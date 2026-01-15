@@ -1,0 +1,51 @@
+question,gold_control_id,odp_required,retrieved_control_ids,rank
+What technical measures must an organization implement according to AC-2 for account management in information systems?,AC-2,ac-2_prm_3,"['AC-20(2)', 'AC-2(5)', 'AC-7', 'IA-4', 'AC-2(12)', 'AC-9(3)', 'IR-10', 'AC-2(2)', 'AC-2', 'AC-2(1)']",9
+Which principle does AC-6 mandate for managing user/system access?,AC-6,nan,"['AC-6', 'AC-6(3)', 'AC-6(2)', 'AC-2(6)', 'AC-6(7)', 'AU-6(7)', 'AC-6(5)', 'AC-3(6)', 'AC-14', 'AC-12(1)']",1
+Which security awareness programs are mandatory and how often should they be conducted?,AT-2,at-2_prm_1,"['AC-3(3)', 'PL-4', 'CA-7(1)', 'AC-3(7)', 'MA-6(1)', 'CA-2(1)', 'PM-12', 'AC-6(8)', 'PS-3(1)', 'AT-2(2)']",0
+What are the essential components and scheduling for role-based security training programs?,AT-3,at-3_prm_1,"['AT-3', 'PM-13', 'AT-3(4)', 'AT-4', 'CP-3', 'AT-3(3)', 'SA-16', 'AT-3(1)', 'AT-3(2)', 'IR-2']",1
+Must an organization identify key determinations for events occurring within its information system?,AU-2,au-2_prm_2,"['AU-2', 'PL-8(1)', 'SI-4', 'AC-6(1)', 'AU-5(2)', 'PM-5', 'SC-17', 'SC-7', 'SA-13', 'PE-13(1)']",1
+What technical details are necessary for the system to include in audit records?,AU-3,nan,"['RA-6', 'AU-3', 'CM-4', 'IR-5', 'SC-8', 'CP-2(8)', 'AT-3', 'AC-6', 'CP-7(1)', 'CP-6(1)']",2
+Are there defined standards for assessing security controls and how often this should be done?,CA-2,ca-2_prm_1,"['IA-9', 'PM-12', 'SA-17', 'PE-17', 'SI-14', 'PL-8', 'PL-8(2)', 'CA-7(1)', 'SC-42', 'PL-9']",0
+Which key components need to be incorporated into a continuous monitoring strategy and program?,CA-7,"ca-7_prm_1
+ca-7_prm_2
+ca-7_prm_3
+ca-7_prm_4
+ca-7_prm_5","['CA-7', 'SA-4(8)', 'CA-7(3)', 'PM-10', 'SA-3', 'PM-14', 'PM-4', 'CA-2', 'PM-9', 'CA-7(1)']",1
+What technical specifications does CM-2 mandate for the foundational setup of the information system?,CM-2,nan,"['CM-7(2)', 'AC-3(9)', 'CM-8', 'SA-12(14)', 'RA-6', 'CM-2', 'CM-3(2)', 'CM-4', 'CP-2(8)', 'MA-2']",6
+Are there specific criteria needed for defining and maintaining configuration settings documentation?,CM-6,cm-6_prm_1,"['SI-13', 'SA-21(1)', 'AU-7(1)', 'AU-16(1)', 'IA-5', 'CM-3(6)', 'SA-4(9)', 'PL-8', 'SA-4', 'SC-40(2)']",0
+What technical elements must be included in a contingency plan as per CP-2?,CP-2,nan,"['CP-2(8)', 'CP-2', 'CP-2(1)', 'CP-4(1)', 'CP-9(2)', 'CP-3', 'CP-2(3)', 'CP-2(4)', 'CP-1', 'CP-4(4)']",2
+What technical measures does CP-9 mandate for conducting and safeguarding backups at the storage facility?,CP-9,"cp-9_prm_1
+cp-9_prm_2
+cp-9_prm_3","['CP-9', 'CP-9(1)', 'CP-9(5)', 'CP-9(2)', 'CP-9(3)', 'AC-3(9)', 'CP-9(6)', 'CP-6(1)', 'PE-3', 'CP-6']",1
+What are the identification and authentication standards outlined in IA-2 for organizational users?,IA-2,nan,"['IA-8', 'IA-2', 'IA-1', 'IA-8(4)', 'IA-9(2)', 'IA-11', 'IA-2(13)', 'IA-10', 'IA-2(10)', 'IA-9']",2
+"What are the secure methods for generating, disseminating, safeguarding, and invalidating authenticators including passwords, tokens, or certificates?",IA-5,nan,"['IA-5', 'IA-5(1)', 'IA-5(4)', 'SC-12(5)', 'SC-12(3)', 'IA-2', 'SC-23(5)', 'SI-5(1)', 'IA-5(8)', 'MA-4']",1
+Which incident response measures are required by IR-4 for the organization to handle incidents?,IR-4,nan,"['IR-4(3)', 'IR-2', 'IR-8', 'IR-7', 'IR-4(9)', 'IR-6', 'IR-6(2)', 'IR-5', 'IR-4(6)', 'IR-4']",10
+What technical standards does IR-6 impose on the reporting of suspected security incidents and when must they be reported?,IR-6,ir-6_prm_1,"['IR-6', 'IR-6(2)', 'IR-6(1)', 'AU-6(9)', 'RA-6', 'IR-7', 'AU-6', 'MA-6(1)', 'IR-6(3)', 'IR-2']",1
+Must there be specific roles responsible for approving the removal of systems or components off-site for maintenance?,MA-2,ma-2_prm_1,"['MA-2', 'MA-3(3)', 'MA-4(3)', 'MA-4(5)', 'SA-10(2)', 'PE-13(1)', 'PE-13(2)', 'CM-3(2)', 'MA-3', 'CP-3']",1
+What technical measures are mandated by MA-3 for the management and upkeep of information system maintenance tools?,MA-3,nan,"['MA-3(1)', 'MA-3(4)', 'MA-3', 'MA-3(2)', 'MA-3(3)', 'MA-6(1)', 'MA-6(2)', 'MA-6(3)', 'MA-4', 'MA-1']",3
+MP-4 what measures are necessary for safeguarding information system media?,MP-4,"mp-4_prm_1, mp-4_prm_2","['MP-4', 'MP-6(8)', 'MP-8(4)', 'MP-4(2)', 'MP-7', 'MP-5(4)', 'MP-2', 'MP-6', 'MP-8', 'MP-1']",1
+What technical standards does MP-6 outline for sanitizing media intended for disposal or release?,MP-6,"mp-6_prm_1
+mp-6_prm_2","['MP-6', 'MP-6(7)', 'MP-6(2)', 'MP-8(3)', 'MP-6(1)', 'MP-8(4)', 'MP-6(8)', 'MP-6(3)', 'MP-8', 'MP-6(6)']",1
+What are the necessary protocols for managing physical access authorizations at facility entry and exit points?,PE-3,"pe-3_prm_1
+pe-3_prm_2
+pe-3_prm_4
+pe-3_prm_5
+pe-3_prm_6
+pe-3_prm_7
+pe-3_prm_8
+pe-3_prm_9","['PE-3', 'PE-2(1)', 'PE-3(1)', 'SI-8', 'PE-3(2)', 'PE-3(3)', 'PE-16', 'PE-18', 'SI-3', 'PE-3(6)']",1
+PE-6 which technical standards must be followed for securing physical access to the facility?,PE-6,nan,"['PE-3(6)', 'PE-3', 'PE-6(4)', 'PE-6', 'PE-2', 'PE-2(3)', 'PE-3(3)', 'PE-2(2)', 'PE-3(2)', 'PE-3(1)']",4
+What technical controls must be detailed in the security plan according to PL-2?,PL-2,nan,"['PL-2', 'PL-8(2)', 'PL-8(1)', 'PL-9', 'PL-1', 'PL-2(3)', 'RA-6', 'CP-2(8)', 'PM-1', 'PL-8']",1
+PL-4 technical specifications for setting up and sharing guidelines with system users,PL-4,nan,"['AC-21', 'AC-21(1)', 'PL-4', 'AC-6(1)', 'PL-4(1)', 'PL-7', 'PL-8(1)', 'AU-9(6)', 'PM-12', 'PL-2']",3
+PM-1 what aspects of an organization-wide information security program plan must be addressed?,PM-1,nan,"['PM-1', 'PM-2', 'PM-7', 'PM-10', 'PM-9', 'PM-3', 'PM-4', 'PM-6', 'PM-5', 'PM-13']",1
+Does the organization guarantee specific aspects while formulating capital planning and investment requests?,PM-3,nan,"['PM-3', 'SA-2', 'CP-2(8)', 'SI-13', 'CP-4(1)', 'SC-30(3)', 'CP-8(1)', 'IR-4(6)', 'SC-44', 'AC-4(21)']",1
+What technical standards and procedures does PS-2 mandate for position risk designations and screening criteria?,PS-2,nan,"['PS-2', 'PS-3', 'PS-3(3)', 'SA-21(1)', 'PS-6(2)', 'SA-21', 'PS-3(2)', 'RA-6', 'PS-3(1)', 'PS-1']",1
+Does PS-3 outline the necessary steps for granting access to the information system?,PS-3,ps-3_prm_1,"['PS-6(3)', 'PS-3(3)', 'PS-3', 'AC-8', 'PS-3(1)', 'PS-3(2)', 'AC-3(3)', 'PS-5', 'PS-4', 'PE-3']",3
+What technical standards must be followed for classifying an information system and its stored information according to RA-2?,RA-2,nan,"['RA-6', 'PL-8(1)', 'PL-8(2)', 'RA-2', 'PS-3', 'RA-5(4)', 'AC-19(4)', 'AT-3(4)', 'RA-3', 'AC-3(9)']",4
+"What technical standards and protocols must be followed for conducting vulnerability scans according to RA-5, particularly in terms of frequency and trigger conditions?",RA-5,ra-5_prm_1,"['RA-5', 'RA-5(4)', 'RA-5(6)', 'RA-6', 'RA-3', 'RA-5(2)', 'RA-5(5)', 'PS-3', 'RA-5(1)', 'RA-5(8)']",1
+What technical controls must be implemented for system management according to SA-3?,SA-3,sa-3_prm_1,"['PL-9', 'SA-16', 'PM-1', 'SA-1', 'CM-3(2)', 'CP-2(8)', 'SA-20', 'PL-2', 'RA-3', 'MA-4(3)']",0
+Does SA-4 specify what needs to be included in acquisition contracts for information systems?,SA-4,nan,"['SA-4(3)', 'SA-12', 'SA-11', 'AC-9(4)', 'IA-5(5)', 'SA-4', 'SA-4(2)', 'SA-4(1)', 'SA-22', 'SA-15(4)']",6
+What technical measures are mandated by SC-7 for external and key internal boundaries in a system?,SC-7,nan,"['SC-7', 'SC-7(9)', 'SC-7(8)', 'SC-17', 'SC-42(2)', 'SC-12', 'AC-3(9)', 'AC-18(5)', 'SC-8', 'SC-7(13)']",1
+What expanded technical safeguards for transmitted information does SC-8 necessitate?,SC-8,sc-8_prm_1,"['SC-8', 'SC-8(3)', 'CP-2(8)', 'PL-8(1)', 'SC-8(1)', 'SC-8(4)', 'SC-6', 'AC-3(9)', 'SC-16(1)', 'IA-5(8)']",1
+"What are the SI-2 guidelines for detecting, notifying, and fixing software vulnerabilities?",SI-2,si-2_prm_1,"['SI-15', 'SI-2', 'RA-5(4)', 'SI-2(6)', 'SI-2(5)', 'RA-5', 'IR-6(2)', 'SI-7(1)', 'SI-14(1)', 'SC-40(2)']",2
+Which types of monitoring are mandated by SI-4 to spot attacks and illicit connections?,SI-4,si-4_prm_1,"['SI-4', 'SI-4(17)', 'SI-4(9)', 'SI-4(3)', 'SI-4(21)', 'SI-4(11)', 'SI-4(14)', 'SI-4(12)', 'SI-4(10)', 'SI-4(19)']",1

@@ -1,0 +1,12 @@
+question,gold_control_id,odp_required,retrieved_control_ids,rank
+What audit record contents are the system required to generate?,AU-3,N/A,"['AU-3(2)', 'AU-7(2)', 'AU-3', 'AU-12', 'AU-5(1)', 'AU-7', 'AU-11', 'AU-4', 'AU-7(1)', 'AU-12(1)']",3
+What does CM-2 require regarding the baseline configuration of the information system?,CM-2,N/A,"['CM-2(1)', 'CM-2(3)', 'CM-2(2)', 'CM-2', 'CM-2(6)', 'CM-3(5)', 'CM-3(3)', 'CM-7(2)', 'CM-2(7)', 'CM-8(2)']",4
+What are the requirements for establishing and documenting configuration settings?,CM-6,N/A,"['SA-12(14)', 'IA-5', 'CP-7(4)', 'PL-8', 'PM-8', 'CM-6', 'AU-3', 'CM-9', 'IA-3(1)', 'IR-5']",6
+What does CP-2 require in developing a contingency plan for the information system?,CP-2,N/A,"['CP-4(1)', 'CP-2(7)', 'CP-2', 'CP-3', 'CP-9(2)', 'CP-7(1)', 'CP-6(1)', 'CP-4', 'CP-2(4)', 'CP-2(3)']",3
+What identification and authentication requirement does IA-2 specify for organizational users?,IA-2,N/A,"['IA-8', 'IA-2', 'IA-11', 'IA-6', 'IA-10', 'IA-9(2)', 'IA-2(13)', 'IA-5(5)', 'IA-2(10)', 'IA-1']",2
+What incident handling capability does IR-4 require the organization to implement?,IR-4,N/A,"['IR-4(7)', 'IR-4(1)', 'IR-4(2)', 'IR-4(6)', 'IR-4(5)', 'IR-4(8)', 'IR-4', 'IR-4(3)', 'IR-4(4)', 'IR-4(9)']",7
+What does MP-4 require for protecting information system media?,MP-4,N/A,"['MP-5(4)', 'MP-4', 'MP-6(7)', 'MP-3', 'MP-8(4)', 'MP-6(8)', 'MP-4(2)', 'MP-7', 'MP-5', 'MP-2']",2
+What does PE-6 require regarding monitoring physical access to the facility?,PE-6,N/A,"['PE-6(4)', 'PE-6(3)', 'PE-6', 'PE-3(6)', 'PE-3', 'PE-3(3)', 'PE-16', 'PE-6(1)', 'PE-6(2)', 'AU-6(6)']",3
+What does PM-1 require regarding an organization-wide information security program plan?,PM-1,N/A,"['PM-2', 'PM-1', 'PM-10', 'PM-4', 'PM-9', 'PM-7', 'PM-5', 'PM-6', 'PM-13', 'PM-8']",2
+"What does RA-5 require for scanning vulnerabilities, including frequency and trigger conditions?",RA-5,N/A,"['RA-5(2)', 'RA-5', 'RA-5(1)', 'RA-5(3)', 'RA-5(6)', 'RA-5(4)', 'RA-3', 'RA-5(5)', 'RA-5(10)', 'RA-5(8)']",2
+"What does SI-2 require for identifying, reporting, and correcting system flaws?",SI-2,N/A,"['SI-2(3)', 'SI-2', 'SI-10(2)', 'SI-14', 'AU-7', 'SA-12(14)', 'SI-6(3)', 'CP-4(1)', 'SI-7(16)', 'SI-3(6)']",2

@@ -1,0 +1,26 @@
+# Samples (End-to-End)
+
+For each sample include:
+1) **Question**
+2) **Retrieved clauses** (top 5) with framework/version/control_id/title
+3) **Final answer** with bracketed citations
+4) **Support check** (note which claims are supported/unsupported)
+5) **ODP handling** (if applicable)
+
+---
+
+## Sample 1
+- **Question:** TBD
+- **Retrieved:** 
+  - NIST rev5 AC-2(3) — ...
+  - PCI 4.0 8.2.6 — ...
+  - HIPAA 164.308(a)(1)(ii)(A) — ...
+- **Answer:** ...
+- **Support check:** ...
+- **ODP:** ...
+
+## Sample 2
+...
+
+## Sample 3
+...

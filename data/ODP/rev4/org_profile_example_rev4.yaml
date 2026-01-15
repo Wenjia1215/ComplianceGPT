@@ -1,0 +1,23 @@
+# A sparse override file.
+# Tiny demo profile with a few sample values so we can validate the FILL path. 
+# Replace with the real org defaults later.
+ac-10_prm_1: 5 failed login attempts
+ac-10_prm_2: 5 failed login attempts
+ac-16_prm_5: 90 days
+ac-1_prm_1: Security Officer
+ac-2.12_prm_2: 90 days
+ac-2.13_prm_1: 90 days
+ac-2.7_prm_1: Security Officer
+ac-2.8_prm_1: 90 days
+ac-3.5_prm_1: 90 days
+ac-3.7_prm_1: Security Officer
+ac-4.2_prm_1: 90 days
+ac-4.5_prm_1: 90 days
+ac-4_prm_1: 90 days
+ac-6.2_prm_1: Security Officer
+ac-6.5_prm_1: monthly
+ac-7_prm_3: 5 failed login attempts
+ac-7_prm_4: 90 days
+ac-7_prm_5: 90 days
+ac-9.2_prm_1: 5 failed login attempts
+ac-9.2_prm_2: 5 failed login attempts

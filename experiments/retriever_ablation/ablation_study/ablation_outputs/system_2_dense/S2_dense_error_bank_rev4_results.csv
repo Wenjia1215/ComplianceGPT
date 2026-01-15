@@ -1,0 +1,12 @@
+question,control_id,rank,top_1_hit,is_hit_at_1,is_hit_at_5,is_hit_at_10,retrieved_ids,odp_required
+What audit record contents are the system required to generate?,AU-3,3,AU-12,False,True,True,"['AU-12', 'AU-3(2)', 'AU-3', 'AU-3(1)', 'AU-7', 'AU-14(2)', 'AU-12(2)', 'AU-4(1)', 'AU-9(1)', 'AU-11(1)']",
+What does CM-2 require regarding the baseline configuration of the information system?,CM-2,1,CM-2,True,True,True,"['CM-2', 'CM-2(2)', 'CM-2(1)', 'CM-2(6)', 'CM-2(3)', 'CM-8(2)', 'CM-2(7)', 'CM-3(5)', 'CM-3(3)', 'CM-11(2)']",
+What are the requirements for establishing and documenting configuration settings?,CM-6,1,CM-6,True,True,True,"['CM-6', 'CM-6(1)', 'SA-4(5)', 'SA-10', 'CM-9', 'CM-2', 'CM-9(1)', 'CM-3(6)', 'CM-2(7)', 'CM-1']",
+What does CP-2 require in developing a contingency plan for the information system?,CP-2,1,CP-2,True,True,True,"['CP-2', 'CP-2(1)', 'CP-2(2)', 'CP-2(7)', 'CP-2(8)', 'CP-2(5)', 'CP-2(6)', 'CP-3', 'CP-4(1)', 'CP-2(3)']",
+What identification and authentication requirement does IA-2 specify for organizational users?,IA-2,1,IA-2,True,True,True,"['IA-2', 'IA-8', 'IA-2(5)', 'IA-2(2)', 'IA-2(1)', 'IA-2(3)', 'IA-10', 'IA-2(4)', 'IA-11', 'IA-4(2)']",
+What incident handling capability does IR-4 require the organization to implement?,IR-4,1,IR-4,True,True,True,"['IR-4', 'IR-4(6)', 'IR-4(1)', 'IR-4(7)', 'IR-4(9)', 'IR-4(4)', 'IR-4(3)', 'IR-4(2)', 'IR-4(8)', 'IR-4(10)']",
+What does MP-4 require for protecting information system media?,MP-4,1,MP-4,True,True,True,"['MP-4', 'MP-5(4)', 'MP-4(2)', 'MP-4(1)', 'MP-8(4)', 'MP-2', 'MP-3', 'MP-7(1)', 'MP-1', 'MP-7']",
+What does PE-6 require regarding monitoring physical access to the facility?,PE-6,2,PE-6(4),False,True,True,"['PE-6(4)', 'PE-6', 'PE-6(1)', 'PE-3(6)', 'PE-3(3)', 'PE-3', 'PE-6(3)', 'PE-18', 'PE-3(1)', 'PE-2']",
+What does PM-1 require regarding an organization-wide information security program plan?,PM-1,1,PM-1,True,True,True,"['PM-1', 'PL-1', 'PM-2', 'PM-3', 'MP-1', 'PS-1', 'PL-2', 'PM-13', 'PM-10', 'PL-2(3)']",
+"What does RA-5 require for scanning vulnerabilities, including frequency and trigger conditions?",RA-5,2,RA-5(2),False,True,True,"['RA-5(2)', 'RA-5', 'RA-5(1)', 'RA-5(10)', 'RA-5(6)', 'RA-5(5)', 'RA-5(3)', 'RA-5(8)', 'RA-5(4)', 'RA-5(7)']",
+"What does SI-2 require for identifying, reporting, and correcting system flaws?",SI-2,3,SI-2(2),False,True,True,"['SI-2(2)', 'SI-2(3)', 'SI-2', 'SI-7(2)', 'SI-6(2)', 'SI-11', 'SI-2(1)', 'SI-10(2)', 'SI-2(6)', 'SI-7']",

@@ -1,0 +1,408 @@
+{
+  "nist_sp_800_53": {
+    "rev4": {
+      "categories": [
+        {
+          "name": "System and Communications Protection",
+          "item_count": 136
+        },
+        {
+          "name": "Access Control",
+          "item_count": 126
+        },
+        {
+          "name": "System and Services Acquisition",
+          "item_count": 98
+        },
+        {
+          "name": "System and Information Integrity",
+          "item_count": 91
+        },
+        {
+          "name": "Audit and Accountability",
+          "item_count": 63
+        },
+        {
+          "name": "Identification and Authentication",
+          "item_count": 57
+        },
+        {
+          "name": "Configuration Management",
+          "item_count": 55
+        },
+        {
+          "name": "Contingency Planning",
+          "item_count": 54
+        },
+        {
+          "name": "Physical and Environmental Protection",
+          "item_count": 53
+        },
+        {
+          "name": "Incident Response",
+          "item_count": 34
+        },
+        {
+          "name": "Media Protection",
+          "item_count": 30
+        },
+        {
+          "name": "Maintenance",
+          "item_count": 27
+        },
+        {
+          "name": "Security Assessment and Authorization",
+          "item_count": 24
+        },
+        {
+          "name": "Personnel Security",
+          "item_count": 16
+        },
+        {
+          "name": "Program Management",
+          "item_count": 16
+        },
+        {
+          "name": "Risk Assessment",
+          "item_count": 16
+        },
+        {
+          "name": "Planning",
+          "item_count": 15
+        },
+        {
+          "name": "Awareness and Training",
+          "item_count": 11
+        }
+      ],
+      "totals": {
+        "categories": 18,
+        "items": 922
+      }
+    },
+    "rev5": {
+      "categories": [
+        {
+          "name": "System and Communications Protection",
+          "item_count": 162
+        },
+        {
+          "name": "Access Control",
+          "item_count": 147
+        },
+        {
+          "name": "System and Services Acquisition",
+          "item_count": 145
+        },
+        {
+          "name": "System and Information Integrity",
+          "item_count": 118
+        },
+        {
+          "name": "Identification and Authentication",
+          "item_count": 74
+        },
+        {
+          "name": "Audit and Accountability",
+          "item_count": 69
+        },
+        {
+          "name": "Configuration Management",
+          "item_count": 66
+        },
+        {
+          "name": "Physical and Environmental Protection",
+          "item_count": 59
+        },
+        {
+          "name": "Contingency Planning",
+          "item_count": 56
+        },
+        {
+          "name": "Incident Response",
+          "item_count": 42
+        },
+        {
+          "name": "Program Management",
+          "item_count": 37
+        },
+        {
+          "name": "Assessment, Authorization, and Monitoring",
+          "item_count": 32
+        },
+        {
+          "name": "Maintenance",
+          "item_count": 30
+        },
+        {
+          "name": "Media Protection",
+          "item_count": 30
+        },
+        {
+          "name": "Supply Chain Risk Management",
+          "item_count": 27
+        },
+        {
+          "name": "Risk Assessment",
+          "item_count": 26
+        },
+        {
+          "name": "Personally Identifiable Information Processing and Transparency",
+          "item_count": 21
+        },
+        {
+          "name": "Personnel Security",
+          "item_count": 18
+        },
+        {
+          "name": "Awareness and Training",
+          "item_count": 17
+        },
+        {
+          "name": "Planning",
+          "item_count": 17
+        }
+      ],
+      "totals": {
+        "categories": 20,
+        "items": 1193
+      }
+    }
+  },
+  "hipaa_security_rule": {
+    "2023": {
+      "categories": [
+        {
+          "name": "Administrative Safeguards",
+          "item_count": 34
+        },
+        {
+          "name": "Definitions",
+          "item_count": 17
+        },
+        {
+          "name": "General Rules",
+          "item_count": 17
+        },
+        {
+          "name": "Physical Safeguards",
+          "item_count": 12
+        },
+        {
+          "name": "Technical Safeguards",
+          "item_count": 12
+        },
+        {
+          "name": "Organizational Requirements",
+          "item_count": 8
+        },
+        {
+          "name": "Compliance and Investigations",
+          "item_count": 6
+        },
+        {
+          "name": "Policies, Procedures, and Documentation",
+          "item_count": 6
+        },
+        {
+          "name": "General Provisions",
+          "item_count": 4
+        },
+        {
+          "name": "General Administrative Requirements",
+          "item_count": 2
+        }
+      ],
+      "totals": {
+        "categories": 10,
+        "items": 118
+      }
+    },
+    "2024": {
+      "categories": [
+        {
+          "name": "Administrative Safeguards",
+          "item_count": 34
+        },
+        {
+          "name": "Definitions",
+          "item_count": 17
+        },
+        {
+          "name": "General Rules",
+          "item_count": 17
+        },
+        {
+          "name": "Physical Safeguards",
+          "item_count": 12
+        },
+        {
+          "name": "Technical Safeguards",
+          "item_count": 12
+        },
+        {
+          "name": "Organizational Requirements",
+          "item_count": 8
+        },
+        {
+          "name": "Compliance and Investigations",
+          "item_count": 6
+        },
+        {
+          "name": "Policies, Procedures, and Documentation",
+          "item_count": 6
+        },
+        {
+          "name": "General Provisions",
+          "item_count": 4
+        },
+        {
+          "name": "General Administrative Requirements",
+          "item_count": 2
+        }
+      ],
+      "totals": {
+        "categories": 10,
+        "items": 118
+      }
+    }
+  },
+  "pci_dss": {
+    "v4.0": {
+      "categories": [
+        {
+          "id": "R1",
+          "name": "Install and Maintain Network Security Controls",
+          "item_count": 5
+        },
+        {
+          "id": "R2",
+          "name": "Apply Secure Configurations to All System Components",
+          "item_count": 3
+        },
+        {
+          "id": "R3",
+          "name": "Protect Stored Account Data",
+          "item_count": 7
+        },
+        {
+          "id": "R4",
+          "name": "Protect Cardholder Data with Strong Cryptography During Transmission",
+          "item_count": 2
+        },
+        {
+          "id": "R5",
+          "name": "Protect All Systems and Networks from Malicious Software",
+          "item_count": 4
+        },
+        {
+          "id": "R6",
+          "name": "Develop and Maintain Secure Systems and Software",
+          "item_count": 5
+        },
+        {
+          "id": "R7",
+          "name": "Restrict Access to System Components and Cardholder Data by Business Need to Know",
+          "item_count": 3
+        },
+        {
+          "id": "R8",
+          "name": "Identify Users and Authenticate Access to System Components",
+          "item_count": 6
+        },
+        {
+          "id": "R9",
+          "name": "Restrict Physical Access to Cardholder Data",
+          "item_count": 5
+        },
+        {
+          "id": "R10",
+          "name": "Log and Monitor All Access to System Components and Cardholder Data",
+          "item_count": 7
+        },
+        {
+          "id": "R11",
+          "name": "Test Security of Systems and Networks Regularly",
+          "item_count": 6
+        },
+        {
+          "id": "R12",
+          "name": "Support Information Security with Organizational Policies and Programs",
+          "item_count": 10
+        }
+      ],
+      "totals": {
+        "categories": 12,
+        "items": 63
+      }
+    },
+    "v4.0.1": {
+      "categories": [
+        {
+          "id": "R1",
+          "name": "Install and Maintain Network Security Controls",
+          "item_count": 5
+        },
+        {
+          "id": "R2",
+          "name": "Apply Secure Configurations to All System Components",
+          "item_count": 3
+        },
+        {
+          "id": "R3",
+          "name": "Protect Stored Account Data",
+          "item_count": 7
+        },
+        {
+          "id": "R4",
+          "name": "Protect Cardholder Data with Strong Cryptography During Transmission",
+          "item_count": 2
+        },
+        {
+          "id": "R5",
+          "name": "Protect All Systems and Networks from Malicious Software",
+          "item_count": 4
+        },
+        {
+          "id": "R6",
+          "name": "Develop and Maintain Secure Systems and Software",
+          "item_count": 5
+        },
+        {
+          "id": "R7",
+          "name": "Restrict Access to System Components and Cardholder Data by Business Need to Know",
+          "item_count": 3
+        },
+        {
+          "id": "R8",
+          "name": "Identify Users and Authenticate Access to System Components",
+          "item_count": 6
+        },
+        {
+          "id": "R9",
+          "name": "Restrict Physical Access to Cardholder Data",
+          "item_count": 5
+        },
+        {
+          "id": "R10",
+          "name": "Log and Monitor All Access to System Components and Cardholder Data",
+          "item_count": 7
+        },
+        {
+          "id": "R11",
+          "name": "Test Security of Systems and Networks Regularly",
+          "item_count": 6
+        },
+        {
+          "id": "R12",
+          "name": "Support Information Security with Organizational Policies and Programs",
+          "item_count": 10
+        }
+      ],
+      "totals": {
+        "categories": 12,
+        "items": 63
+      }
+    }
+  }
+}

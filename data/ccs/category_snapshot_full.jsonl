@@ -1,0 +1,82 @@
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "System and Communications Protection", "item_count": 136}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Access Control", "item_count": 126}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "System and Services Acquisition", "item_count": 98}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "System and Information Integrity", "item_count": 91}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Audit and Accountability", "item_count": 63}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Identification and Authentication", "item_count": 57}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Configuration Management", "item_count": 55}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Contingency Planning", "item_count": 54}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Physical and Environmental Protection", "item_count": 53}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Incident Response", "item_count": 34}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Media Protection", "item_count": 30}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Maintenance", "item_count": 27}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Security Assessment and Authorization", "item_count": 24}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Personnel Security", "item_count": 16}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Program Management", "item_count": 16}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Risk Assessment", "item_count": 16}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Planning", "item_count": 15}
+{"framework": "nist_sp_800_53", "version": "rev4", "category_id": null, "category_name": "Awareness and Training", "item_count": 11}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "System and Communications Protection", "item_count": 162}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Access Control", "item_count": 147}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "System and Services Acquisition", "item_count": 145}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "System and Information Integrity", "item_count": 118}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Identification and Authentication", "item_count": 74}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Audit and Accountability", "item_count": 69}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Configuration Management", "item_count": 66}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Physical and Environmental Protection", "item_count": 59}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Contingency Planning", "item_count": 56}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Incident Response", "item_count": 42}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Program Management", "item_count": 37}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Assessment, Authorization, and Monitoring", "item_count": 32}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Maintenance", "item_count": 30}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Media Protection", "item_count": 30}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Supply Chain Risk Management", "item_count": 27}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Risk Assessment", "item_count": 26}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Personally Identifiable Information Processing and Transparency", "item_count": 21}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Personnel Security", "item_count": 18}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Awareness and Training", "item_count": 17}
+{"framework": "nist_sp_800_53", "version": "rev5", "category_id": null, "category_name": "Planning", "item_count": 17}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Administrative Safeguards", "item_count": 34}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Definitions", "item_count": 17}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "General Rules", "item_count": 17}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Physical Safeguards", "item_count": 12}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Technical Safeguards", "item_count": 12}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Organizational Requirements", "item_count": 8}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Compliance and Investigations", "item_count": 6}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "Policies, Procedures, and Documentation", "item_count": 6}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "General Provisions", "item_count": 4}
+{"framework": "hipaa_security_rule", "version": "2023", "category_id": null, "category_name": "General Administrative Requirements", "item_count": 2}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Administrative Safeguards", "item_count": 34}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Definitions", "item_count": 17}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "General Rules", "item_count": 17}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Physical Safeguards", "item_count": 12}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Technical Safeguards", "item_count": 12}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Organizational Requirements", "item_count": 8}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Compliance and Investigations", "item_count": 6}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "Policies, Procedures, and Documentation", "item_count": 6}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "General Provisions", "item_count": 4}
+{"framework": "hipaa_security_rule", "version": "2024", "category_id": null, "category_name": "General Administrative Requirements", "item_count": 2}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R1", "category_name": "Install and Maintain Network Security Controls", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R2", "category_name": "Apply Secure Configurations to All System Components", "item_count": 3}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R3", "category_name": "Protect Stored Account Data", "item_count": 7}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R4", "category_name": "Protect Cardholder Data with Strong Cryptography During Transmission", "item_count": 2}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R5", "category_name": "Protect All Systems and Networks from Malicious Software", "item_count": 4}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R6", "category_name": "Develop and Maintain Secure Systems and Software", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R7", "category_name": "Restrict Access to System Components and Cardholder Data by Business Need to Know", "item_count": 3}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R8", "category_name": "Identify Users and Authenticate Access to System Components", "item_count": 6}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R9", "category_name": "Restrict Physical Access to Cardholder Data", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R10", "category_name": "Log and Monitor All Access to System Components and Cardholder Data", "item_count": 7}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R11", "category_name": "Test Security of Systems and Networks Regularly", "item_count": 6}
+{"framework": "pci_dss", "version": "v4.0", "category_id": "R12", "category_name": "Support Information Security with Organizational Policies and Programs", "item_count": 10}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R1", "category_name": "Install and Maintain Network Security Controls", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R2", "category_name": "Apply Secure Configurations to All System Components", "item_count": 3}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R3", "category_name": "Protect Stored Account Data", "item_count": 7}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R4", "category_name": "Protect Cardholder Data with Strong Cryptography During Transmission", "item_count": 2}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R5", "category_name": "Protect All Systems and Networks from Malicious Software", "item_count": 4}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R6", "category_name": "Develop and Maintain Secure Systems and Software", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R7", "category_name": "Restrict Access to System Components and Cardholder Data by Business Need to Know", "item_count": 3}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R8", "category_name": "Identify Users and Authenticate Access to System Components", "item_count": 6}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R9", "category_name": "Restrict Physical Access to Cardholder Data", "item_count": 5}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R10", "category_name": "Log and Monitor All Access to System Components and Cardholder Data", "item_count": 7}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R11", "category_name": "Test Security of Systems and Networks Regularly", "item_count": 6}
+{"framework": "pci_dss", "version": "v4.0.1", "category_id": "R12", "category_name": "Support Information Security with Organizational Policies and Programs", "item_count": 10}

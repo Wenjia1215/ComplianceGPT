@@ -1,0 +1,244 @@
+{
+    "name": "ccs",
+    "type": "directory",
+    "children": [
+        {
+            "name": ".DS_Store",
+            "type": "file"
+        },
+        {
+            "name": ".gitkeep",
+            "type": "file"
+        },
+        {
+            "name": "category_snapshot_full.json", // this is a snapshot of the control categories of all 3 compliance frameworks.
+            "type": "file"
+        },
+        {
+            "name": "category_snapshot_full.jsonl",// this is the jsonl format of the snapshot
+            "type": "file"
+        },
+        {
+            "name": "hipaa", // files under this is all hipaa related file
+            "type": "directory",
+            "children": [
+                {
+                    "name": ".DS_Store",
+                    "type": "file"
+                },
+                {
+                    "name": "README.txt",
+                    "type": "file"
+                },
+                {
+                    "name": "deltas",
+                    "type": "directory",
+                    "children": [
+                        {
+                            "name": ".DS_Store",
+                            "type": "file"
+                        },
+                        {
+                            "name": "hipaa_2023to2024.json",
+                            "type": "file"
+                        },
+                        {
+                            "name": "hipaa_2023to2024.jsonl", //this is the deltas file of hipaa security rule 2023 version with 2024 version. all files inside deldas folder are used to record the difference between two versions of the same compliance frameworks
+                            "type": "file"
+                        }
+                    ]
+                },
+                {
+                    "name": "hipaa_2023_ccs.json",
+                    "type": "file"
+                },
+                {
+                    "name": "hipaa_2023_ccs.jsonl", // hipaa compliance framework canonical clause store(CCS) of 2023 version
+                    "type": "file"
+                },
+                {
+                    "name": "hipaa_2024_ccs.json",
+                    "type": "file"
+                },
+                {
+                    "name": "hipaa_2024_ccs.jsonl",// hipaa compliance framework CCS of 2024 version
+                    "type": "file"
+                }
+            ]
+        },
+        {
+            "name": "nist800-53",
+            "type": "directory",
+            "children": [
+                {
+                    "name": ".DS_Store",
+                    "type": "file"
+                },
+                {
+                    "name": "NIST_SP-800-53_rev4_catalog.json",
+                    "type": "file"
+                },
+                {
+                    "name": "NIST_SP-800-53_rev5_catalog.json",
+                    "type": "file"
+                },
+                {
+                    "name": "ODP",
+                    "type": "directory",
+                    "children": [
+                        {
+                            "name": ".DS_Store",
+                            "type": "file"
+                        },
+                        {
+                            "name": "rev4",
+                            "type": "directory",
+                            "children": [
+                                {
+                                    "name": "odp_registry_rev4.csv",
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "odp_registry_rev4.json",
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "odp_registry_rev4.jsonl", // this is the Organization-defined parameter(ODP) file of nist sp 800-53 compliance framework CCS of rev4 (revision 4) version
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "org_profile_blank_rev4.yaml", // this is a blank exmaple file for organization profile for ODP of nist sp 800-53 compliance framework CCS of rev4 (revision 4) version
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "org_profile_example_rev4.yaml",// this is an exmaple file for organization profile for ODP of nist sp 800-53 compliance framework CCS of rev4 (revision 4) version
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        {
+                            "name": "rev5",
+                            "type": "directory",
+                            "children": [
+                                {
+                                    "name": "odp_registry_rev5.csv",
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "odp_registry_rev5.json",
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "odp_registry_rev5.jsonl", // this is the Organization-defined parameter(ODP) file of nist sp 800-53 compliance framework CCS of rev5 (revision 5) version
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "org_profile_blank_rev5.yaml",// this is a blank exmaple file for organization profile for ODP of nist sp 800-53 compliance framework CCS of rev5 (revision 5) version
+                                    "type": "file"
+                                },
+                                {
+                                    "name": "org_profile_example_rev5.yaml",// this is an exmaple file for organization profile for ODP of nist sp 800-53 compliance framework CCS of rev5 (revision 5) version
+                                    "type": "file"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "deltas",
+                    "type": "directory",
+                    "children": [
+                        {
+                            "name": ".DS_Store",
+                            "type": "file"
+                        },
+                        {
+                            "name": ".gitkeep",
+                            "type": "file"
+                        },
+                        {
+                            "name": "readme.txt",
+                            "type": "file"
+                        },
+                        {
+                            "name": "rev4_to_rev5.delta.json", 
+                            "type": "file"
+                        },
+                        {
+                            "name": "rev4_to_rev5.delta.jsonl",// this is the deltas (difference) between nist sp 800-53 rev4 and rev5 version
+                            "type": "file"
+                        }
+                    ]
+                },
+                {
+                    "name": "rev4.jsonl",// this is nist sp 800-53 compliance framework canonical clause store(CCS) of rev4 version
+                    "type": "file"
+                },
+                {
+                    "name": "rev5.jsonl",// this is nist sp 800-53 compliance framework canonical clause store(CCS) of rev5 version
+                    "type": "file"
+                }
+            ]
+        },
+        {
+            "name": "pci_dss",
+            "type": "directory",
+            "children": [
+                {
+                    "name": ".DS_Store",
+                    "type": "file"
+                },
+                {
+                    "name": "deltas",
+                    "type": "directory",
+                    "children": [
+                        {
+                            "name": ".DS_Store",
+                            "type": "file"
+                        },
+                        {
+                            "name": "v4_0tov4_0_1.json",
+                            "type": "file"
+                        },
+                        {
+                            "name": "v4_0tov4_0_1.jsonl",
+                            "type": "file"
+                        }
+                    ]
+                },
+                {
+                    "name": "pcidss_v4_0.headings.json",
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0.headings.jsonl",// this is PCI DSS compliance framework headings of V4.0 version, PCI-DSS framework has multiple layers, so I put its heading here so we can see it clear
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0.json",
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0.jsonl",// this is PCI DSS compliance framework canonical clause store(CCS) of V4.0 version
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0_1.headings.json",// this is PCI DSS compliance framework headings of V4.0.1 version, PCI-DSS framework has multiple layers, so I put its heading here so we can see it clear
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0_1.headings.jsonl",// this is PCI DSS compliance framework headings of V4.0.1 version
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0_1.json",
+                    "type": "file"
+                },
+                {
+                    "name": "pcidss_v4_0_1.jsonl",// this is PCI DSS compliance framework canonical clause store(CCS) of V4.0.1 version
+                    "type": "file"
+                }
+            ]
+        }
+    ]
+}

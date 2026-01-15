@@ -1,0 +1,121 @@
+question,control_id,odp_required,rank
+When must account managers and the designated personnel be notified about user account changes?,AC-2,"ac-02_odp.5
+ac-02_odp.6
+ac-02_odp.7
+ac-02_odp.8",1
+What must an organization enforce regarding logical access to its information and systems?,AC-3,nan,1
+What principle should be employed to limit user and process access to the minimum necessary for assigned tasks?,AC-6,nan,1
+How must a system be configured to handle consecutive invalid logon attempts?,AC-7,"ac-7_odp_1, ac-7_odp_2, ac-7_odp_3",1
+What actions must a system take to lock a session and what is required for a user to re-establish access?,AC-11,ac-11_odp_1,1
+"What are the requirements for security and privacy literacy training, including its frequency, triggers for updates, and content sources?",AT-2,"at-2_prm_1, at-2_prm_2, at-2_odp_5, at-2_odp_6, at-2_odp_7",1
+Organizations should determine the content of training based on what?,AT-3,nan,1
+"How must an organization document, monitor, and retain records of its security and privacy training activities?",AT-4,at-4_odp,1
+What type of activity should be included in literacy training to simulate real-world incidents?,AT-2(1),nan,1
+What method does AT-3(3) specify for reinforcing objectives in role-based security training?,AT-3(3),nan,1
+"What are the organizational responsibilities for defining, justifying, and maintaining the types of events to be logged by a system?",AU-2,"au-2_odp_1, au-2_prm_2, au-2_odp_4",1
+What information must each audit record contain to support after-the-fact investigation of security incidents?,AU-3,nan,2
+What factors must an organization consider when allocating audit log storage capacity to prevent the loss of audit data?,AU-4,nan,1
+"What is the required process for reviewing system audit records, and what actions should be taken based on the findings?",AU-6,au-6_odp_1,1
+What are the requirements for generating and recording time stamps in audit records to ensure accuracy?,AU-8,au-8_odp,1
+"Describe the key steps of the formal control assessment process, from planning to reporting.",CA-2,ca-2_odp.2,4
+"What are the requirements for managing and securing information exchanges between systems, including the associated agreements?",CA-3,"ca-3_odp_1, ca-3_odp_3",1
+What is the purpose of a plan of action and milestones in addressing identified control weaknesses?,CA-5,ca-5_odp,1
+What are the primary responsibilities of an authorizing official regarding system authorization and risk determination?,CA-6,ca-6_odp,1
+What are the requirements for implementing a system-level continuous monitoring strategy?,CA-7,"ca-7_odp_1
+ca-7_odp_2
+ca-7_odp_3
+ca-7_prm_4
+ca-7_prm_5",1
+What are the lifecycle requirements for system baseline configurations?,CM-2,"cm-2_odp_1, cm-2_odp_2",2
+What must an organization do to manage configuration-controlled changes?,CM-3,"cm-3_odp_1
+cm-3_odp_2
+cm-3_odp_3",1
+What should be analyzed before implementing a system change?,CM-4,nan,2
+"How should configuration settings be established, approved, and monitored?",CM-6,"cm-6_odp_1
+cm-6_odp_2
+cm-6_odp_3",1
+"What are the requirements for developing, maintaining, and updating a system component inventory?",CM-8,"cm-8_odp_1, cm-8_odp_2",4
+"What are the key elements that must be included in a contingency plan, and how should it be reviewed, distributed, and updated?",CP-2,"cp-2_prm_1, cp-2_prm_2, cp-2_odp_5",1
+When and how should contingency training be provided to system users based on their assigned roles and responsibilities?,CP-3,"cp-3_odp_1, cp-3_odp_2, cp-3_odp_3, cp-3_odp_4",1
+"How frequently must contingency plans be tested, and what should be done after reviewing the test results?",CP-4,"cp-4_odp_1, cp-4_prm_2",1
+What are the requirements for establishing and maintaining an alternate processing site to resume essential operations?,CP-7,"cp-7_odp_1, cp-7_odp_2",1
+What actions must be taken to ensure that system and user-level information is backed up and that backup data remains protected?,CP-9,"cp-9_odp_1, cp-9_odp_2, cp-9_odp_3, cp-9_odp_4",1
+How must organizations identify and authenticate users and associate them with processes acting on their behalf?,IA-2,nan,1
+"What are the requirements for assigning, authorizing, and preventing reuse of system identifiers for individuals, groups, or devices?",IA-4,"ia-4_odp_1, ia-4_odp_2",1
+"How should organizations manage authenticators, including their distribution, protection, and periodic updates?",IA-5,"ia-5_odp_1, ia-5_odp_2",1
+What does NIST require to protect authentication information from disclosure during the authentication process?,IA-6,nan,3
+How should organizations handle identification and authentication of non-organizational users accessing federal systems?,IA-8,nan,1
+"When should incident response training be provided, and how often should its content be reviewed and updated?",IR-2,"ir-2_odp_1, ir-2_odp_2, ir-2_odp_3, ir-2_odp_4",1
+"How often should organizations test the effectiveness of their incident response capabilities, and what kinds of tests may be used?",IR-3,"ir-3_odp_1, ir-3_odp_2",1
+"What are the key elements of implementing an effective incident handling capability, including coordination and lessons learned?",IR-4,nan,1
+What information should organizations maintain and analyze when documenting and reviewing security incidents?,IR-5,nan,2
+"What are the reporting requirements for suspected or confirmed incidents, including notification timeframes and recipients?",IR-6,"ir-6_odp_1, ir-6_odp_2",1
+What are the key considerations for a controlled system maintenance program?,MA-2,nan,1
+"How should organizations approve, control, and periodically review the use of system maintenance tools?",MA-3,ma-3_odp,1
+"What must organizations do to authorize, secure, and record nonlocal maintenance and diagnostic activities?",MA-4,nan,1
+What process should be established for authorizing maintenance personnel and ensuring appropriate escorting and access control during maintenance?,MA-5,nan,1
+How should organizations identify critical system components and obtain maintenance support to mitigate risk when those components fail?,MA-6,nan,1
+How should access to both digital and non-digital system media be restricted to authorized individuals?,MP-2,nan,1
+"What requirements apply to marking system media with handling or distribution limitations, and when may media be exempt from marking?",MP-3,"mp-3_odp_1, mp-3_odp_2",1
+How must organizations physically control and securely store system media to prevent unauthorized access or tampering?,MP-4,"mp-4_prm_1, mp-4_prm_2",1
+"What safeguards should be in place for transporting system media outside controlled areas, including accountability and documentation requirements?",MP-5,"mp-5_odp_1, mp-5_prm_2",1
+"What are the requirements for sanitizing system media prior to disposal, reuse, or release from organizational control?",MP-6,"mp-6_prm_1, mp-6_prm_2",1
+"What are the requirements for managing facility access authorizations, credentials, and access lists for individuals entering secured areas?",PE-2,pe-2_odp,1
+"What considerations, components, and types of controls are involved in implementing physical access control?",PE-3,nan,1
+What controls should organizations use to protect system distribution and transmission lines from physical damage or interception?,PE-4,nan,1
+"How should physical access to output devices such as monitors, printers, or copiers be restricted and monitored?",PE-5,nan,1
+What measures should be implemented to monitor and review physical access logs and respond to security incidents in facilities housing systems?,PE-6,"pe-6_odp_1, pe-6_odp_2",1
+What is the guidance of control PL-2?,PL-2,nan,5
+What considerations are involved in establishing rules of behavior regarding their application to different user types and the methods for documenting acknowledgment?,PL-4,nan,1
+"What is the purpose of a Concept of Operations, and how often should it be reviewed and updated?",PL-7,pl-7_odp,1
+What should security and privacy architectures describe to ensure protection of information and integration with the enterprise architecture?,PL-8,pl-8_odp,2
+"How does the concept of tailoring allow organizations to customize control baselines to their mission, environment, and risk profile?",PL-10,nan,2
+"Who serves as the senior agency information security officer, and what is their role within federal agencies?",PM-2,nan,1
+What is the purpose of a plan of action and milestones process within the organization's risk management strategy?,PM-4,nan,1
+How are measures of performance used to evaluate the effectiveness of security and privacy programs?,PM-6,nan,1
+"What considerations must be incorporated into the enterprise architecture to address security, privacy, and risk?",PM-7,nan,1
+"What are the key components of an organization's risk management strategy, and how should it be implemented and updated?",PM-9,pm-9_odp,2
+"What process should the organization use to assign, review, and update position risk designations and establish screening criteria for personnel?",PS-2,ps-2_odp,1
+When and how must individuals be screened before authorizing or maintaining access to organizational systems?,PS-3,ps-3_prm_1,1
+What steps must be taken when an individual's employment or role is terminated?,PS-4,"ps-4_odp_1, ps-4_odp_2",2
+"What actions should the organization take to review, modify, and communicate access authorizations for reassigned or transferred personnel?",PS-5,"ps-5_odp_1, ps-5_odp_2, ps-5_odp_3, ps-5_odp_4",1
+"What requirements apply to developing, reviewing, and signing access agreements for individuals requiring system access?",PS-6,"ps-6_odp_1, ps-6_odp_2",1
+"How should organizations determine, document, and restrict the purposes and lawful basis for processing personally identifiable information?",PT-2,"pt-2_odp_1, pt-2_odp_2, pt-2_odp_3",1
+"What must organizations identify and document about the purposes and conditions for collecting, using, and sharing PII, and how should they handle changes to those purposes?",PT-3,"pt-3_odp_1, pt-3_odp_2, pt-3_odp_3, pt-3_odp_4",1
+"How should organizations obtain and manage individual consent for processing PII, and what factors should be considered when determining the appropriate consent mechanism?",PT-4,nan,1
+"What information should be included in privacy notices to individuals, and when must such notices be provided or updated?",PT-5,pt-5_odp_2,1
+What must organizations do to publish and maintain accurate system of records Notices for systems that contain PII?,PT-6,nan,1
+"What steps are required to categorize a system and its information, and who must approve the decision?",RA-2,nan,1
+"How should organizations conduct and document risk assessments, and how often should the results be reviewed?",RA-3,"ra-3_odp_1
+ra-3_odp_2
+ra-3_odp_3
+ra-3_odp_4
+ra-3_odp_5",1
+"What are the requirements for scanning systems for vulnerabilities, remediating identified risks, and sharing vulnerability information?",RA-5,"ra-5_prm_1
+ ra-5_odp_3
+ ra-5_odp_4",2
+"What options may organizations consider when responding to identified risks, and how does risk tolerance affect these decisions?",RA-7,nan,1
+"What is the purpose of performing a criticality analysis, and when should it be conducted?",RA-9,"ra-9_odp_1, ra-9_odp_2",1
+"In SA-5, what documentation should be obtained or developed?",SA-5,"sa-5_odp_1
+sa-5_odp_2",1
+"In SA-8, which security and privacy engineering principles should be applied?",SA-8,sa-8_prm_1,1
+What are the requirements for ensuring external service providers comply with organizational security and privacy expectations?,SA-9,"sa-9_odp_1, sa-9_odp_2",1
+"What should be required from system developers regarding configuration management, approved changes, and flaw tracking?",SA-10,"sa-10_odp_1, sa-10_odp_2, sa-10_odp_3",1
+What are developers required to produce and correct under a system's security and privacy assessment plan?,SA-11,"sa-11_odp_1
+sa-11_odp_2
+sa-11_odp_3",2
+"How should communications be monitored and controlled at system interfaces, and how must external connections be managed to protect organizational networks?",SC-7,sc-7_odp,1
+What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?,SC-8,nan,1
+What requirements apply to establishing and managing cryptographic keys used within the system?,SC-12,sc-12_odp,1
+"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",SC-13,nan,2
+What protections must be applied to ensure the confidentiality and integrity of information at rest within system components?,SC-28,nan,1
+"What actions must organizations take to identify, report, test, and install security-relevant software and firmware updates?",SI-2,si-2_odp,1
+What are the requirements for implementing and managing malicious-code protection mechanisms across the system?,SI-3,"si-3_odp_1, si-3_odp_2, si-3_odp_3, si-3_odp_4, si-3_odp_6",1
+"How should systems be monitored to detect attacks, unauthorized connections, and anomalous activities, and how should such events be analyzed and reported?",SI-4,"si-4_odp_1, si-4_odp_2, si-4_odp_3, si-4_odp_4, si-4_odp_5",1
+"What integrity-verification mechanisms should be employed to detect unauthorized changes to software, firmware, or data?",SI-7,"si-7_prm_1, si-7_prm_2",1
+How should organizations validate system inputs to prevent injection or cross-site scripting attacks?,SI-10,nan,1
+"What elements must be included in a supply-chain risk management plan, and how often should it be reviewed and protected from unauthorized disclosure?",SR-2,"sr-2_odp_1, sr-2_odp_2",1
+How should organizations identify and address weaknesses in supply-chain elements and document protective controls and processes?,SR-3,"sr-3_odp_1, sr-3_odp_2, sr-3_odp_3, sr-3_odp_4",1
+"What acquisition and contracting practices should be employed to protect the supply chain from counterfeit, tampered, or malicious components?",SR-5,nan,1
+How frequently should supply-chain-related risks be assessed and reviewed for suppliers and contractors?,SR-6,sr-6_odp,1
+"What policies and procedures should be developed to detect, prevent, and report counterfeit components within the system?",SR-11,sr-11_odp_1,1

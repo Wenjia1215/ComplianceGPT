@@ -1,0 +1,111 @@
+
+---
+
+# README: Retriever Performance Benchmark
+
+## 1. Objective (What it is)
+
+This notebook provides a performance and resource benchmark for five key retrieval pipelines (S1, S2, S5, S6, and S7) identified in the main `AblationStudy_S1-7.ipynb` study.
+
+The primary goal of this experiment is to quantify the *cost* (latency and memory) associated with the *accuracy* gains of each successive system. This notebook measures three specific metrics:
+
+1.  **Query Latency:** The end-to-end wall-clock time (in milliseconds) required for each system to process a single query and return a ranked list of document IDs.
+2.  **VRAM Footprint:** The static GPU memory (in megabytes) required to load the core AI models (bi-encoder and cross-encoder) used by the dense and hybrid pipelines.
+3.  **Static Model Size:** The reported size of the external model used for the offline Query-Rewrite (QUR) generation step.
+
+## 2. Scope (What it is *not*)
+
+This benchmark is strictly focused on performance and resource costs. It does **not** measure:
+
+* **Retrieval Accuracy:** All accuracy metrics (MRR@10, Recall@k, nDCG@k) are exclusively handled in the `AblationStudy_S1-7.ipynb` and `MicroAblation_S4_S7_Validation.ipynb` notebooks.
+* **Answer Generation Latency:** This notebook only times the **retrieval** step (finding relevant documents). The latency of the **"Answerer"** (the RAG generator component) is a separate task and is not measured here.
+* **QUR Generation Latency:** The Query-Rewrite (QUR) step, which uses the `Qwen2.5-7B` model, is an **offline, pre-calculation** process. The rewrites are saved to CSV files. This notebook only measures the *online* cost of *loading and using* these pre-computed rewrites, not the *offline* cost of generating them.
+
+## 3. Rationale (Why this experiment)
+
+The main ablation study proved that S7 (ComplianceGPT) is the most accurate retrieval pipeline. However, S7 is also the most complex, combining lexical search, dense search, query rewrites, and a final reranking stage.
+
+A complete analysis requires understanding the engineering trade-offs. This benchmark provides the objective data necessary to answer critical, practical questions:
+
+* Is the S7 pipeline 10x slower or 100x slower than the S1 baseline?
+* What is the dominant source of latency in the S7 pipeline?
+* Do the hybrid systems (S6, S7) require large, expensive GPUs, or is their memory footprint practical for standard hardware?
+
+The results of this notebook provide the quantitative data for the "Latency/Resource Snapshot" section of the final research paper.
+
+## 4. Methodology (How it was conducted)
+
+This notebook isolates each component to measure its cost accurately.
+
+### 4.1. VRAM (Resource) Snapshot
+
+To get an isolated, static measurement of VRAM usage, the notebook performs the following steps *before* initializing the full pipeline:
+
+1.  **Clear Cache:** The GPU cache is emptied (`torch.cuda.empty_cache()`).
+2.  **Load Model 1:** The `intfloat/e5-small-v2` (bi-encoder) is loaded onto the GPU.
+3.  **Measure Model 1:** `torch.cuda.memory_allocated()` is called to get the VRAM footprint of the S2 bi-encoder.
+4.  **Clear Cache:** The model is deleted from memory, and the cache is emptied again.
+5.  **Load Model 2:** The `cross-encoder/ms-marco-MiniLM-L-6-v2` (reranker) is loaded onto the GPU.
+6.  **Measure Model 2:** `torch.cuda.memory_allocated()` is called to get the VRAM footprint of the S6/S7 reranker.
+
+The final report lists these individual costs and provides the estimated totals for the S2 system (bi-encoder only) and the S6/S7 systems (bi-encoder + cross-encoder).
+
+### 4.2. Latency (Performance) Benchmark
+
+To measure end-to-end query time, a dedicated `RetrievalBenchmarker` class was created.
+
+1.  **Isolate Logic:** This class contains five distinct functions (`benchmark_s1`, `benchmark_s2`, `benchmark_s5`, `benchmark_s6`, `benchmark_s7`) that perfectly replicate the logic of each pipeline (e.g., `benchmark_s6` runs the S5 logic *plus* the reranker; `benchmark_s7` runs the S6 logic *plus* the QUR-RRF stage).
+2.  **Consistent Test:** A single, representative query is selected from the `nist_sp800-53_rev5_gold-set_100q.csv` to be used as a consistent input for all five systems.
+3.  **Stable Average:** Each system is benchmarked by:
+    * Running the function **once** as a "warmup" run (to load any JIT components).
+    * Running the function **10 times** in a loop.
+    * Recording the wall-clock time (using `time.time()`) for each of the 10 trials, measured in milliseconds.
+    * Using `torch.cuda.synchronize()` for all GPU-based systems (S2, S5, S6, S7) to ensure the timing is accurate and includes all GPU computation.
+4.  **Report:** The final average latency of the 10 trials is reported for each system.
+
+### 4.3. Static Model Size
+
+The size of the offline QUR model (`Qwen2.5-7B`) is recorded as a static fact to complete the resource overview.
+
+## 5. Final Report Summary
+
+The following report was generated by this notebook and saved to `Performance_Benchmark_Report.md`.
+
+---
+
+# Retriever Performance Benchmark Report
+Report generated: 2025-11-14 18:04:02.729851 (UTC)
+
+## 1. End-to-End Query Latency (Performance)
+Average latency per query over 10 trials on a single GPU.
+
+| System | Avg. Latency (ms) |
+| :--- | ---: |
+| S1 (BM25) | 12.38 |
+| S2 (Dense) | 9.81 |
+| S5 (Hybrid RRF) | 23.55 |
+| S6 (Hybrid + RR) | 306.42 |
+| S7 (ComplianceGPT) | 367.55 |
+
+**Key Insight:** The baseline lexical (S1) and dense (S2) retrievers, along with the Stage 1 hybrid (S5), all perform in real-time (<25ms). The addition of the cross-encoder reranker (S6, S7) introduces a significant, ~15x latency cost. This demonstrates the primary trade-off between speed (S5) and accuracy (S6/S7).
+
+## 2. Model VRAM Footprint (Resource Cost)
+VRAM measured by loading models onto an idle GPU.
+
+| Component | Model | VRAM (MB) |
+| :--- | :--- | ---: |
+| Bi-Encoder (S2) | intfloat/e5-small-v2 | 127.27 |
+| Cross-Encoder (S6/S7) | cross-encoder/ms-marco-MiniLM-L-6-v2 | 86.65 |
+
+### Estimated Total System VRAM
+* **S2 (Dense) Total:** 127.27 MB
+* **S6/S7 (Hybrid) Total:** 213.92 MB
+
+**Key Insight:** The VRAM requirement for the SOTA S7 pipeline is exceptionally low (~214 MB). This makes the system highly practical, as it does not require a large-memory GPU.
+
+## 3. QUR Model Size (Static Cost)
+Size of the model used for Query-Rewrite (QUR) generation.
+
+* **QUR Model:** Qwen2.5-7B
+
+**Key Insight:** This is a large model, but its cost is only incurred during a **one-time, offline process** to pre-calculate the query rewrites. It is *not* a real-time cost for the retrieval pipeline.
