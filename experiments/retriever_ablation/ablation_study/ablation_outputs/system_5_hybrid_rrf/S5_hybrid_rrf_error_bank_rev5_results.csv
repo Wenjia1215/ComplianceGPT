@@ -1,24 +1,30 @@
-question,control_id,odp_required,rank,version
-What must an organization enforce regarding logical access to its information and systems?,AC-3,N/A,1,rev5
-How must a system be configured to handle consecutive invalid logon attempts?,AC-7,N/A,1,rev5
-What information must each audit record contain to support after-the-fact investigation of security incidents?,AU-3,N/A,2,rev5
-What are the primary responsibilities of an authorizing official regarding system authorization and risk determination?,CA-6,N/A,1,rev5
-What are the lifecycle requirements for system baseline configurations?,CM-2,N/A,2,rev5
-What must an organization do to manage configuration-controlled changes?,CM-3,N/A,1,rev5
-What should be analyzed before implementing a system change?,CM-4,N/A,2,rev5
-"What are the requirements for developing, maintaining, and updating a system component inventory?",CM-8,N/A,4,rev5
-What information should organizations maintain and analyze when documenting and reviewing security incidents?,IR-5,N/A,2,rev5
-What are the key considerations for a controlled system maintenance program?,MA-2,N/A,1,rev5
-What process should be established for authorizing maintenance personnel and ensuring appropriate escorting and access control during maintenance?,MA-5,N/A,1,rev5
-What is the guidance of control PL-2?,PL-2,N/A,5,rev5
-What should security and privacy architectures describe to ensure protection of information and integration with the enterprise architecture?,PL-8,N/A,2,rev5
-"How does the concept of tailoring allow organizations to customize control baselines to their mission, environment, and risk profile?",PL-10,N/A,2,rev5
-"What considerations must be incorporated into the enterprise architecture to address security, privacy, and risk?",PM-7,N/A,1,rev5
-"What are the key components of an organization's risk management strategy, and how should it be implemented and updated?",PM-9,N/A,2,rev5
-What steps must be taken when an individual's employment or role is terminated?,PS-4,N/A,2,rev5
-"What must organizations identify and document about the purposes and conditions for collecting, using, and sharing PII, and how should they handle changes to those purposes?",PT-3,N/A,1,rev5
-"What steps are required to categorize a system and its information, and who must approve the decision?",RA-2,N/A,1,rev5
-"How should organizations conduct and document risk assessments, and how often should the results be reviewed?",RA-3,N/A,1,rev5
-What are developers required to produce and correct under a system's security and privacy assessment plan?,SA-11,N/A,2,rev5
-What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?,SC-8,N/A,1,rev5
-"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",SC-13,N/A,2,rev5
+question_id,question,gold_control_id,odp_required,rank,is_hit_at_1,is_hit_at_5,is_hit_at_10,top_1_hit,retrieved_control_ids,system_meta
+2,What must an organization enforce regarding logical access to its information and systems?,AC-3,N/A,1,True,True,True,AC-3,"[""AC-3"", ""CM-5"", ""SC-8"", ""AC-3.3"", ""AC-4"", ""SA-9.7"", ""AC-20"", ""AC-24"", ""AC-3.11"", ""AC-20.3""]","{""sys"": ""S5""}"
+4,How must a system be configured to handle consecutive invalid logon attempts?,AC-7,"ac-7_odp_1, ac-7_odp_2, ac-7_odp_3",2,False,True,True,AC-7.4,"[""AC-7.4"", ""AC-7"", ""AC-9.1"", ""AC-9.2"", ""AC-7.3"", ""SI-11"", ""AC-9"", ""AC-7.2"", ""SI-10.3"", ""SA-8.24""]","{""sys"": ""S5""}"
+9,What type of activity should be included in literacy training to simulate real-world incidents?,AT-2(1),N/A,0,False,False,False,AT-2.1,"[""AT-2.1"", ""AT-2"", ""IR-2.1"", ""IR-9.2"", ""AT-2.5"", ""AT-2.4"", ""IR-2"", ""AT-2.6"", ""AT-2.2"", ""AT-2.3""]","{""sys"": ""S5""}"
+10,What method does AT-3(3) specify for reinforcing objectives in role-based security training?,AT-3(3),N/A,0,False,False,False,AT-3,"[""AT-3"", ""AT-3.3"", ""AT-4"", ""CP-3"", ""AT-1"", ""AT-6"", ""AT-3.2"", ""IR-2"", ""AC-3.7"", ""AT-2""]","{""sys"": ""S5""}"
+12,What information must each audit record contain to support after-the-fact investigation of security incidents?,AU-3,N/A,2,False,True,True,AU-11,"[""AU-11"", ""AU-3"", ""AU-6.5"", ""AU-6"", ""AU-6.9"", ""AU-7"", ""IR-5"", ""AU-6.1"", ""AU-3.1"", ""SA-8.22""]","{""sys"": ""S5""}"
+14,"What is the required process for reviewing system audit records, and what actions should be taken based on the findings?",AU-6,au-6_odp_1,1,True,True,True,AU-6,"[""AU-6"", ""AU-3"", ""SA-8.22"", ""AU-6.7"", ""AC-4.26"", ""AU-5"", ""MP-6.1"", ""AU-7"", ""AU-11"", ""AU-7.1""]","{""sys"": ""S5""}"
+15,What are the requirements for generating and recording time stamps in audit records to ensure accuracy?,AU-8,au-8_odp,1,True,True,True,AU-8,"[""AU-8"", ""AU-12.1"", ""AU-3"", ""AU-7"", ""AU-11.1"", ""AU-11"", ""AU-12"", ""AU-6.5"", ""AU-3.1"", ""AU-12.2""]","{""sys"": ""S5""}"
+16,"Describe the key steps of the formal control assessment process, from planning to reporting.",CA-2,ca-2_odp.2,2,False,True,True,PM-4,"[""PM-4"", ""CA-2"", ""SA-11.7"", ""PL-1"", ""CA-5"", ""PL-2"", ""CM-9"", ""CA-7"", ""RA-3"", ""CP-1""]","{""sys"": ""S5""}"
+19,What are the primary responsibilities of an authorizing official regarding system authorization and risk determination?,CA-6,ca-6_odp,1,True,True,True,CA-6,"[""CA-6"", ""CA-6.2"", ""PM-10"", ""CA-6.1"", ""CA-1"", ""RA-2"", ""PL-2"", ""AC-3.2"", ""CM-5.4"", ""MP-6.7""]","{""sys"": ""S5""}"
+23,What should be analyzed before implementing a system change?,CM-4,N/A,0,False,False,False,CM-3,"[""CM-3"", ""CM-3.7"", ""CM-3.2"", ""CM-4.1"", ""IA-5.5"", ""IR-6.2"", ""CM-3.8"", ""MA-3"", ""SA-8.17"", ""SA-11.2""]","{""sys"": ""S5""}"
+24,"How should configuration settings be established, approved, and monitored?",CM-6,"cm-6_odp_1
+cm-6_odp_2
+cm-6_odp_3",2,False,True,True,CM-8.6,"[""CM-8.6"", ""CM-6"", ""CM-9"", ""CM-3"", ""SA-10"", ""CM-6.2"", ""CM-6.1"", ""CM-1"", ""CM-3.2"", ""CP-7.4""]","{""sys"": ""S5""}"
+25,"What are the requirements for developing, maintaining, and updating a system component inventory?",CM-8,"cm-8_odp_1, cm-8_odp_2",2,False,True,True,PM-5,"[""PM-5"", ""CM-8"", ""CM-8.1"", ""CM-8.2"", ""CM-8.7"", ""SA-15"", ""SA-4.9"", ""SA-10"", ""CM-2.2"", ""SA-4.2""]","{""sys"": ""S5""}"
+26,"What are the key elements that must be included in a contingency plan, and how should it be reviewed, distributed, and updated?",CP-2,"cp-2_prm_1, cp-2_prm_2, cp-2_odp_5",2,False,True,True,CP-4.1,"[""CP-4.1"", ""CP-2"", ""CP-3"", ""CP-8.4"", ""CP-2.1"", ""CP-4"", ""CP-2.7"", ""CP-1"", ""CP-9.2"", ""CP-4.2""]","{""sys"": ""S5""}"
+39,What information should organizations maintain and analyze when documenting and reviewing security incidents?,IR-5,N/A,1,True,True,True,IR-5,"[""IR-5"", ""AU-6"", ""PE-6"", ""CM-4"", ""IR-6.2"", ""AU-3"", ""IR-4"", ""IR-6"", ""AU-6.9"", ""IR-9.2""]","{""sys"": ""S5""}"
+44,What process should be established for authorizing maintenance personnel and ensuring appropriate escorting and access control during maintenance?,MA-5,N/A,2,False,True,True,MA-5.1,"[""MA-5.1"", ""MA-5"", ""MA-5.5"", ""MA-3"", ""MA-4.5"", ""MA-1"", ""MA-5.4"", ""MA-4.6"", ""MA-2"", ""PE-2.1""]","{""sys"": ""S5""}"
+56,What is the guidance of control PL-2?,PL-2,N/A,1,True,True,True,PL-2,"[""PL-2"", ""PL-10"", ""PL-1"", ""PL-8.1"", ""PL-4"", ""PL-11"", ""SC-12.3"", ""SC-12.2"", ""PL-9"", ""PS-2""]","{""sys"": ""S5""}"
+59,What should security and privacy architectures describe to ensure protection of information and integration with the enterprise architecture?,PL-8,pl-8_odp,2,False,True,True,PM-7,"[""PM-7"", ""PL-8"", ""SA-17"", ""PL-2"", ""PL-8.1"", ""SA-3"", ""SC-1"", ""SA-8.19"", ""SA-8.28"", ""SA-8""]","{""sys"": ""S5""}"
+60,"How does the concept of tailoring allow organizations to customize control baselines to their mission, environment, and risk profile?",PL-10,N/A,2,False,True,True,PL-11,"[""PL-11"", ""PL-10"", ""RA-2.1"", ""CM-2.6"", ""PM-31"", ""PT-4.1"", ""AC-1"", ""CA-7"", ""RA-1"", ""SA-4""]","{""sys"": ""S5""}"
+65,"What are the key components of an organization's risk management strategy, and how should it be implemented and updated?",PM-9,pm-9_odp,1,True,True,True,PM-9,"[""PM-9"", ""PM-30"", ""PM-4"", ""RA-1"", ""SR-1"", ""CM-1"", ""PL-1"", ""PM-29"", ""PM-7"", ""PE-23""]","{""sys"": ""S5""}"
+67,When and how must individuals be screened before authorizing or maintaining access to organizational systems?,PS-3,ps-3_prm_1,1,True,True,True,PS-3,"[""PS-3"", ""CA-6"", ""AC-20"", ""AC-8"", ""AC-2.13"", ""PS-6"", ""AC-3.14"", ""PE-3"", ""IA-2"", ""CM-3.2""]","{""sys"": ""S5""}"
+68,What steps must be taken when an individual's employment or role is terminated?,PS-4,"ps-4_odp_1, ps-4_odp_2",2,False,True,True,PS-4.1,"[""PS-4.1"", ""PS-4"", ""PS-6.3"", ""PS-4.2"", ""AC-12"", ""SI-19"", ""PT-7.1"", ""SI-18.5"", ""PS-2"", ""AC-12.2""]","{""sys"": ""S5""}"
+72,"What must organizations identify and document about the purposes and conditions for collecting, using, and sharing PII, and how should they handle changes to those purposes?",PT-3,"pt-3_odp_1, pt-3_odp_2, pt-3_odp_3, pt-3_odp_4",1,True,True,True,PT-3,"[""PT-3"", ""CM-5"", ""PM-25"", ""PM-5.1"", ""SA-8.33"", ""IR-8"", ""PE-8.3"", ""PM-20.1"", ""SI-18"", ""PT-7""]","{""sys"": ""S5""}"
+76,"What steps are required to categorize a system and its information, and who must approve the decision?",RA-2,N/A,1,True,True,True,RA-2,"[""RA-2"", ""MP-6.1"", ""CM-8.4"", ""PT-7.1"", ""AC-21.1"", ""SA-4.2"", ""SA-10.2"", ""SA-4.9"", ""AC-3.4"", ""AC-19.4""]","{""sys"": ""S5""}"
+87,What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?,SC-8,N/A,2,False,True,True,SC-7.4,"[""SC-7.4"", ""SC-8"", ""AC-17.2"", ""SC-8.3"", ""SC-28"", ""PM-17"", ""SC-8.1"", ""AC-17"", ""SC-7"", ""SI-4.10""]","{""sys"": ""S5""}"
+89,"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",SC-13,N/A,2,False,True,True,IA-7,"[""IA-7"", ""SC-13"", ""PM-17"", ""SC-12"", ""IA-1"", ""SC-40.2"", ""CP-9.8"", ""SC-40.1"", ""PL-1"", ""CA-1""]","{""sys"": ""S5""}"
+93,"How should systems be monitored to detect attacks, unauthorized connections, and anomalous activities, and how should such events be analyzed and reported?",SI-4,"si-4_odp_1, si-4_odp_2, si-4_odp_3, si-4_odp_4, si-4_odp_5",1,True,True,True,SI-4,"[""SI-4"", ""AT-2.4"", ""MA-4.1"", ""IR-6.2"", ""CM-8.3"", ""AC-17.1"", ""RA-5"", ""AU-13.2"", ""PE-6"", ""SC-5.3""]","{""sys"": ""S5""}"
+94,"What integrity-verification mechanisms should be employed to detect unauthorized changes to software, firmware, or data?",SI-7,"si-7_prm_1, si-7_prm_2",2,False,True,True,SA-10.1,"[""SA-10.1"", ""SI-7"", ""SA-10.3"", ""SI-7.5"", ""SI-7.6"", ""SA-10.4"", ""CM-8.3"", ""SI-7.12"", ""SI-7.10"", ""SA-10.5""]","{""sys"": ""S5""}"

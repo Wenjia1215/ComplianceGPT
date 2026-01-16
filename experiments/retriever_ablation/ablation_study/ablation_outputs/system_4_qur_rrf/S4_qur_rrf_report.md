@@ -1,34 +1,68 @@
-System 4: BM25 + QUR (RRF): Performance Evaluation
-This report summarizes the performance of the system 4: bm25 + qur (rrf) on the NIST SP 800-53 Rev. 5 and Rev. 4 gold sets, and error bank set.
 
-NIST SP 800-53 Rev. 5: Performance
-Metric	Overall (100q)	ODP-Subset (63q)
-Recall@1	0.6600	0.6349
-Recall@5	0.9700	1.0000
-Recall@10	0.9800	1.0000
-MRR@10	0.7802	0.7780
-nDCG@10	0.8300	0.8337
+### S4_qur_rrf (Rev5)
+**Overall (n=100)**
+- Recall@1:  0.7100
+- Recall@5:  0.9400
+- Recall@10: 0.9600
+- MRR@10:    0.8098
+- nDCG@10:   84.7498
 
-NIST SP 800-53 Rev. 4: Performance
-Metric	Overall (36q)	ODP-Subset (19q)
-Recall@1	0.7222	0.8421
-Recall@5	0.9444	0.9474
-Recall@10	0.9722	0.9474
-MRR@10	0.8114	0.8947
-nDCG@10	0.8509	0.9085
+**ODP-Subset (n=63)**
+- Recall@1:  0.7778
+- Recall@5:  0.9683
+- Recall@10: 0.9841
+- MRR@10:    0.8608
+- nDCG@10:   56.1774
 
-Error Bank — Rev.5 only (n=23)
-Metric	Overall (23q)	ODP-Subset (0q)
-Recall@1	0.1304	0.0000
-Recall@5	0.7826	0.0000
-Recall@10	0.9130	0.0000
-MRR@10	0.4493	0.0000
-nDCG@10	0.5656	0.0000
+---
 
-Error Bank — Rev.4 only (n=11)
-Metric	Overall (11q)	ODP-Subset (0q)
-Recall@1	0.2727	0.0000
-Recall@5	0.9091	0.0000
-Recall@10	1.0000	0.0000
-MRR@10	0.5586	0.0000
-nDCG@10	0.6675	0.0000
+### S4_qur_rrf (Rev4)
+**Overall (n=36)**
+- Recall@1:  0.6944
+- Recall@5:  0.8889
+- Recall@10: 0.9444
+- MRR@10:    0.7951
+- nDCG@10:   29.9573
+
+**ODP-Subset (n=19)**
+- Recall@1:  0.7895
+- Recall@5:  0.9474
+- Recall@10: 0.9474
+- MRR@10:    0.8684
+- nDCG@10:   16.8928
+
+---
+
+### S4_qur_rrf (ErrorBank-Rev5)
+**Overall (n=27)**
+- Recall@1:  0.1852
+- Recall@5:  0.7778
+- Recall@10: 0.8519
+- MRR@10:    0.4377
+- nDCG@10:   14.5952
+
+**ODP-Subset (n=15)**
+- Recall@1:  0.2667
+- Recall@5:  0.8667
+- Recall@10: 0.9333
+- MRR@10:    0.5267
+- nDCG@10:   9.4155
+
+---
+
+### S4_qur_rrf (ErrorBank-Rev4)
+**Overall (n=12)**
+- Recall@1:  0.2500
+- Recall@5:  0.6667
+- Recall@10: 0.8333
+- MRR@10:    0.4688
+- nDCG@10:   6.6954
+
+**ODP-Subset (n=5)**
+- Recall@1:  0.6000
+- Recall@5:  0.8000
+- Recall@10: 0.8000
+- MRR@10:    0.7000
+- nDCG@10:   3.6309
+
+---

@@ -1,34 +1,68 @@
-System 7: ComplianceGPT (Ultimate): Performance Evaluation
-This report summarizes the performance of the system 7: compliancegpt (ultimate) on the NIST SP 800-53 Rev. 5 and Rev. 4 gold sets, and error bank set.
 
-NIST SP 800-53 Rev. 5: Performance
-Metric	Overall (100q)	ODP-Subset (63q)
-Recall@1	0.9000	0.9206
-Recall@5	0.9900	1.0000
-Recall@10	1.0000	1.0000
-MRR@10	0.9448	0.9577
-nDCG@10	0.9588	0.9686
+### S7_compliance_gpt (Rev5)
+**Overall (n=100)**
+- Recall@1:  0.8400
+- Recall@5:  0.9800
+- Recall@10: 0.9800
+- MRR@10:    0.9050
+- nDCG@10:   92.4402
 
-NIST SP 800-53 Rev. 4: Performance
-Metric	Overall (36q)	ODP-Subset (19q)
-Recall@1	0.8889	0.8947
-Recall@5	1.0000	1.0000
-Recall@10	1.0000	1.0000
-MRR@10	0.9444	0.9474
-nDCG@10	0.9590	0.9612
+**ODP-Subset (n=63)**
+- Recall@1:  0.8571
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9233
+- nDCG@10:   59.4165
 
-Error Bank — Rev.5 only (n=23)
-Metric	Overall (23q)	ODP-Subset (0q)
-Recall@1	0.6957	0.0000
-Recall@5	0.9565	0.0000
-Recall@10	1.0000	0.0000
-MRR@10	0.8323	0.0000
-nDCG@10	0.8747	0.0000
+---
 
-Error Bank — Rev.4 only (n=11)
-Metric	Overall (11q)	ODP-Subset (0q)
-Recall@1	0.6364	0.0000
-Recall@5	1.0000	0.0000
-Recall@10	1.0000	0.0000
-MRR@10	0.8182	0.0000
-nDCG@10	0.8658	0.0000
+### S7_compliance_gpt (Rev4)
+**Overall (n=36)**
+- Recall@1:  0.8889
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9398
+- nDCG@10:   34.3928
+
+**ODP-Subset (n=19)**
+- Recall@1:  0.8421
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9123
+- nDCG@10:   17.7619
+
+---
+
+### S7_compliance_gpt (ErrorBank-Rev5)
+**Overall (n=27)**
+- Recall@1:  0.4815
+- Recall@5:  0.9259
+- Recall@10: 0.9259
+- MRR@10:    0.6914
+- nDCG@10:   20.3093
+
+**ODP-Subset (n=15)**
+- Recall@1:  0.5333
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.7556
+- nDCG@10:   12.2856
+
+---
+
+### S7_compliance_gpt (ErrorBank-Rev4)
+**Overall (n=12)**
+- Recall@1:  0.8333
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9167
+- nDCG@10:   11.2619
+
+**ODP-Subset (n=5)**
+- Recall@1:  0.8000
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9000
+- nDCG@10:   4.6309
+
+---

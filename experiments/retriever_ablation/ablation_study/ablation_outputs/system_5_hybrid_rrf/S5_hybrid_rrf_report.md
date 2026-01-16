@@ -1,34 +1,68 @@
-System 5: Hybrid (BM25+Dense) RRF: Performance Evaluation
-This report summarizes the performance of the system 5: hybrid (bm25+dense) rrf on the NIST SP 800-53 Rev. 5 and Rev. 4 gold sets, and error bank set.
 
-NIST SP 800-53 Rev. 5: Performance
-Metric	Overall (100q)	ODP-Subset (63q)
-Recall@1	0.8500	0.8730
-Recall@5	1.0000	1.0000
-Recall@10	1.0000	1.0000
-MRR@10	0.9153	0.9286
-nDCG@10	0.9369	0.9468
+### S5_hybrid_rrf (Rev5)
+**Overall (n=100)**
+- Recall@1:  0.8400
+- Recall@5:  0.9700
+- Recall@10: 0.9700
+- MRR@10:    0.9050
+- nDCG@10:   92.2021
 
-NIST SP 800-53 Rev. 4: Performance
-Metric	Overall (36q)	ODP-Subset (19q)
-Recall@1	0.6667	0.7368
-Recall@5	0.9722	1.0000
-Recall@10	1.0000	1.0000
-MRR@10	0.8125	0.8684
-nDCG@10	0.8601	0.9029
+**ODP-Subset (n=63)**
+- Recall@1:  0.8730
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.9365
+- nDCG@10:   60.0474
 
-Error Bank — Rev.5 only (n=23)
-Metric	Overall (23q)	ODP-Subset (0q)
-Recall@1	0.4783	0.0000
-Recall@5	1.0000	0.0000
-Recall@10	1.0000	0.0000
-MRR@10	0.7152	0.0000
-nDCG@10	0.7881	0.0000
+---
 
-Error Bank — Rev.4 only (n=11)
-Metric	Overall (11q)	ODP-Subset (0q)
-Recall@1	0.2727	0.0000
-Recall@5	1.0000	0.0000
-Recall@10	1.0000	0.0000
-MRR@10	0.5985	0.0000
-nDCG@10	0.7015	0.0000
+### S5_hybrid_rrf (Rev4)
+**Overall (n=36)**
+- Recall@1:  0.8333
+- Recall@5:  0.9722
+- Recall@10: 1.0000
+- MRR@10:    0.8921
+- nDCG@10:   33.0665
+
+**ODP-Subset (n=19)**
+- Recall@1:  0.8947
+- Recall@5:  0.9474
+- Recall@10: 1.0000
+- MRR@10:    0.9298
+- nDCG@10:   17.9871
+
+---
+
+### S5_hybrid_rrf (ErrorBank-Rev5)
+**Overall (n=27)**
+- Recall@1:  0.4074
+- Recall@5:  0.8889
+- Recall@10: 0.8889
+- MRR@10:    0.6481
+- nDCG@10:   19.2021
+
+**ODP-Subset (n=15)**
+- Recall@1:  0.4667
+- Recall@5:  1.0000
+- Recall@10: 1.0000
+- MRR@10:    0.7333
+- nDCG@10:   12.0474
+
+---
+
+### S5_hybrid_rrf (ErrorBank-Rev4)
+**Overall (n=12)**
+- Recall@1:  0.5000
+- Recall@5:  0.9167
+- Recall@10: 1.0000
+- MRR@10:    0.6764
+- nDCG@10:   9.0665
+
+**ODP-Subset (n=5)**
+- Recall@1:  0.6000
+- Recall@5:  0.8000
+- Recall@10: 1.0000
+- MRR@10:    0.7333
+- nDCG@10:   3.9871
+
+---

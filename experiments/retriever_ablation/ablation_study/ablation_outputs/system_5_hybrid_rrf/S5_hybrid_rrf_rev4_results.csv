@@ -1,51 +1,51 @@
-question,control_id,odp_required,rank
-What does AC-2 require the organization to do when managing information system accounts?,AC-2,ac-2_prm_3,1
-What principle does AC-6 require the organization to employ for user/system access?,AC-6,nan,1
-What security awareness training must the organization provide and when?,AT-2,at-2_prm_1,1
-What are the requirements for role-based security training and timing of delivery?,AT-3,at-3_prm_1,1
-What must the organization determine about events within the information system?,AU-2,au-2_prm_2,1
-What audit record contents are the system required to generate?,AU-3,nan,3
-What are the requirements regarding assessment of security controls and frequency?,CA-2,ca-2_prm_1,2
-What elements must be included in the continuous monitoring strategy and program?,CA-7,"ca-7_prm_1
+question_id,question,gold_control_id,odp_required,rank,is_hit_at_1,is_hit_at_5,is_hit_at_10,top_1_hit,retrieved_control_ids,system_meta
+1,What does AC-2 require the organization to do when managing information system accounts?,AC-2,ac-2_prm_3,1,True,True,True,AC-2,"[""AC-2"", ""AC-2.12"", ""AC-6.2"", ""AC-2.1"", ""AC-3.2"", ""AC-2.2"", ""AC-2.9"", ""AC-2.11"", ""AC-2.7"", ""AC-2.8""]","{""sys"": ""S5""}"
+2,What principle does AC-6 require the organization to employ for user/system access?,AC-6,N/A,1,True,True,True,AC-6,"[""AC-6"", ""AC-6.2"", ""AC-6.6"", ""AC-14"", ""AC-6.3"", ""AC-6.1"", ""IA-2"", ""AC-17"", ""AC-6.7"", ""AC-2.6""]","{""sys"": ""S5""}"
+3,What security awareness training must the organization provide and when?,AT-2,at-2_prm_1,1,True,True,True,AT-2,"[""AT-2"", ""AT-1"", ""AT-2.2"", ""AT-3"", ""SA-16"", ""AT-4"", ""PM-14"", ""AT-3.4"", ""CP-3"", ""AT-2.1""]","{""sys"": ""S5""}"
+4,What are the requirements for role-based security training and timing of delivery?,AT-3,at-3_prm_1,1,True,True,True,AT-3,"[""AT-3"", ""PM-13"", ""CP-3"", ""SA-16"", ""AT-2"", ""AC-2.7"", ""AT-1"", ""PM-14"", ""PS-2"", ""SA-4""]","{""sys"": ""S5""}"
+5,What must the organization determine about events within the information system?,AU-2,au-2_prm_2,1,True,True,True,AU-2,"[""AU-2"", ""RA-5.4"", ""AU-7.1"", ""SI-4"", ""CM-3.2"", ""IR-5"", ""AU-3"", ""SI-7.8"", ""SA-4.8"", ""SA-12.14""]","{""sys"": ""S5""}"
+6,What audit record contents are the system required to generate?,AU-3,N/A,1,True,True,True,AU-3,"[""AU-3"", ""AU-7"", ""AU-12"", ""AU-3.2"", ""AU-6.5"", ""AU-11"", ""AU-3.1"", ""AU-12.2"", ""AU-2"", ""AU-14""]","{""sys"": ""S5""}"
+7,What are the requirements regarding assessment of security controls and frequency?,CA-2,ca-2_prm_1,1,True,True,True,CA-2,"[""CA-2"", ""SA-4"", ""SA-11"", ""RA-3"", ""CA-7.1"", ""CA-1"", ""RA-1"", ""SC-8"", ""PL-2"", ""SA-4.2""]","{""sys"": ""S5""}"
+8,What elements must be included in the continuous monitoring strategy and program?,CA-7,"ca-7_prm_1
 ca-7_prm_2
 ca-7_prm_3
 ca-7_prm_4
-ca-7_prm_5",1
-What does CM-2 require regarding the baseline configuration of the information system?,CM-2,nan,2
-What are the requirements for establishing and documenting configuration settings?,CM-6,cm-6_prm_1,1
-What does CP-2 require in developing a contingency plan for the information system?,CP-2,nan,1
-What does CP-9 require for conducting and protecting backups at the storage location?,CP-9,"cp-9_prm_1
+ca-7_prm_5",1,True,True,True,CA-7,"[""CA-7"", ""PM-14"", ""SA-4.8"", ""CA-7.3"", ""CA-7.1"", ""CP-1"", ""CA-6"", ""CA-2"", ""PE-3.3"", ""MA-1""]","{""sys"": ""S5""}"
+9,What does CM-2 require regarding the baseline configuration of the information system?,CM-2,N/A,1,True,True,True,CM-2,"[""CM-2"", ""CM-2.2"", ""CM-2.1"", ""CM-2.6"", ""CM-3.5"", ""CM-8.2"", ""CM-6"", ""CM-3.3"", ""CM-1"", ""CM-2.3""]","{""sys"": ""S5""}"
+10,What are the requirements for establishing and documenting configuration settings?,CM-6,cm-6_prm_1,1,True,True,True,CM-6,"[""CM-6"", ""CP-7.4"", ""CM-9"", ""CM-2"", ""CM-8.6"", ""CM-3"", ""CM-1"", ""SA-4"", ""CM-9.1"", ""IA-5""]","{""sys"": ""S5""}"
+11,What does CP-2 require in developing a contingency plan for the information system?,CP-2,N/A,1,True,True,True,CP-2,"[""CP-2"", ""CP-4.1"", ""CP-4"", ""CP-2.7"", ""CP-2.1"", ""CP-3"", ""CP-8.4"", ""CP-1"", ""CP-2.2"", ""CP-9.2""]","{""sys"": ""S5""}"
+12,What does CP-9 require for conducting and protecting backups at the storage location?,CP-9,"cp-9_prm_1
 cp-9_prm_2
-cp-9_prm_3",1
-What identification and authentication requirement does IA-2 specify for organizational users?,IA-2,nan,2
-"What processes are in place to securely create, distribute, protect, and revoke authenticators such as passwords, tokens, or certificates?",IA-5,nan,1
-What incident handling capability does IR-4 require the organization to implement?,IR-4,nan,4
-What does IR-6 require about reporting suspected security incidents and by when?,IR-6,ir-6_prm_1,1
-Who must approve removing the system or components off-site for maintenance?,MA-2,ma-2_prm_1,1
-What actions does MA-3 require the organization to do with information system maintenance tools?,MA-3,nan,1
-What does MP-4 require for protecting information system media?,MP-4,"mp-4_prm_1, mp-4_prm_2",2
-What does MP-6 require for sanitizing media prior to disposal or release?,MP-6,"mp-6_prm_1
-mp-6_prm_2",1
-What are the requirements for enforcing physical access authorizations at facility entry/exit points?,PE-3,"pe-3_prm_1
+cp-9_prm_3",1,True,True,True,CP-9,"[""CP-9"", ""CP-9.3"", ""CP-9.5"", ""SA-9.5"", ""CP-6"", ""CP-9.1"", ""CP-6.1"", ""CP-6.3"", ""CP-9.2"", ""CP-2.5""]","{""sys"": ""S5""}"
+13,What identification and authentication requirement does IA-2 specify for organizational users?,IA-2,N/A,2,False,True,True,IA-8,"[""IA-8"", ""IA-2"", ""IA-1"", ""IA-10"", ""IA-3"", ""IA-9.2"", ""IA-9"", ""IA-11"", ""AC-14"", ""IA-2.5""]","{""sys"": ""S5""}"
+14,"What processes are in place to securely create, distribute, protect, and revoke authenticators such as passwords, tokens, or certificates?",IA-5,N/A,1,True,True,True,IA-5,"[""IA-5"", ""CM-3.6"", ""IA-2.8"", ""IA-2.9"", ""IA-5.1"", ""IA-5.6"", ""IA-5.7"", ""IA-5.11"", ""SC-12"", ""IA-5.5""]","{""sys"": ""S5""}"
+15,What incident handling capability does IR-4 require the organization to implement?,IR-4,N/A,1,True,True,True,IR-4,"[""IR-4"", ""IR-4.1"", ""IR-4.6"", ""IR-4.7"", ""IR-8"", ""IR-6"", ""IR-7"", ""IR-4.2"", ""IR-4.8"", ""IR-10""]","{""sys"": ""S5""}"
+16,What does IR-6 require about reporting suspected security incidents and by when?,IR-6,ir-6_prm_1,1,True,True,True,IR-6,"[""IR-6"", ""IR-6.2"", ""IR-6.1"", ""IR-5"", ""IR-2"", ""IR-5.1"", ""IR-4.7"", ""IR-7"", ""PE-6"", ""IR-4.6""]","{""sys"": ""S5""}"
+18,Who must approve removing the system or components off-site for maintenance?,MA-2, ma-2_prm_1,1,True,True,True,MA-2,"[""MA-2"", ""MA-5.1"", ""SA-22"", ""MA-6"", ""MA-3"", ""MP-6.1"", ""MA-5"", ""SA-22.1"", ""CM-3.2"", ""CM-8.4""]","{""sys"": ""S5""}"
+17,What actions does MA-3 require the organization to do with information system maintenance tools?,MA-3,N/A,1,True,True,True,MA-3,"[""MA-3"", ""MA-3.4"", ""MA-3.1"", ""MA-5"", ""MA-2"", ""MA-6.3"", ""MA-4.3"", ""MA-4"", ""MA-2.2"", ""MA-1""]","{""sys"": ""S5""}"
+19,What does MP-4 require for protecting information system media?,MP-4,"mp-4_prm_1, mp-4_prm_2",1,True,True,True,MP-4,"[""MP-4"", ""MP-3"", ""MP-7"", ""MP-5"", ""MP-4.2"", ""MP-5.4"", ""MP-1"", ""MP-8.4"", ""MP-2"", ""MP-8""]","{""sys"": ""S5""}"
+20,What does MP-6 require for sanitizing media prior to disposal or release?,MP-6,"mp-6_prm_1
+mp-6_prm_2",1,True,True,True,MP-6,"[""MP-6"", ""MP-6.1"", ""MP-6.3"", ""MP-4"", ""MP-8.3"", ""MP-8"", ""MP-6.8"", ""MP-7"", ""MP-6.7"", ""MP-8.4""]","{""sys"": ""S5""}"
+21,What are the requirements for enforcing physical access authorizations at facility entry/exit points?,PE-3,"pe-3_prm_1
 pe-3_prm_2
 pe-3_prm_4
 pe-3_prm_5
 pe-3_prm_6
 pe-3_prm_7
 pe-3_prm_8
-pe-3_prm_9",1
-What does PE-6 require regarding monitoring physical access to the facility?,PE-6,nan,2
-What does PL-2 require for the security plan describing controls in place or planned?,PL-2,nan,1
-What does PL-4 require about establishing and disseminating rules of behavior to system users?,PL-4,nan,1
-What does PM-1 require regarding an organization-wide information security program plan?,PM-1,nan,1
-What does the organization ensure when preparing capital planning and investment requests?,PM-3,nan,1
-What does PS-2 require regarding position risk designations and screening criteria?,PS-2,nan,1
-What does PS-3 require before authorizing access to the information system?,PS-3,ps-3_prm_1,1
-What does RA-2 require regarding categorizing the information system and its resident information?,RA-2,nan,2
-"What does RA-5 require for scanning vulnerabilities, including frequency and trigger conditions?",RA-5,ra-5_prm_1,2
-What does SA-3 require about managing the system?,SA-3,sa-3_prm_1,2
-What does SA-4 require including in acquisition contracts for information systems?,SA-4,nan,6
-What does SC-7 require the system to do at external and key internal boundaries?,SC-7,nan,1
-What protections for transmitted information does SC-8 require?,SC-8,sc-8_prm_1,1
-"What does SI-2 require for identifying, reporting, and correcting system flaws?",SI-2,si-2_prm_1,2
-"What monitoring does SI-4 require to detect attacks, indicators, and unauthorized connections?",SI-4,si-4_prm_1,1
+pe-3_prm_9",2,False,True,True,PE-16,"[""PE-16"", ""PE-3"", ""PE-3.1"", ""PE-2"", ""PE-18"", ""SC-7.14"", ""PS-4"", ""SI-8"", ""MA-5"", ""MA-5.1""]","{""sys"": ""S5""}"
+22,What does PE-6 require regarding monitoring physical access to the facility?,PE-6,N/A,2,False,True,True,PE-6.4,"[""PE-6.4"", ""PE-6"", ""PE-3"", ""PE-3.6"", ""PE-3.3"", ""PE-3.1"", ""PE-2"", ""PE-6.1"", ""PE-4"", ""PE-2.1""]","{""sys"": ""S5""}"
+23,What does PL-2 require for the security plan describing controls in place or planned?,PL-2,N/A,1,True,True,True,PL-2,"[""PL-2"", ""PL-2.3"", ""PM-1"", ""PL-1"", ""PL-8"", ""CP-2"", ""CA-2"", ""PL-8.1"", ""PL-7"", ""CP-4.1""]","{""sys"": ""S5""}"
+24,What does PL-4 require about establishing and disseminating rules of behavior to system users?,PL-4,N/A,1,True,True,True,PL-4,"[""PL-4"", ""PL-4.1"", ""PL-1"", ""AC-6.1"", ""PL-2"", ""AC-3.4"", ""AC-18.4"", ""PL-8"", ""IR-4.2"", ""PL-2.3""]","{""sys"": ""S5""}"
+25,What does PM-1 require regarding an organization-wide information security program plan?,PM-1,N/A,1,True,True,True,PM-1,"[""PM-1"", ""PM-4"", ""PM-2"", ""PM-3"", ""PM-8"", ""PL-2"", ""PM-7"", ""PM-13"", ""PM-14"", ""PM-10""]","{""sys"": ""S5""}"
+26,What does the organization ensure when preparing capital planning and investment requests?,PM-3,N/A,1,True,True,True,PM-3,"[""PM-3"", ""SA-2"", ""CP-1"", ""PL-1"", ""CP-2.2"", ""CP-2.8"", ""CP-2.5"", ""CP-2.7"", ""CP-2"", ""CP-4.1""]","{""sys"": ""S5""}"
+27,What does PS-2 require regarding position risk designations and screening criteria?,PS-2,N/A,1,True,True,True,PS-2,"[""PS-2"", ""PS-3"", ""PS-6.2"", ""SA-21.1"", ""PS-3.3"", ""PS-1"", ""PE-2.1"", ""PS-6.3"", ""PS-4.1"", ""PS-7""]","{""sys"": ""S5""}"
+28,What does PS-3 require before authorizing access to the information system?,PS-3,ps-3_prm_1,1,True,True,True,PS-3,"[""PS-3"", ""PS-3.3"", ""AT-3"", ""PS-6"", ""CA-3"", ""PS-6.3"", ""PS-3.1"", ""CA-6"", ""PS-6.2"", ""AC-3.3""]","{""sys"": ""S5""}"
+29,What does RA-2 require regarding categorizing the information system and its resident information?,RA-2,N/A,5,False,True,True,RA-5.4,"[""RA-5.4"", ""RA-1"", ""RA-3"", ""RA-5.2"", ""RA-2"", ""AC-3.2"", ""SA-2"", ""IA-9.2"", ""AC-24.2"", ""SA-5""]","{""sys"": ""S5""}"
+30,"What does RA-5 require for scanning vulnerabilities, including frequency and trigger conditions?",RA-5,ra-5_prm_1,1,True,True,True,RA-5,"[""RA-5"", ""RA-5.2"", ""RA-5.1"", ""RA-5.10"", ""RA-5.5"", ""RA-5.3"", ""RA-5.6"", ""RA-3"", ""RA-5.4"", ""AU-6.5""]","{""sys"": ""S5""}"
+31,What does SA-3 require about managing the system?,SA-3,sa-3_prm_1,6,False,False,True,SA-9,"[""SA-9"", ""SA-4.3"", ""SA-4.2"", ""SA-1"", ""SA-11.4"", ""SA-3"", ""SA-16"", ""SA-15.3"", ""SA-10"", ""SA-19.3""]","{""sys"": ""S5""}"
+32,What does SA-4 require including in acquisition contracts for information systems?,SA-4,N/A,4,False,True,True,SA-1,"[""SA-1"", ""SA-12"", ""SA-4.2"", ""SA-4"", ""SA-12.1"", ""SA-11.4"", ""SA-9.1"", ""SA-16"", ""SA-9"", ""SA-4.3""]","{""sys"": ""S5""}"
+33,What does SC-7 require the system to do at external and key internal boundaries?,SC-7,N/A,1,True,True,True,SC-7,"[""SC-7"", ""SC-7.19"", ""SC-7.9"", ""SC-7.3"", ""SC-40"", ""SC-7.13"", ""SC-7.4"", ""SC-7.14"", ""SC-5.1"", ""SC-17""]","{""sys"": ""S5""}"
+34,What protections for transmitted information does SC-8 require?,SC-8,sc-8_prm_1,1,True,True,True,SC-8,"[""SC-8"", ""SC-8.3"", ""SC-8.1"", ""SC-7.4"", ""SC-28"", ""SC-8.2"", ""SC-8.4"", ""SC-7.8"", ""SC-6"", ""SC-4""]","{""sys"": ""S5""}"
+35,"What does SI-2 require for identifying, reporting, and correcting system flaws?",SI-2,si-2_prm_1,1,True,True,True,SI-2,"[""SI-2"", ""SI-10.2"", ""SI-2.3"", ""SI-3.6"", ""SI-2.2"", ""SA-11"", ""SI-1"", ""IR-2"", ""SI-6.2"", ""SI-7.2""]","{""sys"": ""S5""}"
+36,"What monitoring does SI-4 require to detect attacks, indicators, and unauthorized connections?",SI-4,si-4_prm_1,1,True,True,True,SI-4,"[""SI-4"", ""SI-4.17"", ""SC-5.3"", ""SI-4.9"", ""SI-4.14"", ""SI-4.4"", ""AU-6.5"", ""CM-8.3"", ""SI-4.16"", ""SI-4.18""]","{""sys"": ""S5""}"
