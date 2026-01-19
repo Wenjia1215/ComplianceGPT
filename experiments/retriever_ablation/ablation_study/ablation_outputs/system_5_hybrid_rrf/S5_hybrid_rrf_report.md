@@ -1,4 +1,3 @@
-
 ### S5_hybrid_rrf (Rev5)
 **Overall (n=100)**
 - Recall@1:  0.8400

@@ -1,4 +1,3 @@
-
 ### S4_qur_rrf (Rev5)
 **Overall (n=100)**
 - Recall@1:  0.7100

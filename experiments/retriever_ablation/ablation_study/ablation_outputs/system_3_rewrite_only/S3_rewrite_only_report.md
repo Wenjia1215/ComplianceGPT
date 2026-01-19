@@ -1,4 +1,3 @@
-
 ### S3_rewrite_only (Rev5)
 **Overall (n=100)**
 - Recall@1:  0.5200

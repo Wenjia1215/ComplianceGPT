@@ -1,4 +1,3 @@
-
 ### S2_dense (Rev5)
 **Overall (n=100)**
 - Recall@1:  0.8100

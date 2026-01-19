@@ -1,4 +1,3 @@
-
 ### S1 BM25 (Rev5)
 **Overall (n=100)**
 - Recall@1:  0.7300
