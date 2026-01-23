@@ -9,7 +9,7 @@
 ## 1. Purpose
 
 This document summarizes retrieval performance **by failure mode** on the curated Error Bank.
-The Error Bank is defined as queries where **BM25 mis‑ranks the gold clause (bm25_rank > 1)**.
+The Error Bank is defined as queries where **BM25 mis‑ranks the gold clause (bm25_rank != 1)**.
 
 ## 2. Current Error Bank Snapshot
 
