@@ -1,11 +1,10 @@
-# Error Bank (MisRank>1) — Build Specification & Rationale (Updated)
+# Error Bank (MisRank !=1) — Build Specification & Rationale (Updated)
 
-> **Status:** current CSV = `error_bank_v1.csv` (labeled copy: `error_bank_v1_labeled.csv`)
+> **Status:** current CSV = `error_bank_v1.csv` 
 
-## Context: Canonical Clause Store Rebuild
+## How to build
 
-The underlying NIST SP 800-53 clause-level JSONL corpus was rebuilt to fix earlier JSON→JSONL interpretation issues.
-The control content is intended to be equivalent, but the **JSONL structure and text formatting changed**, which can shift BM25 tokenization/lexical matches and therefore change which queries fall into the Error Bank.
+Execute section 1 of AblationStudy_S1_8.ipynb
 
 ## Why an Error Bank?
 
