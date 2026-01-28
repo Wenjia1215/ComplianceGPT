@@ -1,154 +1,217 @@
-# README: Validation Study for S4 and S7 Retrieval Architectures
+# Micro‑Ablation Validation (Oracle‑only): S4b + S7a (NIST SP 800‑53)
 
-## 1. Objective
+This folder contains a **focused micro‑ablation** that validates two architectural concerns in our retrieval stack by constructing **oracle (upper‑bound) variants**.
 
-This notebook provides a focused validation study for two key architectural decisions within the S4 (QUR-RRF) and S7 (ComplianceGPT) retrieval pipelines.
-
-Following a main S1–S7 ablation study which identified S7 as the state-of-the-art retriever, this experiment performs a **micro-ablation** to rigorously justify its specific component design over simpler, plausible alternatives.
-
-The study tests two primary hypotheses:
-
-1. **S7 Reranker Input:**  
-   Is the optimal input for the final reranking stage the original user query or the best AI-generated rewrite?
-
-2. **S4 Fusion Strategy:**  
-   Is the "full fusion" of all AI-generated rewrites superior to a simpler fusion of only the single best rewrite?
-
-
-## 2. Hypotheses Under Test
-
-To understand the hypotheses, it's crucial to understand the technical design of the S7 and S4 pipelines.
-
-### Hypothesis 1 (S7 Reranker Input)
-
-The S7 (ComplianceGPT) pipeline is a **two-stage system** designed for maximum accuracy. It combines:
-
-- a fast **high-recall retrieval** stage, and  
-- a slow **high-precision reranking** stage.
-
-#### Stage 1: High-Recall Retrieval (The "Net")
-
-The goal of this stage is to quickly search the entire 1,000+ document database and find a **Top 50** list of potential candidates. It casts a wide net by fusing three different search results using Reciprocal Rank Fusion (RRF):
-
-- **BM25(Q_orig):** A lexical search using the original query.  
-- **BM25(Q_all_rewrites):** Lexical searches using all AI-generated rewrites.  
-- **Dense(Q_orig):** A semantic (Bi-Encoder) search using the original query.
-
-#### Stage 2: High-Precision Reranking (The "Judge")
-
-This stage takes the Top 50 candidates from Stage 1 and meticulously re-scores them to find the single best answer. It uses a powerful Cross-Encoder AI model, which is slow but highly accurate.
-
-The critical design choice is **what to feed this “Judge” as the query**:
-
-- **Baseline (S7 Standard):**  
-  The reranker is fed the original user query `Q_orig`.  
-  - Assumption: `Q_orig` is the truest representation of user intent, and the Cross-Encoder is powerful enough to understand it, even if it is lexically imperfect.
-
-- **Alternative (Ablation a):**  
-  The reranker is fed the best AI-generated rewrite `Q_best_rewrite`.  
-  - Assumption: this "cleaner," more explicit query would be a better input for the Judge, leading to a more accurate final ranking.
-
-This experiment tests **which query input for Stage 2 yields higher precision**.
+**Scope constraints (current phase):**
+- **Only NIST SP 800‑53** (Rev. 4 / Rev. 5).  
+- Ignore crosswalk / PCI DSS / HIPAA work (out of scope for this run).
+- This notebook **does NOT rerun baselines S4 or S7**; we compare against the S4/S7 results produced by our main `AblationStudy_S1_8.ipynb`.
 
 ---
 
-### Hypothesis 2 (S4 Fusion Strategy)
+## 1) What we are validating (the “why”)
 
-The S4 (QUR-RRF) system is a **simpler, single-stage retriever**. It only uses lexical search (BM25) and fuses the results from the original query and its AI-generated rewrites.
+We proactively designed this micro‑ablation to stress‑test two plausible doubts:
 
-- **Baseline (S4 Standard):**  
-  The system fuses the results from the original query + **all generated rewrites** (`Q_orig + Q_all_rewrites`).  
-  - Assumption: this "high recall" approach provides the richest set of candidates for RRF to find the correct answer, even if some rewrites are noisy.
+1) **Retrieval (S4 / QUR‑RRF):**  
+   Does fusing multiple rewrites help, or does it introduce noise? Would fusing only *one best rewrite* be enough?
 
-- **Alternative (Ablation b):**  
-  The system fuses only the original query + the **single best rewrite** (`Q_orig + Q_best_rewrite`).  
-  - Assumption: this is a "higher precision," lower-noise input that avoids poor-quality rewrites, potentially leading to a better final ranking.
+2) **Reranking (S7 / ComplianceGPT):**  
+   For the cross‑encoder reranker, should we rerank using the **original user query**, or a “cleaner” rewrite?
 
-This experiment tests whether the **"full fusion" strategy** is measurably superior to the **"best-only" fusion**.
-
-
-## 3. Methodology
-
-To ensure a fair and reproducible comparison, this notebook implements a self-contained `ComplianceGPTRetriever` class. This class encapsulates:
-
-- all necessary models (BM25, Bi-Encoder, Cross-Encoder), and  
-- all required data (corpora, QUR spreadsheets).
-
-The core `retrieve()` method accepts a **mode flag** to isolate and test each hypothesis against the same gold-standard queries (Rev. 5, Rev. 4, and Error Bank).
-
-### Retrieval Mode Definitions
-
-**Standard S7 (Baseline for H1):**
-
-- **Stage 1 (RRF):**  
-  Fuses `BM25(Q_orig)`, `BM25(Q_all_rewrites)`, and `Dense(Q_orig)` to get the Top 50 candidates.
-- **Stage 2 (Rerank):**  
-  Feeds `(Q_orig, Candidate)` pairs into the Cross-Encoder for final scoring.
-
-**Ablation (a) — Test for H1:**
-
-- **Stage 1 (RRF):**  
-  Identical to Standard S7: fuse `BM25(Q_orig)`, `BM25(Q_all_rewrites)`, and `Dense(Q_orig)` to get the Top 50 candidates.
-- **Stage 2 (Rerank):**  
-  Feeds `(Q_best_rewrite, Candidate)` pairs into the Cross-Encoder.  
-  - The only change from Standard S7 is the reranker input.
+Earlier versions of this micro‑ablation wrote several separate markdown reports and even included ODP subsets and broad claims based on an older corpus. fileciteturn18file1 fileciteturn18file2 fileciteturn18file3  
+This **new version** is intentionally minimal (one notebook + one README) and aligned to our **current clause‑level CCS** and our **current S4/S7 logic** (extracted from `AblationStudy_S1_8.ipynb`).
 
 ---
 
-**Standard S4 (Baseline for H2):**
+## 2) Oracle definition (upper bound, not deployable)
 
-- **Stage 1 (RRF):**  
-  Fuses `BM25(Q_orig)` and `BM25(Q_all_rewrites)`.
-- **Stage 2 (Rerank):**  
-  None (single-stage retriever).
+**Oracle = “theoretical upper bound.”**  
+For each question, we generate **3 rewrites** and then **peek at the gold control ID** to select the rewrite that performs best in Stage‑1 retrieval.
 
-**Ablation (b) — Test for H2:**
+**Requirement B (“best scoring rewrite”):**
+1. Generate 3 rewrites for the question.
+2. For each rewrite `r`, run **Stage‑1 hybrid retrieval** (BM25 + Dense + RRF).
+3. Compute the **rank of the gold control** in that fused Stage‑1 ranking.
+4. Choose the rewrite with the **lowest (best) gold rank**.  
+   (Tie‑break by the fused score.)
 
-- **Stage 1 (RRF):**  
-  Fuses `BM25(Q_orig)` and `BM25(Q_best_rewrite)`.  
-  - The only change from Standard S4 is the subset of rewrites used.
-- **Stage 2 (Rerank):**  
-  None.
-
-
-## 4. Results & Conclusions
-
-The results of the experiment, also saved in  
-`Comparison_Report-MicroAblation_S4_S7_Validation.md`, confirm both original hypotheses.
+Because this uses the gold label, it is **not a production method**. It is a tool to answer:  
+> “If rewrite selection were perfect, would this design choice help or hurt?”
 
 ---
 
-### Conclusion 1: Reranking with the Original Query is Decisively Superior
+## 3) Systems produced by this notebook (what runs here)
 
-The S7 (Standard) pipeline **significantly outperformed** the S7a (Rerank Best) ablation on all datasets. This validates the design choice that the original, unfiltered user query is the **most valuable and reliable signal** for the final, precision-focused reranking stage.
+This notebook runs **only the oracle variants**:
 
-Using an AI-generated rewrite—even the "best" one—introduces an interpretation risk that measurably degrades performance.
+### 3.1 S4b — Oracle best‑rewrite fusion (retrieval micro‑ablation)
+- Baseline S4 (from main ablation): **QUR‑RRF** fusing original + multiple rewrites.
+- **S4b (this notebook):** fuse **original + oracle‑best rewrite only**.
 
-#### S7 (Standard) vs. S7a (Rerank Best) — MRR@10
+Implementation notes:
+- Retrieval is lexical BM25 at the **control level**, using control docs built by aggregating clause texts.
+- Fusion uses **weighted RRF** (config below).
 
-| Dataset              | S7 (Standard) MRR@10 | S7a (Rerank Best) MRR@10 |
-|----------------------|----------------------:|--------------------------:|
-| Rev. 5 Overall       |                0.9448 |                    0.8177 |
-| Rev. 4 Overall       |                0.9444 |                    0.8449 |
-| Error Bank (Rev. 5)  |                0.8323 |                    0.6982 |
-| Error Bank (Rev. 4)  |                0.8182 |                    0.7879 |
+### 3.2 S7a — Oracle best‑rewrite rerank query (reranking micro‑ablation)
+- Baseline S7 (from main ablation): ComplianceGPT two‑stage retrieval + rerank; reranker uses **original query**.
+- **S7a (this notebook):** candidate generation is unchanged, but the cross‑encoder reranker uses the **oracle‑best rewrite as the rerank query**.
+
+Implementation notes:
+- Stage‑1 candidate generation uses our current “superhybrid” approach (BM25 original + BM25 rewrites + Dense original fused by RRF).
+- Stage‑2 uses a cross‑encoder with **safe blending** (config below).
 
 ---
 
-### Conclusion 2: Full-Rewrite Fusion is More Robust and Effective
+## 4) Inputs (data + rewrites)
 
-The S4 (Standard) pipeline, which fuses **all** generated rewrites, outperformed the S4b (RRF Best) ablation on the primary Rev. 5 and Rev. 4 datasets. This demonstrates that the high recall generated by the full set of rewrites provides a more **robust candidate pool** for RRF to surface the correct answer.
+### 4.1 Clause‑level CCS (flat JSONL)
+We use the flattened clause‑level CCS JSONL with fields like:
+`clause_id`, `control_id`, `title`, `text`, `kind`.
 
-The simpler "best-only" approach, while competitive, is less effective overall. This justifies the **"superhybrid" RRF design** used in Stage 1 of the S7 pipeline.
+Paths (Colab/Drive):
+```python
+REV5_CATALOG_PATH = "/content/drive/MyDrive/compliance_data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl"
+REV4_CATALOG_PATH = "/content/drive/MyDrive/compliance_data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl"
+```
 
-#### S4 (Standard) vs. S4b (RRF Best) — MRR@10
+By default we keep clause `kind` in `("smt", "gdn")` to match our current main notebook behavior.
 
-| Dataset              | S4 (Standard) MRR@10 | S4b (RRF Best) MRR@10 |
-|----------------------|----------------------:|-----------------------:|
-| Rev. 5 Overall       |                0.7802 |                 0.7674 |
-| Rev. 4 Overall       |                0.8114 |                 0.7782 |
-| Error Bank (Rev. 5)  |                0.4493 |                 0.3968 |
-| Error Bank (Rev. 4)  |                0.5586 |                 0.5833 |
+### 4.2 Gold sets + Error Bank
+```python
+REV5_GOLD_CSV = "/content/drive/MyDrive/compliance_data/gold_standard_datasets/nist800_53/nist_sp800-53_rev5_gold-set_100q.csv"
+REV4_GOLD_CSV = "/content/drive/MyDrive/compliance_data/gold_standard_datasets/nist800_53/nist_sp800-53_rev4_gold-set_36q.csv"
+ERROR_BANK_CSV = "/content/drive/MyDrive/compliance_data/error_bank/error_bank_v1.csv"
+```
 
-> **Note:** The S4b ablation’s minor win on the 11-query Rev. 4 Error Bank is not considered significant enough to outweigh its losses on the larger, primary datasets.
+The notebook splits Error Bank into rev4/rev5 subsets by the version column(s) present in your `error_bank_v1.csv`.
+(So counts can differ across older reports.)
 
+### 4.3 QUR rewrite CSVs (3 rewrites per question)
+```python
+QUR_CSV_REV5 = "/content/drive/MyDrive/compliance_outputs/outputs_qur/qur_rewrites_rev5.csv"
+QUR_CSV_REV4 = "/content/drive/MyDrive/compliance_outputs/outputs_qur/qur_rewrites_rev4.csv"
+QUR_CSV_ERRB = "/content/drive/MyDrive/compliance_outputs/outputs_qur/qur_rewrites_error_bank.csv"
+```
+
+Minimum required columns:
+- original query text (e.g., `original_query` / `question`)
+- rewritten query text (e.g., `rewritten_query` / `rewrite`)
+- a stable ordering per question (e.g., `rewrite_rank`) **or** pre‑sorted rows
+
+---
+
+## 5) Configuration (current run defaults)
+
+These are the critical knobs for matching our current S4/S7 design:
+
+```python
+# BM25 defaults (match main notebook)
+BM25_K1 = 1.5
+BM25_B  = 0.75
+
+# Fusion / RRF
+RRF_K_DEFAULT  = 60
+REWRITE_WEIGHT = 0.25   # how much rewrite runs contribute vs original in RRF
+
+# Rerank safe blending
+RERANK_ALPHA = 0.65     # final_score = alpha * base_rrf + (1-alpha) * rerank_score
+
+# Rewrite filtering inside candidate generation (if enabled in our current S7 logic)
+REWRITE_JACCARD_MIN = 0.15
+
+# Oracle selection
+NUM_REWRITES_FOR_SELECTION = 3
+CANDIDATE_SET_SIZE         = 50
+```
+
+---
+
+## 6) Evaluation contract (what “correct” means)
+
+**Correctness unit:** control ID hit (e.g., `AC-2`).  
+Even though we retrieve over clause content, we evaluate whether the **gold control** appears in the top‑K ranked control list.
+
+**Metrics written per query:**
+- `rank` (rank of gold control within top‑K list; 0 if not found)
+- `Recall@1`, `Recall@5`, `Recall@10` (hit rates)
+- `MRR@10` (1/rank if rank ≤ 10 else 0)
+- `nDCG@10` (single‑relevant‑item DCG; 1/log2(rank+1) if rank ≤ 10 else 0)
+
+---
+
+## 7) How to run (Colab)
+
+Open:
+- `MicroAblation_S4b_S7a_ORACLE_ONLY_twofiles_PERFECT.ipynb`
+
+Steps:
+1. **Runtime → Restart runtime**
+2. **Run All** (important: the setup cell builds indices and instantiates the cross‑encoder)
+3. Confirm you see the CCS loader sanity check print a non‑zero number of records.
+
+---
+
+## 8) Outputs (ONLY two files)
+
+All outputs are saved to:
+```python
+ABLATION_OUTPUT_DIR = "/content/drive/MyDrive/ablation_outputs/micro_ablations"
+```
+
+This notebook writes **exactly two CSVs**:
+- `S4b_rrf_best_ALL.csv`
+- `S7a_rerank_best_ALL.csv`
+
+Schema (both files):
+- `dataset` (e.g., `rev5_gold`, `rev4_gold`, `error_bank_rev5`, `error_bank_rev4`)
+- `question_id`, `question`
+- `gold_control_id`
+- `rank`, `is_hit_at_1`, `is_hit_at_5`, `is_hit_at_10`
+- `mrr@10`, `ndcg@10`
+- `top_1_hit`
+- `retrieved_control_ids` (pipe‑separated string)
+- `system_meta` (JSON string; includes whether an oracle rewrite was used)
+
+---
+
+## 9) Comparing to baselines (S4 / S7 from main ablation)
+
+We compare S4b vs S4 and S7a vs S7 using the S4/S7 CSV outputs from `AblationStudy_S1_8.ipynb`.
+
+Recommended join keys:
+- `dataset`
+- `question_id`
+
+Example comparison snippet:
+```python
+import pandas as pd
+
+s4b = pd.read_csv("/content/drive/MyDrive/ablation_outputs/micro_ablations/S4b_rrf_best_ALL.csv")
+s7a = pd.read_csv("/content/drive/MyDrive/ablation_outputs/micro_ablations/S7a_rerank_best_ALL.csv")
+
+s4  = pd.read_csv(".../S4_qur_rrf_ALL.csv")            # produced by main ablation
+s7  = pd.read_csv(".../S7_compliance_gpt_ALL.csv")     # produced by main ablation
+
+m4 = s4.merge(s4b, on=["dataset","question_id"], suffixes=("_S4","_S4b"))
+m7 = s7.merge(s7a, on=["dataset","question_id"], suffixes=("_S7","_S7a"))
+```
+
+---
+
+## 10) Notes / pitfalls
+
+- **Oracle ≠ deployable.** It uses gold labels to choose rewrites, by design.
+- **Don’t compare across corpora.** Older micro‑ablation markdown reports were generated on different corpus versions and produced different metric scales and conclusions. fileciteturn18file0 fileciteturn18file1
+- **Kind filtering matters.** If you change `keep_kinds`, you must apply the same change in the main ablation notebook to keep results comparable.
+- **No hardcoded hashes.** We intentionally do not embed SHA256 hashes in this notebook. We add hashes only after finalizing inputs/outputs for artifact freeze.
+
+---
+
+## 11) Historical note (why we replaced the old markdown set)
+
+Older docs (kept for archival reference) include:
+- a multi‑file comparison report and separate per‑system reports fileciteturn18file0 fileciteturn18file2 fileciteturn18file3
+- an older README that describes a different implementation structure (class‑based, multiple modes, ODP subsets) and draws conclusions based on that older run fileciteturn18file1
+
+This README supersedes them for the **current clause‑level CCS + oracle‑only two‑file output** workflow.
