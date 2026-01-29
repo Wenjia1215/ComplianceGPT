@@ -61,6 +61,24 @@ Implementation notes:
 - Stage‑1 candidate generation uses our current “superhybrid” approach (BM25 original + BM25 rewrites + Dense original fused by RRF).
 - Stage‑2 uses a cross‑encoder with **safe blending** (config below).
 
+### 3.3 Why the names are S7a and S4b?
+
+The suffix letters a/b do not indicate a system version number. They indicate the micro-ablation experiment ID (two different validation questions):
+
+Ablation (a): Reranking input question — should the reranker score candidates using the original query or a rewrite?
+
+Baseline: S7 (rerank with original query)
+
+Variant: S7a (rerank with oracle-best rewrite)
+
+Ablation (b): Fusion breadth question — during retrieval fusion, should we fuse multiple rewrites or only the single best rewrite?
+
+Baseline: S4 (multi-rewrite fusion)
+
+Variant: S4b (oracle best-rewrite-only fusion)
+
+In short: System ID + Experiment ID → S7 + a = S7a, S4 + b = S4b.
+
 ---
 
 ## 4) Inputs (data + rewrites)
