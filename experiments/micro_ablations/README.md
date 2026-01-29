@@ -84,7 +84,7 @@ REV4_GOLD_CSV = "/content/drive/MyDrive/compliance_data/gold_standard_datasets/n
 ERROR_BANK_CSV = "/content/drive/MyDrive/compliance_data/error_bank/error_bank_v1.csv"
 ```
 
-The notebook splits Error Bank into rev4/rev5 subsets by the version column(s) present in your `error_bank_v1.csv`.
+The notebook splits Error Bank into rev4/rev5 subsets by the version column(s) present in `error_bank_v1.csv`.
 (So counts can differ across older reports.)
 
 ### 4.3 QUR rewrite CSVs (3 rewrites per question)
@@ -143,12 +143,15 @@ Even though we retrieve over clause content, we evaluate whether the **gold cont
 ## 7) How to run (Colab)
 
 Open:
-- `MicroAblation_S4b_S7a_ORACLE_ONLY_twofiles_PERFECT.ipynb`
+- `MicroAblation_S4b_S7.ipynb`
 
 Steps:
-1. **Runtime → Restart runtime**
+
+1. **Runtime → Restart runtime** (Choose T4 GPU OR BETTER)
+
 2. **Run All** (important: the setup cell builds indices and instantiates the cross‑encoder)
-3. Confirm you see the CCS loader sanity check print a non‑zero number of records.
+
+3. Confirm the CCS loader sanity check print a non‑zero number of records.
 
 ---
 
@@ -202,16 +205,37 @@ m7 = s7.merge(s7a, on=["dataset","question_id"], suffixes=("_S7","_S7a"))
 ## 10) Notes / pitfalls
 
 - **Oracle ≠ deployable.** It uses gold labels to choose rewrites, by design.
-- **Don’t compare across corpora.** Older micro‑ablation markdown reports were generated on different corpus versions and produced different metric scales and conclusions. fileciteturn18file0 fileciteturn18file1
-- **Kind filtering matters.** If you change `keep_kinds`, you must apply the same change in the main ablation notebook to keep results comparable.
-- **No hardcoded hashes.** We intentionally do not embed SHA256 hashes in this notebook. We add hashes only after finalizing inputs/outputs for artifact freeze.
+
+- **Kind filtering matters.** If one change `keep_kinds`, one must apply the same change in the main ablation notebook to keep results comparable.
+
 
 ---
 
-## 11) Historical note (why we replaced the old markdown set)
+## 11) why only s4 & s7
 
-Older docs (kept for archival reference) include:
-- a multi‑file comparison report and separate per‑system reports fileciteturn18file0 fileciteturn18file2 fileciteturn18file3
-- an older README that describes a different implementation structure (class‑based, multiple modes, ODP subsets) and draws conclusions based on that older run fileciteturn18file1
+why the others were excluded from this specific Oracle study:
 
-This README supersedes them for the **current clause‑level CCS + oracle‑only two‑file output** workflow.
+1. Why S4? (The "Recall Champion")
+Role: S4 (QUR-RRF) represents Stage 1 Retrieval Strategy.
+
+The Question it answers: "When we cast the net to find candidates, should we trust one 'perfect' rewrite, or fuse them all together?"
+
+Why not S3? S3 (Rewrite-Replace) is a known inferior architecture (single-point-of-failure). We already know fusion (S4) beats replacement (S3) in the main ablation. We don't need an Oracle to prove S3 is risky.
+
+Why not S5? S5 is just Hybrid RRF without QUR. The "Oracle" test is specifically about Rewrites. Since S5 doesn't use rewrites, an Oracle test is mathematically impossible for it.
+
+2. Why S7? (The "Precision Champion")
+Role: S7 (ComplianceGPT) represents Stage 2 Reranking Strategy (The Final System).
+
+The Question it answers: "When the expensive reranker judges a document, should it look at the user's messy query or the AI's clean rewrite?"
+
+Why not S6? S6 is the Reranker without the advanced Candidate Generation. S7 is effectively "S6 + S4". By testing S7, we are testing the Reranker in its final, best environment. If the "Original Query" strategy wins in S7, it applies to S6 too. Testing S6 separately is redundant.
+
+Summary for Dissertation Defense
+"We focused the micro-ablation on the two terminal nodes of our architectural decision tree:"
+
+S4 (Candidate Generation): Proving that Fusion is safer than Selection.
+
+S7 (Final Reranking): Proving that Original Intent is more precise than Rewritten Text.
+
+S3, S5, and S6 are intermediate steps. Validating the "Champions" (S4 and S7) implicitly validates the logic for the whole pipeline.
