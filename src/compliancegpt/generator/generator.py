@@ -101,10 +101,19 @@ def normalize_contract(raw: Dict[str, Any]) -> Dict[str, Any]:
 # Supports both:
 #  - {{ insert: param, ac-02_odp.05 }}
 #  - [assignment: organization-defined ...]   (no ID; will not yield an ID)
-ODP_PATTERN = re.compile(
-    r"(?:\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+|\[assignment:\s*([^\]]+?)\s*\])",
+# Supports both:
+#  - {{ insert: param, ac-02_odp.05 }}
+#  - {{ insert: param, ac-1_prm_1 }}
+#  - [assignment: organization-defined ...]   (no ID; indicates unresolved params)
+_PARAM_CURLY_RE = re.compile(
+    r"\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+",
     re.IGNORECASE,
 )
+_PARAM_ASSIGNMENT_RE = re.compile(
+    r"\[assignment:\s*([^\]]+?)\s*\]",
+    re.IGNORECASE,
+)
+
 
 def _has_value(val: Any) -> bool:
     if val is None:
@@ -118,33 +127,43 @@ def _has_value(val: Any) -> bool:
 
 def _extract_keys(text: str) -> List[str]:
     """
-    Extract ODP IDs from {{insert}} placeholders.
+    Extract required parameter IDs from curly {{insert}} placeholders.
 
-    IMPORTANT FIX:
-      For "{{ insert: param, ac-02_odp.05 }}", the ID is the LAST comma-separated token.
-      (Earlier bug extracted "param".)
+    Important:
+      - Any curly placeholder token is treated as a required parameter ID (ODP + PRM).
+      - Assignment placeholders do NOT yield an ID. If assignment placeholders exist
+        but no curly IDs exist, we return a stable sentinel ("assignment_required")
+        to keep verifier consistency.
     """
     if not text:
         return []
-    matches = ODP_PATTERN.findall(text)
-    keys: List[str] = []
-    for a, b in matches:
-        raw = (a or b).strip()
+
+    ids: List[str] = []
+    for m in _PARAM_CURLY_RE.finditer(text):
+        raw = (m.group(1) or "").strip()
         if not raw:
             continue
-        # Only brace style reliably encodes an ID; assignment style is free-text.
-        # Still, for brace style, take last token after comma.
         base = raw.split(",")[-1].strip()
-        if base:
-            keys.append(base)
-    # de-dup while preserving order
+        if not base:
+            continue
+        token = base.split()[0].strip()
+        if not token or token.lower() == "param":
+            continue
+        ids.append(token)
+
+    has_assignment = bool(_PARAM_ASSIGNMENT_RE.search(text))
+
     out: List[str] = []
     seen = set()
-    for k in keys:
+    for k in ids:
         lk = k.lower()
-        if lk not in seen:
-            seen.add(lk)
-            out.append(k)
+        if lk in seen:
+            continue
+        seen.add(lk)
+        out.append(k)
+
+    if not out and has_assignment:
+        return ["assignment_required"]
     return out
 
 def _profile_lookup(profile: Dict[str, Any], key: str) -> Any:

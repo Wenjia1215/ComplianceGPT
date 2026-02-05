@@ -1,6 +1,0 @@
-example_id,error_type,question,what_went_wrong,expected_fix
-E1,over-citation,...,Cited 6 clauses when 2 suffice,Reduce topk or add citation cap
-E2,under-citation,...,Answer claims retention period w/o clause,Force claim-level evidence
-E3,off-by-version,...,Cited HIPAA 2023 when 2024 requested,Version pinning in retrieval
-E4,wrong framework,...,NIST cited for PCI-only ask,Scope filter
-E5,fabricated reference,...,PCI 9.99 (does not exist),Control-ID whitelist check

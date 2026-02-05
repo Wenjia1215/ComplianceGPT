@@ -4,7 +4,7 @@ pipeline.py — ComplianceGPT Answerer v0 (Defense Grade) — v3.2
 
 Key properties:
 - Canonical citation display (AC-06.04 -> AC-6(4)).
-- Safe "statement-only" retrieval filtering.
+- Configurable retrieval doc filtering (doc_filter_mode).
 - Primary-control consistency guardrail.
 - Status precedence: NEVER overwrite NO_EVIDENCE or ERROR.
 """
@@ -43,9 +43,9 @@ except ImportError as e:
     raise ImportError(f"[FATAL] Cannot import generator module: {e}")
 
 try:
-    from compliancegpt_retriever_s7 import ComplianceGPTRetriever, RetrievalConfig
+    from retriever_s7 import ComplianceGPTRetriever, RetrievalConfig
 except ImportError as e:
-    raise ImportError(f"[FATAL] Cannot import retriever module: {e}")
+    raise ImportError(f"[FATAL] Cannot import retriever_s7 module: {e}")
 
 try:
     from QUR_Generator_UT import QURComponent
@@ -122,78 +122,259 @@ def is_statement_only_doc(doc_id: str) -> bool:
         return False
     return bool(_CTRL_RE.match(s) or _STMT_RE.match(s))
 
+# Doc selection filter modes (used when choosing which retrieved docs to pass downstream).
+# - "all": do not filter; allow _smt/_gdn/_obj/etc.
+# - "prefer_statement_only": legacy behavior; if any statement-only docs exist, use them, else fallback to raw.
+# - "statement_only": keep only statement-only docs; if none exist, fallback to raw (to avoid empty pipeline).
+_DOC_FILTER_MODES = ("all", "prefer_statement_only", "statement_only")
+
+def select_docs(raw_docs: List[Dict[str, Any]], top_k: int, mode: str) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    mode = (mode or "all").strip().lower()
+    if mode not in _DOC_FILTER_MODES:
+        mode = "all"
+
+    meta: Dict[str, Any] = {
+        "doc_filter_mode": mode,
+        "raw_n": len(raw_docs or []),
+        "kept_n": None,
+        "dropped_n": None,
+        "fallback_to_raw": False,
+    }
+
+    raw_docs = raw_docs or []
+    if top_k <= 0:
+        meta["kept_n"] = 0
+        meta["dropped_n"] = len(raw_docs)
+        return [], meta
+
+    if mode == "all":
+        docs = raw_docs[:top_k]
+        meta["kept_n"] = len(docs)
+        meta["dropped_n"] = len(raw_docs) - len(docs)
+        return docs, meta
+
+    stmt_docs = [d for d in raw_docs if is_statement_only_doc(d.get("id", ""))]
+
+    if mode == "statement_only":
+        if stmt_docs:
+            docs = stmt_docs[:top_k]
+            meta["kept_n"] = len(docs)
+            meta["dropped_n"] = len(raw_docs) - len(docs)
+            return docs, meta
+        # fallback
+        docs = raw_docs[:top_k]
+        meta["fallback_to_raw"] = True
+        meta["kept_n"] = len(docs)
+        meta["dropped_n"] = len(raw_docs) - len(docs)
+        return docs, meta
+
+    # prefer_statement_only (legacy)
+    if stmt_docs:
+        docs = stmt_docs[:top_k]
+        meta["kept_n"] = len(docs)
+        meta["dropped_n"] = len(raw_docs) - len(docs)
+        return docs, meta
+
+    docs = raw_docs[:top_k]
+    meta["fallback_to_raw"] = True
+    meta["kept_n"] = len(docs)
+    meta["dropped_n"] = len(raw_docs) - len(docs)
+    return docs, meta
+
+
 # Synchronized with generator.py
-ODP_PATTERN = re.compile(
-    r"(?:\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+|\[assignment:\s*([^\]]+?)\s*\])",
+# -----------------------------
+# ODP / PARAM placeholder helpers
+# -----------------------------
+# We support:
+#   - Curly insert placeholders that encode a parameter id token:
+#       {{ insert: param, ac-1_prm_1 }}
+#       {{ insert: param, ac-01_odp.03 }}
+#   - Assignment placeholders (free-text; may not encode an id):
+#       [assignment: organization-defined parameter]
+#
+# Important:
+#   - We treat ANY curly placeholder id token as a "required parameter id"
+#     (ODP + PRM, etc.) because verifier.py extracts them this way.
+#   - We do NOT attempt to mint fake ids from assignment placeholders.
+#     If assignment placeholders exist but no extractable ids exist, we use a
+#     stable sentinel ("assignment_required") to satisfy verifier consistency.
+
+_PARAM_CURLY_RE = re.compile(
+    r"\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+",
+    re.IGNORECASE,
+)
+_PARAM_ASSIGNMENT_RE = re.compile(
+    r"\[assignment:\s*([^\]]+?)\s*\]",
     re.IGNORECASE,
 )
 
-def _extract_odp_keys(text: str) -> List[str]:
+def _extract_odp_requirements(text: str) -> Tuple[List[str], bool]:
+    """
+    Returns (required_param_ids, has_assignment_placeholder).
+
+    required_param_ids are extracted from curly placeholders only.
+    """
     if not isinstance(text, str) or not text:
-        return []
-    keys: List[str] = []
-    for a, b in ODP_PATTERN.findall(text):
-        raw = a or b
-        if raw:
-            base = str(raw).strip().split(",")[-1].strip()
-            if base:
-                keys.append(base)
-    return keys
+        return ([], False)
 
+    ids: List[str] = []
+    for m in _PARAM_CURLY_RE.finditer(text):
+        raw = (m.group(1) or "").strip()
+        if not raw:
+            continue
+        # Common format is: "param, <ID>"
+        base = raw.split(",")[-1].strip()
+        if not base:
+            continue
+        token = base.split()[0].strip()
+        if not token:
+            continue
+        # avoid the historic bug: "param" treated as an id
+        if token.lower() == "param":
+            continue
+        ids.append(token)
 
+    has_assignment = bool(_PARAM_ASSIGNMENT_RE.search(text))
+
+    # Stable de-dup preserving order
+    out: List[str] = []
+    seen = set()
+    for x in ids:
+        lx = x.lower()
+        if lx in seen:
+            continue
+        seen.add(lx)
+        out.append(x)
+    return (out, has_assignment)
 
 def _normalize_odp_id(raw: str) -> str:
     """
     Normalize ODP IDs so that minor formatting differences match.
     Examples:
       - "ac-02_odp.5"  -> "ac-02_odp.05"
-      - "AC-02_ODP.05" -> "ac-02_odp.05"
+      - "AC_02_ODP.05" -> "ac-02_odp.05"
     """
     s = (raw or "").strip().lower()
     s = re.sub(r"\s+", "", s)
     s = s.replace("__", "_")
+    # normalize common family underscore variants (align with verifier.py behavior)
+    s = s.replace("ac_","ac-").replace("ra_","ra-").replace("pl_","pl-").replace("pm_","pm-")
+    # pad ".<digit>" after "odp."
     s = re.sub(r"(odp\.)\b(\d)\b", r"\g<1>0\2", s)
     return s
 def apply_odp_to_answer(answer_text: str, org_profile: Dict[str, Any]) -> Tuple[str, str, List[str]]:
     """
-    Substitutes ODPs where possible.
+    Substitutes values for curly {{ insert: param, <ID> }} placeholders when possible.
     Returns: (status, substituted_text, missing_keys)
+
+    Notes:
+      - This function substitutes ONLY curly placeholders.
+      - If any [assignment: ...] placeholders exist, status will be PARAMS_REQUIRED.
+      - org_profile may be either:
+          - flat: { "<id>": "<value>" }
+          - nested: { "odp_values": { "<id>": "<value>" } }
     """
     text = answer_text or ""
-    required = set(_extract_odp_keys(text))
-    missing: List[str] = []
+    required, has_assignment = _extract_odp_requirements(text)
 
-    for key in sorted(required):
-        _norm_map = { _normalize_odp_id(k): k for k in org_profile.keys() } if isinstance(org_profile, dict) else {}
+    # Support nested profiles
+    profile_map: Dict[str, Any]
+    if isinstance(org_profile, dict):
+        nested = org_profile.get("odp_values", None)
+        profile_map = nested if isinstance(nested, dict) else org_profile
+    else:
+        profile_map = {}
+
+    missing: List[str] = []
+    _norm_map = { _normalize_odp_id(k): k for k in profile_map.keys() } if isinstance(profile_map, dict) else {}
+
+    for key in sorted(set(required)):
         prof_key = _norm_map.get(_normalize_odp_id(key), key)
-        val = org_profile.get(prof_key) if isinstance(org_profile, dict) else None
+        val = profile_map.get(prof_key) if isinstance(profile_map, dict) else None
+
         # Robust check allowing 0 or False but not None or ""
         if val is not None and str(val).strip() != "":
             val_str = str(val)
-            # FIXED: Added re.escape to prevent regex injection
             rep_braces = r"\{+\s*insert:\s*(?:param,\s*)?" + re.escape(key) + r"\s*\}+"
-            rep_assign = r"\[assignment:\s*" + re.escape(key) + r"\s*\]"
             try:
                 text = re.sub(rep_braces, val_str, text, flags=re.IGNORECASE)
-                text = re.sub(rep_assign, val_str, text, flags=re.IGNORECASE)
             except re.error:
-                # If regex fails, we skip substitution for this key
                 pass
         else:
             missing.append(key)
 
-    status = "PARAMS_REQUIRED" if missing else "OK"
+    status = "PARAMS_REQUIRED" if (missing or has_assignment) else "OK"
     return status, text, missing
 
 def resolve_ccs_path(framework_version: str) -> str:
     candidates = [
+        # Colab / Drive default
         f"/content/drive/MyDrive/compliance_data/ccs/nist800-53/NIST_SP-800-53_{framework_version}_catalog.jsonl",
+        # Repo relative path
         f"data/ccs/nist800-53/NIST_SP-800-53_{framework_version}_catalog.jsonl",
+        # Local working dir convenience
+        f"NIST_SP-800-53_{framework_version}_catalog.jsonl",
+        # Sandbox/CI convenience (ignored if missing)
+        f"/mnt/data/NIST_SP-800-53_{framework_version}_catalog.jsonl",
     ]
     for c in candidates:
         if Path(c).exists():
             return c
     return candidates[0]
+
+
+def _ccs_kind_counts(ids: List[str]) -> Dict[str, int]:
+    """Count CCS clause kinds by ID suffix marker (e.g., _smt/_gdn/_obj)."""
+    kind_re = re.compile(r"_(smt|gdn|obj)(?:\.|$)", re.IGNORECASE)
+    counts = {"smt": 0, "gdn": 0, "obj": 0, "other": 0}
+    for cid in ids:
+        m = kind_re.search(cid or "")
+        if not m:
+            counts["other"] += 1
+            continue
+        k = m.group(1).lower()
+        counts[k] += 1
+    return counts
+
+
+def _assert_ccs_loaded(
+    *,
+    ccs_path: str,
+    ids: List[str],
+    strict: bool,
+    min_docs: int,
+) -> Dict[str, Any]:
+    """Hard sanity checks to prevent silently loading the wrong CCS."""
+    counts = _ccs_kind_counts(ids)
+    total = len(ids)
+
+    print(
+        f"[CCS] Loaded corpus from: {ccs_path}\n"
+        f"[CCS] docs={total} kind_counts={counts}"
+    )
+
+    if total < min_docs:
+        raise ValueError(
+            f"[FATAL] CCS sanity check failed: only {total} docs loaded (<{min_docs}). "
+            f"Path: {ccs_path}"
+        )
+
+    # Clause-level catalogs should contain at least statements and usually guidance/objectives.
+    if strict:
+        if counts["smt"] == 0:
+            raise ValueError(
+                f"[FATAL] CCS sanity check failed: 0 '_smt' docs detected. Path: {ccs_path}"
+            )
+        if (counts["gdn"] + counts["obj"]) == 0:
+            raise ValueError(
+                "[FATAL] CCS sanity check failed: 0 '_gdn'/'_obj' docs detected. "
+                "This often means you're loading a statement-only or wrong-format corpus. "
+                f"Path: {ccs_path}"
+            )
+
+    return {"total_docs": total, "kind_counts": counts}
+
 
 # ============================================================================
 # 4) PIPELINE
@@ -205,8 +386,18 @@ class ComplianceGPTPipeline:
         framework_version: str = "rev5",
         model_id: str = "Qwen/Qwen2.5-7B-Instruct",
         use_qur: bool = True,
+        doc_filter_mode: str = "all",
+        ccs_path: Optional[str] = None,
+        strict_ccs_assert: bool = True,
+        min_ccs_docs: int = 1000,
     ) -> None:
         self.framework_version = framework_version
+
+        # Which retrieved docs to pass to generator/verifier.
+        # Default: "all" (allow _smt/_gdn/_obj/etc.). Use "prefer_statement_only" to restore legacy behavior.
+        m = (doc_filter_mode or "all").strip().lower()
+        self.doc_filter_mode = m if m in _DOC_FILTER_MODES else "all"
+
 
         from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
         import torch
@@ -234,9 +425,17 @@ class ComplianceGPTPipeline:
             except Exception as e:
                 print(f"[WARN] QUR init failed: {e}. Skipping.")
 
-        ccs_path = resolve_ccs_path(framework_version)
+        ccs_path = (ccs_path or resolve_ccs_path(framework_version)).strip()
+        self.ccs_path = ccs_path
+        if not Path(ccs_path).exists():
+            raise FileNotFoundError(
+                f"[FATAL] CCS file not found: {ccs_path}. "
+                "Provide ccs_path=... to ComplianceGPTPipeline(...) or place the file in one of the default locations."
+            )
         print(f"[Pipeline] Retriever loading: {ccs_path}")
         self.retriever = ComplianceGPTRetriever(catalog_path=ccs_path, config=RetrievalConfig())
+        self.ccs_meta = _assert_ccs_loaded(ccs_path=ccs_path, ids=self.retriever.ids, strict=strict_ccs_assert, min_docs=min_ccs_docs)
+
 
     def _citation_suffix(self, primary_display: str) -> str:
         rev_label = "Rev.5" if self.framework_version == "rev5" else "Rev.4"
@@ -249,6 +448,7 @@ class ComplianceGPTPipeline:
         top_k: int = 5,
         use_generator: bool = True,
         gold_row: Optional[Dict[str, Any]] = None,
+        doc_filter_mode: Optional[str] = None,
     ) -> Dict[str, Any]:
         org_profile = org_profile or {}
 
@@ -256,8 +456,8 @@ class ComplianceGPTPipeline:
         rewrites = self.qur.generate(query) if self.qur else None
         raw_docs = self.retriever.retrieve(query, top_k=top_k * 2, rewrites=rewrites)
 
-        filtered = [d for d in raw_docs if is_statement_only_doc(d.get("id", ""))]
-        docs = (filtered[:top_k] if filtered else raw_docs[:top_k])
+        mode = (doc_filter_mode or self.doc_filter_mode or "all")
+        docs, doc_filter_meta = select_docs(raw_docs, top_k=top_k, mode=mode)
 
         primary_doc_id = docs[0].get("id", "") if docs else ""
         primary_family = _control_family_num(primary_doc_id) if primary_doc_id else ""
@@ -275,6 +475,9 @@ class ComplianceGPTPipeline:
             }
 
         contract = normalize_contract(contract_raw)
+
+        # Contract mode is always provably-extractive for this answerer.
+        contract["contract_mode"] = "provably_extractive"
 
         # 3) Verifier outputs (computed at the end, after all post-processing)
         verifier_errors: List[str] = []
@@ -358,12 +561,21 @@ class ComplianceGPTPipeline:
             sid = str(span.get("source_id", ""))
             span["source_id_display"] = doc_base_display(sid)
 
+        # Convenience: list of unique evidence source ids in order.
+        _seen: set[str] = set()
+        contract["selected_source_ids"] = []
+        for _sp in contract.get("evidence_spans", []):
+            _sid = str(_sp.get("source_id", "")).strip()
+            if _sid and _sid not in _seen:
+                _seen.add(_sid)
+                contract["selected_source_ids"].append(_sid)
+
         # 7) Recompute ODP status (policy-aware, benchmark-consistent)
         base_status = str(contract.get("status", "OK")).strip().upper()
 
         if base_status in ("OK", "PARAMS_REQUIRED"):
-            # Extract ODP keys from the (verbatim) answer text
-            required_keys = sorted(set(_extract_odp_keys(str(contract.get("answer_text", "")))))
+            # Extract ODP requirements from the (verbatim) answer text
+            required_keys, has_assignment = _extract_odp_requirements(str(contract.get("answer_text", "")))
 
             # Determine how to handle ODPs:
             # - In benchmark mode (gold_row provided), respect gold_row["resolution_policy"] when present.
@@ -381,22 +593,28 @@ class ComplianceGPTPipeline:
                     policy = "ASK"
                 else:
                     policy = "FILL_FROM_PROFILE" if (isinstance(org_profile, dict) and len(org_profile) > 0) else "ASK"
-
-            if required_keys:
+            if required_keys or has_assignment:
                 if policy == "ASK":
                     # Keep the answer verbatim (placeholders intact), require params
                     contract["status"] = "PARAMS_REQUIRED"
-                    contract["odp_required_list"] = required_keys
+                    contract["odp_required_list"] = required_keys if required_keys else (["assignment_required"] if has_assignment else [])
+                    contract["odp_assignment_present"] = bool(has_assignment)
                 elif policy == "FILL_FROM_PROFILE":
                     # Substitute only if values exist; otherwise require params
                     odp_status, substituted, missing = apply_odp_to_answer(str(contract.get("answer_text", "")), org_profile)
                     contract["answer_text"] = substituted if odp_status == "OK" else str(contract.get("answer_text", ""))
-                    contract["odp_required_list"] = [] if odp_status == "OK" else missing
+                    # If assignment placeholders exist but no extractable ids, use a stable sentinel to satisfy verifier consistency.
+                    if odp_status == "OK":
+                        contract["odp_required_list"] = []
+                    else:
+                        contract["odp_required_list"] = (missing if missing else (required_keys if required_keys else (["assignment_required"] if has_assignment else [])))
+                    contract["odp_assignment_present"] = bool(has_assignment)
                     contract["status"] = odp_status
                 else:
                     # Unknown policy -> default to ASK behavior
                     contract["status"] = "PARAMS_REQUIRED"
-                    contract["odp_required_list"] = required_keys
+                    contract["odp_required_list"] = required_keys if required_keys else (["assignment_required"] if has_assignment else [])
+                    contract["odp_assignment_present"] = bool(has_assignment)
             else:
                 # No ODP placeholders detected
                 contract["odp_required_list"] = []
@@ -472,6 +690,7 @@ class ComplianceGPTPipeline:
 
         return {
             "query": query,
+            "doc_filter": doc_filter_meta,
             "docs": docs,
             "contract": contract,
             "verifier_errors": verifier_errors,

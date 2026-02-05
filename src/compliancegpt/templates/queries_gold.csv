@@ -1,7 +1,0 @@
-task_id,query,gold_control_ids,notes
-T1,How should inactive accounts be disabled or removed?,AC-2(3); PCI 8.2.6,NIST vs PCI
-T2,What are HIPAA requirements for risk analysis?,164.308(a)(1)(ii)(A),HIPAA
-T3,Log retention requirements comparing NIST and PCI.,AU-11; PCI 10.x,
-T4,Multi-factor authentication requirements across the three frameworks.,IA-2; 164.312(d); PCI 8.x,
-T5,Vulnerability scanning frequency and coverage (PCI vs NIST).,RA-5; PCI 11.x,
-T6,Incident response plan content and testing cadence.,IR-8; PCI 12.x; 164.308(a)(6),
