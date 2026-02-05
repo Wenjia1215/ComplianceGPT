@@ -6,7 +6,7 @@ from typing import List, Dict, Any, Optional, Tuple, Iterable
 # ==========================================================
 # ComplianceGPT Verifier (v2)
 # Goal: mechanically verifiable, auditable QA checks:
-#   - Status mutual consistency (OK / PARAMS_REQUIRED / NO_EVIDENCE)
+#   - Status mutual consistency (OK / PARAMS_REQUIRED / NO_EVIDENCE / ERROR)
 #   - Citation correctness (control-level + optional doc-id level)
 #   - ODP behavior correctness (placeholder detection + required list)
 #   - Version correctness (when provable)
@@ -136,8 +136,8 @@ def normalize_odp_id(raw: str) -> str:
     s = re.sub(r"\s+", "", s)
 
     # normalize common variants like ac_02 -> ac-02 (optional; keep both in matching)
-    s = s.replace("ac_","ac-").replace("ra_","ra-").replace("pl_","pl-").replace("pm_","pm-")
-    s = s.replace("__","_")
+    s = s.replace("ac_", "ac-").replace("ra_", "ra-").replace("pl_", "pl-").replace("pm_", "pm-")
+    s = s.replace("__", "_")
 
     # pad ".<digit>" after "odp."
     # e.g., odp.5 -> odp.05
@@ -278,8 +278,15 @@ def check_status_consistency(contract: AnswerContract) -> List[str]:
     errors: List[str] = []
 
     status = (contract.status or "").strip().upper()
-    if status not in {"OK", "PARAMS_REQUIRED", "NO_EVIDENCE"}:
+    if status not in {"OK", "PARAMS_REQUIRED", "NO_EVIDENCE", "ERROR"}:
         errors.append("InvalidStatus")
+        return errors
+
+    # ERROR is a valid contract outcome (format/model failure upstream).
+    # We treat it as a hard failure but skip other semantic checks.
+    if status == "ERROR":
+        errors.append("StatusERROR")
+        return errors
 
     # Look for unresolved ODP placeholders in answer_text OR in any span.
     has_placeholders = has_unresolved_odp_placeholder(contract.answer_text) or any(
@@ -555,6 +562,30 @@ def verify_answer(
     except Exception:
         return VerifierResult(qid, False, ["MalformedJSON"], {"control_precision": 0.0, "control_recall": 0.0, "control_f1": 0.0})
 
+    # Short-circuit: ERROR is a valid contract status but not a "pass" outcome.
+    # We return a deterministic failure without running semantic checks.
+    status_up = (contract.status or "").strip().upper()
+    if status_up == "ERROR":
+        metrics: Dict[str, float] = {
+            "control_precision": 0.0,
+            "control_recall": 0.0,
+            "control_f1": 0.0,
+            "doc_precision": 0.0,
+            "doc_recall": 0.0,
+            "doc_f1": 0.0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "f1": 0.0,
+            "verbatim_strict_pass_rate": float("nan"),
+            "verbatim_normalized_pass_rate": float("nan"),
+        }
+        return VerifierResult(
+            question_id=qid,
+            is_pass=False,
+            error_tags=["StatusERROR"],
+            metrics=metrics,
+        )
+
     # ---- checks
     errors: List[str] = []
 
@@ -618,7 +649,6 @@ def verify_answer(
         "doc_recall": float(doc_metrics.get("recall", 0.0)),
         "doc_f1": float(doc_metrics.get("f1", 0.0)),
     }
-
 
     # Backward-compatible aliases (legacy notebooks expect these)
     metrics["precision"] = metrics["control_precision"]
