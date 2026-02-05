@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-generator.py — ComplianceGPT Answerer v0 (Defense Grade) — Generator v3.3
+generator.py — ComplianceGPT Answerer v0 (Defense Grade) — Generator v3.3.1
 
 This generator is designed to be CONSISTENT with the pipeline's "provably extractive" mode:
 
@@ -396,7 +396,6 @@ class ComplianceGenerator:
             gen = self.model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                max_new_tokens=self.max_new_tokens,
                 generation_config=self._deterministic_cfg,
             )
         return self.tokenizer.decode(gen[0][inputs["input_ids"].shape[1] :], skip_special_tokens=True)
