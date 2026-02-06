@@ -493,7 +493,9 @@ class ComplianceGPTPipeline:
         if not selected_ids and isinstance(contract.get("evidence_spans"), list):
             selected_ids = [str(s.get("source_id", "")).strip() for s in contract.get("evidence_spans", []) if str(s.get("source_id", "")).strip()]
 
-        if not selected_ids and primary_doc_id:
+        status_up = str(contract.get("status", "")).strip().upper()
+
+        if not selected_ids and primary_doc_id and status_up not in {"NO_EVIDENCE", "ERROR"}:
             selected_ids = [str(primary_doc_id).strip()]
 
         # Keep only the primary control-family when possible
@@ -523,15 +525,29 @@ class ComplianceGPTPipeline:
         spans_out = [{"source_id": sid, "span_text": _lookup_clean_text(sid)} for sid in selected_ids if sid]
         contract["evidence_spans"] = spans_out
 
-        # Keep status coherent with evidence
-        if spans_out and str(contract.get("status", "")).strip().upper() == "NO_EVIDENCE":
-            contract["status"] = "OK"
-        if (not spans_out) and str(contract.get("status", "")).strip().upper() == "OK":
-            contract["status"] = "NO_EVIDENCE"
+        # Enforce status precedence and coherence (do not overwrite NO_EVIDENCE/ERROR)
+        status_up = str(contract.get("status", "")).strip().upper()
+        if status_up in {"NO_EVIDENCE", "ERROR"}:
+            # Contract says: NO_EVIDENCE/ERROR must not carry evidence spans.
+            spans_out = []
+            selected_ids = []
+            contract["evidence_spans"] = []
+            if status_up == "NO_EVIDENCE":
+                contract["answer_text"] = "NO_EVIDENCE"
+        else:
+            # For OK / PARAMS_REQUIRED, we require at least one evidence span.
+            if not spans_out:
+                contract["status"] = "ERROR"
+                contract.setdefault("pipeline_errors", []).append(f"{status_up}ButNoEvidenceSpans")
+                contract["answer_text"] = contract.get("answer_text", "") or ""
+            else:
+                # If spans exist, keep status as OK/PARAMS_REQUIRED when set; otherwise default to OK.
+                if status_up not in {"OK", "PARAMS_REQUIRED"}:
+                    contract["status"] = "OK"
 
 
         # For benchmark mode: make the answer_text purely extractive (verbatim from retrieved evidence)
-        if spans_out:
+        if spans_out and str(contract.get("status", "")).strip().upper() in ("OK", "PARAMS_REQUIRED"):
             contract["answer_text"] = " ".join(str(s.get("span_text", "")) for s in spans_out).strip()
 
         # 4) Primary-control consistency
@@ -550,11 +566,6 @@ class ComplianceGPTPipeline:
         # 5) Fallback strategies
         if (not contract.get("answer_text")) and contract.get("evidence_spans"):
             contract["answer_text"] = " ".join(str(s.get("span_text", "")) for s in contract["evidence_spans"]).strip()
-
-        if (not contract.get("answer_text")) and docs:
-            contract["answer_text"] = str(docs[0].get("text", "")).strip()
-            if contract["answer_text"] and not contract.get("evidence_spans"):
-                contract["evidence_spans"] = [{"source_id": str(primary_doc_id), "span_text": contract["answer_text"]}]
 
         # 6) Display citations
         for span in contract.get("evidence_spans", []):
@@ -594,7 +605,7 @@ class ComplianceGPTPipeline:
                 else:
                     policy = "FILL_FROM_PROFILE" if (isinstance(org_profile, dict) and len(org_profile) > 0) else "ASK"
             if required_keys or has_assignment:
-                if policy == "ASK":
+                if policy in ("ASK", "PRESERVE"):
                     # Keep the answer verbatim (placeholders intact), require params
                     contract["status"] = "PARAMS_REQUIRED"
                     contract["odp_required_list"] = required_keys if required_keys else (["assignment_required"] if has_assignment else [])
@@ -611,7 +622,7 @@ class ComplianceGPTPipeline:
                     contract["odp_assignment_present"] = bool(has_assignment)
                     contract["status"] = odp_status
                 else:
-                    # Unknown policy -> default to ASK behavior
+                    # Unknown policy -> default to ASK behavior (Option A compatible)
                     contract["status"] = "PARAMS_REQUIRED"
                     contract["odp_required_list"] = required_keys if required_keys else (["assignment_required"] if has_assignment else [])
                     contract["odp_assignment_present"] = bool(has_assignment)

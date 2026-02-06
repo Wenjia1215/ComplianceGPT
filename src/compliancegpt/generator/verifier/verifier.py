@@ -425,9 +425,19 @@ def check_odp_behavior(contract: AnswerContract, gold: GoldLabel, org_profile: O
     if gold_odps:
         # If gold says ASK, you should not claim OK unless you explicitly provide an org_profile-based fill
         policy = (gold.resolution_policy or "").strip().upper()
-        if policy == "ASK":
+        if policy in {"ASK", "PRESERVE"}:
             if status != "PARAMS_REQUIRED":
                 errors.append("GoldPolicyASKButStatusNotParamsRequired")
+        if policy == "PRESERVE":
+            # PRESERVE means PARAMS_REQUIRED + literal placeholder preservation in output evidence.
+            # For each required ODP token, ensure it appears inside a {{ insert: param, <token> }} placeholder.
+            combined = "\n".join([contract.answer_text] + [s.span_text for s in contract.evidence_spans])
+            for tok in gold_odps:
+                pattern = r"\{\{\s*insert\s*:\s*param\s*,\s*" + re.escape(tok) + r"\s*\}\}"
+                if not re.search(pattern, combined, flags=re.IGNORECASE):
+                    errors.append(f"PreserveMissingPlaceholder:{tok}")
+
+
         elif policy == "FILL_FROM_PROFILE":
             if org_profile is None:
                 # cannot confirm; do not hard-fail, but flag as not provable
