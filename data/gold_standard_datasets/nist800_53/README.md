@@ -1,80 +1,119 @@
 # ODP Resolution Policy for Gold-Standard Evaluation Sets
 
-This document outlines the purpose and assignment logic for the `resolution_policy` column in the gold-standard Q&A (`.csv`) files.
+This README defines the meaning and assignment rules for the `resolution_policy` column in the gold-standard Q&A CSV files
+(e.g., `nist_sp800-53_rev4_gold-set_36q.csv`, `nist_sp800-53_rev5_gold-set_100q.csv`).
+
+The purpose of `resolution_policy` is to make ODP/PRM handling *testable*:
+not only “did the system find the right clause,” but also “did it handle org-defined parameters correctly”.
 
 ---
 
-## 1. Purpose of the `resolution_policy` Column
+## 1) Core principle (applies to ALL policies)
 
-The `resolution_policy` column is essential for evaluating the system’s ability to correctly handle Organization-Defined Parameters (ODPs). It specifies the expected behavior of the answerer when it encounters a question that involves one or more ODPs. This allows us to programmatically test not just whether the system can identify an ODP, but whether it can take the correct, context-appropriate action.
+If a cited clause contains an Organization-Defined Parameter placeholder (ODP/PRM), the system must:
 
----
+1) **Never invent a value** (no guessing / no substitution without an org profile value).
+2) **Preserve the placeholder verbatim** in any quoted evidence (and in any answer text that includes quoted evidence).
 
-## 2. Policy Definitions
-
-The `resolution_policy` column can contain one of four possible values:
-
-- **N/A**  
-  Assigned to any question/answer pair that does **not** involve an ODP.
-
-- **FILL_FROM_PROFILE**  
-  The expected behavior is for the system to retrieve a predefined value from a sample `org_profile.yaml` file and correctly substitute it into the answer. This tests the system’s ability to use organization-specific configuration.
-
-- **ASK**  
-  The expected behavior is for the system to recognize that it lacks the required information and return a `PARAMS_REQUIRED` status, prompting the user for the specific ODP value. This tests the system’s “ask back” capability.
-
-- **PRESERVE**  
-  The expected behavior is for the system to leave the ODP placeholder (e.g.,  {{ insert: param, ... }}) in the final answer verbatim. This tests the system’s ability to quote a control exactly as written without modification.
+Evaluation uses `odp_required` to specify which parameter IDs must be recognized.
 
 ---
 
-## 3. Assignment Logic: How to Choose a Policy
+## 2) Policy values and expected behavior
 
-The policy for each ODP-related question is chosen based on the nature of the parameter itself, with the goal of creating a balanced and comprehensive evaluation set.
+`resolution_policy` is one of:
 
-### Use **FILL_FROM_PROFILE** for standard, organization-wide settings.
-- **Rationale:** These are parameters that an organization would likely define once and apply broadly.  
-- **Examples:** Frequencies (annually, monthly), time periods (e.g., 90 days, one hour), or common configuration choices.
+### **N/A**
+- Use when the question does **not** involve any ODP/PRM.
+- Expected behavior: normal citation-grounded answer, status `OK` (assuming evidence exists).
 
-### Use **ASK** for specific, contextual, or list-based parameters.
-- **Rationale:** These are parameters that cannot be easily predefined and often depend on the specifics of a system, an incident, or a business unit.  
-- **Examples:** A list of organization-defined auditable events, a list of personnel or roles, or criteria for an action that is not globally defined.
+### **FILL_FROM_PROFILE**
+- Use when the required values are standard organization-wide settings that reasonably live in an `org_profile`.
+  Examples: frequencies, time windows, numeric thresholds used consistently across the org.
+- Expected behavior:
+  - If all required ODPs exist in the `org_profile`: status `OK`, and the answer includes substituted values.
+  - If any required ODP is missing from `org_profile`: status `PARAMS_REQUIRED` and the system asks for missing values.
 
-### Use **PRESERVE** for testing literal citation.
-- **Rationale:** This is used in a minority of cases to verify that the system can, when instructed, simply repeat the source text without attempting to resolve the ODP.
+### **ASK**
+- Use when the ODP/PRM values are contextual, list-based, or dependent on system/business specifics.
+  Examples: list of auditable events; specific roles/personnel; context-dependent criteria.
+- Expected behavior:
+  - status `PARAMS_REQUIRED`
+  - the system asks the user for the required values (do not guess).
+  - placeholder preservation is allowed in quoted evidence, but the answer may paraphrase the need for the value.
 
----
+### **PRESERVE**
+- Use to test **literal placeholder preservation** while still requiring the system to request missing values.
+- Expected behavior:
+  - status `PARAMS_REQUIRED`
+  - the system explicitly requests the required values (ASK behavior)
+  - **AND** any placeholder strings appearing in the cited evidence must remain **verbatim** in output
+    (no modification of the placeholder ID, punctuation, braces, or numbering).
 
-## 4. ODP Key Normalization and Format
-
-For consistent and unambiguous programmatic evaluation, all Organization-Defined Parameter (ODP) and Parameter (`prm`) keys across all gold sets have been standardized to a single canonical format.
-
----
-
-### Final Format
-
-The final format is **`[control-id]_[type]_[number]`**.
-
-* **Example (Rev. 5):** `ac-2_odp_1`
-* **Example (Rev. 4):** `at-2_prm_1`
-
----
-
-### Normalization Rules
-
-The following rules were applied to the source OSCAL keys to produce the final, clean format:
-
-1.  **Identifier Type:** Both `prm` (from Rev. 4) and `odp` (from Rev. 5) are preserved to maintain source traceability but are treated as the same conceptual category for evaluation.
-
-2.  **Separators:** All original separators (e.g., dots, colons) have been replaced with a single underscore (`_`) to join the parts of the key.
-
-3.  **Numbering:** All parameter numbers have been normalized to remove leading zeros.
-    * **Example:** A source key like `sr-03_odp_3` is normalized to `sr-3_odp_3`.
+> In short: PRESERVE is not “OK with placeholders”.
+> PRESERVE is “PARAMS_REQUIRED + strict literal placeholder preservation”.
 
 ---
 
-By distributing these policies across the ODP-containing questions in our gold sets, we can rigorously test all facets of the system’s ODP-handling logic.
+## 3) Assignment logic (how to choose a policy)
 
+Use these rules when labeling each ODP-related question:
 
-#### Notes:
-1. EasyQs are the first version of gold standard datasets.
+- Choose **FILL_FROM_PROFILE** when the org can plausibly define the value once in a configuration profile.
+- Choose **ASK** when the value is context-specific, varies by unit/system, or is a list that must be supplied.
+- Choose **PRESERVE** only when you specifically want to test:
+  1) placeholder detection,
+  2) placeholder literal preservation, and
+  3) ask-back behavior,
+  all at the same time.
+
+---
+
+## 4) Canonical format for `odp_required` (IMPORTANT)
+
+To avoid “false failures” caused by formatting drift, **`odp_required` must use the exact parameter IDs
+as they appear inside CCS placeholders**.
+
+### What to store in `odp_required`
+- Store the **placeholder ID string** from CCS, e.g. the token inside:
+  `{{ insert: param, <TOKEN_HERE> }}`
+
+### Examples
+- Rev5 examples (often zero-padded, may contain dots for enhancements):
+  - `ac-01_odp.01`
+  - `ac-02.02_odp.01`
+  - `ca-02_odp.02`
+- Rev4 examples (prm keys; enhancements may use dots):
+  - `at-2_prm_1`
+  - `ac-12.1_prm_1`
+
+### List formatting
+- If multiple parameters are required, write **one per line** (newline-separated).
+- Do not use commas inside `odp_required`.
+
+---
+
+## 5) Canonical format for `gold_control_path`
+
+`gold_control_path` must list **canonical clause IDs that exist in the clause-level CCS**.
+- One clause ID per line (newline-separated).
+- Clause IDs must match CCS exactly (case-sensitive in strict tools).
+- Avoid mixing separators like semicolons, commas, and blank lines.
+
+---
+
+## 6) CSV hygiene requirements
+
+To keep evaluation deterministic across tools:
+- Save gold CSVs as **UTF-8**
+- Use newline-separated lists in cells (not semicolons)
+- Trim whitespace around IDs
+- Avoid NaN/blank ambiguity:
+  - If `odp_required` is empty, set `resolution_policy` to `N/A` (not blank)
+
+---
+
+## 7) Changelog
+
+- **2026-02**: Redefined `PRESERVE` as **PARAMS_REQUIRED + strict literal placeholder preservation**
+  (i.e., preserve + ask), not “OK with placeholders”.

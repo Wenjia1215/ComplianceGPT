@@ -4,17 +4,11 @@ id,question,gold_source_doc,gold_source_version,control_id,answer,gold_exact_cit
 3,What security awareness training must the organization provide and when?,NIST SP 800-53,Revision 4,AT-2,"The organization provides basic security awareness training to information system users (including managers, senior executives, and contractors) as part of initial training for new users, when required by information system changes, and {{ insert: param, at-2_prm_1 }} thereafter.[NIST SP 800-53 Rev.4: AT-2]","The organization provides basic security awareness training to information system users (including managers, senior executives, and contractors):
 As part of initial training for new users;
 When required by information system changes; and
-{{ insert: param, at-2_prm_1 }} thereafter.","at-2_smt
-at-2_smt.a
-at-2_smt.b
-at-2_smt.c",at-2_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+{{ insert: param, at-2_prm_1 }} thereafter.",at-2_smt;at-2_smt.a;at-2_smt.b;at-2_smt.c,at-2_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 4,What are the requirements for role-based security training and timing of delivery?,NIST SP 800-53,Revision 4,AT-3,"The organization provides role-based security training to personnel with assigned security responsibilities before authorizing access to the information system or performing assigned duties, when required by information system changes, and {{ insert: param, at-3_prm_1 }} thereafter.[NIST SP 800-53 Rev.4: AT-3]","The organization provides role-based security training to personnel with assigned security roles and responsibilities:
 Before authorizing access to the information system or performing assigned duties;
 When required by information system changes; and
-{{ insert: param, at-3_prm_1 }} thereafter.","at-3_smt
-at-3_smt.a
-at-3_smt.b
-at-3_smt.c",at-3_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+{{ insert: param, at-3_prm_1 }} thereafter.",at-3_smt;at-3_smt.a;at-3_smt.b;at-3_smt.c,at-3_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 5,What must the organization determine about events within the information system?,NIST SP 800-53,Revision 4,AU-2,"Determines that the following events are to be audited within the information system: {{ insert: param, au-2_prm_2 }}.[NIST SP 800-53 Rev.4: AU-2]","Determines that the following events are to be audited within the information system: {{ insert: param, au-2_prm_2 }}.",au-2_smt.d,au-2_prm_2,ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 6,What audit record contents are the system required to generate?,NIST SP 800-53,Revision 4,AU-3,"The information system generates audit records containing information that establishes what type of event occurred, when the event occurred, where the event occurred, the source of the event, the outcome of the event, and the identity of any user/subject associated with the event.[NIST SP 800-53 Rev.4: AU-3]","The information system generates audit records containing information that establishes what type of event occurred, when the event occurred, where the event occurred, the source of the event, the outcome of the event, and the identity of any individuals or subjects associated with the event.",au-3_smt,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 7,What are the requirements regarding assessment of security controls and frequency?,NIST SP 800-53,Revision 4,CA-2,"The organization assesses the security controls in the information system and its environment of operation {{ insert: param, ca-2_prm_1 }} to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting security requirements for the system.[NIST SP 800-53 Rev.4: CA-2]","Assesses the security controls in the information system and its environment of operation {{ insert: param, ca-2_prm_1 }} to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting established security requirements;",ca-2_smt.b,ca-2_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
@@ -34,14 +28,7 @@ Establishment of {{ insert: param, ca-7_prm_2 }} for monitoring and {{ insert: p
 Ongoing security control assessments in accordance with the organizational continuous monitoring strategy;
 Correlation and analysis of security-related information generated by assessments and monitoring;
 Response actions to address results of the analysis of security-related information; and
-Reporting the security status of organization and the information system to {{ insert: param, ca-7_prm_4 }} {{ insert: param, ca-7_prm_5 }}.","ca-7_smt
-ca-7_smt.a
-ca-7_smt.b
-ca-7_smt.c
-ca-7_smt.d
-ca-7_smt.e
-ca-7_smt.f
-ca-7_smt.g","ca-7_prm_1
+Reporting the security status of organization and the information system to {{ insert: param, ca-7_prm_4 }} {{ insert: param, ca-7_prm_5 }}.",ca-7_smt;ca-7_smt.a;ca-7_smt.b;ca-7_smt.c;ca-7_smt.d;ca-7_smt.e;ca-7_smt.f;ca-7_smt.g,"ca-7_prm_1
 ca-7_prm_2
 ca-7_prm_3
 ca-7_prm_4
@@ -49,18 +36,14 @@ ca-7_prm_5",FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/ma
 9,What does CM-2 require regarding the baseline configuration of the information system?,NIST SP 800-53,Revision 4,CM-2,"The organization develops, documents, and maintains under configuration control, a current baseline configuration of the information system.[NIST SP 800-53 Rev.4: CM-2]","The organization develops, documents, and maintains under configuration control, a current baseline configuration of the information system.",cm-2_smt,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 10,What are the requirements for establishing and documenting configuration settings?,NIST SP 800-53,Revision 4,CM-6,"The organization establishes and documents configuration settings for information technology products employed within the information system using {{ insert: param, cm-6_prm_1 }} that reflect the most restrictive mode consistent with operational requirements.[NIST SP 800-53 Rev.4: CM-6]","Establishes and documents configuration settings for information technology products employed within the information system using {{ insert: param, cm-6_prm_1 }} that reflect the most restrictive mode consistent with operational requirements;",cm-6_smt.a,cm-6_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 11,What does CP-2 require in developing a contingency plan for the information system?,NIST SP 800-53,Revision 4,CP-2,The organization develops a contingency plan for the information system that identifies essential mission and business functions and associated contingency requirements.[NIST SP 800-53 Rev.4: CP-2],"Develops a contingency plan for the information system that:
-Identifies essential missions and business functions and associated contingency requirements;","cp-2_smt.a
-cp-2_smt.a.1",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+Identifies essential missions and business functions and associated contingency requirements;",cp-2_smt.a;cp-2_smt.a.1,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 12,What does CP-9 require for conducting and protecting backups at the storage location?,NIST SP 800-53,Revision 4,CP-9,"Conducts backups of user-level information contained in the information system {{ insert: param, cp-9_prm_1 }};
 Conducts backups of system-level information contained in the information system {{ insert: param, cp-9_prm_2 }};
 Conducts backups of information system documentation including security-related documentation {{ insert: param, cp-9_prm_3 }}; and
 Protects the confidentiality, integrity, and availability of backup information at storage locations. [NIST SP 800-53 Rev.4: CP-9]","Conducts backups of user-level information contained in the information system {{ insert: param, cp-9_prm_1 }};
 Conducts backups of system-level information contained in the information system {{ insert: param, cp-9_prm_2 }};
 Conducts backups of information system documentation including security-related documentation {{ insert: param, cp-9_prm_3 }}; and
-Protects the confidentiality, integrity, and availability of backup information at storage locations.","cp-9_smt.a
-cp-9_smt.b
-cp-9_smt.c
-cp-9_smt.d","cp-9_prm_1
+Protects the confidentiality, integrity, and availability of backup information at storage locations.",cp-9_smt.a;cp-9_smt.b;cp-9_smt.c;cp-9_smt.d,"cp-9_prm_1
 cp-9_prm_2
 cp-9_prm_3",FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 13,What identification and authentication requirement does IA-2 specify for organizational users?,NIST SP 800-53,Revision 4,IA-2,The information system uniquely identifies and authenticates organizational users (or processes acting on behalf of organizational users).[NIST SP 800-53 Rev.4: IA-2],The information system uniquely identifies and authenticates organizational users (or processes acting on behalf of organizational users).,ia-2_smt,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
@@ -70,12 +53,10 @@ cp-9_prm_3",FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/ma
 Reports security incident information to {{ insert: param, ir-6_prm_2 }}. [NIST SP 800-53 Rev.4: IR-6]","Requires personnel to report suspected security incidents to the organizational incident response capability within {{ insert: param, ir-6_prm_1 }}; and
 Reports security incident information to {{ insert: param, ir-6_prm_2 }}.","ir-6_smt.a
 ir-6_smt.b",ir-6_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
-18,Who must approve removing the system or components off-site for maintenance?,NIST SP 800-53,Revision 4,MA-2,"Requires that {{ insert: param, ma-2_prm_1 }} explicitly approve the removal of the information system or system components from organizational facilities for off-site maintenance or repairs; [NIST SP 800-53 Rev.4: MA-2]","Requires that {{ insert: param, ma-2_prm_1 }} explicitly approve the removal of the information system or system components from organizational facilities for off-site maintenance or repairs;",ma-2_smt.c,ma-2_prm_1,ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+18,Who must approve removing the system or components off-site for maintenance?,NIST SP 800-53,Revision 4,MA-2,"Requires that {{ insert: param, ma-2_prm_1 }} explicitly approve the removal of the information system or system components from organizational facilities for off-site maintenance or repairs; [NIST SP 800-53 Rev.4: MA-2]","Requires that {{ insert: param, ma-2_prm_1 }} explicitly approve the removal of the information system or system components from organizational facilities for off-site maintenance or repairs;",ma-2_smt.c, ma-2_prm_1,ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 17,What actions does MA-3 require the organization to do with information system maintenance tools?,NIST SP 800-53,Revision 4,MA-3,"The organization approves, controls, and monitors information system maintenance tools. [NIST SP 800-53 Rev.4: MA-3]","The organization approves, controls, and monitors information system maintenance tools.",ma-3_smt,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 19,What does MP-4 require for protecting information system media?,NIST SP 800-53,Revision 4,MP-4,"Physically controls and securely stores {{ insert: param, mp-4_prm_1 }} within {{ insert: param, mp-4_prm_2 }}, and protects information system media until the media are destroyed or sanitized using approved equipment, techniques, and procedures.[NIST SP 800-53 Rev.4: MP-4]","Physically controls and securely stores {{ insert: param, mp-4_prm_1 }} within {{ insert: param, mp-4_prm_2 }}; and
-Protects information system media until the media are destroyed or sanitized using approved equipment, techniques, and procedures.","mp-4_smt.a
-mp-4_smt.b","mp-4_prm_1
-mp-4_prm_2",ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+Protects information system media until the media are destroyed or sanitized using approved equipment, techniques, and procedures.",mp-4_smt.a;mp-4_smt.b,"mp-4_prm_1, mp-4_prm_2",ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 20,What does MP-6 require for sanitizing media prior to disposal or release?,NIST SP 800-53,Revision 4,MP-6,"Sanitizes {{ insert: param, mp-6_prm_1 }} prior to disposal, release out of organizational control, or release for reuse using {{ insert: param, mp-6_prm_2 }} in accordance with applicable federal and organizational standards and policies; and
 Employs sanitization mechanisms with the strength and integrity commensurate with the security category or classification of the information. [NIST SP 800-53 Rev.4: MP-6]","Sanitizes {{ insert: param, mp-6_prm_1 }} prior to disposal, release out of organizational control, or release for reuse using {{ insert: param, mp-6_prm_2 }} in accordance with applicable federal and organizational standards and policies; and
 Employs sanitization mechanisms with the strength and integrity commensurate with the security category or classification of the information.","mp-6_smt.a
@@ -89,15 +70,7 @@ Provides {{ insert: param, pe-3_prm_5 }} to control access to areas within the f
 Escorts visitors and monitors visitor activity {{ insert: param, pe-3_prm_6 }};
 Secures keys, combinations, and other physical access devices;
 Inventories {{ insert: param, pe-3_prm_7 }} every {{ insert: param, pe-3_prm_8 }}; and
-Changes combinations and keys {{ insert: param, pe-3_prm_9 }} and/or when keys are lost, combinations are compromised, or individuals are transferred or terminated.","pe-3_smt.a
-pe-3_smt.a.1
-pe-3_smt.a.2
-pe-3_smt.b
-pe-3_smt.c
-pe-3_smt.d
-pe-3_smt.e
-pe-3_smt.f
-pe-3_smt.g","pe-3_prm_1
+Changes combinations and keys {{ insert: param, pe-3_prm_9 }} and/or when keys are lost, combinations are compromised, or individuals are transferred or terminated.",pe-3_smt.a;pe-3_smt.a.1;pe-3_smt.a.2;pe-3_smt.b;pe-3_smt.c;pe-3_smt.d;pe-3_smt.e;pe-3_smt.f;pe-3_smt.g,"pe-3_prm_1
 pe-3_prm_2
 pe-3_prm_4
 pe-3_prm_5
@@ -107,29 +80,33 @@ pe-3_prm_8
 pe-3_prm_9",ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 22,What does PE-6 require regarding monitoring physical access to the facility?,NIST SP 800-53,Revision 4,PE-6,The organization monitors physical access to the facility where the information system resides to detect and respond to physical security incidents.[NIST SP 800-53 Rev.4: PE-6],Monitors physical access to the facility where the information system resides to detect and respond to physical security incidents;,pe-6_smt.a,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 23,What does PL-2 require for the security plan describing controls in place or planned?,NIST SP 800-53,Revision 4,PL-2,"The organization develops, documents, and implements a security plan for the information system that describes the security controls in place or planned for meeting security requirements.[NIST SP 800-53 Rev.4: PL-2]","Develops a security plan for the information system that:
-Is consistent with the organization√ïs enterprise architecture;
+Is consistent with the organization’s enterprise architecture;
 Explicitly defines the authorization boundary for the system;
 Describes the operational context of the information system in terms of missions and business processes;
 Provides the security categorization of the information system including supporting rationale;
 Describes the operational environment for the information system and relationships with or connections to other information systems;","pl-2_smt.a
+
 pl-2_smt.a.1
+
 pl-2_smt.a.2
+
 pl-2_smt.a.3
+
 pl-2_smt.a.4
+
 pl-2_smt.a.5",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 24,What does PL-4 require about establishing and disseminating rules of behavior to system users?,NIST SP 800-53,Revision 4,PL-4,"The organization establishes and makes readily available to all information system users, a set of rules that describes their responsibilities and expected behavior with regard to information and information system usage.[NIST SP 800-53 Rev.4: PL-4]","Establishes and makes readily available to individuals requiring access to the information system, the rules that describe their responsibilities and expected behavior with regard to information and information system usage;",pl-4_smt.a,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 25,What does PM-1 require regarding an organization-wide information security program plan?,NIST SP 800-53,Revision 4,PM-1,The organization develops and disseminates an organization-wide information security program plan that provides an overview of the requirements for the security program and a description of the security program management controls and common controls.[NIST SP 800-53 Rev.4: PM-1],"Develops and disseminates an organization-wide information security program plan that:
 Provides an overview of the requirements for the security program and a description of the security program management controls and common controls in place or planned for meeting those requirements;","pm-1_smt.a
 pm-1_smt.a.1",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
-26,"What specific documentation artifacts must the organization employ to record information security resource requirements during capital planning, and how must exceptions to resource inclusion be handled?",NIST SP 800-53,Revision 4,PM-3,Ensures that all capital planning and investment requests include the resources needed to implement the information security program and documents all exceptions to this requirement; Employs a business case/Exhibit 300/Exhibit 53 to record the resources required; Ensures that information security resources are available for expenditure as planned.  [NIST SP 800-53 Rev.4: PM-3],Ensures that all capital planning and investment requests include the resources needed to implement the information security program and documents all exceptions to this requirement; Employs a business case/Exhibit 300/Exhibit 53 to record the resources required; Ensures that information security resources are available for expenditure as planned.,"pm-3_smt.a
-pm-3_smt.b
-pm-3_smt.c",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+26,What does the organization ensure when preparing capital planning and investment requests?,NIST SP 800-53,Revision 4,PM-3,"ensures that all capital planning and investment requests include the resources needed to implement the information security program plan;
+documents all exceptions to the requirement; [NIST SP 800-53 Rev.4: PM-3]","ensures that all capital planning and investment requests include the resources needed to implement the information security program plan;
+documents all exceptions to the requirement;","pm-3.a_obj.1
+pm-3.a_obj.2",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 27,What does PS-2 require regarding position risk designations and screening criteria?,NIST SP 800-53,Revision 4,PS-2,The organization assigns a risk designation to all organizational positions and establishes screening criteria for individuals filling those positions.[NIST SP 800-53 Rev.4: PS-2],"Assigns a risk designation to all organizational positions;
-Establishes screening criteria for individuals filling those positions; and","ps-2_smt.a
-ps-2_smt.b",N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+Establishes screening criteria for individuals filling those positions; and",ps-2_smt.a;ps-2_smt.b,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 28,What does PS-3 require before authorizing access to the information system?,NIST SP 800-53,Revision 4,PS-3,"The organization should screen individuals prior to authorizing access to the information system and rescreens individuals according to {{ insert: param, ps-3_prm_1 }}.[NIST SP 800-53 Rev.4: PS-3]","Screens individuals prior to authorizing access to the information system; and
-Rescreens individuals according to {{ insert: param, ps-3_prm_1 }}.","ps-3_smt.a
-ps-3_smt.b",ps-3_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+Rescreens individuals according to {{ insert: param, ps-3_prm_1 }}.",ps-3_smt.a;ps-3_smt.b,ps-3_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 29,What does RA-2 require regarding categorizing the information system and its resident information?,NIST SP 800-53,Revision 4,RA-2,"The organization categorizes the information system and the information resident therein in accordance with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance.[NIST SP 800-53 Rev.4: RA-2]","Categorizes information and the information system in accordance with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance;",ra-2_smt.a,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 30,"What does RA-5 require for scanning vulnerabilities, including frequency and trigger conditions?",NIST SP 800-53,Revision 4,RA-5,"The organization scans for vulnerabilities in the information system and hosted applications {{ insert: param, ra-5_prm_1 }} and when new vulnerabilities potentially affecting the system are identified and reported.[NIST SP 800-53 Rev.4: RA-5]","Scans for vulnerabilities in the information system and hosted applications {{ insert: param, ra-5_prm_1 }} and when new vulnerabilities potentially affecting the system/applications are identified and reported;",ra-5_smt.a,ra-5_prm_1,PRESERVE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 31,What does SA-3 require about managing the system?,NIST SP 800-53,Revision 4,SA-3,"The organization manages the information system using a system development life cycle {{ insert: param, sa-3_prm_1 }} that incorporates information security considerations.[NIST SP 800-53 Rev.4: SA-3]","Manages the information system using {{ insert: param, sa-3_prm_1 }} that incorporates information security considerations;
@@ -154,6 +131,7 @@ Security-related documentation requirements;
 Requirements for protecting security-related documentation;
 Description of the information system development environment and environment in which the system is intended to operate; and
 Acceptance criteria.","sa-4_smt
+
 sa-4_smt.a
 sa-4_smt.b
 sa-4_smt.c
@@ -170,8 +148,11 @@ Incorporates flaw remediation into the organizational configuration management p
 Tests software and firmware updates related to flaw remediation for effectiveness and potential side effects before installation;
 Installs security-relevant software and firmware updates within {{ insert: param, si-2_prm_1 }} of the release of the updates; and
 Incorporates flaw remediation into the organizational configuration management process.","si-2_smt.a
+
 si-2_smt.b
+
 si-2_smt.c
+
 si-2_smt.d",si-2_prm_1,FILL_FROM_PROFILE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 36,"What monitoring does SI-4 require to detect attacks, indicators, and unauthorized connections?",NIST SP 800-53,Revision 4,SI-4,"Monitors the information system to detect:
 Attacks and indicators of potential attacks in accordance with {{ insert: param, si-4_prm_1 }}; and
