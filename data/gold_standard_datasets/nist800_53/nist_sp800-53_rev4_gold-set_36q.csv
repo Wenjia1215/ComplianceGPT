@@ -104,7 +104,7 @@ pe-3_prm_5
 pe-3_prm_6
 pe-3_prm_7
 pe-3_prm_8
-pe-3_prm_9",ASK,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
+pe-3_prm_9",PRESERVE,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 22,What does PE-6 require regarding monitoring physical access to the facility?,NIST SP 800-53,Revision 4,PE-6,The organization monitors physical access to the facility where the information system resides to detect and respond to physical security incidents.[NIST SP 800-53 Rev.4: PE-6],Monitors physical access to the facility where the information system resides to detect and respond to physical security incidents;,pe-6_smt.a,N/A,N/A,https://github.com/usnistgov/oscal-content/blob/main/nist.gov/SP800-53/rev4/json/NIST_SP-800-53_rev4_catalog.json,4/30/13
 23,What does PL-2 require for the security plan describing controls in place or planned?,NIST SP 800-53,Revision 4,PL-2,"The organization develops, documents, and implements a security plan for the information system that describes the security controls in place or planned for meeting security requirements.[NIST SP 800-53 Rev.4: PL-2]","Develops a security plan for the information system that:
 Is consistent with the organizationÕs enterprise architecture;
