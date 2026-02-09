@@ -1,20 +1,20 @@
 """
-retriever_s7.py — S7 retriever component for ComplianceGPT pipeline
+retriever_s7.py — S7 retriever component for ComplianceGPT
 
-Pipeline-compatible API:
-    from retriever_s7 import ComplianceGPTRetriever, RetrievalConfig
-    r = ComplianceGPTRetriever(catalog_path=..., config=RetrievalConfig())
-    docs = r.retrieve(query, top_k=..., rewrites=rewrites)
+Design goals (clean + pipeline-friendly)
+- Single, unambiguous path name: `ccs_path` (NO catalog_path/ccs_path duality).
+- Single retriever class: `ComplianceGPTRetriever`.
+- Single config class: `RetrievalConfig`.
+- Output docs are clause-level dicts the Generator can consume directly:
+    { "id", "control_id", "kind", "title", "text" }
 
-This module:
-- Keeps the S7 ranking idea (weighted RRF fusion + safe rerank blending + no-harm gate)
-- Adds only the integration glue required by pipeline.py:
-  * exposes ComplianceGPTRetriever + RetrievalConfig
-  * supports `rewrites=` kwarg
-  * sets `self.ids` to CCS clause ids so pipeline CCS sanity check passes
-  * returns clause-level doc dicts (id/control_id/kind/text/title)
+Retrieval idea (kept from your S7 concept)
+- Control ranking: weighted RRF fusion over BM25(control) + Dense(control via clause adapter)
+- Optional rerank: cross-encoder scoring + "safe blending" + "no-harm gate"
+- Evidence selection: return multiple clause snippets per top control (statement + guidance, etc.)
 
-Dependencies:
+Dependencies (same as before)
+- numpy
 - sentence-transformers
 - faiss-cpu (or faiss-gpu)
 - torch
@@ -30,7 +30,6 @@ from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
-import pandas as pd
 
 
 # ==========================================================
@@ -64,10 +63,6 @@ def control_id_aliases(control_id: str) -> str:
     return f"{cid} {cid.replace('-', '')} {cid.replace('-', ' ')}"
 
 
-def strict_clean(s: str) -> str:
-    return "".join(c.lower() for c in str(s) if c.isalnum())
-
-
 def jaccard_overlap(a: str, b: str) -> float:
     A = set(tokenize(normalize_text(a)))
     B = set(tokenize(normalize_text(b)))
@@ -77,6 +72,7 @@ def jaccard_overlap(a: str, b: str) -> float:
 
 
 def normalize_scores_minmax(x: np.ndarray) -> np.ndarray:
+    """Map scores to [0,1] robustly (flat -> zeros)."""
     if x.size == 0:
         return x
     mn, mx = float(np.min(x)), float(np.max(x))
@@ -89,13 +85,23 @@ def normalize_scores_minmax(x: np.ndarray) -> np.ndarray:
 # 2) CCS JSONL loader (clause-level)
 # ==========================================================
 def load_clause_records_jsonl(
-    jsonl_path: str,
+    ccs_path: str,
     keep_kinds: Iterable[str] = ("smt", "gdn"),
 ) -> List[Dict[str, Any]]:
+    """
+    Expected CCS line schema (minimum):
+        {
+          "id": "...",           # clause id (unique)
+          "control_id": "AC-1",  # normalized to AC-1
+          "text": "...",         # clause text
+          "kind": "smt|gdn|..."  # optional; filtered by keep_kinds
+          "title": "..."         # optional
+        }
+    """
     keep = set(k.lower() for k in keep_kinds) if keep_kinds else set()
     out: List[Dict[str, Any]] = []
 
-    with open(jsonl_path, "r", encoding="utf-8") as f:
+    with open(ccs_path, "r", encoding="utf-8") as f:
         for line in f:
             if not line.strip():
                 continue
@@ -126,6 +132,11 @@ def load_clause_records_jsonl(
 
 
 def build_control_docs_from_clauses(records: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """
+    Control-level pseudo-docs for BM25:
+    - prepend control id aliases + title
+    - append all clause texts for that control
+    """
     by_ctl: Dict[str, List[str]] = defaultdict(list)
     titles: Dict[str, str] = {}
     for r in records:
@@ -145,17 +156,20 @@ def build_control_docs_from_clauses(records: List[Dict[str, Any]]) -> List[Dict[
     return docs
 
 
-def build_control_fallback_text_map(records: List[Dict[str, Any]]) -> Dict[str, str]:
+def build_control_fallback_text_map(records: List[Dict[str, Any]], max_parts: int = 8) -> Dict[str, str]:
+    """
+    Short-ish control text for reranker input (avoid feeding huge control docs).
+    """
     by_ctl: Dict[str, List[str]] = defaultdict(list)
     for r in records:
         cid = r.get("control_id", "")
         if cid:
             by_ctl[cid].append(r.get("text", ""))
-    return {normalize_control_id(k).upper(): "\n".join(v[:8]) for k, v in by_ctl.items()}
+    return {normalize_control_id(k).upper(): "\n".join(v[:max_parts]) for k, v in by_ctl.items()}
 
 
 # ==========================================================
-# 3) BM25
+# 3) BM25 (tiny local implementation)
 # ==========================================================
 class BM25Okapi:
     def __init__(self, corpus_tokens: List[List[str]], k1: float = 1.5, b: float = 0.75):
@@ -210,7 +224,8 @@ def build_bm25(docs: List[Dict[str, str]], k1: float, b: float) -> Tuple[BM25Oka
 # 4) Dense index + clause→control adapter
 # ==========================================================
 class DenseIndex:
-    """Exposed for debugging/introspection."""
+    """Clause-level dense retrieval (cosine/IP with normalized embeddings)."""
+
     def __init__(self, model_id: str):
         try:
             import torch  # noqa: F401
@@ -259,18 +274,20 @@ class DenseIndex:
 
 class ClauseDenseControlAdapter:
     """Clause search → compress to control by max clause score."""
+
     def __init__(self, dense_idx: DenseIndex, clause_to_control: Dict[str, str]):
         self.idx = dense_idx
         self.cmap = clause_to_control
 
     def search(self, query: str, top_k: int = 50) -> List[Tuple[str, float]]:
-        hits = self.idx.search(query, top_k=top_k * 5)
+        # search more clauses than needed, then compress per-control
+        hits = self.idx.search(query, top_k=max(10, top_k) * 5)
         best_score: Dict[str, float] = {}
         for clause_id, score in hits:
             ctl = self.cmap.get(clause_id)
             if not ctl:
                 continue
-            ctl = normalize_control_id(ctl)
+            ctl = normalize_control_id(ctl).upper()
             if score > best_score.get(ctl, -1.0):
                 best_score[ctl] = float(score)
         ranked = sorted(best_score.items(), key=lambda x: x[1], reverse=True)
@@ -280,11 +297,11 @@ class ClauseDenseControlAdapter:
 def build_dense_retriever(
     records: List[Dict[str, Any]],
     dense_model_id: str,
-) -> Tuple[ClauseDenseControlAdapter, Dict[str, str], Dict[str, str]]:
+) -> Tuple[ClauseDenseControlAdapter, Dict[str, str], Dict[str, str], DenseIndex]:
     clause_ids: List[str] = []
     texts: List[str] = []
     clause_to_control: Dict[str, str] = {}
-    clause_id_to_text: Dict[str, str] = {}
+    clause_id_to_packed_text: Dict[str, str] = {}
 
     for r in records:
         cid = r["control_id"]
@@ -295,13 +312,13 @@ def build_dense_retriever(
 
         clause_id = r["id"]
         clause_ids.append(clause_id)
-        texts.append(f"passage: {packed}")  # e5
+        texts.append(f"passage: {packed}")  # e5 expects "passage: ..."
         clause_to_control[clause_id] = cid
-        clause_id_to_text[clause_id] = packed
+        clause_id_to_packed_text[clause_id] = packed
 
     idx = DenseIndex(dense_model_id)
     idx.build(texts, clause_ids)
-    return ClauseDenseControlAdapter(idx, clause_to_control), clause_id_to_text, clause_to_control
+    return ClauseDenseControlAdapter(idx, clause_to_control), clause_id_to_packed_text, clause_to_control, idx
 
 
 def build_reranker(model_id: str):
@@ -319,9 +336,15 @@ def build_reranker(model_id: str):
 
 
 # ==========================================================
-# 5) Rewrite handling (pipeline rewrites OR QUR df)
+# 5) Rewrite handling (pipeline-only, no QUR df here)
 # ==========================================================
 def _coerce_rewrite_list(rewrites: Any) -> List[str]:
+    """
+    Accept:
+      - list[str]
+      - list[dict] with keys rewrite/text
+      - single str
+    """
     if not rewrites:
         return []
     out: List[str] = []
@@ -338,7 +361,7 @@ def _coerce_rewrite_list(rewrites: Any) -> List[str]:
     return [x.strip() for x in out if isinstance(x, str) and x.strip()]
 
 
-def _variants_from_pipeline_rewrites(original_query: str, rewrites: List[str], max_rewrites: int, jaccard_min: float) -> List[str]:
+def build_query_variants(original_query: str, rewrites: List[str], max_rewrites: int, jaccard_min: float) -> List[str]:
     variants = [original_query]
     for r in rewrites:
         if len(r) < 6:
@@ -348,35 +371,7 @@ def _variants_from_pipeline_rewrites(original_query: str, rewrites: List[str], m
         variants.append(r)
         if len(variants) >= 1 + int(max_rewrites):
             break
-    return list(dict.fromkeys(variants))
-
-
-def _variants_from_qur_df(original_query: str, qur_df: Optional[pd.DataFrame], max_rewrites: int, jaccard_min: float) -> List[str]:
-    variants = [original_query]
-    if qur_df is None or qur_df.empty:
-        return variants
-
-    df = qur_df
-    if "strict_key" not in df.columns and "original_query" in df.columns:
-        df = df.copy()
-        df["strict_key"] = df["original_query"].apply(strict_clean)
-
-    q_key = strict_clean(original_query)
-    matches = df[df["strict_key"] == q_key] if "strict_key" in df.columns else pd.DataFrame()
-
-    if matches.empty or "rewritten_query" not in matches.columns:
-        return variants
-
-    rewrites: List[str] = []
-    for r in matches["rewritten_query"].tolist():
-        r = str(r).strip()
-        if len(r) < 6:
-            continue
-        if jaccard_overlap(original_query, r) < float(jaccard_min):
-            continue
-        rewrites.append(r)
-
-    variants.extend(rewrites[: int(max_rewrites)])
+    # dedupe while preserving order
     return list(dict.fromkeys(variants))
 
 
@@ -390,18 +385,21 @@ def s7_rank_controls(
     bm25_control_ids: List[str],
     dense_adapter: ClauseDenseControlAdapter,
     reranker,
-    id_to_text_map: Dict[str, str],
+    reranker_text_by_control: Dict[str, str],
     candidate_set_size: int,
     rrf_k: int,
     rewrite_weight: float,
     rerank_alpha: float,
     rerank_apply_min_margin_ratio: float,
 ) -> Tuple[List[str], Dict[str, Any]]:
+    """
+    Returns:
+      ranked_control_ids, meta
+    """
     weights = [1.0] + [float(rewrite_weight)] * (len(variants) - 1)
-
     rrf_scores: Dict[str, float] = defaultdict(float)
-    best_text_cache: Dict[str, str] = {}
 
+    # 1) Weighted RRF fusion of BM25 + Dense (both at control granularity)
     for q, w in zip(variants, weights):
         # BM25 (control-level)
         q_toks = tokenize(normalize_text(q))
@@ -409,10 +407,8 @@ def s7_rank_controls(
         for rank, i in enumerate(idxs, 1):
             cid = normalize_control_id(bm25_control_ids[int(i)]).upper()
             rrf_scores[cid] += float(w) * (1.0 / (float(rrf_k) + float(rank)))
-            if cid not in best_text_cache:
-                best_text_cache[cid] = id_to_text_map.get(cid, "")
 
-        # Dense (control-level via adapter)
+        # Dense (control-level via clause adapter)
         hits = dense_adapter.search(q, top_k=int(candidate_set_size))
         for rank, (raw_cid, _) in enumerate(hits, 1):
             cid = normalize_control_id(str(raw_cid)).upper()
@@ -423,11 +419,11 @@ def s7_rank_controls(
     if not cids:
         return [], {"note": "no_candidates", "rerank_applied": False, "num_variants": len(variants)}
 
-    # Reranker pairs using fallback control text
+    # 2) Rerank (safe blend + no-harm gate)
     pairs: List[List[str]] = []
     valid_cids: List[str] = []
     for cid in cids:
-        txt = best_text_cache.get(cid) or id_to_text_map.get(cid, "")
+        txt = reranker_text_by_control.get(cid, "")
         if txt:
             pairs.append([original_query, txt])
             valid_cids.append(cid)
@@ -442,6 +438,7 @@ def s7_rank_controls(
     base_n = normalize_scores_minmax(base)
     pred_n = normalize_scores_minmax(np.array(pred, dtype=np.float32))
 
+    # alpha = weight on base (RRF); (1-alpha) on reranker
     ra = float(rerank_alpha)
     final_scores = ra * base_n + (1.0 - ra) * pred_n
     order = np.argsort(-final_scores)
@@ -457,14 +454,40 @@ def s7_rank_controls(
     base_top1 = base_ranked[0] if base_ranked else ""
     rerank_top1 = reranked[0] if reranked else ""
 
+    # No-harm gate: if reranker changes top1 but with weak margin, keep base ordering.
     rerank_applied = True
     final_ranked = reranked
     if (rerank_top1 != base_top1) and (rerank_margin_ratio < float(rerank_apply_min_margin_ratio)):
         rerank_applied = False
         final_ranked = base_ranked
 
+    # Debug: capture fused vs rerank vs final details for the top candidates (no effect on ranking)
+    debug_top: List[Dict[str, Any]] = []
+    try:
+        base_rank_map = {c: i + 1 for i, c in enumerate(base_ranked)}
+        rerank_rank_map = {c: i + 1 for i, c in enumerate(reranked)}
+        final_rank_map = {c: i + 1 for i, c in enumerate(final_ranked)}
+        lim = int(min(20, len(valid_cids)))
+        for i in range(lim):
+            cid = valid_cids[i]
+            debug_top.append(
+                {
+                    "control_id": cid,
+                    "rrf_score": float(rrf_scores.get(cid, 0.0)),
+                    "base_rank": int(base_rank_map.get(cid, 0)),
+                    "rerank_rank": int(rerank_rank_map.get(cid, 0)),
+                    "final_rank": int(final_rank_map.get(cid, 0)),
+                    "base_score_norm": float(base_n[i]) if i < len(base_n) else None,
+                    "rerank_score_raw": float(pred[i]) if i < len(pred) else None,
+                    "rerank_score_norm": float(pred_n[i]) if i < len(pred_n) else None,
+                    "final_score": float(final_scores[i]) if i < len(final_scores) else None,
+                }
+            )
+    except Exception:
+        debug_top = []
     meta = {
         "num_variants": len(variants),
+        "top_candidates": debug_top,
         "rerank_applied": rerank_applied,
         "rerank_alpha": float(rerank_alpha),
         "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
@@ -477,117 +500,162 @@ def s7_rank_controls(
 
 
 # ==========================================================
-# 7) Config + retriever (pipeline-compatible)
+# 7) Config + retriever (pipeline-facing)
 # ==========================================================
-@dataclass
-class S7Config:
+@dataclass(frozen=True)
+class RetrievalConfig:
+    # CCS filtering
     keep_kinds: Tuple[str, ...] = ("smt", "gdn")
 
+    # BM25 params
     bm25_k1: float = 1.5
     bm25_b: float = 0.75
 
+    # Dense / rerank models
     dense_model_id: str = "intfloat/e5-small-v2"
     reranker_model_id: str = "BAAI/bge-reranker-base"
 
+    # Ranking params
     candidate_set_size: int = 50
     rrf_k: int = 60
 
+    # Rewrite params
     max_rewrites: int = 3
     rewrite_weight: float = 0.25
     rewrite_jaccard_min: float = 0.15
 
+    # Safe rerank blending + no-harm gate
     rerank_alpha: float = 0.65
     rerank_apply_min_margin_ratio: float = 0.15
 
-
-RetrievalConfig = S7Config
+    # Evidence selection
+    clauses_per_control: int = 3
+    kind_priority: Tuple[str, ...] = ("smt", "gdn")  # fill missing evidence in this order
 
 
 class ComplianceGPTRetriever:
     """
     Pipeline-facing retriever.
 
-    - __init__(catalog_path=..., config=RetrievalConfig())
-    - retrieve(query, top_k=..., rewrites=rewrites) -> list[doc_dict]
-    - ids: clause ids (for pipeline CCS sanity check)
+    Canonical API (use these names everywhere):
+      - __init__(ccs_path=..., config=RetrievalConfig())
+      - retrieve(query, top_k=..., rewrites=...) -> list[doc_dict]
+      - ids: clause ids (for pipeline CCS sanity checks)
     """
-    def __init__(self, *, catalog_path: str, config: RetrievalConfig = RetrievalConfig(), qur_df: Optional[pd.DataFrame] = None, **kwargs):
-        self.config = config
-        self.qur_df = qur_df
 
-        # Load CCS clause records
-        self.records = load_clause_records_jsonl(catalog_path, keep_kinds=config.keep_kinds)
+    def __init__(self, *, ccs_path: str, config: RetrievalConfig = RetrievalConfig(), **kwargs):
+        self.config = config
+
+        # 1) Load CCS (clause-level)
+        self.records = load_clause_records_jsonl(ccs_path, keep_kinds=config.keep_kinds)
         self.record_by_id = {r["id"]: r for r in self.records}
 
-        # Clause ids for CCS sanity check
+        # clause ids for CCS sanity check
         self.ids = [r["id"] for r in self.records]
 
-        # Control->clauses map (fallback selection)
+        # 2) Build control→clauses maps (for evidence selection fallback)
         self.control_to_clause_ids: Dict[str, List[str]] = defaultdict(list)
+        self.control_to_clause_ids_by_kind: Dict[str, Dict[str, List[str]]] = defaultdict(lambda: defaultdict(list))
         for r in self.records:
             ctl = normalize_control_id(r.get("control_id", "")).upper()
-            if ctl:
-                self.control_to_clause_ids[ctl].append(r["id"])
+            if not ctl:
+                continue
+            self.control_to_clause_ids[ctl].append(r["id"])
+            self.control_to_clause_ids_by_kind[ctl][str(r.get("kind", "other")).lower()].append(r["id"])
 
-        # Build BM25 on control-level aggregated docs
+        # 3) BM25 on control-level aggregated docs
         ctl_docs = build_control_docs_from_clauses(self.records)
         self.bm25, self.bm25_control_ids = build_bm25(ctl_docs, k1=config.bm25_k1, b=config.bm25_b)
 
-        # Dense clause index + adapter
-        self.dense_adapter, self.clause_id_to_text, self.clause_to_control = build_dense_retriever(self.records, dense_model_id=config.dense_model_id)
+        # 4) Dense clause index + control adapter
+        self.dense_adapter, self.clause_id_to_packed_text, self.clause_to_control, self.dense_index = build_dense_retriever(
+            self.records, dense_model_id=config.dense_model_id
+        )
 
-        # Reranker
+        # 5) Reranker
         self.reranker = build_reranker(config.reranker_model_id)
 
-        # Fallback control text for reranker
-        self.id_to_text_map = build_control_fallback_text_map(self.records)
+        # 6) Control fallback text for reranker inputs
+        self.reranker_text_by_control = build_control_fallback_text_map(self.records)
 
-    def set_qur_df(self, qur_df: pd.DataFrame) -> None:
-        self.qur_df = qur_df
-
-    def _pick_clause_for_controls(self, query: str, controls: List[str]) -> Dict[str, str]:
+    def _select_clauses_for_controls(self, query: str, controls: List[str]) -> Dict[str, List[str]]:
         """
-        Pick one representative clause id per control, using dense clause hits for the query.
+        Select up to `clauses_per_control` clause ids per control.
+
+        Strategy:
+          1) Take top dense clause hits for the query; bucket by control; keep best scores.
+          2) For each control, if we still need more evidence, fill from kind_priority
+             (statement first, then guidance, etc.)
         """
         controls_set = set(controls)
-        best: Dict[str, Tuple[str, float]] = {}
+        per_ctl: Dict[str, List[Tuple[str, float]]] = defaultdict(list)
 
-        clause_hits = self.dense_adapter.idx.search(query, top_k=self.config.candidate_set_size * 10)
+        # Dense clause hits
+        clause_hits = self.dense_index.search(query, top_k=max(100, self.config.candidate_set_size * 20))
         for clause_id, score in clause_hits:
             ctl = normalize_control_id(self.clause_to_control.get(clause_id, "")).upper()
-            if ctl in controls_set:
-                prev = best.get(ctl)
-                if prev is None or float(score) > prev[1]:
-                    best[ctl] = (clause_id, float(score))
+            if ctl not in controls_set:
+                continue
+            per_ctl[ctl].append((clause_id, float(score)))
 
-        out: Dict[str, str] = {}
+        # Keep best unique clause ids per control (by score)
+        selected: Dict[str, List[str]] = {}
         for ctl in controls:
-            if ctl in best:
-                out[ctl] = best[ctl][0]
+            hits = per_ctl.get(ctl, [])
+            if hits:
+                hits_sorted = sorted(hits, key=lambda x: x[1], reverse=True)
+                seen = set()
+                best_ids: List[str] = []
+                for cid, _ in hits_sorted:
+                    if cid in seen:
+                        continue
+                    best_ids.append(cid)
+                    seen.add(cid)
+                    if len(best_ids) >= int(self.config.clauses_per_control):
+                        break
+                selected[ctl] = best_ids
             else:
-                cands = self.control_to_clause_ids.get(ctl, [])
-                if cands:
-                    out[ctl] = cands[0]
-        return out
+                selected[ctl] = []
 
-    def retrieve(self, query: str, top_k: int = 10, rewrites=None, **kwargs) -> List[Dict[str, Any]]:
+            # Fill remaining from kind_priority
+            need = int(self.config.clauses_per_control) - len(selected[ctl])
+            if need > 0:
+                for kind in self.config.kind_priority:
+                    kind_ids = self.control_to_clause_ids_by_kind.get(ctl, {}).get(kind, [])
+                    for cid in kind_ids:
+                        if cid not in selected[ctl]:
+                            selected[ctl].append(cid)
+                            need -= 1
+                            if need <= 0:
+                                break
+                    if need <= 0:
+                        break
+
+            # If still short, fill from any clauses for the control
+            need = int(self.config.clauses_per_control) - len(selected[ctl])
+            if need > 0:
+                for cid in self.control_to_clause_ids.get(ctl, []):
+                    if cid not in selected[ctl]:
+                        selected[ctl].append(cid)
+                        need -= 1
+                        if need <= 0:
+                            break
+
+        return selected
+
+    def retrieve(self, query: str, top_k: int = 10, rewrites: Any = None, **kwargs) -> List[Dict[str, Any]]:
         """
-        Returns clause-level doc dicts for pipeline:
+        Returns clause-level doc dicts:
           {id, control_id, kind, title, text}
-        Accepts `rewrites=` (pipeline passes this).
-        """
-        # Variants
-        rewrite_list = _coerce_rewrite_list(rewrites)
-        if rewrite_list:
-            variants = _variants_from_pipeline_rewrites(
-                query, rewrite_list, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
-            )
-        else:
-            variants = _variants_from_qur_df(
-                query, self.qur_df, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
-            )
 
-        # Rank controls
+        - `top_k` is the number of top *controls* to return evidence for.
+        - total returned docs ~= top_k * clauses_per_control (minus missing).
+        """
+        rewrite_list = _coerce_rewrite_list(rewrites)
+        variants = build_query_variants(
+            query, rewrite_list, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
+        )
+
         ranked_controls, _meta = s7_rank_controls(
             original_query=query,
             variants=variants,
@@ -595,7 +663,72 @@ class ComplianceGPTRetriever:
             bm25_control_ids=self.bm25_control_ids,
             dense_adapter=self.dense_adapter,
             reranker=self.reranker,
-            id_to_text_map=self.id_to_text_map,
+            reranker_text_by_control=self.reranker_text_by_control,
+            candidate_set_size=self.config.candidate_set_size,
+            rrf_k=self.config.rrf_k,
+            rewrite_weight=self.config.rewrite_weight,
+            rerank_alpha=self.config.rerank_alpha,
+            rerank_apply_min_margin_ratio=self.config.rerank_apply_min_margin_ratio,
+        )
+
+
+        # Expose last retrieval diagnostics for pipeline-level debugging (no effect on ranking)
+        try:
+            self.last_meta = dict(_meta or {})
+            self.last_ranked_controls = list(ranked_controls or [])
+            self.last_variants = list(variants or [])
+        except Exception:
+            self.last_meta = {}
+            self.last_ranked_controls = []
+            self.last_variants = list(variants or [])
+
+        controls = [normalize_control_id(c).upper() for c in ranked_controls][: int(top_k)]
+        if not controls:
+            return []
+
+        ctl_to_clause_ids = self._select_clauses_for_controls(query, controls)
+
+        docs: List[Dict[str, Any]] = []
+        for ctl in controls:
+            for clause_id in ctl_to_clause_ids.get(ctl, []):
+                rec = self.record_by_id.get(clause_id)
+                if not rec:
+                    continue
+                docs.append(
+                    {
+                        "id": rec["id"],
+                        "control_id": normalize_control_id(rec.get("control_id", "")),
+                        "kind": rec.get("kind", "other"),
+                        "title": rec.get("title", ""),
+                        "text": rec.get("text", ""),
+                    }
+                )
+
+        return docs
+
+    def retrieve_debug(self, query: str, top_k: int = 10, rewrites: Any = None, **kwargs) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """
+        Debug-friendly retrieval.
+
+        Returns:
+          (docs, meta)
+
+        - docs: same as `retrieve()`
+        - meta: includes ranking diagnostics (control ranking + rerank gate info) and how clauses were selected.
+        """
+        rewrite_list = _coerce_rewrite_list(rewrites)
+        variants = build_query_variants(
+            query, rewrite_list, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
+        )
+
+        ranked_controls, meta = s7_rank_controls(
+            original_query=query,
+            variants=variants,
+            bm25_retriever=self.bm25,
+            bm25_control_ids=self.bm25_control_ids,
+            dense_adapter=self.dense_adapter,
+            reranker=self.reranker,
+            reranker_text_by_control=self.reranker_text_by_control,
             candidate_set_size=self.config.candidate_set_size,
             rrf_k=self.config.rrf_k,
             rewrite_weight=self.config.rewrite_weight,
@@ -605,25 +738,36 @@ class ComplianceGPTRetriever:
 
         controls = [normalize_control_id(c).upper() for c in ranked_controls][: int(top_k)]
         if not controls:
-            return []
+            meta = dict(meta or {})
+            meta.update({"variants": variants, "ranked_controls": ranked_controls, "selected_controls": []})
+            return [], meta
 
-        # Convert to clause docs
-        ctl_to_clause = self._pick_clause_for_controls(query, controls)
+        ctl_to_clause_ids = self._select_clauses_for_controls(query, controls)
+
         docs: List[Dict[str, Any]] = []
         for ctl in controls:
-            clause_id = ctl_to_clause.get(ctl)
-            if not clause_id:
-                continue
-            rec = self.record_by_id.get(clause_id)
-            if not rec:
-                continue
-            docs.append(
-                {
-                    "id": rec["id"],
-                    "control_id": normalize_control_id(rec.get("control_id", "")),
-                    "kind": rec.get("kind", "other"),
-                    "title": rec.get("title", ""),
-                    "text": rec.get("text", ""),
-                }
-            )
-        return docs
+            for clause_id in ctl_to_clause_ids.get(ctl, []):
+                rec = self.record_by_id.get(clause_id)
+                if not rec:
+                    continue
+                docs.append(
+                    {
+                        "id": rec["id"],
+                        "control_id": normalize_control_id(rec.get("control_id", "")),
+                        "kind": rec.get("kind", "other"),
+                        "title": rec.get("title", ""),
+                        "text": rec.get("text", ""),
+                    }
+                )
+
+        meta = dict(meta or {})
+        meta.update(
+            {
+                "variants": variants,
+                "ranked_controls": ranked_controls,
+                "selected_controls": controls,
+                "selected_clause_ids_by_control": {k: list(v) for k, v in (ctl_to_clause_ids or {}).items()},
+                "n_docs": len(docs),
+            }
+        )
+        return docs, meta

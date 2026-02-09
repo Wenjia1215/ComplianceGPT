@@ -1,6 +1,6 @@
 # Error Bank (MisRank !=1) — Build Specification & Rationale (Updated)
 
-> **Status:** current CSV = `error_bank_v1.csv` 
+> **Status:** current CSV = `error_bank_v1_new.csv` 
 
 ## How to build
 
@@ -33,8 +33,8 @@ This set enables:
 ## Current Dataset Snapshot (updated)
 
 ```
-- rows: 39
-- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 18, 'Semantic Gap': 3}
+- rows: 37
+- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 17, 'Semantic Gap': 2}
 ```
 
 ## Column Schema (current)

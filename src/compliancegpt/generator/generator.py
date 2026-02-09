@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
 """
-generator.py — ComplianceGPT Answerer v0 (Defense Grade) — Generator v3.4 (Option A-ready)
+compliancegpt/generator/generator.py — ComplianceGPT Answerer v0 — Generator (evidence selector)
 
-This generator implements the **Selector Contract** (provably extractive mode):
+Design (provably extractive):
+- The LLM performs evidence selection only (returns source_id list).
+- The pipeline fills span_text verbatim from the canonical CCS using source_id.
+- The verifier checks contract consistency and verbatim grounding.
 
-- The LLM selects ONLY evidence IDs (`source_id`).
-- The generator MUST NOT write an answer or copy evidence text.
-- The pipeline deterministically fills verbatim `span_text` from the canonical CCS
-  and constructs final `answer_text`, applies ODP policy, and sets final `status`.
-
-Key contract reference: citation_contract_80053.md
-
-Public API:
+Exports (used by pipeline):
 - ComplianceGenerator
 - load_org_profile
 - normalize_contract
-
-Option A alignment:
-- Generator sets PARAMS_REQUIRED if selected evidence contains ODP placeholders
-  ({{ insert: param, <token> }}). The pipeline may override status after applying
-  resolution_policy (ASK / FILL_FROM_PROFILE / PRESERVE).
+- apply_odp_logic  (compat helper; pipeline is source of truth for ODP policy)
 """
 
 from __future__ import annotations
@@ -33,17 +25,17 @@ import yaml
 from transformers import GenerationConfig
 
 
-# -----------------------------
-# Org profile loader
-# -----------------------------
-def load_org_profile(filepath: str) -> Dict[str, Any]:
-    """
-    Loads org_profile YAML.
+# ==========================================================
+# 0) Paths
+# ==========================================================
+_THIS_DIR = Path(__file__).resolve().parent
+DEFAULT_CONTRACT_PATH = _THIS_DIR / "citation_contract_80053.md"
 
-    Supports either:
-      - flat mapping: { "<odp_id>": "<value>", ... }
-      - nested: { "odp_values": { "<odp_id>": "<value>", ... }, ... }
-    """
+
+# ==========================================================
+# 1) Org profile loader
+# ==========================================================
+def load_org_profile(filepath: str) -> Dict[str, Any]:
     path = Path(filepath)
     if not path.exists():
         return {}
@@ -56,37 +48,30 @@ def load_org_profile(filepath: str) -> Dict[str, Any]:
         return {}
 
 
-# -----------------------------
-# Contract normalization
-# -----------------------------
+# ==========================================================
+# 2) Contract normalization
+# ==========================================================
 ALLOWED_STATUS = {"OK", "NO_EVIDENCE", "PARAMS_REQUIRED", "ERROR"}
 
 
 def normalize_contract(raw: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Ensures the selector contract always has:
-      - answer_text: str (must be "")
-      - evidence_spans: List[{source_id:str, span_text:str}]  (span_text must be "")
-      - status: str in {OK, NO_EVIDENCE, PARAMS_REQUIRED, ERROR}
-      - odp_required_list: List[str]
+    Normalize a raw dict into the expected contract shape.
     """
     contract: Dict[str, Any] = {}
-
     contract["answer_text"] = str(raw.get("answer_text", ""))
 
     spans_in = raw.get("evidence_spans", [])
     spans_out: List[Dict[str, str]] = []
-
     if isinstance(spans_in, list):
         for span in spans_in:
             if isinstance(span, dict):
-                sid = str(span.get("source_id", "")).strip()
-                spans_out.append({"source_id": sid, "span_text": ""})
-            elif isinstance(span, str):
-                sid = span.strip()
-                if sid:
-                    spans_out.append({"source_id": sid, "span_text": ""})
-
+                spans_out.append(
+                    {
+                        "source_id": str(span.get("source_id", "")).strip(),
+                        "span_text": str(span.get("span_text", "")),
+                    }
+                )
     contract["evidence_spans"] = spans_out
 
     status = str(raw.get("status", "OK")).strip().upper()
@@ -97,139 +82,193 @@ def normalize_contract(raw: Dict[str, Any]) -> Dict[str, Any]:
     if isinstance(odp_in, list):
         odp_out = [str(x).strip() for x in odp_in if str(x).strip()]
     elif isinstance(odp_in, str):
-        # allow comma/newline separated
         parts: List[str] = []
-        for line in odp_in.replace("\r\n", "\n").split("\n"):
-            parts.extend([p.strip() for p in line.split(",")])
+        for chunk in odp_in.replace("\r\n", "\n").split("\n"):
+            parts.extend([p.strip() for p in chunk.split(",")])
         odp_out = [p for p in parts if p]
     contract["odp_required_list"] = odp_out
 
     return contract
 
 
-# -----------------------------
-# ODP extraction (curly placeholder IDs only)
-# -----------------------------
-# Canonical placeholder: {{ insert: param, <token> }}
-_ODP_CURLY_RE = re.compile(
-    r"\{\{\s*insert\s*:\s*param\s*,\s*([^\s}]+)\s*\}\}",
+# ==========================================================
+# 3) ODP helpers (compat; pipeline is source of truth)
+# ==========================================================
+_PARAM_CURLY_RE = re.compile(
+    r"\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+",
+    re.IGNORECASE,
+)
+_PARAM_ASSIGNMENT_RE = re.compile(
+    r"\[assignment:\s*([^\]]+?)\s*\]",
     re.IGNORECASE,
 )
 
 
-def _extract_odp_ids(text: str) -> List[str]:
+def _has_value(val: Any) -> bool:
+    if val is None:
+        return False
+    if isinstance(val, bool):
+        return True
+    if isinstance(val, (int, float)):
+        return True
+    return bool(str(val).strip())
+
+
+def _extract_keys(text: str) -> List[str]:
     """
-    Extract unique ODP/PRM tokens from canonical curly placeholders.
-    Returns stable, first-seen order.
+    Extract required parameter IDs from curly {{insert}} placeholders.
+    If assignment placeholders exist but no curly IDs exist, return sentinel "assignment_required".
     """
     if not text:
         return []
+
+    ids: List[str] = []
+    for m in _PARAM_CURLY_RE.finditer(text):
+        raw = (m.group(1) or "").strip()
+        if not raw:
+            continue
+        base = raw.split(",")[-1].strip()
+        token = base.split()[0].strip() if base else ""
+        if not token or token.lower() == "param":
+            continue
+        ids.append(token)
+
+    has_assignment = bool(_PARAM_ASSIGNMENT_RE.search(text))
+
     out: List[str] = []
     seen = set()
-    for m in _ODP_CURLY_RE.finditer(text):
-        tok = (m.group(1) or "").strip()
-        if not tok:
+    for k in ids:
+        lk = k.lower()
+        if lk in seen:
             continue
-        key = tok.lower()
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(tok)
+        seen.add(lk)
+        out.append(k)
+
+    if not out and has_assignment:
+        return ["assignment_required"]
     return out
 
 
-# -----------------------------
-# Prompt template
-# -----------------------------
-def _load_contract_snippet() -> str:
+def _profile_lookup(profile: Dict[str, Any], key: str) -> Any:
+    if not isinstance(profile, dict):
+        return None
+    if key in profile:
+        return profile.get(key)
+    odp_values = profile.get("odp_values")
+    if isinstance(odp_values, dict) and key in odp_values:
+        return odp_values.get(key)
+    return None
+
+
+def apply_odp_logic(contract: Dict[str, Any], org_profile: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Best-effort: embed the project's contract text in the prompt (for alignment).
-    Falls back to a minimal embedded spec if file not found.
+    Compatibility helper (NOT used for final Answerer v0 behavior by default).
+    The pipeline should handle ODP policy and final substitution decisions.
     """
-    here = Path(__file__).resolve().parent
-    candidates = [
-        here / "citation_contract_80053.md",
-        here.parent / "citation_contract_80053.md",
-        Path.cwd() / "citation_contract_80053.md",
-    ]
-    for p in candidates:
-        if p.exists():
+    answer = str(contract.get("answer_text", ""))
+    orig_status = str(contract.get("status", "OK")).strip().upper()
+
+    required_keys = set(_extract_keys(answer))
+    missing: List[str] = []
+
+    for key in sorted(required_keys):
+        val = _profile_lookup(org_profile, key)
+        if _has_value(val):
+            val_str = str(val)
+            rep_braces = r"\{+\s*insert:\s*(?:param,\s*)?" + re.escape(key) + r"\s*\}+"
+            rep_assign = r"\[assignment:\s*" + re.escape(key) + r"\s*\]"
             try:
-                txt = p.read_text(encoding="utf-8")
-                # Keep only the Selector Contract portion to reduce prompt size.
-                m = re.search(r"## 2\.\s*Generator Output.*?(?=## 3\.)", txt, flags=re.DOTALL | re.IGNORECASE)
-                if m:
-                    return m.group(0).strip()
-                return txt.strip()[:4000]
-            except Exception:
-                break
+                answer = re.sub(rep_braces, val_str, answer, flags=re.IGNORECASE)
+                answer = re.sub(rep_assign, val_str, answer, flags=re.IGNORECASE)
+            except re.error:
+                pass
+        else:
+            missing.append(key)
+
+    if orig_status in {"ERROR", "NO_EVIDENCE"}:
+        contract["status"] = orig_status
+        return contract
+
+    if missing:
+        contract["status"] = "PARAMS_REQUIRED"
+        contract["odp_required_list"] = missing
+        contract["answer_text"] = answer
+    else:
+        contract["status"] = "OK"
+        contract["odp_required_list"] = []
+        contract["answer_text"] = answer
+
+    return contract
+
+
+# ==========================================================
+# 4) Prompt builder (loads Selector Contract section)
+# ==========================================================
+def _read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+
+def _extract_selector_contract(md: str) -> str:
+    """
+    Keep the prompt compact but faithful:
+    extract the section between '## 2.' and '## 3.' if present; otherwise return full md.
+    """
+    m = re.search(r"^##\s*2\..*?$([\s\S]*?)^##\s*3\.", md, flags=re.MULTILINE)
+    if m:
+        return m.group(1).strip()
+    return md.strip()
+
+
+def build_system_prompt(contract_path: Optional[str] = None) -> str:
+    p = Path(contract_path) if contract_path else DEFAULT_CONTRACT_PATH
+    try:
+        md = _read_text(p)
+        selector_spec = _extract_selector_contract(md)
+    except Exception as e:
+        selector_spec = f"[WARN] failed to load citation contract: {e}"
 
     return (
-        "Selector Contract (summary):\n"
-        "- Output a single JSON object only.\n"
-        '- answer_text MUST be "".\n'
-        "- evidence_spans is a list of {source_id, span_text:\"\"}.\n"
-        "- status in {OK, NO_EVIDENCE, PARAMS_REQUIRED, ERROR}.\n"
-        "- If selected evidence contains {{ insert: param, <token> }}, set PARAMS_REQUIRED and list tokens.\n"
-        "- If no evidence selected: status=NO_EVIDENCE and evidence_spans=[].\n"
+        "You are ComplianceGPT, a strict compliance evidence selector.\n\n"
+        "You MUST output a single JSON object that follows the Selector Contract.\n"
+        "Do not paraphrase, do not write prose answers, and do not copy evidence text.\n"
+        "Select the minimum set of source_id values that directly answer the query.\n\n"
+        "=== Selector Contract (excerpt) ===\n"
+        f"{selector_spec}\n"
+        "=== End Selector Contract ===\n"
     )
 
 
-SYSTEM_PROMPT_TEMPLATE = r"""
-You are ComplianceGPT, a strict compliance evidence selector.
-
-You will be given a set of CONTEXT items. Each item has:
-- an ID (source_id), and
-- its TEXT.
-
-TASK:
-Select the MINIMUM set of source IDs whose TEXT directly answers the QUERY.
-
-IMPORTANT:
-- Do NOT paraphrase and do NOT write a new answer.
-- Do NOT copy evidence text. span_text MUST be "" for every span.
-- Select ONLY from IDs that appear in CONTEXT.
-
-OUTPUT FORMAT (JSON only):
-{
-  "answer_text": "",
-  "evidence_spans": [{"source_id": "<ID>", "span_text": ""}, ...],
-  "status": "OK" | "NO_EVIDENCE" | "PARAMS_REQUIRED",
-  "odp_required_list": ["<odp_id>", ...]
-}
-
-ODP RULE:
-If any selected TEXT contains placeholders like:
-  {{ insert: param, <odp_id> }}
-then set status="PARAMS_REQUIRED" and include those <odp_id> values in odp_required_list.
-If no such placeholders are present in selected TEXT, set odp_required_list=[].
-If none of the CONTEXT items provide evidence, set status="NO_EVIDENCE" and evidence_spans=[].
-""".strip()
-
-
-# -----------------------------
-# Generator (ID selector)
-# -----------------------------
+# ==========================================================
+# 5) Generator (ID selector)
+# ==========================================================
 class ComplianceGenerator:
-    def __init__(self, model, tokenizer, max_new_tokens: int = 512, max_parse_retries: int = 2):
+    def __init__(
+        self,
+        model,
+        tokenizer,
+        max_new_tokens: int = 512,
+        max_parse_retries: int = 2,
+        contract_path: Optional[str] = None,
+    ):
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens
         self.max_parse_retries = max_parse_retries
+        self.system_prompt = build_system_prompt(contract_path)
 
         pad_id = self.tokenizer.pad_token_id or self.tokenizer.eos_token_id
         self._deterministic_cfg = GenerationConfig(
             do_sample=False,
             num_beams=1,
             repetition_penalty=1.05,
+            max_new_tokens=self.max_new_tokens,
             pad_token_id=pad_id,
             eos_token_id=self.tokenizer.eos_token_id,
-            max_new_tokens=self.max_new_tokens,
         )
 
     def _parse_contract(self, text: str) -> Optional[Dict[str, Any]]:
         """
-        Robust JSON extractor (brace counting with string awareness).
+        Extract the first valid JSON object from model output (robust to fences and chatter).
         """
         cleaned = re.sub(r"```(?:json)?", "", text, flags=re.IGNORECASE).strip()
         cleaned = re.sub(r"```$", "", cleaned).strip()
@@ -264,32 +303,28 @@ class ComplianceGenerator:
 
     def generate(self, query: str, docs: List[Dict[str, Any]], profile: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Returns a Selector Contract dict.
-        The pipeline should call normalize_contract() and then deterministically fill span_text.
+        Return the Selector Contract (IDs only). Pipeline fills span_text + answer_text.
         """
-        # Build context
+        # Build context string
         ctx_parts: List[str] = []
-        allowed_ids: List[str] = []
         for d in docs:
             did = str(d.get("id", "")).strip()
             dtx = str(d.get("text", "")).strip()
             if did:
-                allowed_ids.append(did)
                 ctx_parts.append(f"ID: {did}\nTEXT: {dtx}")
         context_str = "\n\n".join(ctx_parts)
 
-        contract_snippet = _load_contract_snippet()
-
-        prompt = (
-            f"{SYSTEM_PROMPT_TEMPLATE}\n\n"
-            f"---\nPROJECT CONTRACT SNIPPET (for alignment):\n{contract_snippet}\n---\n\n"
-            f"### CONTEXT\n{context_str}\n\n"
-            f"### QUERY\n{query}\n"
+        user_prompt = (
+            "### CONTEXT\n"
+            f"{context_str}\n\n"
+            "### QUERY\n"
+            f"{query}\n\n"
+            "Return ONLY the JSON object.\n"
         )
 
         messages = [
-            {"role": "system", "content": "JSON-only compliance evidence selector. Output ONLY a JSON object."},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": user_prompt},
         ]
 
         raw_text = self._call_model(messages)
@@ -298,84 +333,56 @@ class ComplianceGenerator:
         if not parsed and self.max_parse_retries > 0:
             for _ in range(self.max_parse_retries):
                 messages.append({"role": "assistant", "content": raw_text})
-                messages.append({"role": "user", "content": "Error: invalid JSON. Output ONLY the JSON object."})
+                messages.append({"role": "user", "content": "Invalid JSON. Output ONLY the JSON object (no prose, no markdown)."})
                 raw_text = self._call_model(messages)
                 parsed = self._parse_contract(raw_text)
                 if parsed:
                     break
 
         if not parsed:
-            # Contract-faithful failure: do NOT fabricate citations on parse failure.
+            # IMPORTANT: do not fabricate evidence IDs on parse failure.
+            # Let the pipeline decide any controlled fallback behavior.
             return {
+                "status": "ERROR",
                 "answer_text": "",
                 "evidence_spans": [],
-                "status": "ERROR",
                 "odp_required_list": [],
                 "raw_output": raw_text,
             }
 
         contract = normalize_contract(parsed)
 
-        # Enforce provably-extractive selector mode
-        contract["answer_text"] = ""
+        # Force ID-only: no copied text
         for s in contract.get("evidence_spans", []):
             if isinstance(s, dict):
                 s["span_text"] = ""
 
-        # Filter unknown IDs (must be selected from provided CONTEXT)
-        allowed = set(i.strip() for i in allowed_ids if i.strip())
-        filtered_spans: List[Dict[str, str]] = []
-        for s in contract.get("evidence_spans", []):
-            sid = str(s.get("source_id", "")).strip()
-            if sid and sid in allowed:
-                filtered_spans.append({"source_id": sid, "span_text": ""})
-        contract["evidence_spans"] = filtered_spans
-
-        # If model tried to return ERROR, honor it but keep selector-safe structure
-        status_in = str(contract.get("status", "OK")).strip().upper()
-        if status_in == "ERROR":
-            contract["evidence_spans"] = []
-            contract["odp_required_list"] = []
-            contract["raw_output"] = raw_text
-            return contract
-
-        # Coerce status based on selection + ODPs from selected TEXT
+        # Status coherence with selection + ODP placeholders from the ORIGINAL doc texts
         if not contract.get("evidence_spans"):
             contract["status"] = "NO_EVIDENCE"
             contract["odp_required_list"] = []
         else:
-            text_by_id = {str(d.get("id", "")).strip(): str(d.get("text", "")).strip() for d in docs if str(d.get("id", "")).strip()}
             selected_ids = [str(s.get("source_id", "")).strip() for s in contract.get("evidence_spans", []) if str(s.get("source_id", "")).strip()]
+            text_by_id = {str(d.get("id", "")).strip(): str(d.get("text", "")).strip() for d in docs if str(d.get("id", "")).strip()}
 
             odp_ids: List[str] = []
             for sid in selected_ids:
-                odp_ids.extend(_extract_odp_ids(text_by_id.get(sid, "")))
+                odp_ids.extend(_extract_keys(text_by_id.get(sid, "")))
 
-            # Stable de-dup
-            seen = set()
-            odp_ids_unique: List[str] = []
-            for x in odp_ids:
-                k = x.lower()
-                if k in seen:
-                    continue
-                seen.add(k)
-                odp_ids_unique.append(x)
+            odp_ids = list(dict.fromkeys([x for x in odp_ids if x]))  # stable de-dup
+            contract["odp_required_list"] = odp_ids
+            contract["status"] = "PARAMS_REQUIRED" if odp_ids else "OK"
 
-            if odp_ids_unique:
-                contract["status"] = "PARAMS_REQUIRED"
-                contract["odp_required_list"] = odp_ids_unique
-            else:
-                contract["status"] = "OK"
-                contract["odp_required_list"] = []
-
+        contract["answer_text"] = ""  # pipeline builds this
         contract["raw_output"] = raw_text
         return contract
 
     def _call_model(self, messages: List[Dict[str, str]]) -> str:
-        import torch  # local import (avoid hard dependency for static analysis)
+        import torch  # local import (keeps module import cheap)
 
-        text = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(text, return_tensors="pt", return_attention_mask=True).to(self.model.device)
+        chat = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(chat, return_tensors="pt", return_attention_mask=True).to(self.model.device)
+
         with torch.inference_mode():
             gen = self.model.generate(
                 input_ids=inputs["input_ids"],

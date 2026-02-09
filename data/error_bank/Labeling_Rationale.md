@@ -8,9 +8,8 @@ This document explains *how each query was labeled* into one of three failure ca
 
 ### Current Error Bank Snapshot
 
-- rows: 39 (rev5: 27 / re4: 12)
-- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 18, 'Semantic Gap': 3}
-
+- rows: 37 (rev5: 24 / rev4: 13)
+- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 17, 'Semantic Gap': 2}
 
 ## Decision Procedure (per query)
 
@@ -91,44 +90,12 @@ ac-7_smt.b`
 
 ---
 
-## (Question ID: 9, REV5)
-
-- **Question:** "What type of activity should be included in literacy training to simulate real-world incidents?"
-- **Gold Control ID:** `AT-2(1)`
-- **Gold Clause IDs:** `at-2.1_smt`
-- **BM25 Rank of Gold:** `0`  *(0 = not in top-10)*
-- **Top-1 Retrieved:** `AT-2.1`
-- **Top-5 Retrieved List:** `AT-2.1`, `CA-8.2`, `AT-2`, `IR-9.2`, `AT-2.6`
-
-**Gold Answer (from Gold Set):**
-
-> Provide practical exercises in literacy training that simulate events and incidents. [NIST SP
-> 800-53 Rev.5: AT-2(1)]
-
-### My Reasoning Process
-
-1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
-   - BM25 ranked an **enhancement or variant** (`AT-2.1`) above the **base control** (`AT-2(1)`), which is a classic wording/granularity mismatch.
-   - Evidence in outputs: gold control appears at **rank #0**, while BM25 prefers `AT-2.1` as top-1.
-
-2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
-   - The query includes meaningful domain anchors beyond a bare template, so generic phrasing is not the primary driver.
-
-3. **Step 3: Test for `Semantic Gap`: (FAIL)**
-   - A semantic gap explanation is not necessary once the earlier category accounts for the miss.
-
-#### Final Verdict: `Terminology Mismatch`
-
-**Rationale:** BM25 confuses the base control with an enhancement/variant (granularity mismatch).
-
----
-
 ## (Question ID: 10, REV5)
 
 - **Question:** "What method does AT-3(3) specify for reinforcing objectives in role-based security training?"
-- **Gold Control ID:** `AT-3(3)`
+- **Gold Control ID:** `AT-3.3`
 - **Gold Clause IDs:** `at-3.3_gdn`
-- **BM25 Rank of Gold:** `0`  *(0 = not in top-10)*
+- **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
 - **Top-1 Retrieved:** `AT-3`
 - **Top-5 Retrieved List:** `AT-3`, `AT-3.3`, `AT-4`, `AC-3.7`, `AT-6`
 
@@ -146,7 +113,7 @@ ac-7_smt.b`
 1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
    - BM25 ranked an **enhancement or variant** (`AT-3`) above the **base control** (`AT-3(3)`), which is a classic wording/granularity mismatch.
    - The query uses anchor term(s) **`method`**, but these words do **not** appear in the gold clause text verbatim. BM25 therefore has weaker lexical evidence for the correct clause.
-   - Evidence in outputs: gold control appears at **rank #0**, while BM25 prefers `AT-3` as top-1.
+   - Evidence in outputs: gold control appears at **rank #2**, while BM25 prefers `AT-3` as top-1.
 
 2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
    - The query includes meaningful domain anchors beyond a bare template, so generic phrasing is not the primary driver.
@@ -320,49 +287,6 @@ ca-2_smt.f`
 #### Final Verdict: `Terminology Mismatch`
 
 **Rationale:** The query uses anchor words that do not appear verbatim in the gold clause, weakening lexical match.
-
----
-
-## (Question ID: 19, REV5)
-
-- **Question:** "What are the primary responsibilities of an authorizing official regarding system authorization and risk determination?"
-- **Gold Control ID:** `CA-6`
-- **Gold Clause IDs:** `ca-6_smt.a
-ca-6_smt.b
-ca-6_smt.c
-ca-6_smt.c.1
-ca-6_smt.c.2
-ca-6_smt.d
-ca-6_smt.e`
-- **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
-- **Top-1 Retrieved:** `CA-6.2`
-- **Top-5 Retrieved List:** `CA-6.2`, `CA-6`, `PM-10`, `CA-6.1`, `CA-2.1`
-
-**Gold Answer (from Gold Set):**
-
-> Assign a senior official as the authorizing official for the system;
-> Ensure that the authorizing official for common controls authorizes the use of those controls
-> for inheritance by organizational systems;
-> Authorizes the system to operate;
-> Accepts the use of common controls inherited by the system; and
-> Update the authorizations {{ insert: param, ca-06_odp }}. [NIST SP 800-53 Rev.5: CA-6]
-
-### My Reasoning Process
-
-1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
-   - BM25 ranked an **enhancement or variant** (`CA-6.2`) above the **base control** (`CA-6`), which is a classic wording/granularity mismatch.
-   - The query uses anchor term(s) **`responsibilities`, `primary responsibilities`, `risk determination`**, but these words do **not** appear in the gold clause text verbatim. BM25 therefore has weaker lexical evidence for the correct clause.
-   - Evidence in outputs: gold control appears at **rank #2**, while BM25 prefers `CA-6.2` as top-1.
-
-2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
-   - The query includes meaningful domain anchors beyond a bare template, so generic phrasing is not the primary driver.
-
-3. **Step 3: Test for `Semantic Gap`: (FAIL)**
-   - A semantic gap explanation is not necessary once the earlier category accounts for the miss.
-
-#### Final Verdict: `Terminology Mismatch`
-
-**Rationale:** BM25 confuses the base control with an enhancement/variant (granularity mismatch).
 
 ---
 
@@ -729,43 +653,6 @@ pl-8_smt.c`
 #### Final Verdict: `Generic Phrasing`
 
 **Rationale:** The query is template-heavy/underspecified, so BM25 cannot separate the correct clause from many similar ones.
-
----
-
-## (Question ID: 60, REV5)
-
-- **Question:** "How does the concept of tailoring allow organizations to customize control baselines to their mission, environment, and risk profile?"
-- **Gold Control ID:** `PL-10`
-- **Gold Clause IDs:** `pl-11_gdn`
-- **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
-- **Top-1 Retrieved:** `PL-11`
-- **Top-5 Retrieved List:** `PL-11`, `PL-10`, `RA-2.1`, `SC-44`, `PL-2`
-
-**Gold Answer (from Gold Set):**
-
-> The concept of tailoring allows organizations to specialize or customize a set of baseline
-> controls by applying a defined set of tailoring actions. Tailoring actions facilitate such
-> specialization and customization by allowing organizations to develop security and privacy
-> plans that reflect their specific mission and business functions, the environments where their
-> systems operate, the threats and vulnerabilities that can affect their systems, and any other
-> conditions or situations that can impact their mission or business success.  [NIST SP 800-53
-> Rev.5: PL-10]
-
-### My Reasoning Process
-
-1. **Step 1: Test for `Terminology Mismatch`: (FAIL)**
-   - The query and gold clause share visible keywords, and there is no single “missing synonym” that fully explains the miss as a pure terminology mismatch.
-
-2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
-   - The query includes meaningful domain anchors beyond a bare template, so generic phrasing is not the primary driver.
-
-3. **Step 3: Test for `Semantic Gap`: (PASS)**
-   - The query intent aligns with the gold control, but the mapping relies on **conceptual interpretation** rather than shared keywords alone.
-   - Evidence in outputs: BM25 prefers a semantically-adjacent control (`PL-11`) even though the gold control is present at rank `2`.
-
-#### Final Verdict: `Semantic Gap`
-
-**Rationale:** The query requires conceptual interpretation beyond simple keyword overlap, so BM25 drifts to a semantically-adjacent control.
 
 ---
 
@@ -1405,6 +1292,39 @@ si-7_smt.b`
 **Rationale:** The query is template-heavy/underspecified, so BM25 cannot separate the correct clause from many similar ones.
 
 ---
+
+
+## (Question ID: 26, REV4)
+
+- **Question:** "What specific documentation artifacts must the organization employ to record information security resource requirements during capital planning, and how must exceptions to resource inclusion be handled?"
+- **Gold Control ID:** `PM-3`
+- **Gold Clause IDs:** `pm-3_smt.a
+pm-3_smt.b
+pm-3_smt.c`
+- **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
+- **Top-1 Retrieved:** `SA-2`
+- **Top-5 Retrieved List:** `SA-2`, `PM-3`, `CM-3.2`, `SC-20`, `SA-11`
+
+**Gold Answer (from Gold Set):**
+
+> Ensures that all capital planning and investment requests include the resources needed to implement the information security program and documents all exceptions to this requirement; Employs a business case/Exhibit 300/Exhibit 53 to record the resources required; Ensures that information security resources are available for expenditure as planned.  [NIST SP 800-53 Rev.4: PM-3]
+
+### My Reasoning Process
+
+1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
+   - The query asks for a general category ("documentation artifacts"), but the gold control answers using specific document names (e.g., "business case/Exhibit 300/Exhibit 53").
+   - BM25 therefore latches onto semantically-adjacent controls with more obvious shared terms and ranks the gold control at **#2** instead of **#1**.
+
+2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
+   - The query includes multiple discriminative anchors (capital planning, resource requirements, exceptions), so the miss is not primarily due to being template-like or underspecified.
+
+3. **Step 3: Test for `Semantic Gap`: (FAIL)**
+   - The miss is explained by lexical anchoring (generic category vs specific examples) without requiring deeper conceptual inference.
+
+#### Final Verdict: `Terminology Mismatch`
+
+**Rationale:** The gold control (PM-3) answers the question using specific artifact names ("business case/Exhibit 300/Exhibit 53") and requires documenting exceptions; the query uses the generic phrase "documentation artifacts," which weakens lexical match and causes BM25 to rank SA-2 above PM-3.
+
 
 ## (Question ID: 29, REV4)
 
