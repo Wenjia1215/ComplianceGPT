@@ -79,8 +79,6 @@ def _system_prompt(self) -> str:
 
 This prompt is combined with an aggressive "paranoid" cleanup function in the `generate` method to create a two-stage system that guarantees clean, well-formatted output.
 
-**(UPDATED SECTION)**
-
 ## 6. Unit Testing & Integrity
 A "zero-trust" system prompt and a "paranoid" cleanup function are our primary lines of defense. The final piece is a **Regression Test Suite** to ensure the component's integrity over time.
 
@@ -105,3 +103,23 @@ This test suite is implemented in the final cell of the `QUR_Generator.ipynb` no
 **4) `test_04_placeholder_preservation`**  
 - **Promise:** The generator will preserve any `{{ ... }}` placeholders.  
 - **Test:** We pass a query containing a literal placeholder (e.g., `What about {{ insert: param }}`) and assert that all 3 rewrites *also* contain the exact string `{{ insert: param }}`.
+
+---
+
+## 7. Usage & Artifacts
+
+### Modes of Operation
+The `qur_generator_ut.py` script supports three execution modes, controlled by the `QUR_RUN_MODE` variable:
+
+1.  **`batch` (Default)**: Generates query rewrites for all configured datasets (Rev4, Rev5, Error Bank) and saves them as CSVs.
+2.  **`single`**: Generates rewrites for a single query passed via `QUR_PASSED_QUERY`. No files are saved.
+3.  **`lib`**: Loads the `QURComponent` class without executing any generation. Used when importing this script into other pipelines.
+
+### Output Artifacts
+When running in **`batch`** mode, the component produces the following CSVs in `data/qur_outputs/`:
+
+| Dataset | Output Filename | Source Gold Set |
+| :--- | :--- | :--- |
+| **NIST Rev 5** | `qur_rewrites_rev5.csv` | `nist_sp800-53_rev5_gold-set_100q.csv` |
+| **NIST Rev 4** | `qur_rewrites_rev4.csv` | `nist_sp800-53_rev4_gold-set_36q.csv` |
+| **Error Bank** | `qur_rewrites_error_bank.csv` | `error_bank_v1.csv` |

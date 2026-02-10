@@ -14,6 +14,7 @@ pe-3_prm_7
 pe-3_prm_8
 pe-3_prm_9",2,False,True,True,PE-16,"[""PE-16"", ""PE-3"", ""PE-3.1"", ""PE-2"", ""PE-18"", ""SC-7.14"", ""PS-4"", ""SI-8"", ""MA-5"", ""MA-5.1""]","{""sys"": ""S5""}"
 22,What does PE-6 require regarding monitoring physical access to the facility?,PE-6,N/A,2,False,True,True,PE-6.4,"[""PE-6.4"", ""PE-6"", ""PE-3"", ""PE-3.6"", ""PE-3.3"", ""PE-3.1"", ""PE-2"", ""PE-6.1"", ""PE-4"", ""PE-2.1""]","{""sys"": ""S5""}"
+26,"What specific documentation artifacts must the organization employ to record information security resource requirements during capital planning, and how must exceptions to resource inclusion be handled?",PM-3,N/A,2,False,True,True,SA-2,"[""SA-2"", ""PM-3"", ""SA-5"", ""SA-4"", ""AU-3"", ""SA-15.11"", ""AU-2"", ""PL-1"", ""CP-1"", ""MP-5""]","{""sys"": ""S5""}"
 29,What does RA-2 require regarding categorizing the information system and its resident information?,RA-2,N/A,5,False,True,True,RA-5.4,"[""RA-5.4"", ""RA-1"", ""RA-3"", ""RA-5.2"", ""RA-2"", ""AC-3.2"", ""SA-2"", ""IA-9.2"", ""AC-24.2"", ""SA-5""]","{""sys"": ""S5""}"
 31,What does SA-3 require about managing the system?,SA-3,sa-3_prm_1,6,False,False,True,SA-9,"[""SA-9"", ""SA-4.3"", ""SA-4.2"", ""SA-1"", ""SA-11.4"", ""SA-3"", ""SA-16"", ""SA-15.3"", ""SA-10"", ""SA-19.3""]","{""sys"": ""S5""}"
 32,What does SA-4 require including in acquisition contracts for information systems?,SA-4,N/A,4,False,True,True,SA-1,"[""SA-1"", ""SA-12"", ""SA-4.2"", ""SA-4"", ""SA-12.1"", ""SA-11.4"", ""SA-9.1"", ""SA-16"", ""SA-9"", ""SA-4.3""]","{""sys"": ""S5""}"

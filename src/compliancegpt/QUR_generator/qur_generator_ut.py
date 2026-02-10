@@ -58,7 +58,7 @@ def _ensure_environment_when_main():
         except Exception as e:
             print("[colab] Drive mount skipped/failed:", e)
 
-    # Use Eastern Time in this runtime (best-effort)
+    # Use Eastern Time in this runtime
     import os, time
     os.environ["TZ"] = "America/New_York"
     try:
@@ -93,15 +93,23 @@ if __name__ == "__main__":
 
 from dataclasses import dataclass
 from pathlib import Path
+import os
 
 @dataclass
 class Config:
-    drive_base: Path = Path('/content/drive/MyDrive/compliance_data')
-    local_base: Path = Path('/mnt/data')
-    output_dir: Path = Path('/content/output_qur')
+    # 1. Base Paths
+    drive_base: Path = Path('/content/drive/MyDrive/ComplianceGPT_v2')
+    local_base: Path = Path('/mnt/data')  # Fallback
+
+    # 2. Output Directory
+    output_dir: Path = Path('/content/drive/MyDrive/ComplianceGPT_v2/data/qur_outputs')
+
+    # 3. File Paths (Initialized as None, set in __post_init__)
     rev5_gold: Path = None
     rev4_gold: Path = None
     error_bank: Path = None
+
+    # 4. Model & Generation Params
     model_id: str = "Qwen/Qwen2.5-7B-Instruct"
     n_rewrites: int = 3
     include_original_in_csv: bool = False
@@ -109,12 +117,18 @@ class Config:
     top_p: float = 0.9
     max_new_tokens: int = 80
     random_seed: int = 42
+
     def __post_init__(self):
+        # Determine the root base path
         base = self.drive_base if (IN_COLAB and self.drive_base.exists()) else self.local_base
-        self.rev5_gold = base / 'gold_standard_datasets/nist800_53/nist_sp800-53_rev5_gold-set_100q.csv'
-        self.rev4_gold = base / 'gold_standard_datasets/nist800_53/nist_sp800-53_rev4_gold-set_36q.csv'
-        self.error_bank = base / 'error_bank/error_bank_v1.csv'
-        # NOTE: do not create output directories at import time; batch mode will create them.
+
+        self.rev5_gold = base / 'data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv'
+        self.rev4_gold = base / 'data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv'
+        self.error_bank = base / 'data/error_bank/error_bank_v1.csv'
+
+        # Update output_dir to use the dynamic base if needed
+        if IN_COLAB and self.drive_base.exists():
+             self.output_dir = base / 'data/qur_outputs'
 
 CFG = Config()
 
@@ -365,35 +379,6 @@ def batch_generate_and_save(include_original=False):
     if not dfe.empty: dfe.to_csv(out_dir / "qur_rewrites_error_bank.csv", index=False)
     return {"rev5": df5, "rev4": df4, "error_bank": dfe}
 
-def copy_qur_outputs_to_drive():
-    """Copy /content/output_qur -> /content/drive/... (Colab only)."""
-    try:
-        import shutil, os
-        from datetime import datetime
-        try:
-            from zoneinfo import ZoneInfo
-            tz = ZoneInfo("America/New_York")
-        except Exception:
-            tz = None
-
-        now = datetime.now(tz) if tz else datetime.now()
-        OUT_DIR = str(CFG.output_dir)  # e.g., /content/output_qur
-        DRIVE_DST = f"/content/drive/MyDrive/compliance_outputs/outputs_qur"
-        os.makedirs(os.path.dirname(DRIVE_DST), exist_ok=True)
-
-        if os.path.exists(OUT_DIR):
-            if os.path.exists(DRIVE_DST):
-                print(f"Destination exists. Removing old folder: {DRIVE_DST}")
-                shutil.rmtree(DRIVE_DST)
-            shutil.copytree(OUT_DIR, DRIVE_DST)
-            with open(f"{DRIVE_DST}/TIMESTAMP_Eastern.txt", "w", encoding="utf-8") as f:
-                f.write(f"Copied at (America/New_York): {now.isoformat()}\n")
-            print("Copied to Drive ->", DRIVE_DST)
-        else:
-            print("Nothing to copy; OUT_DIR not found:", OUT_DIR)
-    except Exception as e:
-        print("Drive copy skipped or failed:", e)
-
 def sanity_report(dfs: Dict[str, pd.DataFrame]) -> pd.DataFrame:
     rows = []
     for name, df in dfs.items():
@@ -435,9 +420,6 @@ if __name__ == "__main__":
             display(sanity_df.head())
         except NameError:
             print(sanity_df.head())
-
-        # 3. Copy to Drive
-        copy_qur_outputs_to_drive()
 
     elif QUR_RUN_MODE == "single":
         qur = make_qur()
