@@ -1,0 +1,31 @@
+{
+  "timestamp_iso": "2026-02-11T03:28:00.718126Z",
+  "dataset": "rev5",
+  "num_queries": 20,
+  "repeats_per_query": 5,
+  "top_k": 10,
+  "candidate_set_size": 50,
+  "rrf_k_default": 60,
+  "dense_model_id": "intfloat/e5-small-v2",
+  "reranker_model_id": "BAAI/bge-reranker-base",
+  "s7_max_rewrites": 3,
+  "s7_rewrite_weight": 0.25,
+  "s7_rewrite_jaccard_min": 0.15,
+  "s7_rerank_alpha": 0.65,
+  "s7_rerank_apply_min_margin_ratio": 0.15,
+  "s7_rerank_skip_enabled": true,
+  "s7_rerank_skip_min_base_margin_ratio": 0.1,
+  "s7_rerank_skip_require_top1_agreement": false,
+  "s7_rerank_apply_min_margin_ratio_worst": 0.0,
+  "summary_csv": "/content/drive/MyDrive/ComplianceGPT_v2/experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_rev5_20q.csv",
+  "runs_csv": "/content/drive/MyDrive/ComplianceGPT_v2/experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_runs_rev5_20q.csv",
+  "table_md": "/content/drive/MyDrive/ComplianceGPT_v2/experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_table_rev5_20q.md",
+  "s7_reranker_called_rate": 0.55,
+  "s7_reranker_called_count": 55,
+  "s7_total_runs": 100,
+  "s7_rerank_applied_rate": 0.5,
+  "s7_rerank_applied_count": 50,
+  "s7_skip_reason_counts": {
+    "base_confident": 45
+  }
+}
