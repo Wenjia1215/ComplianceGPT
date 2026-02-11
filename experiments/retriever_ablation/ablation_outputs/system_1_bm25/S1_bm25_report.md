@@ -3,8 +3,8 @@
 - Recall@1:  0.7600
 - Recall@5:  0.9600
 - Recall@10: 0.9800
-- MRR@10:    0.8502
-- nDCG@10:   0.8828
+- MRR@10:    0.8518
+- nDCG@10:   0.8841
 
 **ODP-Subset (n=63)**
 - Recall@1:  0.7778
@@ -19,9 +19,9 @@
 **Overall (n=36)**
 - Recall@1:  0.6389
 - Recall@5:  0.9167
-- Recall@10: 0.9444
-- MRR@10:    0.7481
-- nDCG@10:   0.7965
+- Recall@10: 0.9167
+- MRR@10:    0.7454
+- nDCG@10:   0.7885
 
 **ODP-Subset (n=19)**
 - Recall@1:  0.7368
@@ -37,8 +37,8 @@
 - Recall@1:  0.0000
 - Recall@5:  0.8333
 - Recall@10: 0.9167
-- MRR@10:    0.3757
-- nDCG@10:   0.5117
+- MRR@10:    0.3827
+- nDCG@10:   0.5172
 
 **ODP-Subset (n=14)**
 - Recall@1:  0.0000
@@ -53,9 +53,9 @@
 **Overall (n=13)**
 - Recall@1:  0.0000
 - Recall@5:  0.7692
-- Recall@10: 0.8462
-- MRR@10:    0.3026
-- nDCG@10:   0.4365
+- Recall@10: 0.7692
+- MRR@10:    0.2949
+- nDCG@10:   0.4142
 
 **ODP-Subset (n=5)**
 - Recall@1:  0.0000

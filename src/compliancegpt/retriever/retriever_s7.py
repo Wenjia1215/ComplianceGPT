@@ -8,7 +8,7 @@ Design goals (clean + pipeline-friendly)
 - Output docs are clause-level dicts the Generator can consume directly:
     { "id", "control_id", "kind", "title", "text" }
 
-Retrieval idea (kept from your S7 concept)
+Retrieval idea
 - Control ranking: weighted RRF fusion over BM25(control) + Dense(control via clause adapter)
 - Optional rerank: cross-encoder scoring + "safe blending" + "no-harm gate"
 - Evidence selection: return multiple clause snippets per top control (statement + guidance, etc.)
@@ -39,6 +39,10 @@ _PUNCT_RE = re.compile(r"[^0-9A-Za-z_\s]+")
 _WS_RE = re.compile(r"\s+")
 _TOKEN_RE = re.compile(r"[A-Za-z0-9]+")
 
+# Control ID normalization helpers
+_CONTROL_ID_DOT_RE = re.compile(r"^([A-Z]{2,3}-\d+)\.(\d+)$")
+_CONTROL_ID_PAREN_RE = re.compile(r"^([A-Z]{2,3}-\d+)\((\d+)\)$")
+
 
 def normalize_text(text: str) -> str:
     if not isinstance(text, str):
@@ -53,14 +57,57 @@ def tokenize(text: str) -> List[str]:
 
 
 def normalize_control_id(control_id: str) -> str:
+    """Normalize control IDs to a canonical form.
+
+    Canonicalization rules:
+      - Upper-case, '_' -> '-'
+      - Enhancement dot form (e.g., 'AC-2.1') is converted to parentheses form ('AC-2(1)')
+    """
     if not isinstance(control_id, str):
         return ""
-    return control_id.strip().upper().replace("_", "-")
+    cid = control_id.strip().upper().replace("_", "-")
+
+    m_dot = _CONTROL_ID_DOT_RE.match(cid)
+    if m_dot:
+        return f"{m_dot.group(1)}({m_dot.group(2)})"
+
+    if _CONTROL_ID_PAREN_RE.match(cid):
+        return cid
+
+    return cid
 
 
 def control_id_aliases(control_id: str) -> str:
+    """Return a space-separated set of ID aliases for indexing/matching.
+
+    Includes:
+      - canonical form
+      - hyphenless and spaced variants
+      - dot/parentheses enhancement variants (both directions)
+    """
     cid = normalize_control_id(control_id)
-    return f"{cid} {cid.replace('-', '')} {cid.replace('-', ' ')}"
+    aliases: set[str] = set()
+
+    def _add(x: str) -> None:
+        if not x:
+            return
+        aliases.add(x)
+        aliases.add(x.replace("-", ""))
+        aliases.add(x.replace("-", " "))
+
+    _add(cid)
+
+    m_paren = _CONTROL_ID_PAREN_RE.match(cid)
+    if m_paren:
+        dot = f"{m_paren.group(1)}.{m_paren.group(2)}"
+        _add(dot)
+    else:
+        m_dot = _CONTROL_ID_DOT_RE.match(cid)
+        if m_dot:
+            paren = f"{m_dot.group(1)}({m_dot.group(2)})"
+            _add(paren)
+
+    return " ".join(sorted(aliases))
 
 
 def jaccard_overlap(a: str, b: str) -> float:
@@ -307,7 +354,7 @@ def build_dense_retriever(
         cid = r["control_id"]
         title = r.get("title", "")
         kind = r.get("kind", "other")
-        header = f"{cid} {title} ({kind})".strip()
+        header = f"{control_id_aliases(cid)} {title} ({kind})".strip()
         packed = f"{header}\n{r['text']}".strip()
 
         clause_id = r["id"]
@@ -391,10 +438,20 @@ def s7_rank_controls(
     rewrite_weight: float,
     rerank_alpha: float,
     rerank_apply_min_margin_ratio: float,
+    rerank_skip_enabled: bool = True,
+    rerank_skip_min_base_margin_ratio: float = 0.10,
+    rerank_skip_require_top1_agreement: bool = False,
 ) -> Tuple[List[str], Dict[str, Any]]:
     """
     Returns:
-      ranked_control_ids, meta
+      (ranked_control_ids, meta)
+
+    Meta includes:
+      - reranker_called: whether cross-encoder was executed (performance proof)
+      - rerank_applied: whether reranked order was applied (no-harm gate outcome)
+      - skip_reason: why reranking was skipped (if skipped)
+      - base_margin_ratio: confidence of base fused top-1 vs top-2 (raw RRF)
+      - rerank_margin_ratio: confidence of reranked top-1 vs top-2 (blended score space)
     """
     weights = [1.0] + [float(rewrite_weight)] * (len(variants) - 1)
     rrf_scores: Dict[str, float] = defaultdict(float)
@@ -415,34 +472,120 @@ def s7_rank_controls(
             rrf_scores[cid] += float(w) * (1.0 / (float(rrf_k) + float(rank)))
 
     fused = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[: int(candidate_set_size)]
-    cids = [c for c, _ in fused]
-    if not cids:
-        return [], {"note": "no_candidates", "rerank_applied": False, "num_variants": len(variants)}
+    cids_all = [c for c, _ in fused]
 
-    # 2) Rerank (safe blend + no-harm gate)
+    if not cids_all:
+        return [], {
+            "note": "no_candidates",
+            "reranker_called": False,
+            "rerank_applied": False,
+            "skip_reason": "no_candidates",
+            "num_variants": len(variants),
+        }
+
+    # Base confidence signal (raw RRF margin ratio).
+    base_top1 = cids_all[0]
+    base_top2 = cids_all[1] if len(cids_all) >= 2 else ""
+    if len(cids_all) >= 2:
+        s1 = float(rrf_scores.get(base_top1, 0.0))
+        s2 = float(rrf_scores.get(base_top2, 0.0))
+        base_margin_ratio = (s1 - s2) / max(s1, 1e-9)
+    else:
+        base_margin_ratio = 1.0
+
+    # Optional agreement signal using original query only (cheap but conservative).
+    top1_agree = False
+    bm25_top1 = ""
+    dense_top1 = ""
+    if bool(rerank_skip_require_top1_agreement):
+        try:
+            q_toks = tokenize(normalize_text(original_query))
+            idxs = bm25_retriever.get_top_n(q_toks, n=1)
+            if idxs:
+                bm25_top1 = normalize_control_id(bm25_control_ids[int(idxs[0])]).upper()
+        except Exception:
+            bm25_top1 = ""
+        try:
+            hits = dense_adapter.search(original_query, top_k=1)
+            if hits:
+                dense_top1 = normalize_control_id(str(hits[0][0])).upper()
+        except Exception:
+            dense_top1 = ""
+        if bm25_top1 and dense_top1 and (base_top1 == bm25_top1 == dense_top1):
+            top1_agree = True
+
+    # 2) Pre-rerank skip gate (performance + accuracy)
+    if bool(rerank_skip_enabled):
+        if base_margin_ratio >= float(rerank_skip_min_base_margin_ratio):
+            if (not bool(rerank_skip_require_top1_agreement)) or top1_agree:
+                meta = {
+                    "num_variants": len(variants),
+                    "reranker_called": False,
+                    "rerank_applied": False,
+                    "skip_reason": "base_confident",
+                    "base_top1": base_top1,
+                    "base_top2": base_top2,
+                    "base_margin_ratio": float(base_margin_ratio),
+                    "top1_agree": bool(top1_agree) if bool(rerank_skip_require_top1_agreement) else None,
+                    "bm25_top1": bm25_top1 if bool(rerank_skip_require_top1_agreement) else None,
+                    "dense_top1": dense_top1 if bool(rerank_skip_require_top1_agreement) else None,
+                    "rerank_alpha": float(rerank_alpha),
+                    "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+                    "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
+                    "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
+                    "final_top1": base_top1,
+                    "final_margin_ratio": float(base_margin_ratio),
+                    "rerank_margin_ratio": None,
+                    "rerank_top1": None,
+                    "top_candidates": [],
+                }
+                return cids_all, meta
+
+    # 3) Rerank (safe blend + no-harm gate)
     pairs: List[List[str]] = []
     valid_cids: List[str] = []
-    for cid in cids:
+    missing_text_cids: List[str] = []
+    for cid in cids_all:
         txt = reranker_text_by_control.get(cid, "")
         if txt:
             pairs.append([original_query, txt])
             valid_cids.append(cid)
+        else:
+            missing_text_cids.append(cid)
 
-    base_ranked = valid_cids[:]
+    missing_text_set = set(missing_text_cids)
+
     if not pairs:
-        return cids, {"note": "no_text_for_rerank", "rerank_applied": False, "num_variants": len(variants)}
+        return cids_all, {
+            "note": "no_text_for_rerank",
+            "reranker_called": False,
+            "rerank_applied": False,
+            "skip_reason": "no_text_for_rerank",
+            "num_variants": len(variants),
+            "base_top1": base_top1,
+            "base_top2": base_top2,
+            "base_margin_ratio": float(base_margin_ratio),
+            "rerank_alpha": float(rerank_alpha),
+            "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+            "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
+            "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
+            "final_top1": base_top1,
+            "final_margin_ratio": float(base_margin_ratio),
+        }
 
     pred = reranker.predict(pairs, show_progress_bar=False)
 
-    base = np.array([rrf_scores.get(c, 0.0) for c in valid_cids], dtype=np.float32)
-    base_n = normalize_scores_minmax(base)
+    base_raw = np.array([rrf_scores.get(c, 0.0) for c in valid_cids], dtype=np.float32)
+    base_n = normalize_scores_minmax(base_raw)
     pred_n = normalize_scores_minmax(np.array(pred, dtype=np.float32))
 
-    # alpha = weight on base (RRF); (1-alpha) on reranker
     ra = float(rerank_alpha)
     final_scores = ra * base_n + (1.0 - ra) * pred_n
     order = np.argsort(-final_scores)
-    reranked = [valid_cids[int(i)] for i in order]
+    reranked_valid = [valid_cids[int(i)] for i in order]
+
+    # Preserve controls without reranker text (append in base order).
+    reranked_full = reranked_valid + [c for c in cids_all if c in missing_text_set]
 
     if len(order) >= 2:
         fs1 = float(final_scores[int(order[0])])
@@ -451,25 +594,32 @@ def s7_rank_controls(
     else:
         rerank_margin_ratio = 1.0
 
-    base_top1 = base_ranked[0] if base_ranked else ""
-    rerank_top1 = reranked[0] if reranked else ""
+    rerank_top1 = reranked_full[0] if reranked_full else ""
 
     # No-harm gate: if reranker changes top1 but with weak margin, keep base ordering.
     rerank_applied = True
-    final_ranked = reranked
+    final_ranked = reranked_full
     if (rerank_top1 != base_top1) and (rerank_margin_ratio < float(rerank_apply_min_margin_ratio)):
         rerank_applied = False
-        final_ranked = base_ranked
+        final_ranked = cids_all
+
+    final_top1 = final_ranked[0] if final_ranked else ""
+    if rerank_applied:
+        final_margin_ratio = float(rerank_margin_ratio)
+    else:
+        final_margin_ratio = float(base_margin_ratio)
 
     # Debug: capture fused vs rerank vs final details for the top candidates (no effect on ranking)
     debug_top: List[Dict[str, Any]] = []
     try:
-        base_rank_map = {c: i + 1 for i, c in enumerate(base_ranked)}
-        rerank_rank_map = {c: i + 1 for i, c in enumerate(reranked)}
+        base_rank_map = {c: i + 1 for i, c in enumerate(cids_all)}
+        rerank_rank_map = {c: i + 1 for i, c in enumerate(reranked_full)}
         final_rank_map = {c: i + 1 for i, c in enumerate(final_ranked)}
-        lim = int(min(20, len(valid_cids)))
+        lim = int(min(20, len(cids_all)))
+        valid_idx_map = {c: i for i, c in enumerate(valid_cids)}
         for i in range(lim):
-            cid = valid_cids[i]
+            cid = cids_all[i]
+            v_idx = valid_idx_map.get(cid)
             debug_top.append(
                 {
                     "control_id": cid,
@@ -477,24 +627,35 @@ def s7_rank_controls(
                     "base_rank": int(base_rank_map.get(cid, 0)),
                     "rerank_rank": int(rerank_rank_map.get(cid, 0)),
                     "final_rank": int(final_rank_map.get(cid, 0)),
-                    "base_score_norm": float(base_n[i]) if i < len(base_n) else None,
-                    "rerank_score_raw": float(pred[i]) if i < len(pred) else None,
-                    "rerank_score_norm": float(pred_n[i]) if i < len(pred_n) else None,
-                    "final_score": float(final_scores[i]) if i < len(final_scores) else None,
+                    "base_score_norm": float(base_n[int(v_idx)]) if v_idx is not None and int(v_idx) < len(base_n) else None,
+                    "rerank_score_raw": float(pred[int(v_idx)]) if v_idx is not None and int(v_idx) < len(pred) else None,
+                    "rerank_score_norm": float(pred_n[int(v_idx)]) if v_idx is not None and int(v_idx) < len(pred_n) else None,
+                    "final_score": float(final_scores[int(v_idx)]) if v_idx is not None and int(v_idx) < len(final_scores) else None,
                 }
             )
     except Exception:
         debug_top = []
+
     meta = {
         "num_variants": len(variants),
         "top_candidates": debug_top,
+        "reranker_called": True,
         "rerank_applied": rerank_applied,
+        "skip_reason": None,
         "rerank_alpha": float(rerank_alpha),
         "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+        "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
+        "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
         "base_top1": base_top1,
+        "base_top2": base_top2,
+        "base_margin_ratio": float(base_margin_ratio),
+        "bm25_top1": bm25_top1 if bool(rerank_skip_require_top1_agreement) else None,
+        "dense_top1": dense_top1 if bool(rerank_skip_require_top1_agreement) else None,
+        "top1_agree": bool(top1_agree) if bool(rerank_skip_require_top1_agreement) else None,
         "rerank_top1": rerank_top1,
-        "final_top1": final_ranked[0] if final_ranked else "",
+        "final_top1": final_top1,
         "rerank_margin_ratio": float(rerank_margin_ratio),
+        "final_margin_ratio": float(final_margin_ratio),
     }
     return final_ranked, meta
 
@@ -527,6 +688,11 @@ class RetrievalConfig:
     # Safe rerank blending + no-harm gate
     rerank_alpha: float = 0.65
     rerank_apply_min_margin_ratio: float = 0.15
+
+    # Pre-rerank skip gate (performance + accuracy)
+    rerank_skip_enabled: bool = True
+    rerank_skip_min_base_margin_ratio: float = 0.10
+    rerank_skip_require_top1_agreement: bool = False
 
     # Evidence selection
     clauses_per_control: int = 3
@@ -669,6 +835,9 @@ class ComplianceGPTRetriever:
             rewrite_weight=self.config.rewrite_weight,
             rerank_alpha=self.config.rerank_alpha,
             rerank_apply_min_margin_ratio=self.config.rerank_apply_min_margin_ratio,
+            rerank_skip_enabled=self.config.rerank_skip_enabled,
+            rerank_skip_min_base_margin_ratio=self.config.rerank_skip_min_base_margin_ratio,
+            rerank_skip_require_top1_agreement=self.config.rerank_skip_require_top1_agreement,
         )
 
 
@@ -734,6 +903,9 @@ class ComplianceGPTRetriever:
             rewrite_weight=self.config.rewrite_weight,
             rerank_alpha=self.config.rerank_alpha,
             rerank_apply_min_margin_ratio=self.config.rerank_apply_min_margin_ratio,
+            rerank_skip_enabled=self.config.rerank_skip_enabled,
+            rerank_skip_min_base_margin_ratio=self.config.rerank_skip_min_base_margin_ratio,
+            rerank_skip_require_top1_agreement=self.config.rerank_skip_require_top1_agreement,
         )
 
         controls = [normalize_control_id(c).upper() for c in ranked_controls][: int(top_k)]

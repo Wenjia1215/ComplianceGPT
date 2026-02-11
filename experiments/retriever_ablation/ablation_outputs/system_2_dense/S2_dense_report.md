@@ -1,17 +1,17 @@
 ### S2_dense (Rev5)
 **Overall (n=100)**
-- Recall@1:  0.8300
+- Recall@1:  0.8400
 - Recall@5:  1.0000
 - Recall@10: 1.0000
-- MRR@10:    0.8990
-- nDCG@10:   0.9244
+- MRR@10:    0.9053
+- nDCG@10:   0.9292
 
 **ODP-Subset (n=63)**
-- Recall@1:  0.8095
+- Recall@1:  0.8254
 - Recall@5:  1.0000
 - Recall@10: 1.0000
-- MRR@10:    0.8873
-- nDCG@10:   0.9156
+- MRR@10:    0.8960
+- nDCG@10:   0.9221
 
 ---
 
@@ -34,18 +34,18 @@
 
 ### S2_dense (ErrorBank-Rev5)
 **Overall (n=24)**
-- Recall@1:  0.5833
+- Recall@1:  0.6667
 - Recall@5:  1.0000
 - Recall@10: 1.0000
-- MRR@10:    0.7458
-- nDCG@10:   0.8092
+- MRR@10:    0.7896
+- nDCG@10:   0.8418
 
 **ODP-Subset (n=14)**
-- Recall@1:  0.5714
+- Recall@1:  0.7143
 - Recall@5:  1.0000
 - Recall@10: 1.0000
-- MRR@10:    0.7250
-- nDCG@10:   0.7927
+- MRR@10:    0.8000
+- nDCG@10:   0.8485
 
 ---
 

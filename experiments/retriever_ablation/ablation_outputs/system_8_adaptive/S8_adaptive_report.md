@@ -1,16 +1,16 @@
 ### S8_adaptive (Rev5)
 **Gate Summary**
-- reranker_called: 71/100 (0.710)
-- rerank_applied:  67/100 (0.670)
-- rerank_applied|called: 67/71 (0.944)
-- skip_reason_counts: {'base_confident': 18}
+- reranker_called: 78/100 (0.780)
+- rerank_applied:  75/100 (0.750)
+- rerank_applied|called: 75/78 (0.962)
+- skip_reason_counts: {'base_confident': 11}
 
 **Overall (n=100)**
-- Recall@1:  0.8900
+- Recall@1:  0.9000
 - Recall@5:  0.9900
-- Recall@10: 0.9900
-- MRR@10:    0.9400
-- nDCG@10:   0.9531
+- Recall@10: 1.0000
+- MRR@10:    0.9460
+- nDCG@10:   0.9597
 
 **ODP-Subset (n=63)**
 - Recall@1:  0.9206
@@ -23,10 +23,10 @@
 
 ### S8_adaptive (Rev4)
 **Gate Summary**
-- reranker_called: 31/36 (0.861)
-- rerank_applied:  28/36 (0.778)
-- rerank_applied|called: 28/31 (0.903)
-- skip_reason_counts: {'base_confident': 4}
+- reranker_called: 33/36 (0.917)
+- rerank_applied:  30/36 (0.833)
+- rerank_applied|called: 30/33 (0.909)
+- skip_reason_counts: {'base_confident': 2}
 
 **Overall (n=36)**
 - Recall@1:  0.9167
@@ -46,24 +46,24 @@
 
 ### S8_adaptive (ErrorBank-Rev5)
 **Gate Summary**
-- reranker_called: 15/24 (0.625)
-- rerank_applied:  13/24 (0.542)
-- rerank_applied|called: 13/15 (0.867)
-- skip_reason_counts: {'base_confident': 9}
+- reranker_called: 18/24 (0.750)
+- rerank_applied:  17/24 (0.708)
+- rerank_applied|called: 17/18 (0.944)
+- skip_reason_counts: {'base_confident': 6}
 
 **Overall (n=24)**
-- Recall@1:  0.6250
+- Recall@1:  0.7083
 - Recall@5:  0.9583
-- Recall@10: 0.9583
-- MRR@10:    0.7917
-- nDCG@10:   0.8353
+- Recall@10: 1.0000
+- MRR@10:    0.8375
+- nDCG@10:   0.8781
 
 **ODP-Subset (n=14)**
-- Recall@1:  0.7143
+- Recall@1:  0.7857
 - Recall@5:  1.0000
 - Recall@10: 1.0000
-- MRR@10:    0.8571
-- nDCG@10:   0.8946
+- MRR@10:    0.8929
+- nDCG@10:   0.9209
 
 ---
 
