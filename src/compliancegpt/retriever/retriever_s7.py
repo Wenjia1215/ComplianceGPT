@@ -271,17 +271,19 @@ def build_bm25(docs: List[Dict[str, str]], k1: float, b: float) -> Tuple[BM25Oka
 # 4) Dense index + clause→control adapter
 # ==========================================================
 class DenseIndex:
-    """Clause-level dense retrieval (cosine/IP with normalized embeddings)."""
+    """Clause-level dense retrieval (cosine/IP with normalized embeddings).
+
+    This implementation prefers faiss when available, but can fall back to a
+    brute-force numpy inner-product search if faiss is not installed.
+    """
 
     def __init__(self, model_id: str):
         try:
             import torch  # noqa: F401
             from sentence_transformers import SentenceTransformer  # noqa: F401
-            import faiss  # noqa: F401
         except Exception as e:
             raise ImportError(
-                "DenseIndex requires sentence-transformers + faiss. "
-                "Install: pip install sentence-transformers faiss-cpu"
+                "DenseIndex requires sentence-transformers and torch."
             ) from e
 
         import torch
@@ -290,12 +292,20 @@ class DenseIndex:
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model_id = model_id
         self.model = SentenceTransformer(model_id, device=self.device)
+
+        # faiss is optional
+        self._faiss = None
+        try:
+            import faiss  # type: ignore
+            self._faiss = faiss
+        except Exception:
+            self._faiss = None
+
         self.index = None
+        self.embeddings: Optional[np.ndarray] = None
         self.ids: List[str] = []
 
     def build(self, texts: List[str], ids: List[str]) -> None:
-        import faiss
-
         self.ids = list(ids)
         emb = self.model.encode(
             texts,
@@ -303,23 +313,54 @@ class DenseIndex:
             show_progress_bar=True,
             normalize_embeddings=True,
         )
-        self.index = faiss.IndexFlatIP(emb.shape[1])
-        self.index.add(emb)
+        emb_np = np.asarray(emb, dtype=np.float32)
+
+        if self._faiss is not None:
+            self.index = self._faiss.IndexFlatIP(int(emb_np.shape[1]))
+            self.index.add(emb_np)
+            self.embeddings = None
+            return
+
+        # Numpy fallback (slower, but dependency-light)
+        self.index = None
+        self.embeddings = emb_np
 
     def search(self, query: str, top_k: int) -> List[Tuple[str, float]]:
-        if self.index is None:
+        if top_k <= 0:
             return []
+
         q_emb = self.model.encode([query], normalize_embeddings=True)
-        scores, idxs = self.index.search(q_emb, top_k)
-        out: List[Tuple[str, float]] = []
-        for i, s in zip(idxs[0], scores[0]):
-            if i == -1:
-                continue
-            out.append((self.ids[int(i)], float(s)))
+        q = np.asarray(q_emb, dtype=np.float32)[0]
+
+        if self.index is not None and self._faiss is not None:
+            scores, idxs = self.index.search(q.reshape(1, -1), int(top_k))
+            out: List[Tuple[str, float]] = []
+            for i, s in zip(idxs[0], scores[0]):
+                if int(i) == -1:
+                    continue
+                out.append((self.ids[int(i)], float(s)))
+            return out
+
+        if self.embeddings is None or self.embeddings.size == 0:
+            return []
+
+        scores_vec = self.embeddings @ q
+        n = int(min(int(top_k), int(scores_vec.shape[0])))
+        if n <= 0:
+            return []
+
+        if n >= int(scores_vec.shape[0]):
+            idxs = np.argsort(-scores_vec)
+        else:
+            part = np.argpartition(-scores_vec, n - 1)[:n]
+            idxs = part[np.argsort(-scores_vec[part])]
+
+        out = [(self.ids[int(i)], float(scores_vec[int(i)])) for i in idxs[:n]]
         return out
 
 
 class ClauseDenseControlAdapter:
+
     """Clause search → compress to control by max clause score."""
 
     def __init__(self, dense_idx: DenseIndex, clause_to_control: Dict[str, str]):

@@ -161,7 +161,7 @@ Even though we retrieve over clause content, we evaluate whether the **gold cont
 ## 7) How to run (Colab)
 
 Open:
-- `MicroAblation_S4b_S7.ipynb`
+- `MicroAblation_S4b_S7a.ipynb`
 
 Steps:
 
@@ -196,7 +196,50 @@ Schema (both files):
 
 ---
 
-## 9) Comparing to baselines (S4 / S7 from main ablation)
+## 9) Results (this run: 2026-02-11)
+
+This section summarizes the **oracle-only** outputs produced by this notebook:
+- `S4b_rrf_best_ALL.csv`
+- `S7a_rerank_best_ALL.csv`
+
+**Sanity checks passed** (per-file): expected row counts per dataset, unique `(dataset, question_id)`, and metric consistency with `rank` for `MRR@10` / `nDCG@10`.
+
+**S4b (oracle best-rewrite-only fusion)**
+
+| dataset | N | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| rev5_gold | 100 | 0.710 | 0.960 | 0.980 | 0.824 | 0.863 |
+| rev4_gold | 36 | 0.694 | 0.917 | 0.917 | 0.772 | 0.808 |
+| error_bank_rev5 | 24 | 0.083 | 0.875 | 0.917 | 0.444 | 0.565 |
+| error_bank_rev4 | 13 | 0.231 | 0.769 | 0.769 | 0.429 | 0.515 |
+| ALL | 173 | 0.584 | 0.925 | 0.942 | 0.731 | 0.784 |
+
+**S7a (oracle best-rewrite as rerank query)**
+
+| dataset | N | Recall@1 | Recall@5 | Recall@10 | MRR@10 | nDCG@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| rev5_gold | 100 | 0.860 | 0.970 | 0.990 | 0.913 | 0.933 |
+| rev4_gold | 36 | 0.861 | 1.000 | 1.000 | 0.922 | 0.942 |
+| error_bank_rev5 | 24 | 0.583 | 0.917 | 0.958 | 0.727 | 0.785 |
+| error_bank_rev4 | 13 | 0.538 | 1.000 | 1.000 | 0.731 | 0.799 |
+| ALL | 173 | 0.798 | 0.971 | 0.988 | 0.876 | 0.904 |
+
+**Delta (S7a - S4b)**
+
+| dataset | N | ΔRecall@1 | ΔRecall@5 | ΔRecall@10 | ΔMRR@10 | ΔnDCG@10 |
+|---|---:|---:|---:|---:|---:|---:|
+| rev5_gold | 100 | 0.150 | 0.010 | 0.010 | 0.089 | 0.069 |
+| rev4_gold | 36 | 0.167 | 0.083 | 0.083 | 0.150 | 0.134 |
+| error_bank_rev5 | 24 | 0.500 | 0.042 | 0.042 | 0.283 | 0.220 |
+| error_bank_rev4 | 13 | 0.308 | 0.231 | 0.231 | 0.301 | 0.284 |
+| ALL | 173 | 0.214 | 0.046 | 0.046 | 0.145 | 0.120 |
+
+**Interpretation (bounded):**
+- These results are **upper bounds** because they use gold labels to select the “best” rewrite.
+- To answer the original design questions (S4b vs S4, and S7a vs S7), compare these CSVs against the corresponding baseline outputs from `AblationStudy_S1_8.ipynb` using `(dataset, question_id)` joins.
+
+
+## 10) Comparing to baselines (S4 / S7 from main ablation)
 
 We compare S4b vs S4 and S7a vs S7 using the S4/S7 CSV outputs from `AblationStudy_S1_8.ipynb`.
 
@@ -220,7 +263,7 @@ m7 = s7.merge(s7a, on=["dataset","question_id"], suffixes=("_S7","_S7a"))
 
 ---
 
-## 10) Notes / pitfalls
+## 11) Notes / pitfalls
 
 - **Oracle ≠ deployable.** It uses gold labels to choose rewrites, by design.
 
@@ -229,7 +272,7 @@ m7 = s7.merge(s7a, on=["dataset","question_id"], suffixes=("_S7","_S7a"))
 
 ---
 
-## 11) why only s4 & s7
+## 12) why only s4 & s7
 
 why the others were excluded from this specific Oracle study:
 
