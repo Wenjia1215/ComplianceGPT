@@ -146,25 +146,40 @@ so each system isolates one additional capability.
 
 ---
 
-# S7 — ComplianceGPT Retriever (Safe Multi-Stage Retrieval)
+# ## S7 — ComplianceGPT Retriever (Safe Multi-Stage Retrieval)
 
-**Why we build it**
-S7 is designed as the best *reliability-focused* retriever for compliance.
+### Why we build it
+S7 is designed as the best reliability-focused retriever for compliance.
 It integrates rewriting, hybrid retrieval, and reranking, but adds safety constraints.
 
-**How it works (high level)**
+### How it works (high level)
 1) Generate query variants: original + filtered rewrites
 2) Run weighted hybrid retrieval (BM25 + Dense) across variants
 3) Fuse candidates using weighted RRF
-4) Rerank with cross-encoder using **safe blending**
+4) Rerank with cross-encoder using safe blending
    - blend base retrieval score with reranker score
    - avoid full rank reversal when reranker evidence is weak
 
-**What it tests**
-- The full ComplianceGPT retrieval hypothesis:
-  "multi-stage retrieval with safety constraints reduces compliance failure modes."
+### Gating: performance + accuracy
+- Pre-rerank skip gate (performance):
+  - Compute base_margin_ratio on the raw fused (weighted-RRF) scores: (s1 - s2) / max(s1, eps)
+  - If base_margin_ratio >= RERANK_SKIP_MIN_BASE_MARGIN_RATIO, do not call the reranker
+- Post-rerank no-harm gate (accuracy):
+  - If reranking changes top-1 but rerank_margin_ratio < RERANK_APPLY_MIN_MARGIN_RATIO, revert to base order
+- Audit fields recorded in system_meta (when available):
+  - reranker_called, rerank_applied, skip_reason
+  - base_margin_ratio, rerank_margin_ratio, final_margin_ratio
 
-**Expected behavior**
+### Benchmark variants (used in Performance_Benchmark)
+- S7_gated: production S7 with skip gate enabled (can reduce latency)
+- S7_worst_always_rerank: same ranking/rerank pipeline but skip gate disabled (reranker always called)
+  - typically also sets RERANK_APPLY_MIN_MARGIN_RATIO to 0.0 to avoid post-rerank reverts
+
+### What it tests
+- The full ComplianceGPT retrieval hypothesis:
+  multi-stage retrieval with safety constraints reduces compliance failure modes.
+
+### Expected behavior
 - Best overall Recall@1 / robustness
 - Strong performance on ErrorBank and ODP queries
 
@@ -214,4 +229,5 @@ For a fair ablation comparison, all systems must share:
 - the same CCS corpus version (Rev4/Rev5 JSONL)
 - the same gold sets + ErrorBank
 - the same preprocessing (control ID normalization)
+  - enhancement canonicalization: treat AC-2.1 and AC-2(1) as equivalent
 - the same evaluation function and metrics
