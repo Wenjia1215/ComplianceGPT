@@ -846,6 +846,41 @@ ra-2_smt.c`
 
 ---
 
+## (Question ID: 77, REV5)
+
+* **Question:** "How should organizations conduct and document risk assessments, and how often should the results be reviewed?"
+* **Gold Control ID:** `RA-3`
+* **Gold Clause IDs:** `N/A (not recorded in the Error Bank export)`
+* **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
+* **Top-1 Retrieved:** `RA-8`
+* **Top-5 Retrieved List:** `RA-8`, `RA-3`, `CA-2(1)`, `CA-2`, `PM-28`
+
+**Gold Answer (from Gold Set):**
+
+> (Gold answer text is not included in the Error Bank export. Use the Rev.5 gold set entry for `RA-3`.)
+
+### My Reasoning Process
+
+1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
+
+   * The query explicitly targets **risk assessments** (`RA-3`), but BM25 ranked a different **assessment-focused control** (`RA-8`) above the gold.
+   * This is consistent with a **terminology/anchor dominance issue**: the shared token “assessments” pulls BM25 toward a neighboring control even when the intended subtype is “risk assessment.”
+   * Evidence in outputs: gold control appears at **rank #2**, while BM25 prefers `RA-8` as top-1.
+
+2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
+
+   * The query includes concrete anchors (“risk assessments”, “conduct and document”, “how often reviewed”), so it is not primarily a generic template query.
+
+3. **Step 3: Test for `Semantic Gap`: (FAIL)**
+
+   * A semantic gap explanation is unnecessary because the gold control is already retrieved at **rank #2**; the issue is ranking preference among nearby controls, not conceptual mismatch.
+
+#### Final Verdict: `Terminology Mismatch`
+
+**Rationale:** BM25 over-weights shared “assessment” terminology and ranks a neighboring assessment-related control above the intended risk assessment control (gold at #2).
+
+---
+
 ## (Question ID: 87, REV5)
 
 - **Question:** "What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?"
@@ -984,41 +1019,6 @@ si-4_smt.g`
 #### Final Verdict: `Semantic Gap`
 
 **Rationale:** The query requires conceptual interpretation beyond simple keyword overlap, so BM25 drifts to a semantically-adjacent control.
-
----
-
-## (Question ID: 94, REV5)
-
-- **Question:** "What integrity-verification mechanisms should be employed to detect unauthorized changes to software, firmware, or data?"
-- **Gold Control ID:** `SI-7`
-- **Gold Clause IDs:** `si-7_smt.a
-si-7_smt.b`
-- **BM25 Rank of Gold:** `2`  *(0 = not in top-10)*
-- **Top-1 Retrieved:** `SA-10.1`
-- **Top-5 Retrieved List:** `SA-10.1`, `SI-7`, `SA-10.3`, `SI-7.6`, `SI-7.5`
-
-**Gold Answer (from Gold Set):**
-
-> Employ integrity verification tools to detect unauthorized changes to software, firmware, and
-> information: {{ insert: param, si-7_prm_1 }}; and take the following actions when unauthorized
-> changes to the software, firmware, and information are detected: {{ insert: param, si-7_prm_2
-> }}. [NIST SP 800-53 Rev.5: SI-7]
-
-### My Reasoning Process
-
-1. **Step 1: Test for `Terminology Mismatch`: (PASS)**
-   - The query is conceptually about the gold control, but it does **not** include the most discriminative clause-specific anchors (often the *enumerated items* or precise action verbs), so BM25 drifts to a nearby control.
-   - Evidence in outputs: gold control appears at **rank #2**, while BM25 prefers `SA-10.1` as top-1.
-
-2. **Step 2: Test for `Generic Phrasing`: (FAIL)**
-   - The query includes meaningful domain anchors beyond a bare template, so generic phrasing is not the primary driver.
-
-3. **Step 3: Test for `Semantic Gap`: (FAIL)**
-   - A semantic gap explanation is not necessary once the earlier category accounts for the miss.
-
-#### Final Verdict: `Terminology Mismatch`
-
-**Rationale:** The query is close in intent but lacks the gold clause’s most discriminative lexical anchors.
 
 ---
 

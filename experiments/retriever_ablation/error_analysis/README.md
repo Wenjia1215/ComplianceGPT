@@ -173,10 +173,3 @@ This notebook is complementary to the main evaluation tables:
 Use this notebook’s pivot table when you need to explain *which failure types* are improved or regressed by specific retrieval components.
 
 ---
-
-## 9) Related project documents
-
-- `WORKFLOW.md` — where this notebook is used in the ablation pipeline.
-- `Labeling_Rationale.md` — definitions and examples for `failure_category`.
-- `SYSTEMS.md` — system variants and component descriptions.
-- `RESULTS.md` — consolidated metrics for the main datasets.
