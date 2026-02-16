@@ -15,22 +15,11 @@ This file is designed to live at:
 from __future__ import annotations
 
 import re
-import sys
+
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, replace as _dc_replace
 
-# ----------------------------
-# Paths / import bootstrapping
-# ----------------------------
-_THIS_FILE = Path(__file__).resolve()
-# .../src/compliancegpt/pipeline/pipeline.py -> .../src
-_SRC_ROOT = _THIS_FILE.parents[2]
-
-if str(_SRC_ROOT) not in sys.path:
-    sys.path.insert(0, str(_SRC_ROOT))
-
-
-# ----------------------------
 # Imports (repo-local, fixed tree layout)
 # ----------------------------
 from compliancegpt.generator.generator import ComplianceGenerator, load_org_profile, normalize_contract  # type: ignore
@@ -47,25 +36,47 @@ except Exception as e:
     _VERIFY_IMPORT_ERROR = str(e)
 try:
     from compliancegpt.retriever.retriever_s7 import ComplianceGPTRetriever, RetrievalConfig  # type: ignore
-except ModuleNotFoundError as _e:
-    # Fallback for notebook-style imports that put specific subfolders on sys.path.
-    # Preferred layout: /src is on sys.path and this module lives at
-    #   src/compliancegpt/retriever/retriever_s7.py
-    try:
-        from retriever_s7 import ComplianceGPTRetriever, RetrievalConfig  # type: ignore
-    except ModuleNotFoundError as _e2:
-        raise ImportError(
-            "[FATAL] Cannot import retriever_s7. "
-            "Fix your sys.path to include '<repo>/src' and import as "
-            "'from compliancegpt.pipeline.pipeline import ComplianceGPTPipeline', "
-            "or ensure retriever_s7.py is discoverable."
-        ) from _e2
+except Exception as e:
+    raise ImportError(
+        "[FATAL] Cannot import compliancegpt.retriever.retriever_s7. "
+        "Ensure your notebook adds '<repo>/src' to sys.path and that the canonical package structure is intact."
+    ) from e
 
-from compliancegpt.QUR_generator.qur_generator_ut import QURComponent  # type: ignore
+try:
+    from compliancegpt.QUR_generator.qur_generator_ut import QURComponent  # type: ignore
+except Exception:
+    QURComponent = None  # type: ignore
+
 
 # ==========================================================
 # 0) Helpers
 # ==========================================================
+def _cfg_with(cfg: Any, **updates: Any) -> Any:
+    """Return a new config with updates applied safely.
+
+    - If cfg is a (possibly frozen) dataclass, use dataclasses.replace (no in-place mutation).
+    - Otherwise, set attributes only when they exist.
+    - Unknown fields are ignored (forward/backward compatible).
+    """
+    if cfg is None:
+        return cfg
+    try:
+        if _is_dataclass(cfg):
+            names = {f.name for f in _dc_fields(cfg)}
+            filtered = {k: v for k, v in updates.items() if k in names}
+            return _dc_replace(cfg, **filtered) if filtered else cfg
+    except Exception:
+        # Fall through to attribute-based updates
+        pass
+    for k, v in updates.items():
+        if hasattr(cfg, k):
+            try:
+                setattr(cfg, k, v)
+            except Exception:
+                pass
+    return cfg
+
+
 def _normalize_fw(framework_version: str) -> str:
     v = str(framework_version or "").strip().lower()
     if v in {"rev4", "r4", "4"}:
@@ -149,9 +160,6 @@ def _choose_docs_for_generator(
     if top_k is not None and int(top_k) > 0:
         out = out[: int(top_k)]
     return out
-
-
-
 
 
 # ==========================================================
@@ -326,7 +334,6 @@ def _apply_odp_policy_to_answer(
     raise ValueError(f"Unknown resolution_policy={policy!r}")
 
 
-
 # ==========================================================
 # Output Compatibility Wrapper
 # ==========================================================
@@ -381,6 +388,8 @@ def _wrap_out(contract: Dict[str, Any]) -> Dict[str, Any]:
     ver_dict = _verifier_result_to_dict(ver) if ver is not None else None
     if ver is not None:
         c["verification"] = ver_dict
+
+    c["verifier_ran"] = bool(ver is not None)
 
     verifier_pass = False
     verifier_errors: List[str] = []
@@ -450,10 +459,8 @@ class ComplianceGPTPipeline:
         self.org_profile: Dict[str, Any] = load_org_profile(org_profile_path) if org_profile_path else {}
 
 
-# Ensure parameter/ODP chunks are available to the retriever (ranking/boosting requires access; no deletion).
-        # Step-A (diagnostics) principle: never *delete* ODP/parameter material at load time.
-        # If keep_kinds is left at its default ("smt","gdn"), widen to keep **all** kinds so
-        # parameter chunks (odp/prm/obj/*) are available for ranking + generator.
+        # Ensure parameter/ODP chunks are available to the retriever (ranking/boosting requires access).
+        # Principle: never delete ODP/parameter material at load time.
         try:
             keep_raw = getattr(retriever_config, "keep_kinds", None)
             keep_norm = tuple(str(k).lower() for k in (keep_raw or ()))
@@ -461,16 +468,16 @@ class ComplianceGPTPipeline:
             keep_norm = ()
 
         if (not keep_norm) or (keep_norm == ("smt", "gdn")):
-            # Empty tuple disables kind filtering in ComplianceGPTRetriever.load_clause_records_jsonl
-            setattr(retriever_config, "keep_kinds", tuple())
+            # Empty tuple disables kind filtering inside ComplianceGPTRetriever.load_clause_records_jsonl
+            new_keep_kinds: Tuple[str, ...] = tuple()
         else:
             kk = list(keep_norm)
             for k in ("smt", "gdn", "odp", "prm", "obj"):
                 if k not in kk:
                     kk.append(k)
-            setattr(retriever_config, "keep_kinds", tuple(kk))
+            new_keep_kinds = tuple(kk)
 
-        # Prefer selection order: statements first, then parameters, then guidance.
+        # Prefer selection order: statements first, then parameters, then guidance (stable).
         try:
             kp_raw = getattr(retriever_config, "kind_priority", None)
             kp = [str(k).lower() for k in (kp_raw or ())]
@@ -478,18 +485,25 @@ class ComplianceGPTPipeline:
             kp = []
 
         desired = ["smt", "odp", "prm", "obj", "gdn"]
-        new_kp = []
+        new_kp: List[str] = []
         for k in desired:
             if k not in new_kp:
                 new_kp.append(k)
         for k in kp:
             if k not in new_kp:
                 new_kp.append(k)
-        setattr(retriever_config, "kind_priority", tuple(new_kp))
 
-        # 1) Retriever (clean: ccs_path only)
+        retriever_config = _cfg_with(
+            retriever_config,
+            keep_kinds=new_keep_kinds,
+            kind_priority=tuple(new_kp),
+        )
+
         self.retriever = ComplianceGPTRetriever(ccs_path=self.ccs_path, config=retriever_config)
         self._assert_ccs_loaded()
+        # Verifier corpus cache (built lazily; avoids O(N_queries * N_docs) rebuild in batch).
+        self._verifier_corpus_cache: Optional[Dict[str, str]] = None
+
 
         # 2) Model + tokenizer (shared with generator and optionally QUR)
         self.model, self.tokenizer = self._load_model(self.model_id, load_in_4bit=load_in_4bit)
@@ -555,6 +569,25 @@ class ComplianceGPTPipeline:
                 raise RuntimeError("CCS sanity check failed: no _smt docs detected (statement clauses missing).")
 
     # --------------------------
+    def _get_verifier_corpus(self) -> Dict[str, str]:
+        """Return an id->text corpus for verifier use.
+
+        Built once and cached. This avoids rebuilding a full corpus dict for every query in batch runs.
+        """
+        if isinstance(getattr(self, "_verifier_corpus_cache", None), dict):
+            return self._verifier_corpus_cache  # type: ignore
+
+        record_by_id = getattr(self.retriever, "record_by_id", {}) or {}
+        corpus: Dict[str, str] = {}
+        for k, v in record_by_id.items():
+            if isinstance(v, dict):
+                corpus[str(k)] = str(v.get("text", "") or "")
+            else:
+                corpus[str(k)] = ""
+        self._verifier_corpus_cache = corpus
+        return corpus
+
+
     # Main API
     # --------------------------
     def answer(
@@ -593,7 +626,9 @@ class ComplianceGPTPipeline:
                 rew = [r for r in (self.qur.generate(q) or []) if isinstance(r, str) and r.strip()]
             except Exception as e:
                 print(f"[Pipeline] QUR failed; continuing without rewrites. ({e})")
-                rew = []        # 2) Retrieval
+                rew = []
+
+        # 2) Retrieval
         # Supervisor requirement: ranking/boosting (NOT deletion). We keep context and only adjust doc ordering.
         policy_hint = ""
         if isinstance(gold_row, dict):
@@ -780,34 +815,40 @@ class ComplianceGPTPipeline:
         # 10) Optional verification (gold_row required)
         if run_verify and isinstance(gold_row, dict):
             if verify_answer is None:
-                final_contract['verification'] = {
-                    'ok': False,
-                    'error': f"verify_answer_unavailable:{_VERIFY_IMPORT_ERROR}" if _VERIFY_IMPORT_ERROR else 'verify_answer_unavailable',
-                    'error_tags': [f"VerifierUnavailable:{_VERIFY_IMPORT_ERROR}" if _VERIFY_IMPORT_ERROR else 'VerifierUnavailable'],
-                    'metrics': {},
+                final_contract["verification"] = {
+                    "ok": False,
+                    "error": (
+                        f"verify_answer_unavailable:{_VERIFY_IMPORT_ERROR}"
+                        if _VERIFY_IMPORT_ERROR else "verify_answer_unavailable"
+                    ),
+                    "error_tags": [
+                        f"VerifierUnavailable:{_VERIFY_IMPORT_ERROR}"
+                        if _VERIFY_IMPORT_ERROR else "VerifierUnavailable"
+                    ],
+                    "metrics": {},
                 }
             else:
-                        try:
-                            corpus = {k: (v.get('text', '') if isinstance(v, dict) else '') for k, v in getattr(self.retriever, 'record_by_id', {}).items()}
-                            ver = verify_answer(
-                                final_contract,
-                                gold_row,
-                                corpus=corpus,
-                                org_profile=self.org_profile,
-                                corpus_version=self.framework_version,
-                                strict_extras=bool(self.verify_strict_extras),
-                                strict_verbatim=bool(self.verify_strict_verbatim),
-                                strict_version=bool(self.verify_strict_version),
-                            )
-                            final_contract['verification'] = ver
-                        except Exception as e:
-                            final_contract['verification'] = {
-                                'ok': False,
-                                'error': str(e),
-                                'error_tags': [f"VerifierException:{type(e).__name__}:{str(e)}"],
-                                'metrics': {},
-                            }
-            
+                try:
+                    corpus = self._get_verifier_corpus()
+                    ver = verify_answer(
+                        final_contract,
+                        gold_row,
+                        corpus=corpus,
+                        org_profile=self.org_profile,
+                        corpus_version=self.framework_version,
+                        strict_extras=bool(self.verify_strict_extras),
+                        strict_verbatim=bool(self.verify_strict_verbatim),
+                        strict_version=bool(self.verify_strict_version),
+                    )
+                    final_contract["verification"] = ver
+                except Exception as e:
+                    final_contract["verification"] = {
+                        "ok": False,
+                        "error": str(e),
+                        "error_tags": [f"VerifierException:{type(e).__name__}:{str(e)}"],
+                        "metrics": {},
+                    }
+
         # Debug extras (kept minimal)
         final_contract["debug"] = {
             "query": q,
