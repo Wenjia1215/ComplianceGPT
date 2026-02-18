@@ -17,7 +17,7 @@ from __future__ import annotations
 import re
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Set
 from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, replace as _dc_replace
 
 # Imports (repo-local, fixed tree layout)
@@ -150,7 +150,7 @@ def _choose_docs_for_generator(
         out = smt if smt else docs
     elif mode == "prefer_smt_keep_params":
         # Stable sort by kind bucket; keep original order within each bucket.
-        order = {"smt": 0, "odp": 1, "prm": 2, "obj": 3, "gdn": 4}
+        order = {"smt": 0, "gdn": 1, "odp": 2, "prm": 3, "obj": 4}
         indexed = list(enumerate(docs))
         indexed.sort(key=lambda t: (order.get(_kind_of(t[1]), 9), t[0]))
         out = [d for _, d in indexed]
@@ -266,6 +266,113 @@ def _profile_lookup(profile: Dict[str, Any], key: str) -> Optional[Any]:
     return profile.get(key)
 
 
+
+# ==========================================================
+# ODP/PRM Canonicalization (CCS-aligned, provably-extractive)
+# ==========================================================
+_PARAM_ID_KIND_RE = re.compile(r"_(odp|prm)\b", re.IGNORECASE)
+
+def _build_param_key_to_canonical(param_ids: Set[str]) -> Dict[str, str]:
+    """
+    Build a deterministic mapping from a normalized "param key" -> canonical param id.
+
+    Key design:
+      - robust to: ra-3_odp.2, ra-03_odp.02, ra-03_odp_2, cp-02.06_odp (legacy/non-canonical)
+      - does NOT guess when ambiguous: if multiple canonicals map to the same key, pick the lexicographically smallest.
+    """
+    out: Dict[str, str] = {}
+    for pid in (param_ids or set()):
+        key = _param_key(pid)
+        if not key:
+            continue
+        if key not in out or pid < out[key]:
+            out[key] = pid
+    return out
+
+def _param_key(raw: str) -> str:
+    """
+    Normalize a raw param token to a stable key:
+      <family>-<ctrl2>[.<enh2>]_<kind>.<idx2>
+    """
+    s = (raw or "").strip().lower()
+    if not s:
+        return ""
+    s = re.sub(r"\s+", "", s)
+    s = s.replace("__", "_")
+
+    # Canonical-ish: ra-03_odp.02 ; ac-02.05_prm.01 ; at-2_prm_1
+    m = re.match(r"^([a-z]{2})-?(\d{1,2})(?:\.(\d{1,2}))?_(odp|prm)[\._-]?(\d{1,2})$", s)
+    if m:
+        fam, ctrl, enh, kind, idx = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+        enh_s = ("." + format(int(enh), "02d")) if enh is not None else ""
+        return f"{fam}-{int(ctrl):02d}{enh_s}_{kind}.{int(idx):02d}"
+
+    # Legacy: cp-02.06_odp  (meaning control=02, idx=06, kind=odp)
+    m2 = re.match(r"^([a-z]{2})-(\d{1,2})\.(\d{1,2})_(odp|prm)$", s)
+    if m2:
+        fam, ctrl, idx, kind = m2.group(1), m2.group(2), m2.group(3), m2.group(4)
+        return f"{fam}-{int(ctrl):02d}_{kind}.{int(idx):02d}"
+
+    # Legacy: ac_02_odp_1
+    m3 = re.match(r"^([a-z]{2})[-_]?(\d{1,2})_(odp|prm)[\._-]?(\d{1,2})$", s)
+    if m3:
+        fam, ctrl, kind, idx = m3.group(1), m3.group(2), m3.group(3), m3.group(4)
+        return f"{fam}-{int(ctrl):02d}_{kind}.{int(idx):02d}"
+
+    return ""
+
+def _canonicalize_param_list(
+    raw_list: List[str],
+    *,
+    param_ids: Set[str],
+    key_map: Dict[str, str],
+    assignment_sentinel: str,
+) -> List[str]:
+    """
+    Canonicalize a list of ODP/PRM ids into CCS-canonical ids.
+    Principle: provably-extractive -> only emit ids that exist in CCS param_ids.
+    Unknown/unmappable tokens are dropped (they are not mechanically verifiable).
+    """
+    seen: Set[str] = set()
+    out: List[str] = []
+    has_assign = False
+
+    for x in (raw_list or []):
+        s = (x or "").strip()
+        if not s:
+            continue
+        if s == assignment_sentinel:
+            has_assign = True
+            continue
+
+        if s in param_ids:
+            if s not in seen:
+                out.append(s)
+                seen.add(s)
+            continue
+
+        k = _param_key(s)
+        if not k:
+            # Try prefix match for tokens like "pm-05_odp" (no idx)
+            s_low = re.sub(r"\s+", "", s.lower())
+            if _PARAM_ID_KIND_RE.search(s_low) and (s_low.endswith("_odp") or s_low.endswith("_prm")):
+                candidates = sorted([pid for pid in param_ids if pid.lower().startswith(s_low + ".")])
+                if len(candidates) == 1:
+                    cand = candidates[0]
+                    if cand not in seen:
+                        out.append(cand)
+                        seen.add(cand)
+            continue
+
+        cand = key_map.get(k, "")
+        if cand and cand in param_ids and cand not in seen:
+            out.append(cand)
+            seen.add(cand)
+
+    out_sorted = sorted(out)
+    if has_assign:
+        out_sorted.append(assignment_sentinel)
+    return out_sorted
 def _apply_odp_policy_to_answer(
     answer_text: str,
     policy: str,
@@ -484,7 +591,7 @@ class ComplianceGPTPipeline:
         except Exception:
             kp = []
 
-        desired = ["smt", "odp", "prm", "obj", "gdn"]
+        desired = ["smt", "gdn", "odp", "prm", "obj"]
         new_kp: List[str] = []
         for k in desired:
             if k not in new_kp:
@@ -769,17 +876,53 @@ class ComplianceGPTPipeline:
 
         # 8) Apply ODP policy (gold_row can override)
         policy = ""
+        policy_from_gold = False
         if isinstance(gold_row, dict):
             try:
-                policy = str(gold_row.get("resolution_policy", "")).strip().upper()
+                raw_pol = str(gold_row.get("resolution_policy", "") or "").strip()
+                if raw_pol:
+                    policy = raw_pol.upper()
+                    policy_from_gold = True
             except Exception:
                 policy = ""
+                policy_from_gold = False
         if policy in {"NAN", "NA", "N/A", "NONE", "NULL"}:
             policy = ""
+            policy_from_gold = False
         if not policy:
             policy = "ASK"
 
         answer_text2, odp_req, status_override = _apply_odp_policy_to_answer(answer_text, policy, self.org_profile)
+
+        # Canonicalize ODP/PRM ids against CCS (provably-extractive: drop unknown ids)
+        param_ids: Set[str] = set()
+        try:
+            rb = getattr(self.retriever, "record_by_id", {}) or {}
+            for _id, rec in rb.items():
+                if isinstance(rec, dict):
+                    k = str(rec.get("kind", "")).strip().lower()
+                    if k in {"odp", "prm"}:
+                        param_ids.add(str(_id))
+        except Exception:
+            param_ids = set()
+
+        key_map = _build_param_key_to_canonical(param_ids)
+
+        # Canonicalize generator-produced ODP list (if any)
+        contract["odp_required_list"] = _canonicalize_param_list(
+            list(contract.get("odp_required_list", []) or []),
+            param_ids=param_ids,
+            key_map=key_map,
+            assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
+        )
+
+        # Canonicalize placeholder-derived ODP list
+        odp_req = _canonicalize_param_list(
+            list(odp_req or []),
+            param_ids=param_ids,
+            key_map=key_map,
+            assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
+        )
 
         final_status = status
         if final_status == "NO_EVIDENCE":
@@ -792,8 +935,19 @@ class ComplianceGPTPipeline:
             # also respect generator's PARAMS_REQUIRED if it claimed it
             if status == "PARAMS_REQUIRED":
                 final_status = "PARAMS_REQUIRED"
+
+
+            # Evaluation-only: if gold explicitly says ASK/PRESERVE, enforce PARAMS_REQUIRED (status correctness gate)
+            if policy_from_gold and policy in {"ASK", "PRESERVE"}:
+                final_status = "PARAMS_REQUIRED"
                 # merge lists conservatively
-                odp_req = sorted(set(list(odp_req or []) + list(contract.get("odp_required_list", []) or [])))
+                merged = list(odp_req or []) + list(contract.get("odp_required_list", []) or [])
+                odp_req = _canonicalize_param_list(
+                    merged,
+                    param_ids=param_ids,
+                    key_map=key_map,
+                    assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
+                )
 
         # 9) Citations (contract-level, deterministic)
         cite_ids = [s.get("source_id", "") for s in (filled_spans or []) if str(s.get("source_id", "")).strip()]

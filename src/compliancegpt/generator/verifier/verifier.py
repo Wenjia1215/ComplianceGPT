@@ -189,40 +189,39 @@ def _split_listish(value: Any) -> List[str]:
 
 def normalize_odp_id(raw: str) -> str:
     """
-    Make ODP/PRM IDs comparable across minor formatting differences.
+    Best-effort canonicalization for ODP/PRM ids.
 
-    Observed formats in your gold sets:
-      - ac-02_odp.5
-      - ac-7_odp_1
-      - at-2_prm_1
-      - at-4_odp   (no number)
-    Normalization strategy (lightweight, compatibility-first):
-      - lowercase, trim, remove internal whitespace
-      - normalize family separators: ac_02 -> ac-02
-      - normalize odp/prm separators: _odp_1 -> _odp.1 ; _prm_2 -> _prm.2
-      - pad single-digit numeric suffixes for odp./prm. (e.g., .5 -> .05)
+    Notes:
+      - This is intentionally heuristic and must never "invent" ids.
+      - It only normalizes formatting (zero-padding, separators) so comparisons are stable.
     """
-    s = (raw or "").strip().lower()
-    s = re.sub(r"\s+", "", s)
+    s = (raw or "").strip()
+    if not s:
+        return ""
 
-    # normalize common family separators
-    s = s.replace("ac_", "ac-").replace("ra_", "ra-").replace("pl_", "pl-").replace("pm_", "pm-")
-    s = s.replace("__", "_")
+    # preserve the special sentinel used by the pipeline
+    if s == _ASSIGNMENT_REQUIRED_SENTINEL:
+        return s
 
-    # normalize odp/prm variants: _odp_1 / _odp-1 / _odp.1 => _odp.1
-    s = re.sub(r"_(odp|prm)[_\-]", r"_\1.", s)
+    t = re.sub(r"\s+", "", s.lower())
 
-    # Some strings may contain 'odp.' or 'prm.' already; pad single digits
-    s = re.sub(r"\b(odp\.)(\d)\b", r"\g<1>0\2", s)
-    s = re.sub(r"\b(prm\.)(\d)\b", r"\g<1>0\2", s)
+    # Canonical / near-canonical: ra-03_odp.02 ; ac-02.05_prm.01 ; at-2_prm_1
+    m = re.match(r"^([a-z]{2})-?(\d{1,2})(?:\.(\d{1,2}))?_(odp|prm)[\._-]?(\d{1,2})$", t)
+    if m:
+        fam, ctrl, enh, kind, idx = m.group(1), m.group(2), m.group(3), m.group(4), m.group(5)
+        ctrl_s = f"{int(ctrl):02d}"
+        enh_s = f".{int(enh):02d}" if enh is not None else ""
+        idx_s = f"{int(idx):02d}"
+        return f"{fam}-{ctrl_s}{enh_s}_{kind}.{idx_s}"
 
-    return s
+    # Legacy form: cp-02.06_odp  (meaning control=02, idx=06, kind=odp)
+    m2 = re.match(r"^([a-z]{2})-(\d{1,2})\.(\d{1,2})_(odp|prm)$", t)
+    if m2:
+        fam, ctrl, idx, kind = m2.group(1), m2.group(2), m2.group(3), m2.group(4)
+        return f"{fam}-{int(ctrl):02d}_{kind}.{int(idx):02d}"
 
-
-# ==========================================================
-# 3) Extraction & Resolution
-# ==========================================================
-
+    # If we cannot confidently normalize, return a conservative cleaned token
+    return t
 def _extract_placeholder_token(payload: str) -> Optional[str]:
     """
     Extract the ODP/PRM token from the placeholder payload after 'insert:'.

@@ -106,10 +106,76 @@ def _build_fulltext(part: Dict[str, Any], kind: str) -> Tuple[str, bool, bool]:
 
     return base, bool(has_prose), used_desc
 
+
+# -----------------------------
+# Param (ODP/PRM) support
+# -----------------------------
+def _param_kind(param_id: str) -> str:
+    pid = (param_id or "").strip().lower()
+    if "_odp" in pid:
+        return "odp"
+    if "_prm" in pid:
+        return "prm"
+    return "param"
+
+def _param_label_value(param: Dict[str, Any]) -> str:
+    # OSCAL uses both top-level 'label' and props{name=label,value=...}
+    lab = str(param.get("label", "")).strip()
+    if lab:
+        return lab
+    props = param.get("props")
+    if isinstance(props, list):
+        for pr in props:
+            if isinstance(pr, dict) and pr.get("name") == "label":
+                v = str(pr.get("value", "")).strip()
+                if v:
+                    return v
+    return ""
+
+def _param_select_choices(param: Dict[str, Any]) -> List[str]:
+    sel = param.get("select")
+    if not isinstance(sel, dict):
+        return []
+    ch = sel.get("choice")
+    if not isinstance(ch, list):
+        return []
+    out: List[str] = []
+    for c in ch:
+        if isinstance(c, str) and c.strip():
+            out.append(c.strip())
+    return out
+
+def _param_guidelines_prose(param: Dict[str, Any]) -> List[str]:
+    gl = param.get("guidelines")
+    if not isinstance(gl, list):
+        return []
+    out: List[str] = []
+    for g in gl:
+        if isinstance(g, dict):
+            prose = g.get("prose")
+            if isinstance(prose, str) and prose.strip():
+                out.append(prose.strip())
+    return out
+
+def _build_param_text(param_id: str, param: Dict[str, Any]) -> str:
+    # Keep this compact but retrieval-friendly: ID + label + choices + guidelines.
+    pieces: List[str] = []
+    lab = _param_label_value(param)
+    if lab:
+        pieces.append(lab)
+    choices = _param_select_choices(param)
+    if choices:
+        pieces.append("Choices: " + " | ".join(choices))
+    gl = _param_guidelines_prose(param)
+    if gl:
+        pieces.append("Guidelines: " + " ".join(gl))
+    body = " ".join(pieces).strip()
+    return f"{param_id.strip()} {body}".strip() if body else param_id.strip()
+
 # -----------------------------
 # Build JSONL
 # -----------------------------
-def build_clause_jsonl_records(oscal_json: Dict[str, Any], *, version_label: str) -> List[Dict[str, Any]]:
+def build_clause_jsonl_records(oscal_json: Dict[str, Any], *, version_label: str, include_params: bool = False) -> List[Dict[str, Any]]:
     catalog = oscal_json.get("catalog")
     if not isinstance(catalog, dict):
         raise ValueError("Input JSON does not have top-level 'catalog' object.")
@@ -163,6 +229,45 @@ def build_clause_jsonl_records(oscal_json: Dict[str, Any], *, version_label: str
                 "used_descendants": bool(used_desc),
                 "provenance": prov,
             })
+
+        # Optionally emit parameter definitions (ODP/PRM) as separate JSONL records.
+        # Note: these records are NOT loaded by the S7 retriever by default (keep_kinds=("smt","gdn")).
+        if include_params:
+            params = ctrl.get("params")
+            if isinstance(params, list):
+                for prm in params:
+                    if not isinstance(prm, dict):
+                        continue
+                    prm_id = str(prm.get("id", "")).strip()
+                    if not prm_id:
+                        continue
+                    prm_id_norm = prm_id.lower()
+                    if prm_id_norm in seen:
+                        continue
+                    seen.add(prm_id_norm)
+
+                    # Only keep ODP/PRM-like params; this avoids pulling in unrelated params.
+                    if ("_odp" not in prm_id_norm) and ("_prm" not in prm_id_norm):
+                        continue
+
+                    txt = _build_param_text(prm_id_norm, prm)
+                    if not txt or not txt.strip():
+                        continue
+
+                    out.append({
+                        "id": prm_id_norm,
+                        "control_id": ctrl_id.lower(),
+                        "title": title,
+                        "text": txt,
+                        "kind": _param_kind(prm_id_norm),
+                        "part_name": "param",
+                        "label": _param_label_value(prm),
+                        "parent_part_id": "",
+                        "has_prose": True,
+                        "used_descendants": False,
+                        "provenance": prov,
+                    })
+
 
     return out
 
@@ -228,6 +333,7 @@ def main():
     ap.add_argument("--out_rev4_jsonl", type=Path, required=True)
     ap.add_argument("--rev5_gold_csv", type=Path, default=None)
     ap.add_argument("--rev4_gold_csv", type=Path, default=None)
+    ap.add_argument("--include_params", action="store_true", help="Also emit ODP/PRM parameter records (kind=odp|prm) into the JSONL.")
     ap.add_argument("--validate", action="store_true")
     args = ap.parse_args()
 
@@ -236,7 +342,7 @@ def main():
         ("rev4", args.rev4_oscal_json, args.out_rev4_jsonl),
     ]:
         data = json.load(in_path.open("r", encoding="utf-8"))
-        recs = build_clause_jsonl_records(data, version_label=label)
+        recs = build_clause_jsonl_records(data, version_label=label, include_params=args.include_params)
         write_jsonl(recs, out_path)
         print(f"[OK] {label}: wrote {len(recs)} clause docs -> {out_path}")
 
