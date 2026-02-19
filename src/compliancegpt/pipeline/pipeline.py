@@ -588,6 +588,75 @@ def _balance_docs_across_controls(
         out.append(d)
 
     return out
+
+def _balance_docs_evenly_across_controls(
+    docs: List[Dict[str, Any]],
+    *,
+    allowed_controls: List[str],
+    top_k: int,
+) -> List[Dict[str, Any]]:
+    """Reorder docs so the generator sees a roughly even quota per allowed control.
+
+    Use this only when control ranking confidence is low (top-1 vs top-2/3 ambiguous).
+    It improves control selection robustness without using gold labels.
+
+    This is *reordering only*; no docs are created or removed.
+    """
+    if not docs:
+        return []
+    allow = [str(c).strip().upper() for c in (allowed_controls or []) if str(c).strip()]
+    if len(allow) <= 1:
+        return list(docs)
+
+    top_k_val = int(top_k) if top_k is not None else 0
+    if top_k_val <= 0:
+        return list(docs)
+
+    groups: Dict[str, List[Dict[str, Any]]] = {c: [] for c in allow}
+    other: List[Dict[str, Any]] = []
+    for d in (docs or []):
+        c = str(_doc_control(d) or "").strip().upper()
+        if c in groups:
+            groups[c].append(d)
+        else:
+            other.append(d)
+
+    # Round-robin across controls to fill the first top_k window.
+    out: List[Dict[str, Any]] = []
+    seen: Set[str] = set()
+    idxs: Dict[str, int] = {c: 0 for c in allow}
+
+    while len(out) < top_k_val:
+        progressed = False
+        for c in allow:
+            i = idxs.get(c, 0)
+            ds = groups.get(c, []) or []
+            while i < len(ds):
+                d = ds[i]
+                i += 1
+                did = _doc_id(d)
+                if not did or did in seen:
+                    continue
+                seen.add(did)
+                out.append(d)
+                progressed = True
+                break
+            idxs[c] = i
+            if len(out) >= top_k_val:
+                break
+        if not progressed:
+            break
+
+    # Append the remainder in original order.
+    for d in (docs or []):
+        did = _doc_id(d)
+        if not did or did in seen:
+            continue
+        seen.add(did)
+        out.append(d)
+
+    return out
+
 def _augment_primary_control_docs(
     *,
     primary_control: str,
@@ -1086,15 +1155,12 @@ class ComplianceGPTPipeline:
         except Exception:
             keep_norm = ()
 
-        if (not keep_norm) or (keep_norm == ("smt", "gdn")):
-            # Empty tuple disables kind filtering inside ComplianceGPTRetriever.load_clause_records_jsonl
-            new_keep_kinds: Tuple[str, ...] = tuple()
+        if not keep_norm:
+            # Default: retrieval corpus is clause-only.
+            new_keep_kinds: Tuple[str, ...] = ("smt", "gdn")
         else:
-            kk = list(keep_norm)
-            for k in ("smt", "gdn", "odp", "prm", "obj"):
-                if k not in kk:
-                    kk.append(k)
-            new_keep_kinds = tuple(kk)
+            # Respect explicit keep_kinds from config; do not auto-expand with params.
+            new_keep_kinds = tuple(keep_norm)
 
         # Prefer selection order: statements first, then parameters, then guidance (stable).
         try:
@@ -1296,12 +1362,17 @@ class ComplianceGPTPipeline:
 
 
         try:
-            retrieved_docs = self.retriever.retrieve(q, top_k=max(int(controls_k_val), 1), rewrites=rew)
+            # Retrieve deeper than generator top-k to reduce control/clause misses (still clause-only kinds).
+            retrieval_top_k = max(int(controls_k_val), int(gen_docs_k_val) * 4, 40)
+            if retrieval_top_k > 60:
+                retrieval_top_k = 60
+            retrieved_docs = self.retriever.retrieve(q, top_k=retrieval_top_k, rewrites=rew)
         except TypeError:
             raise TypeError("Retriever API mismatch. Expected ComplianceGPTRetriever.retrieve(query, top_k=..., rewrites=...).")
 
         retrieved_docs = list(retrieved_docs or [])
         added_param_doc_ids: List[str] = []
+        added_clause_doc_ids: List[str] = []
 
         # Parameter/ODP material remains available in CCS (retriever.record_by_id) for canonicalization.
         # Evidence candidates passed to the generator are clause-level only (smt/gdn).
@@ -1325,11 +1396,12 @@ class ComplianceGPTPipeline:
         allowed_controls: List[str] = []
         gate_n_default = int(getattr(self, "gen_control_gate_topn", 1) or 0)
         gate_n_used = gate_n_default
+        margin_ratio: Optional[float] = None
 
         if gate_n_default > 0 and ranked_controls:
             # Dynamically widen generator pool when control ranking confidence is low.
             meta = getattr(self.retriever, "last_meta", {}) if hasattr(self.retriever, "last_meta") else {}
-            margin_ratio: Optional[float] = None
+            margin_ratio = None
             try:
                 if isinstance(meta, dict) and ("final_margin_ratio" in meta):
                     margin_ratio = float(meta.get("final_margin_ratio"))
@@ -1375,15 +1447,25 @@ class ComplianceGPTPipeline:
             )
 
 
-        # If we widened to multiple controls (low-confidence), preserve within-control coverage by
-        # prioritizing the primary control's docs in the generator window.
-        if len(allowed_controls) > 1 and primary_control:
-            docs_gen_pool = _balance_docs_across_controls(
-                docs_gen_pool,
-                primary_control=primary_control,
-                allowed_controls=allowed_controls,
-                top_k=int(gen_docs_k_val),
-            )
+        # If we widened to multiple controls (low-confidence), adjust the generator window ordering.
+        # When confidence is low (small margin between top controls), balance evenly so the generator
+        # can select the correct control. Otherwise, keep a primary-control bias to preserve
+        # within-control clause-id coverage.
+        if len(allowed_controls) > 1:
+            even_thr = float(getattr(self, "gen_control_gate_even_balance_thr", 0.08))
+            if (margin_ratio is not None) and (margin_ratio < even_thr):
+                docs_gen_pool = _balance_docs_evenly_across_controls(
+                    docs_gen_pool,
+                    allowed_controls=allowed_controls,
+                    top_k=int(gen_docs_k_val),
+                )
+            elif primary_control:
+                docs_gen_pool = _balance_docs_across_controls(
+                    docs_gen_pool,
+                    primary_control=primary_control,
+                    allowed_controls=allowed_controls,
+                    top_k=int(gen_docs_k_val),
+                )
 
         docs_for_gen = _choose_docs_for_generator(docs_gen_pool, top_k=int(gen_docs_k_val), doc_filter_mode=doc_filter_mode_used)
 
@@ -1405,8 +1487,8 @@ class ComplianceGPTPipeline:
                 sel_ids = []
             sel_ids = [s for s in sel_ids if s]
 
-            winner_control: str = ""
-            if sel_ids:
+            winner_control: str = str(primary_control or "").strip().upper()
+            if (not winner_control) and sel_ids:
                 # Majority vote across selected ids.
                 counts: Dict[str, int] = {}
                 for sid in sel_ids:
@@ -1415,18 +1497,101 @@ class ComplianceGPTPipeline:
                         counts[str(cid).upper()] = counts.get(str(cid).upper(), 0) + 1
                 if counts:
                     winner_control = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
-            if not winner_control:
-                winner_control = str(primary_control or "").strip().upper()
+            
 
-            if winner_control and len(allowed_controls) > 1:
-                # Candidate docs from the winner control (post-filtering/augmentation).
-                cand_docs = [d for d in (docs_gen_pool or []) if str(_doc_control(d) or "").strip().upper() == winner_control and _doc_kind(d) in {"smt", "gdn"}]
+            # If the generator selected a different control (within allowed_controls), allow switching
+            # only when control ranking confidence is low (small margin between top controls).
+            if winner_control and (allowed_controls or []):
+                wc = str(winner_control).strip().upper()
+                allow_set = {str(c).strip().upper() for c in (allowed_controls or []) if str(c).strip()}
+                if wc in allow_set:
+                    # Evidence dominance within the generator-selected citations
+                    sel_counts: Dict[str, int] = {}
+                    for sid in (sel_ids or []):
+                        cid = normalize_control_id(sid)
+                        if cid:
+                            k = str(cid).strip().upper()
+                            sel_counts[k] = sel_counts.get(k, 0) + 1
+                    pc = str(primary_control or "").strip().upper()
+                    primary_cnt = int(sel_counts.get(pc, 0)) if pc else 0
+                    winner_cnt = int(sel_counts.get(wc, 0))
 
-                # Build an ordered list: placeholders first, then statements, then guidance.
-                def _cand_key(d: Dict[str, Any]) -> Tuple[int, int, str]:
+                    switch_thr = float(getattr(self, "gen_control_allow_switch_thr", 0.08))
+                    strong_thr = float(getattr(self, "gen_control_allow_switch_strong_thr", 0.15))
+
+                    if (margin_ratio is not None) and (margin_ratio < switch_thr):
+                        primary_control = wc
+                        winner_control = wc
+                    elif (
+                        (margin_ratio is not None)
+                        and (margin_ratio < strong_thr)
+                        and (winner_cnt >= 3)
+                        and (winner_cnt > primary_cnt)
+                    ):
+                        primary_control = wc
+                        winner_control = wc
+                    else:
+                        # Keep the retrieval-based primary control in higher-confidence scenarios.
+                        winner_control = str(primary_control or wc).strip().upper()
+
+
+            if winner_control:
+                # Pull additional clause docs for this control directly from CCS inventory (record_by_id),
+                # so broad questions can cover sibling clauses even if they didn't land in top-k retrieval.
+                def _inventory_docs_for_control(ctrl: str) -> List[Dict[str, Any]]:
+                    out: List[Dict[str, Any]] = []
+                    try:
+                        rmap = getattr(self.retriever, "record_by_id", {})  # type: ignore
+                    except Exception:
+                        rmap = {}
+                    for _rid, rec in (rmap or {}).items():
+                        if not isinstance(rec, dict):
+                            continue
+                        k = str(rec.get("kind", "")).lower().strip()
+                        if k not in {"smt", "gdn"}:
+                            continue
+                        cid = normalize_control_id(str(rec.get("id", "")) or str(_rid))
+                        if str(cid).strip().upper() != str(ctrl).strip().upper():
+                            continue
+                        out.append(rec)
+                    return out
+
+                inv_docs = _inventory_docs_for_control(winner_control)
+
+                # Candidate docs from the winner control (post-filtering/augmentation) plus inventory expansion.
+                cand_docs = [
+                    d for d in (docs_gen_pool or [])
+                    if str(_doc_control(d) or "").strip().upper() == winner_control and _doc_kind(d) in {"smt", "gdn"}
+                ]
+                # Merge in inventory docs (dedupe by id).
+                if inv_docs:
+                    for d in inv_docs:
+                        if str(_doc_kind(d) or "").lower().strip() not in {"smt", "gdn"}:
+                            continue
+                        did = str(_doc_id(d) or "").strip()
+                        if not did:
+                            continue
+                        cand_docs.append(d)
+                # Dedupe preserving first occurrence
+                _seen: Set[str] = set()
+                _deduped: List[Dict[str, Any]] = []
+                for _d in cand_docs:
+                    _did = str(_doc_id(_d) or "").strip()
+                    if not _did or _did in _seen:
+                        continue
+                    _seen.add(_did)
+                    _deduped.append(_d)
+                cand_docs = _deduped
+
+                if not allow_enhancement:
+                    cand_docs = [d for d in cand_docs if not _is_enhancement_clause_id(str(_doc_id(d) or ""))]
+
+                # Ordered list: placeholder-bearing statements first, then other statements, then guidance.
+                def _cand_key(d: Dict[str, Any]) -> Tuple[int, int, int, str]:
+                    enh_rank = 0 if not _is_enhancement_clause_id(str(_doc_id(d) or "")) else 1
                     has_param = 0 if _doc_has_param_placeholder(d) else 1
                     kind_rank = 0 if _doc_kind(d) == "smt" else 1
-                    return (has_param, kind_rank, str(_doc_id(d) or ""))
+                    return (enh_rank, has_param, kind_rank, str(_doc_id(d) or ""))
 
                 cand_docs_sorted = sorted(cand_docs, key=_cand_key)
 
@@ -1434,26 +1599,61 @@ class ComplianceGPTPipeline:
                 already = set(sel_ids)
                 to_add: List[str] = []
 
-                # Always add one gdn if present but missing.
-                gdn_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "gdn" and str(_doc_id(d) or "").strip() and (not _doc_has_param_placeholder(d))]
-                if not gdn_ids:
-                    gdn_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "gdn" and str(_doc_id(d) or "").strip()]
-                if gdn_ids and all(_doc_id_suffix(s).strip().lower() != "_gdn" for s in sel_ids):
-                    to_add.append(gdn_ids[0])
+                # Count selected kinds using CCS inventory (record_by_id includes all kinds).
+                def _kind_of_id(sid: str) -> str:
+                    try:
+                        rec = self.retriever.record_by_id.get(str(sid), {})  # type: ignore
+                        return str(rec.get("kind", "")).lower()
+                    except Exception:
+                        return ""
 
-                # If the selected set is small, backfill more from winner control up to a small target.
-                # This helps clause-id alignment (e.g., missing sibling letters) after multi-control sharing.
-                target_min = 8
-                if len(sel_ids) < target_min:
+                sel_smt = sum(1 for sid in sel_ids if _kind_of_id(sid) == "smt")
+                sel_gdn = sum(1 for sid in sel_ids if _kind_of_id(sid) == "gdn")
+
+                MAX_ADDED = 10
+                MIN_SMT = 3
+                MIN_TOTAL = 8
+
+                # Always include at least one guidance if available and none selected.
+                if sel_gdn == 0:
+                    gdn_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "gdn" and str(_doc_id(d) or "").strip()]
+                    if gdn_ids:
+                        to_add.append(gdn_ids[0])
+
+                # Ensure at least one statement if any exists (prevents gdn-only evidence).
+                if sel_smt == 0:
+                    smt_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "smt" and str(_doc_id(d) or "").strip()]
+                    for did in smt_ids:
+                        if did not in already and did not in to_add:
+                            to_add.append(did)
+                            sel_smt += 1
+                            break
+
+                # Backfill additional statement clauses from the same control to improve clause-id recall.
+                if sel_smt < MIN_SMT:
+                    for d in cand_docs_sorted:
+                        if _doc_kind(d) != "smt":
+                            continue
+                        did = str(_doc_id(d) or "").strip()
+                        if not did or did in already or did in to_add:
+                            continue
+                        to_add.append(did)
+                        sel_smt += 1
+                        if sel_smt >= MIN_SMT or len(to_add) >= MAX_ADDED:
+                            break
+
+                # If the selected set is still small, backfill more from the same control up to MIN_TOTAL.
+                if (len(sel_ids) + len(to_add)) < MIN_TOTAL:
                     for d in cand_docs_sorted:
                         did = str(_doc_id(d) or "").strip()
                         if not did or did in already or did in to_add:
                             continue
                         to_add.append(did)
-                        if len(sel_ids) + len(to_add) >= target_min:
+                        if (len(sel_ids) + len(to_add)) >= MIN_TOTAL or len(to_add) >= MAX_ADDED:
                             break
 
                 if to_add:
+                    added_clause_doc_ids.extend([x for x in to_add if x])
                     # Append to evidence spans (IDs only); span_text will be filled deterministically later.
                     spans = list(contract.get("evidence_spans") or [])
                     for did in to_add:
@@ -1538,11 +1738,19 @@ class ComplianceGPTPipeline:
                     )
                     winner = str(ordered[0][0]).upper()
                     if winner:
-                        primary_control = winner
+                        # Keep evidence internally consistent, but prefer current primary_control if present.
+                        target_ctrl = str(primary_control or "").strip().upper()
+                        if target_ctrl and any(
+                            str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper() == target_ctrl
+                            for gs in gated
+                        ):
+                            tgt = target_ctrl
+                        else:
+                            tgt = winner
                         gated = [
                             gs
                             for gs in gated
-                            if str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper() == winner
+                            if str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper() == tgt
                         ]
 
             spans = gated
@@ -1596,6 +1804,60 @@ class ComplianceGPTPipeline:
                 status = "NO_EVIDENCE"
         else:
             status = "ERROR"
+
+        # If the selector returns NO_EVIDENCE but we do have gated docs available,
+        # treat this as a selector failure and apply a deterministic fallback.
+        # This preserves the meaning of NO_EVIDENCE as "retriever produced no usable evidence".
+        if status == "NO_EVIDENCE" and docs_for_gen:
+            fallback_used = True
+            fallback_reason = fallback_reason or "selector_returned_no_evidence_but_docs_available"
+
+            # Prefer a statement clause for auditability and placeholder extraction.
+            chosen_id: Optional[str] = None
+            for d in docs_for_gen:
+                fid = str((d or {}).get("id", "")).strip()
+                if not fid:
+                    continue
+                if (not allow_enhancement) and _is_enhancement_clause_id(fid):
+                    continue
+                k = str((d or {}).get("kind", "")).strip().lower()
+                if k and k != "smt":
+                    continue
+                chosen_id = fid
+                break
+            if not chosen_id:
+                chosen_id = str((docs_for_gen[0] or {}).get("id", "")).strip()
+
+            if chosen_id:
+                spans = [{"source_id": chosen_id, "span_text": ""}]
+                status = "OK"
+
+        # Ensure at least one statement clause is cited when a statement is available.
+        # This prevents guidance-only evidence, which often suppresses provable placeholder extraction.
+        if status in {"OK", "PARAMS_REQUIRED"} and spans and docs_for_gen:
+            has_smt = any("_smt" in str((s or {}).get("source_id", "")) for s in spans)
+            if not has_smt:
+                chosen_smt: Optional[str] = None
+                # Prefer leaf-level statements (e.g., *_smt.a) when available.
+                leaf_first = sorted(
+                    [d for d in docs_for_gen if str((d or {}).get("id", "")).strip()],
+                    key=lambda dd: ("_smt." not in str((dd or {}).get("id", "")), "_smt" not in str((dd or {}).get("id", ""))),
+                )
+                for d in leaf_first:
+                    fid = str((d or {}).get("id", "")).strip()
+                    if not fid:
+                        continue
+                    if (not allow_enhancement) and _is_enhancement_clause_id(fid):
+                        continue
+                    k = str((d or {}).get("kind", "")).strip().lower()
+                    if k and k != "smt":
+                        continue
+                    if "_smt" not in fid:
+                        continue
+                    chosen_smt = fid
+                    break
+                if chosen_smt and all(str((s or {}).get("source_id", "")) != chosen_smt for s in spans):
+                    spans = list(spans) + [{"source_id": chosen_smt, "span_text": ""}]
 
         # Controlled fallback only when generator output is malformed or ERROR (NEVER override NO_EVIDENCE)
         if status == "ERROR":
@@ -1810,7 +2072,7 @@ class ComplianceGPTPipeline:
 
         # Debug extras (kept minimal)
         final_contract["debug"] = {
-            "pipeline_patch_id": "2026-02-19_rrseed_v1",
+            "pipeline_patch_id": "2026-02-19_rrseed_v6b_even_gate_switch2",
             "query": q,
             "rewrites": rew,
             "variants": getattr(self.retriever, "last_variants", []) if hasattr(self.retriever, "last_variants") else [],
@@ -1831,6 +2093,7 @@ class ComplianceGPTPipeline:
             "doc_filter_mode": doc_filter_mode_used,
             "docs_for_gen_ids": [d.get("id") for d in (docs_for_gen or [])][: int(top_k)],
             "added_param_doc_ids": added_param_doc_ids,
+            "added_clause_doc_ids": added_clause_doc_ids,
             # Selector output
             "selected_source_ids": [s.get("source_id") for s in (filled_spans or []) if isinstance(s, dict)],
             "selected_controls": _selected_controls_from_spans(filled_spans or []),

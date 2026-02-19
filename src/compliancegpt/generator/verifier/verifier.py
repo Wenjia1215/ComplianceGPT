@@ -489,7 +489,12 @@ def check_citations(contract: AnswerContract, gold: GoldLabel, strict_extras: bo
     return errors, control_metrics, doc_metrics
 
 
-def check_odp_behavior(contract: AnswerContract, gold: GoldLabel, org_profile: Optional[Dict[str, Any]] = None) -> List[str]:
+def check_odp_behavior(
+    contract: AnswerContract,
+    gold: GoldLabel,
+    org_profile: Optional[Dict[str, Any]] = None,
+    strict_odp_extras: bool = True,
+) -> List[str]:
     """
     Checks:
       - If gold requires ODPs and policy=ASK or PRESERVE: status must be PARAMS_REQUIRED
@@ -551,8 +556,15 @@ def check_odp_behavior(contract: AnswerContract, gold: GoldLabel, org_profile: O
                     if status != "OK":
                         errors.append("AllODPsPresentButStatusNotOK")
 
-        if status == "PARAMS_REQUIRED" and gen_odps and set(gen_odps) != set(gold_odps):
-            errors.append(f"ODPRequiredListNotEqualGold:gold={gold_odps},gen={gen_odps}")
+        if status == "PARAMS_REQUIRED" and gen_odps:
+            gold_set = set(gold_odps)
+            gen_set = set(gen_odps)
+            missing = sorted(gold_set - gen_set)
+            extra = sorted(gen_set - gold_set)
+            # Missing required ODPs is always a hard error.
+            # Extra ODPs are allowed when strict_odp_extras=False (e.g., research mode tolerating over-asking).
+            if missing or (extra and strict_odp_extras):
+                errors.append(f"ODPRequiredListNotEqualGold:gold={gold_odps},gen={gen_odps}")
 
         if status == "OK" and has_unresolved_odp_placeholder(contract.answer_text):
             errors.append("StatusOKButStillHasODPPlaceholders")
@@ -714,7 +726,7 @@ def verify_answer(
     errors: List[str] = []
 
     errors.extend(check_status_consistency(contract))
-    errors.extend(check_odp_behavior(contract, gold_label, org_profile=org_profile))
+    errors.extend(check_odp_behavior(contract, gold_label, org_profile=org_profile, strict_odp_extras=bool(strict_extras)))
     errors.extend(check_version_correctness(contract, gold_label, strict_version=strict_version, corpus_version=corpus_version))
 
     cit_errors, ctrl_metrics, doc_metrics = check_citations(contract, gold_label, strict_extras=strict_extras)

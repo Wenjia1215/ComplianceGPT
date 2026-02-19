@@ -178,6 +178,47 @@ def load_clause_records_jsonl(
     return out
 
 
+def load_all_records_by_id_jsonl(ccs_path: str) -> Dict[str, Dict[str, Any]]:
+    """
+    Load ALL CCS records into an id->record map (including params like odp/prm).
+
+    Important: retrieval corpora should still be built from clause-only kinds
+    (e.g., smt/gdn) via load_clause_records_jsonl(). This function is for
+    inventory/verification/canonicalization purposes only.
+    """
+    out: Dict[str, Dict[str, Any]] = {}
+    with open(ccs_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            rec = json.loads(line)
+            if not isinstance(rec, dict):
+                continue
+
+            rid = str(rec.get("id", "")).strip()
+            if not rid:
+                continue
+
+            kind = str(rec.get("kind", "other")).lower().strip()
+            txt = str(rec.get("text", "")).strip()
+
+            # Normalize control id when present (some records may not have one)
+            ctl_raw = rec.get("control_id") or rec.get("control") or ""
+            ctl = normalize_control_id(ctl_raw)
+
+            # Keep original fields but ensure canonical keys exist
+            merged = dict(rec)
+            merged["id"] = rid
+            merged["kind"] = kind
+            merged["text"] = txt
+            merged["title"] = str(rec.get("title", "")).strip()
+            merged["control_id"] = ctl
+
+            out[rid] = merged
+
+    return out
+
+
 def build_control_docs_from_clauses(records: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     """
     Control-level pseudo-docs for BM25:
@@ -759,9 +800,14 @@ class ComplianceGPTRetriever:
     def __init__(self, *, ccs_path: str, config: RetrievalConfig = RetrievalConfig(), **kwargs):
         self.config = config
 
-        # 1) Load CCS (clause-level)
+        # 1) Load CCS
+        #    - self.records: retrieval corpus (clause-only kinds)
+        #    - self.record_by_id: full CCS inventory (includes odp/prm for canonicalization)
         self.records = load_clause_records_jsonl(ccs_path, keep_kinds=config.keep_kinds)
-        self.record_by_id = {r["id"]: r for r in self.records}
+        self.record_by_id = load_all_records_by_id_jsonl(ccs_path)
+        # Ensure clause records used in retrieval are stored in canonical, normalized form
+        for r in self.records:
+            self.record_by_id[r["id"]] = r
 
         # clause ids for CCS sanity check
         self.ids = [r["id"] for r in self.records]
