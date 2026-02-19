@@ -45,20 +45,26 @@ The Generator must return a single valid JSON object with this structure:
   - Must be an empty string in provably-extractive mode.
 
 - **`evidence_spans`**
-  - The Generator selects the *minimum* set of `source_id` values needed to answer the query.
+  - Select a minimal but complete set of `source_id` values needed to answer the query.
+  - Evidence spans must reference clause-level items only: `smt` (statement) and `gdn` (guidance).
   - `span_text` must be an empty string for every span.
 
 - **`status`**
   - `OK`: evidence spans selected.
   - `NO_EVIDENCE`: no spans selected (`evidence_spans=[]`).
-  - `PARAMS_REQUIRED`: selected evidence contains unresolved organization-defined parameters (ODPs).
+  - `PARAMS_REQUIRED`: reserved for pipeline output (ODP policy enforcement is deterministic).
   - `ERROR`: parsing/format failure (should be rare; pipeline may fallback).
 
 - **`odp_required_list`**
-  - If `status="PARAMS_REQUIRED"`, include ODP IDs discovered in the selected evidence text.
-  - Otherwise, must be empty.
+  - Must be an empty list (`[]`) in provably-extractive mode.
+  - ODP/PRM requirements are derived deterministically by the pipeline from filled evidence text and CCS parameter inventory.
 
-> Note: the pipeline is the source of truth for final ODP handling and may override/adjust status after deterministic filling.
+- **Evidence eligibility constraints**
+  - Only clause evidence kinds are eligible: `smt` (statement) and `gdn` (guidance).
+  - Parameter/objective nodes (`odp`, `prm`, `obj`) are not eligible as evidence spans.
+  - Prefer specific subclauses over parent clauses when available (e.g., `ac-02_smt.a` over `ac-02_smt`).
+
+> Note: the pipeline is the source of truth for ODP policy enforcement and the final `PARAMS_REQUIRED` status.
 
 ---
 

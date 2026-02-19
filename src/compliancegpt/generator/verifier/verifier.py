@@ -28,6 +28,9 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Tuple, Iterable, Set
 
 
+_ASSIGNMENT_REQUIRED_SENTINEL = "__ASSIGNMENT_REQUIRED__"
+
+
 # ==========================================================
 # 1) Data Models
 # ==========================================================
@@ -93,21 +96,37 @@ __all__ = [
 # ==========================================================
 
 # Regex to capture "AC-2" or "AC-2(1)"
-_CTRL_RE = re.compile(r"(?<![A-Z0-9])([A-Z]{2}-\d+(?:\(\d+\))?)(?=$|[^A-Z0-9])")
+_CTRL_RE = re.compile(r"(?<![A-Z0-9])([A-Z]{2}-\d+(?:\(\d+\)|\.\d+)?)(?=$|[^A-Z0-9])")
 
 
 def _canonicalize_control_id(cid: str) -> str:
-    """Normalize control IDs like 'AC-02(1)' -> 'AC-2(1)'."""
+    """Normalize control IDs like 'AC-02(1)' or 'AC-02.01' -> 'AC-2(1)'.
+
+    Dot enhancement form 'AT-2.1' is normalized to 'AT-2(1)'.
+    """
     s = str(cid or "").strip().upper()
-    m = re.match(r"^([A-Z]{2})-(\d+)(\(\d+\))?$", s)
+    m = re.match(r"^([A-Z]{2})-(\d+)(?:\((\d+)\)|\.(\d+))?$", s)
     if not m:
         return s
-    fam, num, enh = m.group(1), m.group(2), (m.group(3) or "")
+
+    fam = m.group(1)
+    num_raw = m.group(2)
+    enh_raw = m.group(3) or m.group(4) or ""
+
     try:
-        num2 = str(int(num))
+        num = str(int(num_raw))
     except Exception:
-        num2 = num
-    return f"{fam}-{num2}{enh}"
+        num = num_raw
+
+    enh = ""
+    if enh_raw:
+        try:
+            enh = f"({int(enh_raw)})"
+        except Exception:
+            enh = f"({enh_raw})"
+
+    return f"{fam}-{num}{enh}"
+
 _VER_RE = re.compile(r"\brev(?:ision)?\s*([45])\b", flags=re.IGNORECASE)
 
 # Curly placeholder patterns:
@@ -204,6 +223,9 @@ def normalize_odp_id(raw: str) -> str:
         return s
 
     t = re.sub(r"\s+", "", s.lower())
+
+    if t in {"assignment_required", "assignmentrequired"}:
+        return _ASSIGNMENT_REQUIRED_SENTINEL
 
     # Canonical / near-canonical: ra-03_odp.02 ; ac-02.05_prm.01 ; at-2_prm_1
     m = re.match(r"^([a-z]{2})-?(\d{1,2})(?:\.(\d{1,2}))?_(odp|prm)[\._-]?(\d{1,2})$", t)

@@ -739,6 +739,12 @@ class RetrievalConfig:
     clauses_per_control: int = 3
     kind_priority: Tuple[str, ...] = ("smt", "gdn")  # fill missing evidence in this order
 
+    # Evidence gating (keep params in CCS, but avoid citing them as evidence)
+    evidence_kinds: Tuple[str, ...] = ("smt", "gdn")
+
+    # Prefer more specific statement subclauses (e.g., *_smt.a) over top-level statements
+    prefer_depth1_subclauses: bool = True
+
 
 class ComplianceGPTRetriever:
     """
@@ -799,18 +805,44 @@ class ComplianceGPTRetriever:
 
         # Dense clause hits
         clause_hits = self.dense_index.search(query, top_k=max(100, self.config.candidate_set_size * 20))
+        allowed_kinds = set(k.lower() for k in (self.config.evidence_kinds or ()))
         for clause_id, score in clause_hits:
+            rec = self.record_by_id.get(clause_id)
+            if not rec:
+                continue
+            kind = str(rec.get("kind", "")).lower()
+            if allowed_kinds and kind not in allowed_kinds:
+                continue
+
             ctl = normalize_control_id(self.clause_to_control.get(clause_id, "")).upper()
             if ctl not in controls_set:
                 continue
             per_ctl[ctl].append((clause_id, float(score)))
 
-        # Keep best unique clause ids per control (by score)
+        def _depth_bucket(cid: str) -> int:
+            s = str(cid).lower()
+            rem = ""
+            for suf in ("_smt", "_gdn", "_obj"):
+                if suf in s:
+                    rem = s.split(suf, 1)[1]
+                    break
+            depth = rem.count(".") if rem else 0
+            if not self.config.prefer_depth1_subclauses:
+                return 0
+            if depth == 1:
+                return 0
+            if depth == 2:
+                return 1
+            if depth >= 3:
+                return 2
+            return 3
+
+        # Keep best unique clause ids per control (depth-aware, then score)
         selected: Dict[str, List[str]] = {}
         for ctl in controls:
             hits = per_ctl.get(ctl, [])
             if hits:
-                hits_sorted = sorted(hits, key=lambda x: x[1], reverse=True)
+                hits_sorted = sorted(hits, key=lambda x: (_depth_bucket(x[0]), -x[1]))
                 seen = set()
                 best_ids: List[str] = []
                 for cid, _ in hits_sorted:
@@ -829,6 +861,8 @@ class ComplianceGPTRetriever:
             if need > 0:
                 for kind in self.config.kind_priority:
                     kind_ids = self.control_to_clause_ids_by_kind.get(ctl, {}).get(kind, [])
+                    if kind_ids and self.config.prefer_depth1_subclauses:
+                        kind_ids = sorted(kind_ids, key=_depth_bucket)
                     for cid in kind_ids:
                         if cid not in selected[ctl]:
                             selected[ctl].append(cid)
