@@ -207,22 +207,26 @@ def _expand_clause_ids_to_children(
     parent_to_children: Dict[str, List[str]],
     max_total: int,
     max_children_expand: int = 12,
+    small_child_threshold: int = 4,
+    max_ancestor_hops: int = 6,
 ) -> List[str]:
-    """Expand clause ids to include relevant parent/child subclauses without losing intro context.
+    """Apply a conservative hierarchy closure over clause ids.
 
-    Goals:
-      - If a list-introducing parent clause (text ends with ':') is selected, keep the parent and add
-        immediate children (depth-1) of kinds smt/gdn with has_prose=True.
-      - If a child clause is selected and its parent carries placeholders or list-intro context, include
-        the parent before the child.
-      - Never drop the original selected ids. De-duplicate while preserving order.
-      - Truncate to max_total.
+    Primary goal (general, non-gold-specific): reduce "MissedDocIds" caused by missing
+    base statements or small, clearly-defined child clauses.
 
-    Notes:
-      - This function is intentionally conservative; it only expands when the CCS indicates list-intro
-        or descendant usage, avoiding citation explosion.
-      - It preserves parent clauses that contain parameter placeholders (e.g., ODP time window) that do
-        not appear in leaf children.
+    Closure rules (bounded):
+      1) If a selected clause has ancestors (via parent_part_id), include ancestors up to the
+         top-level clause (max_ancestor_hops). This captures "base statement" ids such as
+         'ra-5_smt' when citing 'ra-5_smt.a'.
+      2) If a selected clause is a parent with a *small* number of children (<= small_child_threshold),
+         include those children (depth-1). This captures cases like citing 'si-4_smt.c' while
+         gold expects 'si-4_smt.c.1' and 'si-4_smt.c.2'.
+      3) Preserve original order as much as possible, de-duplicate, and truncate to max_total.
+
+    Safety constraints:
+      - Only expands within smt/gdn kinds.
+      - Avoids citation explosion by requiring small branching factor for child expansion.
     """
     allowed = {"smt", "gdn"}
     seen: Set[str] = set()
@@ -258,15 +262,43 @@ def _expand_clause_ids_to_children(
         seen.add(cid)
         out.append(cid)
 
+    def _ancestors(cid: str) -> List[str]:
+        chain: List[str] = []
+        cur = cid
+        hops = 0
+        while hops < int(max_ancestor_hops):
+            parent = str((meta_by_id.get(cur) or {}).get("parent_part_id", "") or "").strip()
+            if not parent:
+                break
+            if parent in chain:
+                break
+            if _kind(parent) and _kind(parent) not in allowed:
+                break
+            if not _has_prose(parent):
+                # Skip non-prose nodes but continue climbing; they sometimes exist as structural nodes.
+                cur = parent
+                hops += 1
+                continue
+            chain.append(parent)
+            cur = parent
+            hops += 1
+        # Return from root-most to leaf-most ancestor
+        chain.reverse()
+        return chain
+
     for sid in (source_ids or []):
         s = str(sid or "").strip()
         if not s:
             continue
 
+        # 1) Always include ancestor chain (bounded). This captures missing base statement ids.
+        for anc in _ancestors(s):
+            _add(anc)
+
         parent = str((meta_by_id.get(s) or {}).get("parent_part_id", "") or "").strip()
 
-        # If this is a child, include a qualifying parent before the child.
-        if parent:
+        # If this is a child and parent carries important context (params / list intro), ensure parent is kept.
+        if parent and parent not in seen:
             ptxt = _txt(parent)
             if _has_param_placeholder(ptxt) or _is_list_intro(ptxt) or _used_desc(parent):
                 _add(parent)
@@ -274,12 +306,20 @@ def _expand_clause_ids_to_children(
         # Always keep the originally selected id.
         _add(s)
 
-        # If this is a list-introducing parent, add immediate children after it.
+        # 2) If this is a parent, optionally add immediate children.
         kids = parent_to_children.get(s, []) or []
         if kids:
             stxt = _txt(s)
-            if _is_list_intro(stxt) or _used_desc(s):
+            should_expand = _is_list_intro(stxt) or _used_desc(s) or (0 < len(kids) <= int(small_child_threshold))
+            if should_expand:
                 for k in kids[: int(max_children_expand)]:
+                    _add(str(k))
+
+        # 3) If this is a child of a small parent, include siblings (bounded by threshold).
+        if parent:
+            pkids = parent_to_children.get(parent, []) or []
+            if 0 < len(pkids) <= int(small_child_threshold):
+                for k in pkids[: int(max_children_expand)]:
                     _add(str(k))
 
         if len(out) >= int(max_total):
@@ -588,75 +628,6 @@ def _balance_docs_across_controls(
         out.append(d)
 
     return out
-
-def _balance_docs_evenly_across_controls(
-    docs: List[Dict[str, Any]],
-    *,
-    allowed_controls: List[str],
-    top_k: int,
-) -> List[Dict[str, Any]]:
-    """Reorder docs so the generator sees a roughly even quota per allowed control.
-
-    Use this only when control ranking confidence is low (top-1 vs top-2/3 ambiguous).
-    It improves control selection robustness without using gold labels.
-
-    This is *reordering only*; no docs are created or removed.
-    """
-    if not docs:
-        return []
-    allow = [str(c).strip().upper() for c in (allowed_controls or []) if str(c).strip()]
-    if len(allow) <= 1:
-        return list(docs)
-
-    top_k_val = int(top_k) if top_k is not None else 0
-    if top_k_val <= 0:
-        return list(docs)
-
-    groups: Dict[str, List[Dict[str, Any]]] = {c: [] for c in allow}
-    other: List[Dict[str, Any]] = []
-    for d in (docs or []):
-        c = str(_doc_control(d) or "").strip().upper()
-        if c in groups:
-            groups[c].append(d)
-        else:
-            other.append(d)
-
-    # Round-robin across controls to fill the first top_k window.
-    out: List[Dict[str, Any]] = []
-    seen: Set[str] = set()
-    idxs: Dict[str, int] = {c: 0 for c in allow}
-
-    while len(out) < top_k_val:
-        progressed = False
-        for c in allow:
-            i = idxs.get(c, 0)
-            ds = groups.get(c, []) or []
-            while i < len(ds):
-                d = ds[i]
-                i += 1
-                did = _doc_id(d)
-                if not did or did in seen:
-                    continue
-                seen.add(did)
-                out.append(d)
-                progressed = True
-                break
-            idxs[c] = i
-            if len(out) >= top_k_val:
-                break
-        if not progressed:
-            break
-
-    # Append the remainder in original order.
-    for d in (docs or []):
-        did = _doc_id(d)
-        if not did or did in seen:
-            continue
-        seen.add(did)
-        out.append(d)
-
-    return out
-
 def _augment_primary_control_docs(
     *,
     primary_control: str,
@@ -1396,12 +1367,11 @@ class ComplianceGPTPipeline:
         allowed_controls: List[str] = []
         gate_n_default = int(getattr(self, "gen_control_gate_topn", 1) or 0)
         gate_n_used = gate_n_default
-        margin_ratio: Optional[float] = None
 
         if gate_n_default > 0 and ranked_controls:
             # Dynamically widen generator pool when control ranking confidence is low.
             meta = getattr(self.retriever, "last_meta", {}) if hasattr(self.retriever, "last_meta") else {}
-            margin_ratio = None
+            margin_ratio: Optional[float] = None
             try:
                 if isinstance(meta, dict) and ("final_margin_ratio" in meta):
                     margin_ratio = float(meta.get("final_margin_ratio"))
@@ -1447,25 +1417,15 @@ class ComplianceGPTPipeline:
             )
 
 
-        # If we widened to multiple controls (low-confidence), adjust the generator window ordering.
-        # When confidence is low (small margin between top controls), balance evenly so the generator
-        # can select the correct control. Otherwise, keep a primary-control bias to preserve
-        # within-control clause-id coverage.
-        if len(allowed_controls) > 1:
-            even_thr = float(getattr(self, "gen_control_gate_even_balance_thr", 0.08))
-            if (margin_ratio is not None) and (margin_ratio < even_thr):
-                docs_gen_pool = _balance_docs_evenly_across_controls(
-                    docs_gen_pool,
-                    allowed_controls=allowed_controls,
-                    top_k=int(gen_docs_k_val),
-                )
-            elif primary_control:
-                docs_gen_pool = _balance_docs_across_controls(
-                    docs_gen_pool,
-                    primary_control=primary_control,
-                    allowed_controls=allowed_controls,
-                    top_k=int(gen_docs_k_val),
-                )
+        # If we widened to multiple controls (low-confidence), preserve within-control coverage by
+        # prioritizing the primary control's docs in the generator window.
+        if len(allowed_controls) > 1 and primary_control:
+            docs_gen_pool = _balance_docs_across_controls(
+                docs_gen_pool,
+                primary_control=primary_control,
+                allowed_controls=allowed_controls,
+                top_k=int(gen_docs_k_val),
+            )
 
         docs_for_gen = _choose_docs_for_generator(docs_gen_pool, top_k=int(gen_docs_k_val), doc_filter_mode=doc_filter_mode_used)
 
@@ -1498,42 +1458,6 @@ class ComplianceGPTPipeline:
                 if counts:
                     winner_control = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
             
-
-            # If the generator selected a different control (within allowed_controls), allow switching
-            # only when control ranking confidence is low (small margin between top controls).
-            if winner_control and (allowed_controls or []):
-                wc = str(winner_control).strip().upper()
-                allow_set = {str(c).strip().upper() for c in (allowed_controls or []) if str(c).strip()}
-                if wc in allow_set:
-                    # Evidence dominance within the generator-selected citations
-                    sel_counts: Dict[str, int] = {}
-                    for sid in (sel_ids or []):
-                        cid = normalize_control_id(sid)
-                        if cid:
-                            k = str(cid).strip().upper()
-                            sel_counts[k] = sel_counts.get(k, 0) + 1
-                    pc = str(primary_control or "").strip().upper()
-                    primary_cnt = int(sel_counts.get(pc, 0)) if pc else 0
-                    winner_cnt = int(sel_counts.get(wc, 0))
-
-                    switch_thr = float(getattr(self, "gen_control_allow_switch_thr", 0.08))
-                    strong_thr = float(getattr(self, "gen_control_allow_switch_strong_thr", 0.15))
-
-                    if (margin_ratio is not None) and (margin_ratio < switch_thr):
-                        primary_control = wc
-                        winner_control = wc
-                    elif (
-                        (margin_ratio is not None)
-                        and (margin_ratio < strong_thr)
-                        and (winner_cnt >= 3)
-                        and (winner_cnt > primary_cnt)
-                    ):
-                        primary_control = wc
-                        winner_control = wc
-                    else:
-                        # Keep the retrieval-based primary control in higher-confidence scenarios.
-                        winner_control = str(primary_control or wc).strip().upper()
-
 
             if winner_control:
                 # Pull additional clause docs for this control directly from CCS inventory (record_by_id),
@@ -1875,8 +1799,8 @@ class ComplianceGPTPipeline:
 
         
 
-        # 5.5) Leaf-alignment expansion (parent clause -> immediate children when list-introducing)
-        # Applies only to clause ids and only when CCS indicates the parent ends with ':'.
+        # 5.5) Hierarchy-closure expansion (general, non-gold-specific)
+        # Adds bounded ancestor (base statement) and small-child expansions to reduce MissedDocIds.
         try:
             if status in {"OK", "PARAMS_REQUIRED"} and spans:
                 self._ensure_ccs_hierarchy_loaded()
@@ -1890,6 +1814,8 @@ class ComplianceGPTPipeline:
                         parent_to_children=parent_to_children,
                         max_total=max(int(getattr(self, "leaf_expand_max_total", 24)), len(src_ids) + 12),
                         max_children_expand=int(getattr(self, "leaf_expand_max_children", 12)),
+                        small_child_threshold=int(getattr(self, "leaf_expand_small_child_threshold", 4)),
+                        max_ancestor_hops=int(getattr(self, "leaf_expand_max_ancestor_hops", 6)),
                     )
                     # Enforce single-control evidence to avoid unrelated controls injecting extra placeholders.
                     # Keep citations within the retriever-selected primary control unless multi-control behavior is explicitly needed.
@@ -2072,7 +1998,7 @@ class ComplianceGPTPipeline:
 
         # Debug extras (kept minimal)
         final_contract["debug"] = {
-            "pipeline_patch_id": "2026-02-19_rrseed_v6b_even_gate_switch2",
+            "pipeline_patch_id": "2026-02-19_rrseed_v5_ctrlgate_nonenh",
             "query": q,
             "rewrites": rew,
             "variants": getattr(self.retriever, "last_variants", []) if hasattr(self.retriever, "last_variants") else [],

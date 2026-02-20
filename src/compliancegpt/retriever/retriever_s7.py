@@ -575,6 +575,17 @@ def s7_rank_controls(
     else:
         base_margin_ratio = 1.0
 
+
+    # Effective apply threshold for the no-harm gate.
+    # In uncertain base-ranking scenarios, allow a slightly lower margin requirement so the reranker
+    # can correct control-id mistakes without being overly constrained.
+    effective_apply_min = float(rerank_apply_min_margin_ratio)
+    try:
+        if float(base_margin_ratio) < float(rerank_skip_min_base_margin_ratio):
+            effective_apply_min = min(effective_apply_min, 0.10)
+    except Exception:
+        effective_apply_min = float(rerank_apply_min_margin_ratio)
+
     # Optional agreement signal using original query only (cheap but conservative).
     top1_agree = False
     bm25_top1 = ""
@@ -613,6 +624,7 @@ def s7_rank_controls(
                     "dense_top1": dense_top1 if bool(rerank_skip_require_top1_agreement) else None,
                     "rerank_alpha": float(rerank_alpha),
                     "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+        "rerank_effective_apply_min_margin_ratio": float(effective_apply_min),
                     "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
                     "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
                     "final_top1": base_top1,
@@ -649,6 +661,7 @@ def s7_rank_controls(
             "base_margin_ratio": float(base_margin_ratio),
             "rerank_alpha": float(rerank_alpha),
             "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+        "rerank_effective_apply_min_margin_ratio": float(effective_apply_min),
             "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
             "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
             "final_top1": base_top1,
@@ -679,9 +692,16 @@ def s7_rank_controls(
     rerank_top1 = reranked_full[0] if reranked_full else ""
 
     # No-harm gate: if reranker changes top1 but with weak margin, keep base ordering.
+    # Patch (rerankgate_v1): when the base fused ranking is low-confidence, relax the apply threshold modestly.
     rerank_applied = True
     final_ranked = reranked_full
-    if (rerank_top1 != base_top1) and (rerank_margin_ratio < float(rerank_apply_min_margin_ratio)):
+
+    effective_apply_min = float(rerank_apply_min_margin_ratio)
+    base_uncertain_thr = 0.08
+    if float(base_margin_ratio) < float(base_uncertain_thr):
+        effective_apply_min = min(effective_apply_min, 0.10)
+
+    if (rerank_top1 != base_top1) and (rerank_margin_ratio < float(effective_apply_min)):
         rerank_applied = False
         final_ranked = cids_all
 
@@ -726,6 +746,7 @@ def s7_rank_controls(
         "skip_reason": None,
         "rerank_alpha": float(rerank_alpha),
         "rerank_apply_min_margin_ratio": float(rerank_apply_min_margin_ratio),
+        "rerank_effective_apply_min_margin_ratio": float(effective_apply_min),
         "rerank_skip_min_base_margin_ratio": float(rerank_skip_min_base_margin_ratio),
         "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
         "base_top1": base_top1,
