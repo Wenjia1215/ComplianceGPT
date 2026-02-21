@@ -24,9 +24,12 @@ from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, rep
 # Imports
 # ----------------------------
 from compliancegpt.generator.generator import ComplianceGenerator, load_org_profile, normalize_contract  # type: ignore
+
+PIPELINE_PATCH_ID = "2026-02-20-clean-v6-add-answer-compat"
+
 _VERIFY_IMPORT_ERROR = None
 try:
-    from compliancegpt.generator.verifier.verifier import verify_answer  # type: ignore
+    from compliancegpt.generator.verifier.verifier import verify_answer, verify_contract_validity  # type: ignore
     try:
         from compliancegpt.generator.verifier.verifier import parse_control_from_source_id  # type: ignore
     except Exception:
@@ -34,6 +37,7 @@ try:
 except Exception as e:
     verify_answer = None  # type: ignore
     parse_control_from_source_id = None  # type: ignore
+    verify_contract_validity = None  # type: ignore
     _VERIFY_IMPORT_ERROR = str(e)
 try:
     from compliancegpt.retriever.retriever_s7 import ComplianceGPTRetriever, RetrievalConfig  # type: ignore
@@ -94,6 +98,31 @@ def resolve_default_ccs_path(framework_version: str) -> str:
         return str(base / "NIST_SP-800-53_rev5_catalog.jsonl")
     return str(base / "NIST_SP-800-53_rev4_catalog.jsonl")
 
+
+def resolve_default_odp_registry_path(framework_version: str) -> str:
+    fw = _normalize_fw(framework_version)
+    base = Path("/content/drive/MyDrive/ComplianceGPT_v2/data/ODP")
+    if fw == "rev5":
+        return str(base / "rev5" / "odp_registry_rev5.json")
+    return str(base / "rev4" / "odp_registry_rev4.json")
+
+
+def load_odp_registry(path: Optional[str]) -> Dict[str, Any]:
+    """Load ODP registry mapping param_id -> metadata.
+
+    This is safe/non-cheating: it contains labels/prompts only (no values).
+    """
+    if not path:
+        return {}
+    try:
+        p = Path(str(path))
+        if not p.exists():
+            return {}
+        with p.open("r", encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
 
 def _doc_id_suffix(doc_id: str) -> str:
     s = str(doc_id or "").strip().lower()
@@ -343,11 +372,16 @@ def _choose_docs_for_generator(
     """
     Generator input doc selection.
 
+    Evidence kinds passed to the generator are restricted to clause-level:
+      - statement ("_smt")
+      - supplemental guidance ("_gdn")
+
     Modes:
-      - "all": pass through (top_k slice only)
+      - "all": pass through (top_k slice only, then kind gating)
       - "statement_only": only _smt docs   [DEPRECATED: deletes context; kept for backwards-compatibility]
       - "prefer_statement_only": if any _smt exist, use only those; else pass through  [DEPRECATED]
-      - "prefer_smt_keep_params": legacy alias; ranks statements first, then guidance (non-evidence kinds are dropped)
+      - "prefer_smt_keep_params": stable sort statements first then guidance
+      - "prefer_smt_drop_params": legacy alias; behaves like prefer_smt_keep_params (no placeholder-based re-ranking)
     """
     mode = str(doc_filter_mode or "all").strip().lower()
     docs = list(retrieved_docs or [])
@@ -356,7 +390,6 @@ def _choose_docs_for_generator(
         k = str(d.get("kind") or "").strip().lower()
         if k:
             return k
-        # fall back to id suffix: "_smt" -> "smt", etc.
         suf = _doc_id_suffix(d.get("id", "")).strip().lower()
         return suf[1:] if suf.startswith("_") else suf
 
@@ -367,63 +400,33 @@ def _choose_docs_for_generator(
     elif mode == "prefer_statement_only":
         smt = _statement_only_docs(docs)
         out = smt if smt else docs
-    elif mode == "prefer_smt_keep_params":
-        # Stable sort by kind bucket; keep original order within each bucket.
+    elif mode in {"prefer_smt_keep_params", "prefer_smt_drop_params"}:
         order = {"smt": 0, "gdn": 1}
         indexed = list(enumerate(docs))
         indexed.sort(key=lambda t: (order.get(_kind_of(t[1]), 9), t[0]))
         out = [d for _, d in indexed]
-        # Evidence gating: keep only clause-level evidence kinds for generator input.
-        ev = [d for d in out if _kind_of(d) in {"smt", "gdn"}]
-        if ev:
-            out = ev
     else:
         raise ValueError(f"Unknown doc_filter_mode={doc_filter_mode!r}")
 
-    # Evidence gating: only statement/guidance kinds are eligible for generator input.
-    # Parameter/objective nodes remain in CCS for canonicalization but are not passed as evidence.
+    # Evidence gating
     allowed = {"smt", "gdn"}
     out = [d for d in out if _kind_of(d) in allowed]
 
+    # Slice + de-dup (preserve order)
     if top_k is not None and int(top_k) > 0:
         k = int(top_k)
-        if k >= 2:
-            # Reserve one guidance clause if it exists; some gold labels explicitly require _gdn.
-            gdn_doc: Optional[Dict[str, Any]] = None
-            # Prefer a gdn doc without param placeholders (to avoid accidental PARAMS_REQUIRED flips).
-            for d in out:
-                if _kind_of(d) == "gdn" and not _doc_has_param_placeholder(d):
-                    gdn_doc = d
-                    break
-            if gdn_doc is None:
-                for d in out:
-                    if _kind_of(d) == "gdn":
-                        gdn_doc = d
-                        break
-            sliced = out[:k]
-            if gdn_doc is not None and all(_kind_of(d) != "gdn" for d in sliced):
-                # Replace the last doc with the first gdn doc, keeping order/dedup.
-                sliced = sliced[: max(0, k - 1)] + [gdn_doc]
-            # De-dup while preserving order
-            seen_ids: Set[str] = set()
-            dedup: List[Dict[str, Any]] = []
-            for d in sliced:
-                did = _doc_id(d)
-                if not did or did in seen_ids:
-                    continue
-                seen_ids.add(did)
-                dedup.append(d)
-            out = dedup
-        else:
-            out = out[:k]
-    return out
+        out = out[:k]
 
+    seen_ids: Set[str] = set()
+    dedup: List[Dict[str, Any]] = []
+    for d in out:
+        did = str(d.get("id", "")).strip()
+        if not did or did in seen_ids:
+            continue
+        seen_ids.add(did)
+        dedup.append(d)
 
-# ==========================================================
-# Control-ID normalization helpers (pipeline-local)
-# ==========================================================
-_CTRL_ID_RE = re.compile(r"(?i)([A-Z]{2})-0*([0-9]{1,3})")
-
+    return dedup
 def normalize_control_id(s: Any) -> Optional[str]:
     """Return canonical control id like 'AC-6' from variants (e.g., 'AC-06', 'AC-6_smt.1')."""
     if s is None:
@@ -487,6 +490,36 @@ def _filter_docs_by_controls(
             out.append(d)
     return out
 
+
+
+def _filter_docs_to_controls(
+    docs: List[Dict[str, Any]],
+    allowed_controls: List[str],
+) -> List[Dict[str, Any]]:
+    """Backward-compatible alias for older pipeline code."""
+    return _filter_docs_by_controls(docs, allowed_controls)
+
+
+def _apply_doc_filter_mode(
+    docs: List[Dict[str, Any]],
+    doc_filter_mode: str,
+) -> List[Dict[str, Any]]:
+    """Apply generator doc filter mode to an already assembled doc pool.
+
+    This is a thin compatibility wrapper over `_choose_docs_for_generator`.
+    """
+    mode = str(doc_filter_mode or "all").strip().lower()
+    # Historical aliases seen in older notebooks
+    if mode in {"smt_only", "statement_only"}:
+        mode = "statement_only"
+    elif mode in {"prefer_smt", "prefer_statement"}:
+        mode = "prefer_statement_only"
+
+    try:
+        return _choose_docs_for_generator(list(docs or []), top_k=len(docs or []), doc_filter_mode=mode)
+    except Exception:
+        # Fail open: never crash batch because a mode name drifted.
+        return list(docs or [])
 def _filter_docs_evidence_kinds(
     docs: List[Dict[str, Any]],
     *,
@@ -505,214 +538,6 @@ def _filter_docs_evidence_kinds(
 def _doc_has_param_placeholder(d: Dict[str, Any]) -> bool:
     txt = str(d.get("text") or "")
     return "{{ insert: param" in txt
-
-def _balance_docs_across_controls(
-    docs: List[Dict[str, Any]],
-    *,
-    primary_control: str,
-    allowed_controls: List[str],
-    top_k: int,
-) -> List[Dict[str, Any]]:
-    """Reorder docs so the primary control retains enough quota even when allowed_controls > 1.
-
-    Goal:
-      - Prevent clause-id starvation for the primary control (keeps within-control coverage)
-      - Still surface at least a small amount of non-primary evidence early, so the generator
-        has a fair chance to select the right control when top-1 vs top-2 is ambiguous.
-
-    This is *reordering only*; no docs are created or removed.
-    """
-    if not docs:
-        return []
-    if not primary_control or len(allowed_controls or []) <= 1:
-        return list(docs)
-
-    top_k_val = int(top_k) if top_k is not None else 0
-    if top_k_val <= 0:
-        return list(docs)
-
-    primary = str(primary_control).strip().upper()
-    allow = [str(c).strip().upper() for c in (allowed_controls or []) if str(c).strip()]
-    if primary not in allow:
-        allow = [primary] + [c for c in allow if c != primary]
-
-    # Group docs by control (preserve relative order).
-    groups: Dict[str, List[Dict[str, Any]]] = {c: [] for c in allow}
-    other: List[Dict[str, Any]] = []
-    for d in (docs or []):
-        c = str(_doc_control(d) or "").strip().upper()
-        if c in groups:
-            groups[c].append(d)
-        else:
-            other.append(d)
-
-    # Allocate a primary quota to keep the main control well represented.
-    # Heuristic: ~60% primary, remainder shared across others; enforce small minimums.
-    if len(allow) == 2:
-        quota_primary = max(6, (top_k_val * 2) // 3)
-    else:
-        quota_primary = max(6, (top_k_val * 3) // 5)
-
-    # Ensure we leave space for other controls when possible.
-    if top_k_val >= 8 and len(allow) > 1:
-        quota_primary = min(quota_primary, top_k_val - 2)
-    quota_primary = max(1, min(quota_primary, top_k_val))
-
-    remaining = max(0, top_k_val - quota_primary)
-    per_other = 0
-    if len(allow) > 1 and remaining > 0:
-        per_other = max(2, remaining // (len(allow) - 1))
-
-    out: List[Dict[str, Any]] = []
-    seen: Set[str] = set()
-
-    def _push(ds: List[Dict[str, Any]], limit: int) -> int:
-        cnt = 0
-        if limit <= 0:
-            return 0
-        for d in ds:
-            did = _doc_id(d)
-            if not did or did in seen:
-                continue
-            seen.add(did)
-            out.append(d)
-            cnt += 1
-            if cnt >= limit:
-                break
-        return cnt
-
-    prim_docs = groups.get(primary, []) or []
-
-    # --- Stage 1: seed a small amount of non-primary material early ---
-    # Keep this conservative to avoid starving clause-id coverage.
-    seed_primary = 0
-    seed_other = 0
-    if top_k_val >= 10 and len(allow) >= 2:
-        seed_primary = min(4, quota_primary)
-        seed_other = 1
-    elif top_k_val >= 8 and len(allow) >= 2:
-        seed_primary = min(3, quota_primary)
-        seed_other = 1
-
-    prim_used = _push(prim_docs, seed_primary)
-
-    # One doc from each other control early (if possible)
-    if seed_other > 0:
-        for c in allow:
-            if c == primary:
-                continue
-            _push(groups.get(c, []) or [], seed_other)
-
-    # --- Stage 2: fill remaining primary quota ---
-    remaining_primary = max(0, quota_primary - prim_used)
-    if remaining_primary > 0:
-        _push(prim_docs[prim_used:], remaining_primary)
-
-    # --- Stage 3: then each other control quota (round-robin across controls to keep diversity) ---
-    if per_other > 0:
-        for c in allow:
-            if c == primary:
-                continue
-            # if we already seeded 1, subtract it from the quota
-            quota_c = max(0, per_other - (seed_other if seed_other > 0 else 0))
-            if quota_c > 0:
-                ds = groups.get(c, []) or []
-                _push(ds[(seed_other if seed_other > 0 else 0):], quota_c)
-
-    # Finally, append everything else (preserve original ordering across remaining docs).
-    for d in (docs or []):
-        did = _doc_id(d)
-        if not did or did in seen:
-            continue
-        seen.add(did)
-        out.append(d)
-
-    return out
-def _augment_primary_control_docs(
-    *,
-    primary_control: str,
-    existing_docs: List[Dict[str, Any]],
-    retriever: Any,
-    max_docs: int,
-    allow_enhancement: bool,
-    evidence_kinds: Tuple[str, ...] = ("smt", "gdn"),
-) -> List[Dict[str, Any]]:
-    """Backfill additional clause-level docs for the primary control from CCS maps.
-
-    This is intentionally conservative:
-      - stays within a single control (primary_control)
-      - only adds evidence kinds (smt/gdn)
-      - blocks enhancement clause ids unless allow_enhancement=True
-      - preserves existing order; new docs appended
-    """
-    pc = (normalize_control_id(primary_control) or "").upper()
-    if not pc:
-        return list(existing_docs or [])
-    out: List[Dict[str, Any]] = [d for d in (existing_docs or []) if isinstance(d, dict)]
-    if len(out) >= int(max_docs):
-        return out[: int(max_docs)]
-    seen_ids: Set[str] = set()
-    for d in out:
-        did = str(d.get("id", "")).strip()
-        if did:
-            seen_ids.add(did)
-
-    ctl_to_ids = getattr(retriever, "control_to_clause_ids", {}) or {}
-    rb = getattr(retriever, "record_by_id", {}) or {}
-    cand_ids = list(ctl_to_ids.get(pc, []) or [])
-
-    def _depth_score(clause_id: str) -> int:
-        # Prefer deeper subclauses: ac-7_smt.h.1 -> depth 2 (h,1); ac-7_smt -> depth 0
-        s = str(clause_id or "")
-        if "_smt" in s:
-            tail = s.split("_smt", 1)[1]
-        elif "_gdn" in s:
-            tail = s.split("_gdn", 1)[1]
-        else:
-            tail = ""
-        tail = tail.lstrip(".")
-        if not tail:
-            return 0
-        return tail.count(".") + 1
-
-    allow_k = {str(k).strip().lower() for k in (evidence_kinds or tuple()) if str(k).strip()}
-    candidates: List[Tuple[int, int, str]] = []
-    for cid in cand_ids:
-        cid_s = str(cid or "").strip()
-        if not cid_s or cid_s in seen_ids:
-            continue
-        if (not allow_enhancement) and _is_enhancement_clause_id(cid_s):
-            continue
-        rec = rb.get(cid_s)
-        if not isinstance(rec, dict):
-            continue
-        kind = str(rec.get("kind", "")).strip().lower()
-        if kind not in allow_k:
-            continue
-        # kind rank: smt first then gdn
-        kind_rank = 0 if kind == "smt" else (1 if kind == "gdn" else 9)
-        depth_rank = -_depth_score(cid_s)  # deeper first
-        candidates.append((kind_rank, depth_rank, cid_s))
-
-    candidates.sort()
-    for _, _, cid_s in candidates:
-        if len(out) >= int(max_docs):
-            break
-        rec = rb.get(cid_s)
-        if not isinstance(rec, dict):
-            continue
-        out.append(
-            {
-                "id": rec.get("id", cid_s),
-                "control_id": normalize_control_id(rec.get("control_id", "")),
-                "kind": rec.get("kind", "other"),
-                "title": rec.get("title", ""),
-                "text": rec.get("text", ""),
-            }
-        )
-        seen_ids.add(cid_s)
-
-    return out[: int(max_docs)]
 
 def _unique_controls_in_order(docs: List[Dict[str, Any]]) -> List[str]:
     seen = set()
@@ -746,6 +571,37 @@ def _selected_controls_from_spans(spans: List[Dict[str, str]]) -> List[str]:
     return out
 
 
+
+def _best_primary_citation(query: str, spans: List[Dict[str, str]]) -> str:
+    """Pick primary citation by simple token overlap between query and span text."""
+    q = str(query or "").lower()
+    qtoks = set(re.findall(r"[a-z0-9]+", q))
+    if not qtoks:
+        # fallback to first
+        for s in (spans or []):
+            sid = str(s.get("source_id", "")).strip()
+            if sid:
+                return sid
+        return ""
+    best_sid = ""
+    best_score = -1
+    for s in (spans or []):
+        sid = str(s.get("source_id", "")).strip()
+        txt = str(s.get("span_text", "")).lower()
+        if not sid or not txt:
+            continue
+        stoks = set(re.findall(r"[a-z0-9]+", txt))
+        score = len(qtoks & stoks)
+        if score > best_score:
+            best_score = score
+            best_sid = sid
+    if best_sid:
+        return best_sid
+    for s in (spans or []):
+        sid = str(s.get("source_id", "")).strip()
+        if sid:
+            return sid
+    return ""
 def _build_citation_suffix(framework_version: str) -> str:
     fw = _normalize_fw(framework_version)
     if fw == "rev5":
@@ -796,6 +652,68 @@ def _profile_lookup(profile: Dict[str, Any], key: str) -> Optional[Any]:
         if isinstance(profile.get(top), dict) and key in profile[top]:
             return profile[top][key]
     return profile.get(key)
+
+
+def _build_ask_list(
+    required_param_ids: List[str],
+    filled_spans: List[Dict[str, str]],
+    odp_registry: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """Build structured ask_list entries from registry + cited spans (no values)."""
+    req = [str(x).strip() for x in (required_param_ids or []) if str(x).strip()]
+    if not req:
+        return []
+    # map param_id -> list[source_id] where it appears
+    param_to_sources: Dict[str, List[str]] = {}
+    for sp in (filled_spans or []):
+        sid = str(sp.get("source_id", "")).strip()
+        txt = str(sp.get("span_text", "") or "")
+        if not sid or not txt:
+            continue
+        keys, has_assign = _extract_odp_ids(txt)
+        for k in keys:
+            kid = str(k).strip()
+            if kid:
+                param_to_sources.setdefault(kid, [])
+                if sid not in param_to_sources[kid]:
+                    param_to_sources[kid].append(sid)
+        if has_assign:
+            param_to_sources.setdefault(_ASSIGNMENT_REQUIRED_SENTINEL, [])
+            if sid not in param_to_sources[_ASSIGNMENT_REQUIRED_SENTINEL]:
+                param_to_sources[_ASSIGNMENT_REQUIRED_SENTINEL].append(sid)
+
+    out: List[Dict[str, Any]] = []
+    for pid in req:
+        if pid == _ASSIGNMENT_REQUIRED_SENTINEL:
+            out.append({
+                "param_id": _ASSIGNMENT_REQUIRED_SENTINEL,
+                "friendly_label": "Assignment placeholder",
+                "raw_marker": "[assignment: ...]",
+                "ask_prompt": "Provide the organization-defined assignment value referenced in the cited clause(s).",
+                "source_ids": param_to_sources.get(_ASSIGNMENT_REQUIRED_SENTINEL, []),
+            })
+            continue
+        meta = odp_registry.get(pid) if isinstance(odp_registry, dict) else None
+        if isinstance(meta, dict):
+            out.append({
+                "param_id": pid,
+                "friendly_label": meta.get("friendly_label"),
+                "raw_marker": meta.get("raw_marker"),
+                "ask_prompt": meta.get("ask_prompt"),
+                "data_type": meta.get("data_type"),
+                "cardinality": meta.get("cardinality"),
+                "source_ids": param_to_sources.get(pid, []),
+            })
+        else:
+            out.append({
+                "param_id": pid,
+                "friendly_label": None,
+                "raw_marker": None,
+                "ask_prompt": f"What value does your organization use for parameter: {pid}?",
+                "source_ids": param_to_sources.get(pid, []),
+            })
+    return out
+
 
 
 
@@ -905,77 +823,121 @@ def _canonicalize_param_list(
     if has_assign:
         out_sorted.append(assignment_sentinel)
     return out_sorted
+
+def _query_allows_enhancements(query: str) -> bool:
+    """Allow enhancements only when the query explicitly references a control enhancement (e.g., AC-2(1))."""
+    q = str(query or "").upper()
+    if not q:
+        return False
+    return bool(re.search(r"\b[A-Z]{2}-\d{1,2}\(\d+\)\b", q)) or ("ENHANCEMENT" in q)
+
+
+def _extract_control_hints(query: str) -> List[str]:
+    """Extract explicit control references from the query (base + enhancements).
+
+    Returns canonical forms aligned with CCS ids:
+      - base: "AC-2"
+      - enhancement: "AC-2.1"  (from "AC-2(1)")
+    """
+    q = str(query or "")
+    if not q:
+        return []
+    out: List[str] = []
+
+    # Enhancements: AC-2(1) -> AC-2.1
+    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)\b", q):
+        base = str(m.group(1) or "").upper()
+        num = str(m.group(2) or "").strip()
+        try:
+            n = str(int(num))
+        except Exception:
+            n = num
+        if base and n:
+            out.append(f"{base}.{n}")
+
+    # Base controls
+    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\b", q):
+        base = str(m.group(1) or "").upper()
+        if not base:
+            continue
+        # Avoid duplicating base when enhancement already present.
+        if any(x.startswith(base + ".") for x in out):
+            continue
+        out.append(base)
+
+    # De-dup preserve order
+    seen: Set[str] = set()
+    final: List[str] = []
+    for x in out:
+        if x not in seen:
+            seen.add(x)
+            final.append(x)
+    return final
+
+
 def _apply_odp_policy_to_answer(
     answer_text: str,
     policy: str,
     org_profile: Dict[str, Any],
 ) -> Tuple[str, List[str], str]:
     """
-    Apply ODP resolution policy to the final answer_text.
+    Apply ODP resolution policy to the final answer_text cleanly.
 
-    Returns: (new_answer_text, odp_required_list, final_status_override_or_empty)
+    No query regex heuristics. Extractive presence dictates the requirement.
 
-    Policy:
-      - ASK: do not substitute; require params if any placeholders
-      - PRESERVE: do not substitute; require params if any placeholders (used for evaluation)
-      - FILL_FROM_PROFILE: substitute known keys; require params only for missing keys and assignment placeholders
+    Returns: (new_answer_text, odp_required_list, status_override)
     """
     pol_raw = policy
     try:
         pol = "" if pol_raw is None else str(pol_raw).strip().upper()
     except Exception:
         pol = ""
-    # Treat pandas/NumPy NaN and other empty-ish tokens as missing
-    if pol in {"", "NAN", "NA", "N/A", "NONE", "NULL"}:
-        pol = "ASK"
-    # Allow a few safe aliases
+
+    # Default to profile-filling when policy is missing/empty-ish
+    if pol in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
+        pol = "FILL_FROM_PROFILE"
     if pol in {"FILL", "PROFILE", "FILL_PROFILE"}:
         pol = "FILL_FROM_PROFILE"
+
     text = str(answer_text or "")
-
     keys, has_assignment = _extract_odp_ids(text)
+
     if not keys and not has_assignment:
-        return text, [], ""  # no change
+        return text, [], "OK"
 
-    missing: List[str] = []
-
-    if pol in {"ASK", "PRESERVE"}:
-        # Keep placeholders exactly; just surface required keys.
+    if pol == "PRESERVE":
+        # Keep placeholders verbatim; do not force PARAMS_REQUIRED.
         req = list(keys)
         if has_assignment:
             req.append(_ASSIGNMENT_REQUIRED_SENTINEL)
-        return text, req, "PARAMS_REQUIRED"
+        return text, req, "OK"
 
-    if pol == "FILL_FROM_PROFILE":
-        # Substitute what we can; keep missing placeholders.
+    if pol in {"ASK", "FILL_FROM_PROFILE"}:
+        missing: List[str] = []
         for k in keys:
             val = _profile_lookup(org_profile, k)
-            if val is None or (isinstance(val, str) and not val.strip()):
-                missing.append(k)
-                continue
-            val_str = str(val)
-            # replace curly placeholder for this key (robust for whitespace)
-            rep_braces = r"\{+\s*insert:\s*(?:param,\s*)?" + re.escape(k) + r"\s*\}+"
-            try:
-                text = re.sub(rep_braces, val_str, text, flags=re.IGNORECASE)
-            except re.error:
-                # if the regex fails, leave placeholder
+
+            if pol == "FILL_FROM_PROFILE" and val is not None and str(val).strip():
+                # Fill known value
+                val_str = str(val)
+                rep_braces = r"\{+\s*insert:\s*(?:param,\s*)?" + re.escape(k) + r"\s*\}+"
+                try:
+                    text = re.sub(rep_braces, val_str, text, flags=re.IGNORECASE)
+                except re.error:
+                    missing.append(k)
+            else:
                 missing.append(k)
 
         req = list(sorted(set(missing)))
         if has_assignment:
             req.append(_ASSIGNMENT_REQUIRED_SENTINEL)
 
+        # If placeholders remain unresolved in the final text, trigger PARAMS_REQUIRED.
         if req:
             return text, req, "PARAMS_REQUIRED"
-        return text, [], ""  # all resolved
+        return text, [], "OK"
 
-    raise ValueError(f"Unknown resolution_policy={policy!r}")
-
-
-# ==========================================================
-# Output Compatibility Wrapper
-# ==========================================================
+    raise ValueError(f"Unknown resolution_policy={pol_raw!r}")
 def _verifier_result_to_dict(ver: Any) -> Optional[Dict[str, Any]]:
     """Normalize verifier output (dataclass / dict / unknown) to a JSON-friendly dict."""
     if ver is None:
@@ -1057,6 +1019,29 @@ def _wrap_out(contract: Dict[str, Any]) -> Dict[str, Any]:
 # ==========================================================
 # Pipeline
 # ==========================================================
+def _ensure_ccs_hierarchy_loaded(
+    meta_by_id: Dict[str, Dict[str, Any]],
+    parent_to_children: Dict[str, List[str]],
+) -> None:
+    """Module-level alias used by older pipeline code paths.
+
+    Builds parent→children mapping from CCS metadata if `parent_to_children` is empty.
+    This is non-cheating: it uses only CCS fields (e.g., `parent_part_id`).
+    """
+    if parent_to_children:
+        return
+    try:
+        for cid, meta in (meta_by_id or {}).items():
+            if not isinstance(meta, dict):
+                continue
+            parent = meta.get("parent_part_id")
+            if parent:
+                parent = str(parent)
+                parent_to_children.setdefault(parent, []).append(str(cid))
+        for p in list(parent_to_children.keys()):
+            parent_to_children[p] = sorted(set(parent_to_children[p]))
+    except Exception:
+        return
 class ComplianceGPTPipeline:
     """
     End-to-end runner:
@@ -1085,8 +1070,11 @@ class ComplianceGPTPipeline:
         gen_control_gate_lowconf_top3: float = 0.04,
         gen_control_gate_lowconf_maxn: int = 3,
         block_enhancements_by_default: bool = True,
-        leaf_expand_max_children: int = 12,
-        leaf_expand_max_total: int = 24,
+        leaf_expand_max_children: int = 16,
+        leaf_expand_max_total: int = 64,
+        leaf_expand_levels: int = 2,
+        enable_hierarchy_closure: bool = False,
+        resolution_policy: str = "ASK",
     ):
         self.framework_version = _normalize_fw(framework_version)
         self.model_id = str(model_id)
@@ -1109,6 +1097,12 @@ class ComplianceGPTPipeline:
         # Leaf-alignment expansion caps (parent -> immediate children)
         self.leaf_expand_max_children = int(leaf_expand_max_children)
         self.leaf_expand_max_total = int(leaf_expand_max_total)
+        self.leaf_expand_levels = int(leaf_expand_levels)
+
+        # Optional: hierarchy closure expansion of cited clause ids (strict mode keeps this off).
+        self.enable_hierarchy_closure = bool(enable_hierarchy_closure)
+        # ODP resolution policy for single/batch runs (MUST NOT be sourced from gold labels).
+        self.resolution_policy = str(resolution_policy or "ASK")
 
         self.ccs_path = str(ccs_path) if ccs_path else resolve_default_ccs_path(self.framework_version)
         self.strict_ccs_assert = bool(strict_ccs_assert)
@@ -1116,6 +1110,11 @@ class ComplianceGPTPipeline:
 
         self.org_profile_path = org_profile_path
         self.org_profile: Dict[str, Any] = load_org_profile(org_profile_path) if org_profile_path else {}
+
+        # ODP registry (labels/prompts only; never contains values)
+        self.odp_registry_path = resolve_default_odp_registry_path(self.framework_version)
+        self.odp_registry: Dict[str, Any] = load_odp_registry(self.odp_registry_path)
+
 
 
         # Ensure parameter/ODP chunks are available to the retriever (ranking/boosting requires access).
@@ -1261,769 +1260,665 @@ class ComplianceGPTPipeline:
 
     # Main API
     # --------------------------
+
+    def _ensure_param_inventory_loaded(self) -> None:
+        """Build and cache CCS parameter inventory (ODP/PRM ids) for canonicalization."""
+        if getattr(self, "_param_ids", None) is not None and getattr(self, "_param_key_map", None) is not None:
+            return
+        self._assert_ccs_loaded()
+        param_ids: Set[str] = set()
+        try:
+            for rid, rec in (self.retriever.record_by_id or {}).items():
+                k = str(rec.get("kind", "") or "").strip().lower()
+                if k in {"odp", "prm"}:
+                    param_ids.add(str(rid))
+        except Exception:
+            param_ids = set()
+        self._param_ids = param_ids
+        self._param_key_map = _build_param_key_to_canonical(param_ids)
+
+    def _hierarchy_closure_expand(self, source_ids: List[str]) -> Tuple[List[str], List[str]]:
+        """
+        Defensible hierarchy closure for clause ids.
+
+        Allowed expansions (bounded; no gold use):
+          - add ancestors up to the base statement (*_smt) for each cited clause
+          - expand small container/list-intro nodes to their children (bounded), up to N levels
+
+        Returns: (expanded_ids_preserving_order, added_ids)
+        """
+        if not source_ids:
+            return [], []
+        if not bool(self.enable_hierarchy_closure):
+            return list(source_ids), []
+
+        self._assert_ccs_loaded()
+        self._ensure_ccs_hierarchy_loaded()
+
+        meta_by_id = self._ccs_meta_by_id
+        parent_to_children = self._ccs_parent_to_children
+
+        max_children = max(0, int(getattr(self, "leaf_expand_max_children", 0)))
+        max_total = max(0, int(getattr(self, "leaf_expand_max_total", 0)))
+        max_levels = max(0, int(getattr(self, "leaf_expand_levels", 1)))
+
+        original_set = set([str(s) for s in source_ids if str(s).strip()])
+        seen: Set[str] = set()
+        ordered: List[str] = []
+
+        def _add(x: str) -> None:
+            x2 = str(x or "").strip()
+            if not x2:
+                return
+            if x2 in seen:
+                return
+            if x2 not in meta_by_id:
+                return
+            seen.add(x2)
+            ordered.append(x2)
+
+        def _is_base_stmt(x: str) -> bool:
+            xl = (x or "").strip().lower()
+            return bool(re.search(r"_smt$", xl))
+
+        def _is_container_node(x: str) -> bool:
+            m = meta_by_id.get(x) or {}
+            if not m:
+                return False
+            kids = list(parent_to_children.get(x, []) or [])
+            if not kids:
+                return False
+            if bool(m.get("used_descendants")):
+                return True
+            txt = str(m.get("text", "") or "").strip()
+            if txt.endswith(":"):
+                return True
+            hp = m.get("has_prose")
+            if hp is False:
+                return True
+            # If the node has children at all, treat it as container (bounded by caps below).
+            return True
+
+        # 1) Add originals + ancestors (up to base statement)
+        for sid in source_ids:
+            _add(sid)
+            cur = str(sid or "").strip()
+            guard = 0
+            while cur and guard < 32:
+                guard += 1
+                parent = str((meta_by_id.get(cur) or {}).get("parent_part_id") or "").strip()
+                if not parent or parent == cur:
+                    break
+                _add(parent)
+                if _is_base_stmt(parent):
+                    break
+                cur = parent
+
+        # 2) Expand container nodes to children (bounded; multi-level downward closure)
+        if max_children > 0 and max_total > 0 and max_levels > 0:
+            # BFS seeded from the ORIGINAL ids only; descendants may be expanded up to max_levels.
+            queue: List[Tuple[str, int]] = []
+            best_level: Dict[str, int] = {}
+            for sid in source_ids:
+                s = str(sid or "").strip()
+                if not s:
+                    continue
+                if s not in meta_by_id:
+                    continue
+                best_level[s] = 0
+                queue.append((s, 0))
+
+            while queue:
+                pid, lvl = queue.pop(0)
+                if len(ordered) >= max_total:
+                    break
+                if lvl >= max_levels:
+                    continue
+                if not _is_container_node(pid):
+                    continue
+
+                kids = list(parent_to_children.get(pid, []) or [])
+                if not kids:
+                    continue
+                if len(kids) > max_children:
+                    try:
+                        kids = sorted(str(x) for x in kids)
+                    except Exception:
+                        kids = list(kids)
+                    kids = kids[: int(max_children)]
+
+                for kid in kids:
+                    if len(ordered) >= max_total:
+                        break
+                    km = meta_by_id.get(kid) or {}
+                    kind = str(km.get("kind", "") or "").strip().lower()
+                    txt = str(km.get("text", "") or "").strip()
+                    if kind not in {"smt", "gdn"}:
+                        continue
+                    if not txt:
+                        continue
+                    _add(kid)
+                    # Queue child for further expansion (if within level budget).
+                    nl = lvl + 1
+                    if nl < max_levels and kid in meta_by_id and _is_container_node(kid):
+                        prev = best_level.get(kid)
+                        if prev is None or nl < prev:
+                            best_level[kid] = nl
+                            queue.append((kid, nl))
+
+        expanded = list(ordered)
+        added = [x for x in expanded if x not in original_set]
+        return expanded, added
+
     def answer(
         self,
         query: str,
-        *,
-        top_k: int = 12,
-        controls_k: Optional[int] = None,
-        gen_docs_k: Optional[int] = None,
-        rewrites: Optional[List[str]] = None,
+        top_k: int = 10,
+        rewrites: Any = None,
         gold_row: Optional[Dict[str, Any]] = None,
         use_generator: bool = True,
-        run_verify: bool = True,
+        run_verify: bool = False,
+        doc_filter_mode: str = "prefer_smt_drop_params",
+        statement_only_on_param_queries: bool = True,
     ) -> Dict[str, Any]:
         """
-        Returns Final Answer Contract (see citation_contract_80053.md).
+        End-to-end single query -> extractive contract.
 
-        If gold_row is provided (evaluation), the verifier will compare to its expected control_id and resolution_policy.
+        Hard constraints:
+          - No gold leakage: `gold_row` is used ONLY inside the verifier call.
+          - Evidence must be clause-level (smt/gdn) with verbatim spans from CCS.
+          - No CCS inventory backfill (adding clauses that were not retrieved) unless explicitly enabled.
         """
         q = str(query or "").strip()
         if not q:
-            return _wrap_out({
+            err_contract = {
+                "question": "",
+                "framework_version": self.framework_version,
                 "answer_text": "",
+                "answer_text_with_citations": "",
                 "evidence_spans": [],
                 "status": "ERROR",
                 "odp_required_list": [],
                 "primary_citation": "",
                 "all_citations": "",
-                "answer_text_with_citation": "",
-                "contract_mode": "provably_extractive",
-                "error": "Empty query",
-            })
-
-        # 1) QUR rewrites
-        rew = list(rewrites) if rewrites else []
-        if self.qur is not None and not rew:
-            try:
-                rew = [r for r in (self.qur.generate(q) or []) if isinstance(r, str) and r.strip()]
-            except Exception as e:
-                print(f"[Pipeline] QUR failed; continuing without rewrites. ({e})")
-                rew = []
-
-        # 2) Retrieval
-        # Supervisor requirement: ranking/boosting (NOT deletion). We keep context and only adjust doc ordering.
-        policy_hint = ""
-        if isinstance(gold_row, dict):
-            try:
-                policy_hint = str(gold_row.get("resolution_policy", "")).strip().upper()
-            except Exception:
-                policy_hint = ""
-        if policy_hint in {"NAN", "NA", "N/A", "NONE", "NULL", ""}:
-            policy_hint = ""
-        # Split the retrieval vs generator budgets:
-        #   - controls_k: how many top controls to retrieve evidence for (retriever-level)
-        #   - gen_docs_k: how many clause-level docs to offer to the generator (within gated controls)
-        controls_k_val = int(controls_k) if controls_k is not None else int(top_k)
-        gen_docs_k_val = int(gen_docs_k) if gen_docs_k is not None else int(top_k)
-        controls_k_val = max(int(controls_k_val), 1)
-        gen_docs_k_val = max(int(gen_docs_k_val), 1)
-
-        # By default, block enhancement clause ids (e.g., ac-2.1_*) unless explicitly requested.
-        allow_enhancement = (not bool(getattr(self, "block_enhancements_by_default", True))) or _query_mentions_enhancement(q)
-        if isinstance(gold_row, dict) and not allow_enhancement:
-            try:
-                for k in ("control_id", "gold_control_id", "gold_control", "expected_control_id"):
-                    v = str(gold_row.get(k, "") or "")
-                    if v and (("." in v) or ("(" in v) or (")" in v)):
-                        allow_enhancement = True
-                        break
-            except Exception:
-                pass
-
-
-        try:
-            # Retrieve deeper than generator top-k to reduce control/clause misses (still clause-only kinds).
-            retrieval_top_k = max(int(controls_k_val), int(gen_docs_k_val) * 4, 40)
-            if retrieval_top_k > 60:
-                retrieval_top_k = 60
-            retrieved_docs = self.retriever.retrieve(q, top_k=retrieval_top_k, rewrites=rew)
-        except TypeError:
-            raise TypeError("Retriever API mismatch. Expected ComplianceGPTRetriever.retrieve(query, top_k=..., rewrites=...).")
-
-        retrieved_docs = list(retrieved_docs or [])
-        added_param_doc_ids: List[str] = []
-        added_clause_doc_ids: List[str] = []
-
-        # Parameter/ODP material remains available in CCS (retriever.record_by_id) for canonicalization.
-        # Evidence candidates passed to the generator are clause-level only (smt/gdn).
-
-        # 3) Doc selection for generator (single-control by default; stable ordering)
-        doc_filter_mode_used = str(self.doc_filter_mode or "all").strip().lower()
-        if doc_filter_mode_used in {"statement_only", "prefer_statement_only"}:
-            # Hard deprecate deletion modes: keep docs, just prefer statements.
-            doc_filter_mode_used = "prefer_smt_keep_params"
-        elif policy_hint in {"ASK", "PRESERVE", "FILL_FROM_PROFILE"} and doc_filter_mode_used == "all":
-            # Default boost for parameter-aware questions: prioritize statements then guidance.
-            doc_filter_mode_used = "prefer_smt_keep_params"
-
-        ranked_controls = list(getattr(self.retriever, "last_ranked_controls", []) or [])
-        primary_control = ""
-        if ranked_controls:
-            primary_control = str(normalize_control_id(ranked_controls[0]) or "").upper()
-        elif retrieved_docs:
-            primary_control = str((_doc_control(retrieved_docs[0]) or "")).upper()
-
-        allowed_controls: List[str] = []
-        gate_n_default = int(getattr(self, "gen_control_gate_topn", 1) or 0)
-        gate_n_used = gate_n_default
-
-        if gate_n_default > 0 and ranked_controls:
-            # Dynamically widen generator pool when control ranking confidence is low.
-            meta = getattr(self.retriever, "last_meta", {}) if hasattr(self.retriever, "last_meta") else {}
-            margin_ratio: Optional[float] = None
-            try:
-                if isinstance(meta, dict) and ("final_margin_ratio" in meta):
-                    margin_ratio = float(meta.get("final_margin_ratio"))
-            except Exception:
-                margin_ratio = None
-
-            if margin_ratio is not None:
-                thr_top2 = float(getattr(self, "gen_control_gate_lowconf_top2", 0.08))
-                thr_top3 = float(getattr(self, "gen_control_gate_lowconf_top3", 0.04))
-                maxn = int(getattr(self, "gen_control_gate_lowconf_maxn", 3) or 0)
-                if margin_ratio < thr_top3:
-                    gate_n_used = max(gate_n_used, 3)
-                elif margin_ratio < thr_top2:
-                    gate_n_used = max(gate_n_used, 2)
-                if maxn > 0:
-                    gate_n_used = min(gate_n_used, maxn)
-
-            gate_n_used = min(int(gate_n_used), len(ranked_controls))
-            for c in ranked_controls[:gate_n_used]:
-                cc = normalize_control_id(c)
-                if cc:
-                    allowed_controls.append(str(cc).upper())
-        elif primary_control:
-            gate_n_used = 1
-            allowed_controls = [primary_control]
-        docs_gen_pool = list(retrieved_docs or [])
-        # Gate to top-N controls (default top-1) to avoid cross-control ODP pollution.
-        docs_gen_pool = _filter_docs_by_controls(docs_gen_pool, allowed_controls)
-        # Only clause-level evidence kinds for the generator.
-        docs_gen_pool = _filter_docs_evidence_kinds(docs_gen_pool, allowed_kinds=("smt", "gdn"))
-        # Block enhancements unless explicitly allowed.
-        if not allow_enhancement:
-            docs_gen_pool = [d for d in docs_gen_pool if not _is_enhancement_clause_id(str(d.get("id", "")).strip())]
-        # Backfill more clause-level evidence for the primary control from CCS maps.
-        if primary_control:
-            docs_gen_pool = _augment_primary_control_docs(
-                primary_control=primary_control,
-                existing_docs=docs_gen_pool,
-                retriever=self.retriever,
-                max_docs=max(int(gen_docs_k_val), len(docs_gen_pool)),
-                allow_enhancement=bool(allow_enhancement),
-                evidence_kinds=("smt", "gdn"),
-            )
-
-
-        # If we widened to multiple controls (low-confidence), preserve within-control coverage by
-        # prioritizing the primary control's docs in the generator window.
-        if len(allowed_controls) > 1 and primary_control:
-            docs_gen_pool = _balance_docs_across_controls(
-                docs_gen_pool,
-                primary_control=primary_control,
-                allowed_controls=allowed_controls,
-                top_k=int(gen_docs_k_val),
-            )
-
-        docs_for_gen = _choose_docs_for_generator(docs_gen_pool, top_k=int(gen_docs_k_val), doc_filter_mode=doc_filter_mode_used)
-
-        fallback_used: bool = False
-        fallback_reason: str = ""
-
-        # 4) Evidence selection
-        if bool(use_generator):
-            # Generator selects evidence IDs only
-            raw_contract = self.generator.generate(q, docs_for_gen, self.org_profile)
-            contract = normalize_contract(raw_contract)
-
-            # If multi-control widening was used, the generator window may be shared across controls.
-            # Backfill additional docs from the winning control (within allowed_controls only) to
-            # reduce clause-id misses without reintroducing cross-control ODP pollution.
-            try:
-                sel_ids = [str(s.get("source_id") or "").strip() for s in (contract.get("evidence_spans") or []) if isinstance(s, dict)]
-            except Exception:
-                sel_ids = []
-            sel_ids = [s for s in sel_ids if s]
-
-            winner_control: str = str(primary_control or "").strip().upper()
-            if (not winner_control) and sel_ids:
-                # Majority vote across selected ids.
-                counts: Dict[str, int] = {}
-                for sid in sel_ids:
-                    cid = normalize_control_id(sid)
-                    if cid:
-                        counts[str(cid).upper()] = counts.get(str(cid).upper(), 0) + 1
-                if counts:
-                    winner_control = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
-            
-
-            if winner_control:
-                # Pull additional clause docs for this control directly from CCS inventory (record_by_id),
-                # so broad questions can cover sibling clauses even if they didn't land in top-k retrieval.
-                def _inventory_docs_for_control(ctrl: str) -> List[Dict[str, Any]]:
-                    out: List[Dict[str, Any]] = []
-                    try:
-                        rmap = getattr(self.retriever, "record_by_id", {})  # type: ignore
-                    except Exception:
-                        rmap = {}
-                    for _rid, rec in (rmap or {}).items():
-                        if not isinstance(rec, dict):
-                            continue
-                        k = str(rec.get("kind", "")).lower().strip()
-                        if k not in {"smt", "gdn"}:
-                            continue
-                        cid = normalize_control_id(str(rec.get("id", "")) or str(_rid))
-                        if str(cid).strip().upper() != str(ctrl).strip().upper():
-                            continue
-                        out.append(rec)
-                    return out
-
-                inv_docs = _inventory_docs_for_control(winner_control)
-
-                # Candidate docs from the winner control (post-filtering/augmentation) plus inventory expansion.
-                cand_docs = [
-                    d for d in (docs_gen_pool or [])
-                    if str(_doc_control(d) or "").strip().upper() == winner_control and _doc_kind(d) in {"smt", "gdn"}
-                ]
-                # Merge in inventory docs (dedupe by id).
-                if inv_docs:
-                    for d in inv_docs:
-                        if str(_doc_kind(d) or "").lower().strip() not in {"smt", "gdn"}:
-                            continue
-                        did = str(_doc_id(d) or "").strip()
-                        if not did:
-                            continue
-                        cand_docs.append(d)
-                # Dedupe preserving first occurrence
-                _seen: Set[str] = set()
-                _deduped: List[Dict[str, Any]] = []
-                for _d in cand_docs:
-                    _did = str(_doc_id(_d) or "").strip()
-                    if not _did or _did in _seen:
-                        continue
-                    _seen.add(_did)
-                    _deduped.append(_d)
-                cand_docs = _deduped
-
-                if not allow_enhancement:
-                    cand_docs = [d for d in cand_docs if not _is_enhancement_clause_id(str(_doc_id(d) or ""))]
-
-                # Ordered list: placeholder-bearing statements first, then other statements, then guidance.
-                def _cand_key(d: Dict[str, Any]) -> Tuple[int, int, int, str]:
-                    enh_rank = 0 if not _is_enhancement_clause_id(str(_doc_id(d) or "")) else 1
-                    has_param = 0 if _doc_has_param_placeholder(d) else 1
-                    kind_rank = 0 if _doc_kind(d) == "smt" else 1
-                    return (enh_rank, has_param, kind_rank, str(_doc_id(d) or ""))
-
-                cand_docs_sorted = sorted(cand_docs, key=_cand_key)
-
-                # Determine which ids we will add.
-                already = set(sel_ids)
-                to_add: List[str] = []
-
-                # Count selected kinds using CCS inventory (record_by_id includes all kinds).
-                def _kind_of_id(sid: str) -> str:
-                    try:
-                        rec = self.retriever.record_by_id.get(str(sid), {})  # type: ignore
-                        return str(rec.get("kind", "")).lower()
-                    except Exception:
-                        return ""
-
-                sel_smt = sum(1 for sid in sel_ids if _kind_of_id(sid) == "smt")
-                sel_gdn = sum(1 for sid in sel_ids if _kind_of_id(sid) == "gdn")
-
-                MAX_ADDED = 10
-                MIN_SMT = 3
-                MIN_TOTAL = 8
-
-                # Always include at least one guidance if available and none selected.
-                if sel_gdn == 0:
-                    gdn_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "gdn" and str(_doc_id(d) or "").strip()]
-                    if gdn_ids:
-                        to_add.append(gdn_ids[0])
-
-                # Ensure at least one statement if any exists (prevents gdn-only evidence).
-                if sel_smt == 0:
-                    smt_ids = [str(_doc_id(d) or "").strip() for d in cand_docs_sorted if _doc_kind(d) == "smt" and str(_doc_id(d) or "").strip()]
-                    for did in smt_ids:
-                        if did not in already and did not in to_add:
-                            to_add.append(did)
-                            sel_smt += 1
-                            break
-
-                # Backfill additional statement clauses from the same control to improve clause-id recall.
-                if sel_smt < MIN_SMT:
-                    for d in cand_docs_sorted:
-                        if _doc_kind(d) != "smt":
-                            continue
-                        did = str(_doc_id(d) or "").strip()
-                        if not did or did in already or did in to_add:
-                            continue
-                        to_add.append(did)
-                        sel_smt += 1
-                        if sel_smt >= MIN_SMT or len(to_add) >= MAX_ADDED:
-                            break
-
-                # If the selected set is still small, backfill more from the same control up to MIN_TOTAL.
-                if (len(sel_ids) + len(to_add)) < MIN_TOTAL:
-                    for d in cand_docs_sorted:
-                        did = str(_doc_id(d) or "").strip()
-                        if not did or did in already or did in to_add:
-                            continue
-                        to_add.append(did)
-                        if (len(sel_ids) + len(to_add)) >= MIN_TOTAL or len(to_add) >= MAX_ADDED:
-                            break
-
-                if to_add:
-                    added_clause_doc_ids.extend([x for x in to_add if x])
-                    # Append to evidence spans (IDs only); span_text will be filled deterministically later.
-                    spans = list(contract.get("evidence_spans") or [])
-                    for did in to_add:
-                        spans.append({"source_id": did, "span_text": ""})
-                    contract["evidence_spans"] = spans
-        else:
-            # Extractive fallback: take the top-k docs as evidence IDs (no model call).
-            contract = {
-                "answer_text": "",
-                "evidence_spans": [{"source_id": str(d.get("id", "")).strip(), "span_text": ""} for d in (docs_for_gen or []) if str(d.get("id", "")).strip()],
-                "status": "OK" if docs_for_gen else "NO_EVIDENCE",
-                "odp_required_list": [],
+                "debug": {"error": "empty_query"},
             }
+            return _wrap_out(err_contract)
 
-        # ODP/PRM requirement list is derived deterministically from filled evidence text.
-        # Generator-produced lists are ignored to preserve provably-extractive behavior.
-        contract["odp_required_list"] = []
+        self._assert_ccs_loaded()
 
-        # 5) Enforce selector invariants (provably-extractive)
-        #    - answer_text must be empty at selector stage (pipeline will fill)
-        contract["answer_text"] = ""
-        #    - status/evidence consistency
-        spans = contract.get("evidence_spans", []) or []
-        status = str(contract.get("status", "ERROR")).upper().strip()
-
-        if status == "NO_EVIDENCE":
-            spans = []
-        elif status in {"OK", "PARAMS_REQUIRED"}:
-            spans = [s for s in spans if str(s.get("source_id", "")).strip()]
-            # Evidence gating (pipeline-enforced):
-            #   - only smt/gdn clause kinds may be cited
-            #   - optionally gate to the retriever top-1 control to avoid cross-control pollution
-            #   - block enhancement clause ids unless explicitly requested
-            rb = getattr(self.retriever, "record_by_id", {}) or {}
-            gated: List[Dict[str, str]] = []
-            allow_kinds = {"smt", "gdn"}
-            allowed_set: Set[str] = {str(x).upper() for x in (allowed_controls or []) if str(x).strip()}
-            for s in spans:
-                sid = str((s or {}).get("source_id", "")).strip()
-                if not sid:
-                    continue
-                if (not allow_enhancement) and _is_enhancement_clause_id(sid):
-                    continue
-
-                # Control gate (dynamic top-N when confidence is low)
-                sid_ctrl = str((normalize_control_id(sid) or "")).upper()
-                if allowed_set and sid_ctrl not in allowed_set:
-                    continue
-
-                rec = rb.get(sid) if isinstance(rb, dict) else None
-                kind = ""
-                if isinstance(rec, dict):
-                    kind = str(rec.get("kind", "")).strip().lower()
-                if not kind:
-                    suf = _doc_id_suffix(sid).strip().lower()
-                    kind = suf[1:] if suf.startswith("_") else suf
-                if kind not in allow_kinds:
-                    continue
-                gated.append({"source_id": sid, "span_text": str((s or {}).get("span_text", "") or "")})
-
-            # Winner-control collapse: keep only one control worth of spans.
-            if gated:
-                rank_index: Dict[str, int] = {}
-                try:
-                    for i, c in enumerate(ranked_controls or []):
-                        cc = normalize_control_id(c)
-                        if cc:
-                            rank_index[str(cc).upper()] = int(i)
-                except Exception:
-                    rank_index = {}
-
-                counts: Dict[str, int] = {}
-                for gs in gated:
-                    cid = str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper()
-                    if cid:
-                        counts[cid] = int(counts.get(cid, 0)) + 1
-
-                if counts:
-                    ordered = sorted(
-                        counts.items(),
-                        key=lambda kv: (-int(kv[1]), int(rank_index.get(str(kv[0]).upper(), 10**9))),
-                    )
-                    winner = str(ordered[0][0]).upper()
-                    if winner:
-                        # Keep evidence internally consistent, but prefer current primary_control if present.
-                        target_ctrl = str(primary_control or "").strip().upper()
-                        if target_ctrl and any(
-                            str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper() == target_ctrl
-                            for gs in gated
-                        ):
-                            tgt = target_ctrl
-                        else:
-                            tgt = winner
-                        gated = [
-                            gs
-                            for gs in gated
-                            if str((normalize_control_id(str(gs.get("source_id", "")) or "") or "")).upper() == tgt
-                        ]
-
-            spans = gated
-
-            # If the generator chose only disallowed spans, do a narrowly-scoped rescue within docs_for_gen.
-            if status in {"OK", "PARAMS_REQUIRED"} and (not spans) and docs_for_gen:
-                fallback_used = True
-                fallback_reason = "evidence_gate_rescue"
-                # Prefer the highest-ranked allowed control's first eligible doc.
-                chosen_id: Optional[str] = None
-                if allowed_controls:
-                    for c in allowed_controls:
-                        cc = str(c).upper()
-                        for d in docs_for_gen:
-                            fid = str((d or {}).get("id", "")).strip()
-                            if not fid:
-                                continue
-                            if (not allow_enhancement) and _is_enhancement_clause_id(fid):
-                                continue
-                            k = str((d or {}).get("kind", "")).strip().lower()
-                            if k and k not in allow_kinds:
-                                continue
-                            if str((normalize_control_id(fid) or "")).upper() != cc:
-                                continue
-                            chosen_id = fid
-                            break
-                        if chosen_id:
-                            break
-
-                if not chosen_id:
-                    for d in docs_for_gen:
-                        fid = str((d or {}).get("id", "")).strip()
-                        if not fid:
-                            continue
-                        if (not allow_enhancement) and _is_enhancement_clause_id(fid):
-                            continue
-                        k = str((d or {}).get("kind", "")).strip().lower()
-                        if k and k not in allow_kinds:
-                            continue
-                        cid = str((normalize_control_id(fid) or "")).upper()
-                        if allowed_set and cid not in allowed_set:
-                            continue
-                        chosen_id = fid
-                        break
-
-                if chosen_id:
-                    spans = [{"source_id": chosen_id, "span_text": ""}]
-                if not spans:
-                    status = "NO_EVIDENCE"
-            if not spans:
-                status = "NO_EVIDENCE"
-        else:
-            status = "ERROR"
-
-        # If the selector returns NO_EVIDENCE but we do have gated docs available,
-        # treat this as a selector failure and apply a deterministic fallback.
-        # This preserves the meaning of NO_EVIDENCE as "retriever produced no usable evidence".
-        if status == "NO_EVIDENCE" and docs_for_gen:
-            fallback_used = True
-            fallback_reason = fallback_reason or "selector_returned_no_evidence_but_docs_available"
-
-            # Prefer a statement clause for auditability and placeholder extraction.
-            chosen_id: Optional[str] = None
-            for d in docs_for_gen:
-                fid = str((d or {}).get("id", "")).strip()
-                if not fid:
-                    continue
-                if (not allow_enhancement) and _is_enhancement_clause_id(fid):
-                    continue
-                k = str((d or {}).get("kind", "")).strip().lower()
-                if k and k != "smt":
-                    continue
-                chosen_id = fid
-                break
-            if not chosen_id:
-                chosen_id = str((docs_for_gen[0] or {}).get("id", "")).strip()
-
-            if chosen_id:
-                spans = [{"source_id": chosen_id, "span_text": ""}]
-                status = "OK"
-
-        # Ensure at least one statement clause is cited when a statement is available.
-        # This prevents guidance-only evidence, which often suppresses provable placeholder extraction.
-        if status in {"OK", "PARAMS_REQUIRED"} and spans and docs_for_gen:
-            has_smt = any("_smt" in str((s or {}).get("source_id", "")) for s in spans)
-            if not has_smt:
-                chosen_smt: Optional[str] = None
-                # Prefer leaf-level statements (e.g., *_smt.a) when available.
-                leaf_first = sorted(
-                    [d for d in docs_for_gen if str((d or {}).get("id", "")).strip()],
-                    key=lambda dd: ("_smt." not in str((dd or {}).get("id", "")), "_smt" not in str((dd or {}).get("id", ""))),
-                )
-                for d in leaf_first:
-                    fid = str((d or {}).get("id", "")).strip()
-                    if not fid:
-                        continue
-                    if (not allow_enhancement) and _is_enhancement_clause_id(fid):
-                        continue
-                    k = str((d or {}).get("kind", "")).strip().lower()
-                    if k and k != "smt":
-                        continue
-                    if "_smt" not in fid:
-                        continue
-                    chosen_smt = fid
-                    break
-                if chosen_smt and all(str((s or {}).get("source_id", "")) != chosen_smt for s in spans):
-                    spans = list(spans) + [{"source_id": chosen_smt, "span_text": ""}]
-
-        # Controlled fallback only when generator output is malformed or ERROR (NEVER override NO_EVIDENCE)
-        if status == "ERROR":
-            fallback_used = True
-            fallback_reason = "generator_error_or_malformed_contract"
-            if docs_for_gen:
-                fid = str(docs_for_gen[0].get("id", "")).strip()
-                if fid:
-                    spans = [{"source_id": fid, "span_text": ""}]
-                    status = "OK"
-
-        contract["status"] = status
-        contract["evidence_spans"] = spans
-
-
-        
-
-        # 5.5) Hierarchy-closure expansion (general, non-gold-specific)
-        # Adds bounded ancestor (base statement) and small-child expansions to reduce MissedDocIds.
+        # 1) Retrieve docs (clause-level)
+        top_k = max(1, int(top_k))
+        retrieval_meta: Dict[str, Any] = {}
+        retrieved_docs: List[Dict[str, Any]] = []
         try:
-            if status in {"OK", "PARAMS_REQUIRED"} and spans:
-                self._ensure_ccs_hierarchy_loaded()
-                meta = getattr(self, "_ccs_meta_by_id", {}) or {}
-                parent_to_children = getattr(self, "_ccs_parent_to_children", {}) or {}
-                src_ids = [str(s.get("source_id", "")).strip() for s in spans if str(s.get("source_id", "")).strip()]
-                if meta and parent_to_children and src_ids:
-                    expanded_ids = _expand_clause_ids_to_children(
-                        src_ids,
-                        meta_by_id=meta,
-                        parent_to_children=parent_to_children,
-                        max_total=max(int(getattr(self, "leaf_expand_max_total", 24)), len(src_ids) + 12),
-                        max_children_expand=int(getattr(self, "leaf_expand_max_children", 12)),
-                        small_child_threshold=int(getattr(self, "leaf_expand_small_child_threshold", 4)),
-                        max_ancestor_hops=int(getattr(self, "leaf_expand_max_ancestor_hops", 6)),
-                    )
-                    # Enforce single-control evidence to avoid unrelated controls injecting extra placeholders.
-                    # Keep citations within the retriever-selected primary control unless multi-control behavior is explicitly needed.
-                    if primary_control:
-                        expanded_ids = [sid for sid in expanded_ids if str((normalize_control_id(str(sid)) or "")).upper() == str(primary_control).upper()]
-                    if not allow_enhancement:
-                        expanded_ids = [sid for sid in expanded_ids if not _is_enhancement_clause_id(str(sid))]
-                    spans = [{"source_id": sid, "span_text": ""} for sid in expanded_ids]
-                    contract["evidence_spans"] = spans
+            if hasattr(self.retriever, "retrieve_debug"):
+                retrieved_docs, retrieval_meta = self.retriever.retrieve_debug(q, top_k=top_k, rewrites=rewrites)
+            else:
+                retrieved_docs = self.retriever.retrieve(q, top_k=top_k, rewrites=rewrites)
+                retrieval_meta = dict(getattr(self.retriever, "last_meta", {}) or {})
+        except Exception as e:
+            err_contract = {
+                "question": q,
+                "framework_version": self.framework_version,
+                "answer_text": "",
+                "answer_text_with_citations": "",
+                "evidence_spans": [],
+                "status": "ERROR",
+                "odp_required_list": [],
+                "primary_citation": "",
+                "all_citations": "",
+                "debug": {"error": "retrieval_failed", "exception": repr(e)},
+            }
+            return _wrap_out(err_contract)
+
+        if not retrieved_docs:
+            no_ev = {
+                "question": q,
+                "framework_version": self.framework_version,
+                "answer_text": "",
+                "answer_text_with_citations": "",
+                "evidence_spans": [],
+                "status": "NO_EVIDENCE",
+                "odp_required_list": [],
+                "primary_citation": "",
+                "all_citations": "",
+                "debug": {"retrieval_meta": retrieval_meta, "retrieved_docs": 0},
+            }
+            # Even if no evidence, allow verifier call to label agreement metrics.
+            if bool(run_verify) and gold_row is not None:
+                ver = verify_answer(
+                    json_output=no_ev,
+                    gold_row=gold_row,
+                    corpus=self._get_verifier_corpus(),
+                    org_profile=self.org_profile,
+                    corpus_version=self.framework_version,
+                    strict_extras=bool(self.verify_strict_extras),
+                    strict_verbatim=bool(self.verify_strict_verbatim),
+                    strict_version=bool(self.verify_strict_version),
+                )
+                no_ev["verification"] = _verifier_result_to_dict(ver)
+            return _wrap_out(no_ev)
+
+        # 2) Determine primary control(s)
+        controls = []
+        try:
+            controls = [normalize_control_id(c).upper() for c in (retrieval_meta.get("selected_controls") or []) if normalize_control_id(c)]
+        except Exception:
+            controls = []
+        if not controls:
+            # fall back: use control_id fields from docs (stable order)
+            seen_ctl: Set[str] = set()
+            for d in retrieved_docs:
+                cid = normalize_control_id(d.get("control_id", ""))
+                if not cid:
+                    continue
+                cu = cid.upper()
+                if cu in seen_ctl:
+                    continue
+                seen_ctl.add(cu)
+                controls.append(cu)
+
+        primary_control = controls[0] if controls else ""
+        allowed_controls: List[str] = [primary_control] if primary_control else []
+        widen_tier = 0
+
+        # 3) Control widening / generator control gating (no gold use)
+        # Default: keep generator evidence within top-N retrieved controls.
+        try:
+            topn = max(1, int(getattr(self, "gen_control_gate_topn", 1)))
+        except Exception:
+            topn = 1
+        if primary_control:
+            allowed_controls = controls[:topn] if controls else [primary_control]
+        else:
+            allowed_controls = controls[:1] if controls else []
+        widen_tier = 0
+
+        # If retriever confidence is low (small margin), temporarily widen the generator pool.
+        try:
+            final_margin = retrieval_meta.get("final_margin_ratio", None)
+            fm = float(final_margin) if final_margin is not None else 1.0
+        except Exception:
+            fm = 1.0
+
+        try:
+            low2 = float(getattr(self, "gen_control_gate_lowconf_top2", 0.08))
+            low3 = float(getattr(self, "gen_control_gate_lowconf_top3", 0.04))
+            maxn = max(1, int(getattr(self, "gen_control_gate_lowconf_maxn", 3)))
+        except Exception:
+            low2, low3, maxn = 0.08, 0.04, 3
+
+        if primary_control and len(controls) >= 2:
+            if fm < low3 and len(controls) >= 3:
+                n = min(len(controls), maxn, 3)
+                allowed_controls = controls[:n]
+                widen_tier = max(0, n - 1)
+            elif fm < low2:
+                n = min(len(controls), maxn, 2)
+                allowed_controls = controls[:n]
+                widen_tier = max(0, n - 1)
+
+        # 4) Doc filtering for generator window
+        # Policy-aware default: when we are ASK-ing or FILL-ing, keep both statement + guidance
+        # and do not apply any query-keyword heuristics.
+        doc_filter_mode_used = str(doc_filter_mode or "all").strip().lower()
+        pol_eff = str(self.resolution_policy or "").strip().upper()
+        if pol_eff in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
+            pol_eff = "FILL_FROM_PROFILE"
+        if pol_eff in {"FILL", "PROFILE", "FILL_PROFILE"}:
+            pol_eff = "FILL_FROM_PROFILE"
+
+        if pol_eff in {"ASK", "FILL_FROM_PROFILE"} and doc_filter_mode_used == "all":
+            doc_filter_mode_used = "prefer_smt_keep_params"
+
+        docs_gen_pool = list(retrieved_docs)
+
+        # No inventory backfill by default (explicit opt-in only).
+        docs_gen_pool = _filter_docs_to_controls(docs_gen_pool, allowed_controls)
+
+        # Generator window prioritization: when primary control selection is confident,
+        # present primary-control clauses first to reduce cross-control noise.
+        try:
+            primary_first_min_margin = float(getattr(self, "gen_primary_first_min_margin_ratio", 0.06))
+        except Exception:
+            primary_first_min_margin = 0.06
+        try:
+            mratio = float(retrieval_meta.get("final_margin_ratio", 0.0) or 0.0)
+        except Exception:
+            mratio = 0.0
+
+        primary_first_applied = False
+        if primary_control and mratio >= primary_first_min_margin:
+            primary_docs = _filter_docs_to_controls(docs_gen_pool, [primary_control])
+            if primary_docs:
+                primary_ids = {str(d.get("id", "")).strip() for d in primary_docs if str(d.get("id", "")).strip()}
+                other_docs = [d for d in docs_gen_pool if str(d.get("id", "")).strip() not in primary_ids]
+                docs_gen_pool = primary_docs + other_docs
+                primary_first_applied = True
+
+        docs_for_gen = _apply_doc_filter_mode(docs_gen_pool, doc_filter_mode_used)
+        if not docs_for_gen:
+            # If filtering dropped everything, fall back to statement docs for the primary control.
+            docs_for_gen = _apply_doc_filter_mode(_filter_docs_to_controls(retrieved_docs, [primary_control]), "smt_only")
+        docs_for_gen = docs_for_gen[: int(getattr(self, "gen_docs_k", 24))]
+
+        # 5) Evidence selection
+        fallback_used = False
+        fallback_reason = ""
+        raw_contract: Dict[str, Any] = {}
+
+        if bool(use_generator):
+            try:
+                raw_contract = self.generator.generate(q, docs_for_gen, self.org_profile)
+            except Exception as e:
+                raw_contract = {"status": "ERROR", "evidence_spans": [], "debug": {"exception": repr(e)}}
+        else:
+            raw_contract = {"status": "OK", "evidence_spans": [{"source_id": d.get("id", "")} for d in docs_for_gen[:3]]}
+
+        contract = normalize_contract(raw_contract)
+
+        # Determine which control the generator actually cited (if any).
+        def _control_from_clause_id(cid_like: str) -> str:
+            s = str(cid_like or "").strip()
+            if not s:
+                return ""
+            # Prefer authoritative mapping via record_by_id when available.
+            rec = self.retriever.record_by_id.get(s)
+            if rec:
+                cc = normalize_control_id(rec.get("control_id", ""))
+                return cc.upper() if cc else ""
+            # Fall back: take prefix before '_' and normalize.
+            prefix = s.split("_", 1)[0]
+            cc = normalize_control_id(prefix)
+            return cc.upper() if cc else ""
+
+        sel_ids_raw: List[str] = []
+        try:
+            sel_ids_raw = [str(s.get("source_id") or "").strip() for s in (contract.get("evidence_spans") or []) if isinstance(s, dict)]
+        except Exception:
+            sel_ids_raw = []
+        sel_ids_raw = [s for s in sel_ids_raw if s]
+        control_hints = _extract_control_hints(q)
+        has_enh_hint = any('.' in c for c in (control_hints or []))
+        # Filter out enhancement clause ids unless query explicitly allows enhancements.
+        allow_enh = bool(_query_allows_enhancements(q)) or bool(has_enh_hint)
+        if bool(getattr(self, "block_enhancements_by_default", False)) and not allow_enh:
+            sel_ids_raw = [cid for cid in (sel_ids_raw or []) if not _is_enhancement_clause_id(str(cid))]
+
+
+
+        winner_control = primary_control
+
+        # Prefer explicit control references in the question (base + enhancements).
+        if control_hints:
+            winner_control = str(control_hints[0]).upper()
+        elif sel_ids_raw:
+            counts: Dict[str, int] = {}
+            for sid in sel_ids_raw:
+                cc = _control_from_clause_id(sid)
+                if not cc:
+                    continue
+                counts[cc] = counts.get(cc, 0) + 1
+            if counts:
+                winner_control = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
+
+        # Lightweight re-rank among candidate controls using lexical overlap with control texts.
+        # This helps when retrieval confuses nearby controls (e.g., IA-5 vs IA-6) without using gold.
+        try:
+            if not control_hints:
+                cand: Set[str] = set()
+                if primary_control:
+                    cand.add(str(primary_control).upper())
+                for d in (docs_for_gen or [])[:25]:
+                    cc0 = normalize_control_id(d.get("control_id", ""))
+                    if cc0:
+                        cand.add(str(cc0).upper())
+                for sid in (sel_ids_raw or [])[:25]:
+                    cc1 = _control_from_clause_id(sid)
+                    if cc1:
+                        cand.add(str(cc1).upper())
+
+                def _tok(s: str) -> Set[str]:
+                    s2 = str(s or "").lower()
+                    parts = re.findall(r"[a-z0-9]{3,}", s2)
+                    return set(parts)
+
+                qtok = _tok(q)
+                best_ctl = winner_control
+                best_score = -1.0
+
+                for ctl in sorted(cand):
+                    text_parts: List[str] = []
+                    for suf in ("_smt", "_gdn"):
+                        sid2 = f"{str(ctl).lower()}{suf}"
+                        rec2 = self.retriever.record_by_id.get(sid2)
+                        if rec2:
+                            t2 = str(rec2.get("text", "") or "").strip()
+                            if t2:
+                                text_parts.append(t2)
+                    if not text_parts:
+                        continue
+
+                    ctoks = _tok(" ".join(text_parts))
+                    overlap = float(len(qtok & ctoks))
+
+                    rs = 0.0
+                    for d in (docs_for_gen or [])[:25]:
+                        dc = normalize_control_id(d.get("control_id", ""))
+                        if dc and str(dc).upper() == str(ctl).upper():
+                            try:
+                                rs += float(d.get("score", 0.0) or 0.0)
+                            except Exception:
+                                rs += 0.0
+
+                    score = overlap * 10.0 + rs
+                    if score > best_score:
+                        best_score = score
+                        best_ctl = str(ctl).upper()
+
+                if best_score >= 0.0:
+                    winner_control = best_ctl
         except Exception:
             pass
 
-        # 6) Deterministically fill span_text from CCS (via retriever.record_by_id)
-        filled_spans: List[Dict[str, str]] = []
-        missing_ids: List[str] = []
-        for s in spans:
-            sid = str(s.get("source_id", "")).strip()
-            if not sid:
-                continue
-            rec = getattr(self.retriever, "record_by_id", {}).get(sid)
-            txt = ""
-            if isinstance(rec, dict):
-                txt = str(rec.get("text", "")).strip()
-            if not txt:
-                # fallback: search in provided docs_for_gen
-                for d in docs_for_gen:
-                    if str(d.get("id", "")).strip() == sid:
-                        txt = str(d.get("text", "")).strip()
-                        break
-            if not txt:
-                missing_ids.append(sid)
-                continue
-            filled_spans.append({"source_id": sid, "span_text": txt})
-
-        # Missing IDs indicate a selector/ID mismatch. Do NOT crash the pipeline.
-        # Keep any filled spans, and surface missing IDs in debug.
-        if missing_ids and not filled_spans and status != "NO_EVIDENCE":
-            # If nothing could be filled, attempt one more controlled fallback using the top retrieved doc.
-            # Prefer the top gated generator doc to stay within the primary control.
-            if docs_for_gen:
-                fid = str(docs_for_gen[0].get("id", "")).strip()
-                ftxt = str(docs_for_gen[0].get("text", "")).strip()
-                if fid and ftxt:
-                    filled_spans = [{"source_id": fid, "span_text": ftxt}]
-                    fallback_used = True
-                    fallback_reason = fallback_reason or "all_selected_ids_missing_fallback_to_top_gated_doc"
-            elif retrieved_docs:
-                fid = str(retrieved_docs[0].get("id", "")).strip()
-                ftxt = str(retrieved_docs[0].get("text", "")).strip()
-                if fid and ftxt:
-                    filled_spans = [{"source_id": fid, "span_text": ftxt}]
-                    fallback_used = True
-                    fallback_reason = fallback_reason or "all_selected_ids_missing_fallback_to_top_retrieved"
-            if not filled_spans:
-                status = "ERROR"
-
-
-        # 7) Build extractive answer_text (no new claims)
-        answer_text = " ".join(s["span_text"] for s in filled_spans).strip()
-
-        # 8) Apply ODP policy (gold_row can override)
-        policy = ""
-        policy_from_gold = False
-        if isinstance(gold_row, dict):
-            try:
-                raw_pol = str(gold_row.get("resolution_policy", "") or "").strip()
-                if raw_pol:
-                    policy = raw_pol.upper()
-                    policy_from_gold = True
-            except Exception:
-                policy = ""
-                policy_from_gold = False
-        if policy in {"NAN", "NA", "N/A", "NONE", "NULL"}:
-            policy = ""
-            policy_from_gold = False
-        if not policy:
-            policy = "ASK"
-
-        answer_text2, odp_req, status_override = _apply_odp_policy_to_answer(answer_text, policy, self.org_profile)
-
-        # Canonicalize ODP/PRM ids against CCS (provably-extractive: drop unknown ids)
-        param_ids: Set[str] = set()
-        try:
-            rb = getattr(self.retriever, "record_by_id", {}) or {}
-            for _id, rec in rb.items():
-                if isinstance(rec, dict):
-                    k = str(rec.get("kind", "")).strip().lower()
-                    if k in {"odp", "prm"}:
-                        param_ids.add(str(_id))
-        except Exception:
-            param_ids = set()
-
-        key_map = _build_param_key_to_canonical(param_ids)
-
-        # Canonicalize generator-produced ODP list (if any)
-        contract["odp_required_list"] = _canonicalize_param_list(
-            list(contract.get("odp_required_list", []) or []),
-            param_ids=param_ids,
-            key_map=key_map,
-            assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
-        )
-
-        # Canonicalize placeholder-derived ODP list
-        odp_req = _canonicalize_param_list(
-            list(odp_req or []),
-            param_ids=param_ids,
-            key_map=key_map,
-            assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
-        )
-
-        final_status = status
-        if final_status == "NO_EVIDENCE":
-            # never upgrade NO_EVIDENCE even if placeholders exist
-            odp_req = []
-            answer_text2 = ""
+        # Deterministic fallback if generator returned nothing or errored
+        if not sel_ids_raw and docs_for_gen:
+            fallback_used = True
+            fallback_reason = "empty_evidence_from_generator" if bool(use_generator) else "no_generator"
+            top_doc = docs_for_gen[0]
+            contract = {
+                "answer_text": "",
+                "evidence_spans": [{"source_id": str(top_doc.get("id", "")).strip(), "span_text": ""}],
+                "status": "OK",
+                "odp_required_list": [],
+                "debug": {"fallback": fallback_reason},
+            }
+            sel_ids_raw = [str(top_doc.get("id", "")).strip()]
+        # 6) Hierarchy closure (defensible; bounded)
+        if bool(self.enable_hierarchy_closure):
+            expanded_ids, added_ids = self._hierarchy_closure_expand(sel_ids_raw)
         else:
-            if status_override:
-                final_status = status_override
-            # Respect generator PARAMS_REQUIRED only when placeholders exist in extractive text.
-            if status == "PARAMS_REQUIRED" and final_status != "NO_EVIDENCE":
-                keys_tmp, has_assign_tmp = _extract_odp_ids(answer_text2)
-                if keys_tmp or has_assign_tmp:
-                    final_status = "PARAMS_REQUIRED"
-                else:
-                    final_status = "OK"
+            expanded_ids, added_ids = list(sel_ids_raw), []
 
-        # 9) Citations (contract-level, deterministic)
-        cite_ids = [s.get("source_id", "") for s in (filled_spans or []) if str(s.get("source_id", "")).strip()]
-        primary_citation = str(cite_ids[0]) if cite_ids else ""
-        all_citations = ", ".join([str(x) for x in cite_ids]) if cite_ids else ""
-        answer_with_cit = (f"{answer_text2} (CITE: {all_citations})".strip()) if answer_text2 and all_citations else (answer_text2 or "")
 
-        final_contract: Dict[str, Any] = {
+        # Ensure clause-only and fill verbatim span_text from CCS
+        filled_spans: List[Dict[str, str]] = []
+        for sid in expanded_ids:
+            rec = self.retriever.record_by_id.get(sid)
+            if not rec:
+                continue
+            kind = str(rec.get("kind", "") or "").strip().lower()
+            if kind not in {"smt", "gdn"}:
+                continue
+            txt = str(rec.get("text", "") or "").strip()
+            if not txt:
+                continue
+            filled_spans.append({"source_id": str(rec.get("id", sid)), "span_text": txt})
+
+        if not filled_spans:
+            final_contract = {
+                "question": q,
+                "framework_version": self.framework_version,
+                "answer_text": "",
+                "answer_text_with_citations": "",
+                "evidence_spans": [],
+                "status": "NO_EVIDENCE",
+                "odp_required_list": [],
+                "primary_citation": "",
+                "all_citations": "",
+                "debug": {
+                    "retrieval_meta": retrieval_meta,
+                    "allowed_controls": allowed_controls,
+                    "doc_filter_mode_used": doc_filter_mode_used,
+                    "primary_first_applied": primary_first_applied,
+                    "winner_control": winner_control,
+                    "hierarchy_added_ids": added_ids,
+                    "fallback_used": fallback_used,
+                    "fallback_reason": fallback_reason,
+                },
+            }
+            if bool(run_verify) and gold_row is not None:
+                ver = verify_answer(
+                    json_output=final_contract,
+                    gold_row=gold_row,
+                    corpus=self._get_verifier_corpus(),
+                    org_profile=self.org_profile,
+                    corpus_version=self.framework_version,
+                    strict_extras=bool(self.verify_strict_extras),
+                    strict_verbatim=bool(self.verify_strict_verbatim),
+                    strict_version=bool(self.verify_strict_version),
+                )
+                final_contract["verification"] = _verifier_result_to_dict(ver)
+            return _wrap_out(final_contract)
+
+        # 7) Build answer text (extractive)
+        answer_text = "\n\n".join([s["span_text"] for s in filled_spans]).strip()
+
+        # 8) Apply ODP policy (ASK/PRESERVE/FILL_FROM_PROFILE), then canonicalize required list
+        answer_text2, odp_required_raw, status_override = _apply_odp_policy_to_answer(
+            answer_text=answer_text,
+            policy=self.resolution_policy,
+            org_profile=self.org_profile,
+        )
+
+        self._ensure_param_inventory_loaded()
+        param_ids: Set[str] = getattr(self, "_param_ids", set()) or set()
+        key_map: Dict[str, str] = getattr(self, "_param_key_map", {}) or {}
+
+        odp_required_canon = _canonicalize_param_list(
+            raw_list=odp_required_raw,
+            param_ids=param_ids,
+            key_map=key_map,
+            assignment_sentinel=_ASSIGNMENT_REQUIRED_SENTINEL,
+        )
+
+        odp_final = odp_required_canon if odp_required_canon else list(dict.fromkeys([str(x).strip() for x in (odp_required_raw or []) if str(x).strip()]))
+
+        status = str(status_override or "").strip().upper()
+        if not status:
+            status = "OK"
+
+        
+        # 8.1) Build ask_list (structured prompts) only when we are actively asking for params.
+        ask_list: List[Dict[str, Any]] = []
+        pol_eff = str(self.resolution_policy or "").strip().upper()
+        if pol_eff in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
+            pol_eff = "FILL_FROM_PROFILE"
+        if pol_eff in {"FILL", "PROFILE", "FILL_PROFILE"}:
+            pol_eff = "FILL_FROM_PROFILE"
+
+        if status == "PARAMS_REQUIRED" and pol_eff in {"ASK", "FILL_FROM_PROFILE"}:
+            ask_list = _build_ask_list(odp_final, filled_spans, self.odp_registry)
+        # 9) Citations fields
+        cite_ids = [str(s.get("source_id", "")).strip() for s in filled_spans if str(s.get("source_id", "")).strip()]
+        primary_citation = _best_primary_citation(q, filled_spans) if cite_ids else ""
+        all_citations = ", ".join(cite_ids)
+
+        suffix = _build_citation_suffix(self.framework_version)
+        if all_citations:
+            answer_text_with_citations = f"{answer_text2}\n\nCitations: {all_citations} ({suffix})".strip()
+        else:
+            answer_text_with_citations = answer_text2
+
+        final_contract = {
+            "question": q,
+            "framework_version": self.framework_version,
             "answer_text": answer_text2,
+            "answer_text_with_citations": answer_text_with_citations,
             "evidence_spans": filled_spans,
-            "status": final_status,
-            "odp_required_list": odp_req,
+            "status": status,
+            "odp_required_list": odp_final,
+            "ask_list": ask_list,
             "primary_citation": primary_citation,
             "all_citations": all_citations,
-            "answer_text_with_citation": answer_with_cit,
-            "contract_mode": "provably_extractive",
+            "debug": {
+                "retrieval_meta": retrieval_meta,
+                "allowed_controls": allowed_controls,
+                "control_widen_tier": widen_tier,
+                "primary_control": primary_control,
+                "winner_control": winner_control,
+                "doc_filter_mode_used": doc_filter_mode_used,
+                "primary_first_applied": primary_first_applied,
+                "hierarchy_added_ids": added_ids,
+                "fallback_used": fallback_used,
+                "fallback_reason": fallback_reason,
+                "counts": {
+                    "retrieved_docs": int(len(retrieved_docs)),
+                    "docs_for_gen": int(len(docs_for_gen)),
+                    "evidence_spans": int(len(filled_spans)),
+                },
+            },
         }
 
-        # 10) Optional verification (gold_row required)
-        if run_verify and isinstance(gold_row, dict):
-            if verify_answer is None:
-                final_contract["verification"] = {
-                    "ok": False,
-                    "error": (
-                        f"verify_answer_unavailable:{_VERIFY_IMPORT_ERROR}"
-                        if _VERIFY_IMPORT_ERROR else "verify_answer_unavailable"
-                    ),
-                    "error_tags": [
-                        f"VerifierUnavailable:{_VERIFY_IMPORT_ERROR}"
-                        if _VERIFY_IMPORT_ERROR else "VerifierUnavailable"
-                    ],
-                    "metrics": {},
-                }
-            else:
+        # 10) Verifier (gold-only)
+        if bool(run_verify) and gold_row is not None:
+            ver = verify_answer(
+                json_output=final_contract,
+                gold_row=gold_row,
+                corpus=self._get_verifier_corpus(),
+                org_profile=self.org_profile,
+                corpus_version=self.framework_version,
+                strict_extras=bool(self.verify_strict_extras),
+                strict_verbatim=bool(self.verify_strict_verbatim),
+                strict_version=bool(self.verify_strict_version),
+            )
+            final_contract["verification"] = _verifier_result_to_dict(ver)
+
+            # Optional: contract-only validity checks (no gold dependence)
+            if "verify_contract_validity" in globals() and callable(globals().get("verify_contract_validity")):
                 try:
-                    corpus = self._get_verifier_corpus()
-                    ver = verify_answer(
-                        final_contract,
-                        gold_row,
-                        corpus=corpus,
+                    vp, verrs = verify_contract_validity(
+                        json_output=final_contract,
+                        corpus=self._get_verifier_corpus(),
                         org_profile=self.org_profile,
-                        corpus_version=self.framework_version,
-                        strict_extras=bool(self.verify_strict_extras),
                         strict_verbatim=bool(self.verify_strict_verbatim),
-                        strict_version=bool(self.verify_strict_version),
                     )
-                    final_contract["verification"] = ver
-                except Exception as e:
-                    final_contract["verification"] = {
-                        "ok": False,
-                        "error": str(e),
-                        "error_tags": [f"VerifierException:{type(e).__name__}:{str(e)}"],
-                        "metrics": {},
-                    }
+                    final_contract["verification_validity"] = {"is_pass": bool(vp), "errors": list(verrs or [])}
+                except Exception:
+                    pass
 
-        # Debug extras (kept minimal)
-        final_contract["debug"] = {
-            "pipeline_patch_id": "2026-02-19_rrseed_v5_ctrlgate_nonenh",
-            "query": q,
-            "rewrites": rew,
-            "variants": getattr(self.retriever, "last_variants", []) if hasattr(self.retriever, "last_variants") else [],
-            # Clause-level docs returned from retriever (ids)
-            "retrieved_doc_ids": [d.get("id") for d in (retrieved_docs or [])][: int(top_k)],
-            # Unique controls in retrieval order (control-level perspective)
-            "retrieved_control_order": _unique_controls_in_order(retrieved_docs or []),
-            # Control ranking diagnostics if retriever exposes it
-            "ranked_controls_top": (getattr(self.retriever, "last_ranked_controls", []) or [])[: max(20, int(top_k))],
-            "gen_gate_n_used": int(gate_n_used),
-            "gen_allowed_controls": list(allowed_controls or []),
-            "primary_control_final": primary_control,
-
-            "retriever_meta": getattr(self.retriever, "last_meta", {}) if hasattr(self.retriever, "last_meta") else {},
-            'keep_kinds_used': getattr(getattr(self.retriever, 'config', None), 'keep_kinds', None),
-            'kind_priority_used': getattr(getattr(self.retriever, 'config', None), 'kind_priority', None),
-            # Generator input (post filtering)
-            "doc_filter_mode": doc_filter_mode_used,
-            "docs_for_gen_ids": [d.get("id") for d in (docs_for_gen or [])][: int(top_k)],
-            "added_param_doc_ids": added_param_doc_ids,
-            "added_clause_doc_ids": added_clause_doc_ids,
-            # Selector output
-            "selected_source_ids": [s.get("source_id") for s in (filled_spans or []) if isinstance(s, dict)],
-            "selected_controls": _selected_controls_from_spans(filled_spans or []),
-            # Evaluation context (if provided)
-            "resolution_policy": policy,
-        }
         return _wrap_out(final_contract)
+
+
+# ---------------------------------------------------------------------------
+# Backward-compatible API shim
+# ------------------------------------------------------------------------
+# The research-clean pipeline *should* expose `answer`. This shim preserves that
+# public API without changing retrieval or citation behavior.
+try:
+    if "ComplianceGPTPipeline" in globals():
+        _cls = globals()["ComplianceGPTPipeline"]
+        if not hasattr(_cls, "answer"):
+            # Fallback to common legacy entrypoints if present.
+            if hasattr(_cls, "run_single"):
+                def answer(self, *args, **kwargs):  # type: ignore
+                    return self.run_single(*args, **kwargs)
+                setattr(_cls, "answer", answer)
+            elif any("__call__" in c.__dict__ for c in _cls.mro()):
+                def answer(self, *args, **kwargs):  # type: ignore
+                    return self.__call__(*args, **kwargs)
+                setattr(_cls, "answer", answer)
+except Exception:
+    # Do not fail import because of a shim.
+    pass

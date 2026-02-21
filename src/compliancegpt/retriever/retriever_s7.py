@@ -1,5 +1,8 @@
 """
-retriever_s7.py — S7 retriever component for ComplianceGPT
+
+RETRIEVER_PATCH_ID = "2026-02-21-leafbudget8-clause-rerank"
+
+retriever_s7.py - S7 retriever component for ComplianceGPT
 
 Design goals (clean + pipeline-friendly)
 - Single, unambiguous path name: `ccs_path` (NO catalog_path/ccs_path duality).
@@ -27,7 +30,7 @@ import math
 import re
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Set
 
 import numpy as np
 
@@ -246,19 +249,73 @@ def build_control_docs_from_clauses(records: List[Dict[str, Any]]) -> List[Dict[
 
 def build_control_fallback_text_map(records: List[Dict[str, Any]], max_parts: int = 8) -> Dict[str, str]:
     """
-    Short-ish control text for reranker input (avoid feeding huge control docs).
+    Build a deterministic per-control text map used for reranker fallback scoring.
+
+    Deterministic priority order before applying max_parts:
+      1) Control title
+      2) Base statement (e.g., ra-5_smt, ac-2(1)_smt)
+      3) Sub-statements (e.g., ra-5_smt.a, ra-5_smt.c.1)
+      4) Guidance (e.g., ra-5_gdn, ra-5_gdn.a)
+
+    Notes:
+      - This function MUST NOT change its input/output signature.
+      - It intentionally excludes non-clause kinds (e.g., odp/prm/obj).
     """
-    by_ctl: Dict[str, List[str]] = defaultdict(list)
+    by_ctl: Dict[str, List[Dict[str, Any]]] = defaultdict(list)
     for r in records:
         cid = r.get("control_id", "")
         if cid:
-            by_ctl[cid].append(r.get("text", ""))
-    return {normalize_control_id(k).upper(): "\n".join(v[:max_parts]) for k, v in by_ctl.items()}
+            by_ctl[str(cid)].append(r)
 
+    def _tier(rid: str, kind: str) -> int:
+        rid_l = (rid or "").strip().lower()
+        k = (kind or "").strip().lower()
+        # Prefer explicit kind; fall back to id suffix when kind is missing.
+        if k == "smt" or "_smt" in rid_l:
+            # Base statement: ends with '_smt' (no '.a', '.1', etc.).
+            return 0 if re.search(r"_smt$", rid_l) else 1
+        if k == "gdn" or "_gdn" in rid_l:
+            return 2
+        return 99
 
-# ==========================================================
-# 3) BM25 (tiny local implementation)
-# ==========================================================
+    out: Dict[str, str] = {}
+    max_n = max(0, int(max_parts))
+    for cid, recs in by_ctl.items():
+        # Control title (use first non-empty title across records).
+        title = ""
+        for r in recs:
+            t = str(r.get("title", "") or "").strip()
+            if t:
+                title = t
+                break
+
+        scored: List[Tuple[int, str, str]] = []
+        for r in recs:
+            rid = str(r.get("id", "") or "").strip()
+            if not rid:
+                continue
+            kind = str(r.get("kind", "") or "").strip()
+            tier = _tier(rid, kind)
+            if tier >= 99:
+                continue
+            txt = str(r.get("text", "") or "").strip()
+            if not txt:
+                continue
+            scored.append((tier, rid.lower(), txt))
+
+        scored.sort(key=lambda x: (x[0], x[1]))
+
+        parts: List[str] = []
+        if title:
+            parts.append(f"Control Title: {title}")
+
+        # Take up to max_parts clause texts (after title).
+        for tier, _rid, txt in scored[:max_n]:
+            parts.append(txt)
+
+        out[normalize_control_id(cid).upper()] = "\n".join(parts).strip()
+
+    return out
 class BM25Okapi:
     def __init__(self, corpus_tokens: List[List[str]], k1: float = 1.5, b: float = 0.75):
         self.k1 = float(k1)
@@ -309,7 +366,7 @@ def build_bm25(docs: List[Dict[str, str]], k1: float, b: float) -> Tuple[BM25Oka
 
 
 # ==========================================================
-# 4) Dense index + clause→control adapter
+# 4) Dense index + clause->control adapter
 # ==========================================================
 class DenseIndex:
     """Clause-level dense retrieval (cosine/IP with normalized embeddings).
@@ -402,7 +459,7 @@ class DenseIndex:
 
 class ClauseDenseControlAdapter:
 
-    """Clause search → compress to control by max clause score."""
+    """Clause search -> compress to control by max clause score."""
 
     def __init__(self, dense_idx: DenseIndex, clause_to_control: Dict[str, str]):
         self.idx = dense_idx
@@ -490,23 +547,78 @@ def _coerce_rewrite_list(rewrites: Any) -> List[str]:
     return [x.strip() for x in out if isinstance(x, str) and x.strip()]
 
 
-def build_query_variants(original_query: str, rewrites: List[str], max_rewrites: int, jaccard_min: float) -> List[str]:
-    variants = [original_query]
-    for r in rewrites:
-        if len(r) < 6:
-            continue
-        if jaccard_overlap(original_query, r) < float(jaccard_min):
-            continue
-        variants.append(r)
-        if len(variants) >= 1 + int(max_rewrites):
-            break
-    # dedupe while preserving order
-    return list(dict.fromkeys(variants))
+def build_query_variants(
+    query: str,
+    rewrites: Optional[List[str]] = None,
+    max_rewrites: Optional[int] = None,
+    jaccard_min: Optional[float] = None,
+    **_kwargs: Any,
+) -> List[str]:
+    q = str(query or "").strip()
+    if not q:
+        return []
+    base: List[str] = [q]
 
+    # Keep rewrites in original order, optionally filtered by token Jaccard similarity.
+    # This prevents obvious semantic drift from dominating retrieval while staying
+    # fully model-agnostic (no gold-driven rules).
+    q_toks = set(tokenize(q))
+    kept: List[str] = []
+    for r in (rewrites or []):
+        rr = str(r or "").strip()
+        if not rr or rr == q:
+            continue
+        if jaccard_min is not None and q_toks:
+            rr_toks = set(tokenize(rr))
+            if rr_toks:
+                inter = len(q_toks.intersection(rr_toks))
+                union = len(q_toks.union(rr_toks))
+                jac = (inter / union) if union else 0.0
+                if jac < float(jaccard_min):
+                    continue
+        kept.append(rr)
 
-# ==========================================================
-# 6) S7 ranking core (controls)
-# ==========================================================
+    if max_rewrites is not None:
+        try:
+            m = int(max_rewrites)
+            if m >= 0:
+                kept = kept[:m]
+        except Exception:
+            pass
+
+    base.extend(kept)
+
+    def _augment_enhancements(v: str) -> str:
+        # Add CCS-friendly dot forms for enhancement controls: AT-2(1) -> AT-2.1
+        extras: List[str] = []
+        for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)\b", v or ""):
+            b = str(m.group(1) or "").upper()
+            n0 = str(m.group(2) or "").strip()
+            try:
+                n = str(int(n0))
+            except Exception:
+                n = n0
+            if b and n:
+                extras.append(f"{b}.{n}")
+        if not extras:
+            return v
+        return str(v) + " " + " ".join(extras + [e.lower() for e in extras])
+
+    out: List[str] = []
+    for v in base:
+        out.append(v)
+        v2 = _augment_enhancements(v)
+        if v2 != v:
+            out.append(v2)
+
+    # De-dup preserve order
+    seen: Set[str] = set()
+    final: List[str] = []
+    for v in out:
+        if v not in seen:
+            seen.add(v)
+            final.append(v)
+    return final
 def s7_rank_controls(
     original_query: str,
     variants: List[str],
@@ -798,7 +910,7 @@ class RetrievalConfig:
     rerank_skip_require_top1_agreement: bool = False
 
     # Evidence selection
-    clauses_per_control: int = 3
+    clauses_per_control: int = 12
     kind_priority: Tuple[str, ...] = ("smt", "gdn")  # fill missing evidence in this order
 
     # Evidence gating (keep params in CCS, but avoid citing them as evidence)
@@ -833,7 +945,7 @@ class ComplianceGPTRetriever:
         # clause ids for CCS sanity check
         self.ids = [r["id"] for r in self.records]
 
-        # 2) Build control→clauses maps (for evidence selection fallback)
+        # 2) Build control->clauses maps (for evidence selection fallback)
         self.control_to_clause_ids: Dict[str, List[str]] = defaultdict(list)
         self.control_to_clause_ids_by_kind: Dict[str, Dict[str, List[str]]] = defaultdict(lambda: defaultdict(list))
         for r in self.records:
@@ -862,17 +974,15 @@ class ComplianceGPTRetriever:
         """
         Select up to `clauses_per_control` clause ids per control.
 
-        Strategy:
-          1) Take top dense clause hits for the query; bucket by control; keep best scores.
-          2) For each control, if we still need more evidence, fill from kind_priority
-             (statement first, then guidance, etc.)
+        Research-grade selection: purely semantic score from the dense index.
+        No depth bucketing and no post-hoc kind-based inventory fill.
         """
         controls_set = set(controls)
         per_ctl: Dict[str, List[Tuple[str, float]]] = defaultdict(list)
 
-        # Dense clause hits
         clause_hits = self.dense_index.search(query, top_k=max(100, self.config.candidate_set_size * 20))
         allowed_kinds = set(k.lower() for k in (self.config.evidence_kinds or ()))
+
         for clause_id, score in clause_hits:
             rec = self.record_by_id.get(clause_id)
             if not rec:
@@ -884,70 +994,92 @@ class ComplianceGPTRetriever:
             ctl = normalize_control_id(self.clause_to_control.get(clause_id, "")).upper()
             if ctl not in controls_set:
                 continue
+
             per_ctl[ctl].append((clause_id, float(score)))
 
-        def _depth_bucket(cid: str) -> int:
-            s = str(cid).lower()
-            rem = ""
-            for suf in ("_smt", "_gdn", "_obj"):
-                if suf in s:
-                    rem = s.split(suf, 1)[1]
-                    break
-            depth = rem.count(".") if rem else 0
-            if not self.config.prefer_depth1_subclauses:
-                return 0
-            if depth == 1:
-                return 0
-            if depth == 2:
-                return 1
-            if depth >= 3:
-                return 2
-            return 3
-
-        # Keep best unique clause ids per control (depth-aware, then score)
         selected: Dict[str, List[str]] = {}
         for ctl in controls:
             hits = per_ctl.get(ctl, [])
             if hits:
-                hits_sorted = sorted(hits, key=lambda x: (_depth_bucket(x[0]), -x[1]))
-                seen = set()
+                hits_sorted = sorted(hits, key=lambda x: x[1], reverse=True)
+
+                # Take a modest per-control candidate pool, then optionally rerank within-control.
+                # This helps distinguish closely-related leaf clauses (e.g., *.a vs *.b) without
+                # injecting any unseen evidence.
+                top_m = max(int(self.config.clauses_per_control) * 6, 24)
+                cand = hits_sorted[:top_m]
+
+                rerank_scores: Optional[Dict[str, float]] = None
+                try:
+                    pairs: List[Tuple[str, str]] = []
+                    cand_ids: List[str] = []
+                    for cid, _ds in cand:
+                        rec2 = self.record_by_id.get(cid)
+                        if not rec2:
+                            continue
+                        title2 = str(rec2.get("title", "") or "")
+                        text2 = str(rec2.get("text", "") or "")
+                        doc_text = (title2 + "\n" + text2).strip() if title2 else text2
+                        if not doc_text:
+                            continue
+                        pairs.append((query, doc_text))
+                        cand_ids.append(cid)
+
+                    if pairs and cand_ids:
+                        preds = self.reranker.predict(
+                            pairs,
+                            batch_size=32,
+                            convert_to_numpy=True,
+                            show_progress_bar=False,
+                        )
+                        rerank_scores = {cid: float(preds[i]) for i, cid in enumerate(cand_ids)}
+                except Exception:
+                    rerank_scores = None
+
+                def _subclause_depth(clause_id: str) -> int:
+                    # Depth after kind marker (e.g., "ac-2_smt.h.3" -> 2; "ac-11_smt" -> 0).
+                    if "_" not in clause_id:
+                        return 0
+                    tail = clause_id.split("_", 1)[1]
+                    if tail.startswith("smt"):
+                        rest = tail[3:]
+                    elif tail.startswith("gdn"):
+                        rest = tail[3:]
+                    else:
+                        rest = ""
+                    if rest.startswith("."):
+                        rest = rest[1:]
+                    if not rest:
+                        return 0
+                    return len(rest.split("."))
+
+                scored: List[Tuple[str, float, int, int]] = []
+                for cid, dense_score in cand:
+                    rec2 = self.record_by_id.get(cid)
+                    if not rec2:
+                        continue
+                    base = float(dense_score)
+                    if rerank_scores and cid in rerank_scores:
+                        base = float(rerank_scores[cid])
+                    depth = _subclause_depth(cid) if self.config.prefer_depth1_subclauses else 0
+                    text_len = len(str(rec2.get("text", "") or ""))
+                    scored.append((cid, base, depth, text_len))
+
+                scored_sorted = sorted(scored, key=lambda x: (x[1], x[2], x[3]), reverse=True)
+
+                seen: Set[str] = set()
                 best_ids: List[str] = []
-                for cid, _ in hits_sorted:
+                for cid, _s, _d, _tl in scored_sorted:
                     if cid in seen:
                         continue
                     best_ids.append(cid)
                     seen.add(cid)
                     if len(best_ids) >= int(self.config.clauses_per_control):
                         break
+
                 selected[ctl] = best_ids
             else:
                 selected[ctl] = []
-
-            # Fill remaining from kind_priority
-            need = int(self.config.clauses_per_control) - len(selected[ctl])
-            if need > 0:
-                for kind in self.config.kind_priority:
-                    kind_ids = self.control_to_clause_ids_by_kind.get(ctl, {}).get(kind, [])
-                    if kind_ids and self.config.prefer_depth1_subclauses:
-                        kind_ids = sorted(kind_ids, key=_depth_bucket)
-                    for cid in kind_ids:
-                        if cid not in selected[ctl]:
-                            selected[ctl].append(cid)
-                            need -= 1
-                            if need <= 0:
-                                break
-                    if need <= 0:
-                        break
-
-            # If still short, fill from any clauses for the control
-            need = int(self.config.clauses_per_control) - len(selected[ctl])
-            if need > 0:
-                for cid in self.control_to_clause_ids.get(ctl, []):
-                    if cid not in selected[ctl]:
-                        selected[ctl].append(cid)
-                        need -= 1
-                        if need <= 0:
-                            break
 
         return selected
 
@@ -956,7 +1088,7 @@ class ComplianceGPTRetriever:
         Returns clause-level doc dicts:
           {id, control_id, kind, title, text}
 
-        - `top_k` is the number of top *controls* to return evidence for.
+        - `top_k` is the number of top controls to return evidence for.
         - total returned docs ~= top_k * clauses_per_control (minus missing).
         """
         rewrite_list = _coerce_rewrite_list(rewrites)
@@ -981,7 +1113,6 @@ class ComplianceGPTRetriever:
             rerank_skip_min_base_margin_ratio=self.config.rerank_skip_min_base_margin_ratio,
             rerank_skip_require_top1_agreement=self.config.rerank_skip_require_top1_agreement,
         )
-
 
         # Expose last retrieval diagnostics for pipeline-level debugging (no effect on ranking)
         try:

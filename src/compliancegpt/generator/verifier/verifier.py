@@ -795,3 +795,81 @@ def verify_answer(
         error_tags=errors,
         metrics=metrics,
     )
+
+
+# ==========================================================
+# Contract-only validity checks (no gold dependence)
+# ==========================================================
+
+def verify_contract_validity(
+    json_output: Dict[str, Any],
+    corpus: Optional[Dict[str, str]] = None,
+    org_profile: Optional[Dict[str, Any]] = None,
+    strict_verbatim: bool = True,
+) -> Tuple[bool, List[str]]:
+    """
+    Validate the answer contract without using gold labels.
+
+    This is intentionally separate from verify_answer(), which mixes:
+      (a) contract validity, and
+      (b) agreement with a particular gold labeling (doc ids, controls, policy).
+
+    Returns:
+      (is_pass, error_tags)
+    """
+    errors: List[str] = []
+
+    # Basic structural checks
+    if not isinstance(json_output, dict):
+        return False, ["ContractNotDict"]
+
+    status = str(json_output.get("status", "") or "").strip().upper()
+    spans = json_output.get("evidence_spans", [])
+    if spans is None:
+        spans = []
+    if not isinstance(spans, list):
+        errors.append("EvidenceSpansNotList")
+        spans = []
+
+    if status == "NO_EVIDENCE":
+        if spans:
+            errors.append("NoEvidenceButHasSpans")
+    elif status in {"OK", "PARAMS_REQUIRED"}:
+        if not spans:
+            errors.append("MissingEvidenceSpans")
+    elif status == "ERROR":
+        # ERROR is allowed to have empty spans.
+        pass
+    else:
+        errors.append("UnknownStatus")
+
+    for i, sp in enumerate(spans):
+        if not isinstance(sp, dict):
+            errors.append("EvidenceSpanNotDict")
+            continue
+        sid = str(sp.get("source_id", "") or "").strip()
+        stxt = str(sp.get("span_text", "") or "")
+        if not sid:
+            errors.append("MissingSourceId")
+        if status != "NO_EVIDENCE" and not str(stxt).strip():
+            errors.append("MissingSpanText")
+
+        if corpus is not None and sid:
+            official = resolve_official_text(sid, corpus)
+            if not official:
+                errors.append("UnknownSourceId")
+            else:
+                ok, _ = verify_span(official, stxt, strict_verbatim=bool(strict_verbatim))
+                if not ok:
+                    errors.append("SpanNotVerbatim")
+
+    # Contract consistency checks (placeholders vs odp list vs status)
+    try:
+        contract = parse_answer_contract(json_output)
+        errors.extend(check_status_consistency(contract))
+    except Exception:
+        errors.append("ContractParseError")
+
+    # Ensure error tags are unique and deterministic order
+    errors = sorted(set(errors))
+    return (len(errors) == 0), errors
