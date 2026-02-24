@@ -17,6 +17,10 @@ from __future__ import annotations
 import re
 import json
 
+# Control id regex used by normalize_control_id().
+# Matches variants like 'AC-2', 'AC 02', 'ac-2_smt.h.1', and 'AC-2(1)'.
+_CTRL_ID_RE = re.compile(r"\b([A-Za-z]{2})\s*[-_ ]?\s*0*([0-9]{1,2})(?:\([0-9]+\))?(?=[^A-Za-z0-9]|$)")
+
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple, Set
 from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, replace as _dc_replace
@@ -25,7 +29,7 @@ from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, rep
 # ----------------------------
 from compliancegpt.generator.generator import ComplianceGenerator, load_org_profile, normalize_contract  # type: ignore
 
-PIPELINE_PATCH_ID = "2026-02-20-clean-v6-add-answer-compat"
+PIPELINE_PATCH_ID = "2026-02-23-clause-span-fallback-v1"
 
 _VERIFY_IMPORT_ERROR = None
 try:
@@ -1025,7 +1029,7 @@ def _ensure_ccs_hierarchy_loaded(
 ) -> None:
     """Module-level alias used by older pipeline code paths.
 
-    Builds parent→children mapping from CCS metadata if `parent_to_children` is empty.
+    Builds parent-to-children mapping from CCS metadata if `parent_to_children` is empty.
     This is non-cheating: it uses only CCS fields (e.g., `parent_part_id`).
     """
     if parent_to_children:
@@ -1598,9 +1602,15 @@ class ComplianceGPTPipeline:
                 primary_first_applied = True
 
         docs_for_gen = _apply_doc_filter_mode(docs_gen_pool, doc_filter_mode_used)
+
+        # Drop empty-text docs (some controls have container ids like "cp-2_smt" with no leaf text).
+        docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
+
         if not docs_for_gen:
             # If filtering dropped everything, fall back to statement docs for the primary control.
             docs_for_gen = _apply_doc_filter_mode(_filter_docs_to_controls(retrieved_docs, [primary_control]), "smt_only")
+            docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
+
         docs_for_gen = docs_for_gen[: int(getattr(self, "gen_docs_k", 24))]
 
         # 5) Evidence selection
@@ -1756,6 +1766,65 @@ class ComplianceGPTPipeline:
                 continue
             filled_spans.append({"source_id": str(rec.get("id", sid)), "span_text": txt})
 
+        secondary_fallback_used = False
+        secondary_fallback_reason = ""
+        secondary_fallback_selected_id = ""
+        secondary_fallback_candidates_checked: List[str] = []
+
+        if not filled_spans:
+            # Secondary deterministic fallback: if the generator-selected ids cannot be filled into valid
+            # clause spans (e.g., missing record, non-clause kind, or empty text), select the first
+            # retriever-returned clause record with non-empty text. This remains fully extractive and does
+            # not consult any gold labels.
+            cand_ids: List[str] = []
+            # Prefer hierarchy-expanded ids first, then retriever candidates.
+            for _sid in (expanded_ids or []):
+                s2 = str(_sid or "").strip()
+                if s2 and s2 not in cand_ids:
+                    cand_ids.append(s2)
+            for d in (docs_for_gen or [])[:50]:
+                s2 = str(d.get("id", "") or "").strip()
+                if s2 and s2 not in cand_ids:
+                    cand_ids.append(s2)
+
+            # If we are in an ODP asking mode, prefer candidates that actually contain ODP markers.
+            want_odp = str(contract.get("status", "") or "").strip().upper() == "PARAMS_REQUIRED" or bool(contract.get("odp_required_list"))
+            best_id = ""
+            best_txt = ""
+
+            def _is_valid_clause_text(_rec: Dict[str, Any]) -> bool:
+                k = str(_rec.get("kind", "") or "").strip().lower()
+                if k not in {"smt", "gdn"}:
+                    return False
+                t = str(_rec.get("text", "") or "").strip()
+                return bool(t)
+
+            for _sid in cand_ids:
+                rec2 = self.retriever.record_by_id.get(_sid)
+                if not isinstance(rec2, dict):
+                    continue
+                if not _is_valid_clause_text(rec2):
+                    continue
+                t2 = str(rec2.get("text", "") or "").strip()
+                secondary_fallback_candidates_checked.append(str(rec2.get("id", _sid)))
+                if want_odp:
+                    keys, has_assign = _extract_odp_ids(t2)
+                    if keys or has_assign:
+                        best_id = str(rec2.get("id", _sid))
+                        best_txt = t2
+                        break
+                if not best_id:
+                    best_id = str(rec2.get("id", _sid))
+                    best_txt = t2
+                if want_odp and len(secondary_fallback_candidates_checked) >= 25:
+                    break
+
+            if best_id and best_txt:
+                secondary_fallback_used = True
+                secondary_fallback_reason = "no_valid_clause_spans_after_fill"
+                secondary_fallback_selected_id = best_id
+                filled_spans = [{"source_id": best_id, "span_text": best_txt}]
+
         if not filled_spans:
             final_contract = {
                 "question": q,
@@ -1776,6 +1845,10 @@ class ComplianceGPTPipeline:
                     "hierarchy_added_ids": added_ids,
                     "fallback_used": fallback_used,
                     "fallback_reason": fallback_reason,
+                    "secondary_fallback_used": secondary_fallback_used,
+                    "secondary_fallback_reason": secondary_fallback_reason,
+                    "secondary_fallback_selected_id": secondary_fallback_selected_id,
+                    "secondary_fallback_candidates_checked": secondary_fallback_candidates_checked[:10],
                 },
             }
             if bool(run_verify) and gold_row is not None:
@@ -1863,6 +1936,10 @@ class ComplianceGPTPipeline:
                 "hierarchy_added_ids": added_ids,
                 "fallback_used": fallback_used,
                 "fallback_reason": fallback_reason,
+                    "secondary_fallback_used": secondary_fallback_used,
+                    "secondary_fallback_reason": secondary_fallback_reason,
+                    "secondary_fallback_selected_id": secondary_fallback_selected_id,
+                    "secondary_fallback_candidates_checked": secondary_fallback_candidates_checked[:10],
                 "counts": {
                     "retrieved_docs": int(len(retrieved_docs)),
                     "docs_for_gen": int(len(docs_for_gen)),
@@ -1903,7 +1980,7 @@ class ComplianceGPTPipeline:
 
 # ---------------------------------------------------------------------------
 # Backward-compatible API shim
-# ------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 # The research-clean pipeline *should* expose `answer`. This shim preserves that
 # public API without changing retrieval or citation behavior.
 try:
