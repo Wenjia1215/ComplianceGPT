@@ -3,8 +3,7 @@
 This folder contains a **focused micro‑ablation** that validates two architectural concerns in our retrieval stack by constructing **oracle (upper‑bound) variants**.
 
 **Scope constraints (current phase):**
-- **Only NIST SP 800‑53** (Rev. 4 / Rev. 5).  
-- Ignore crosswalk / PCI DSS / HIPAA work (out of scope for this run).
+- **Only NIST SP 800-53** (Rev. 4 / Rev. 5).
 - This notebook **does NOT rerun baselines S4 or S7**; we compare against the S4/S7 results produced by our main `AblationStudy_S1_8.ipynb`.
 
 ---
@@ -13,30 +12,30 @@ This folder contains a **focused micro‑ablation** that validates two architect
 
 We proactively designed this micro‑ablation to stress‑test two plausible doubts:
 
-1) **Retrieval (S4 / QUR‑RRF):**  
+1) **Retrieval (S4 / QUR‑RRF):**
    Does fusing multiple rewrites help, or does it introduce noise? Would fusing only *one best rewrite* be enough?
 
-2) **Reranking (S7 / ComplianceGPT):**  
+2) **Reranking (S7 / ComplianceGPT):**
    For the cross‑encoder reranker, should we rerank using the **original user query**, or a “cleaner” rewrite?
 
-Earlier versions of this micro‑ablation wrote several separate markdown reports and even included ODP subsets and broad claims based on an older corpus. fileciteturn18file1 fileciteturn18file2 fileciteturn18file3  
+Earlier versions of this micro‑ablation wrote several separate markdown reports and even included ODP subsets and broad claims based on an older corpus.
 This **new version** is intentionally minimal (one notebook + one README) and aligned to our **current clause‑level CCS** and our **current S4/S7 logic** (extracted from `AblationStudy_S1_8.ipynb`).
 
 ---
 
 ## 2) Oracle definition (upper bound, not deployable)
 
-**Oracle = “theoretical upper bound.”**  
+**Oracle = “theoretical upper bound.”**
 For each question, we generate **3 rewrites** and then **peek at the gold control ID** to select the rewrite that performs best in Stage‑1 retrieval.
 
 **Requirement B (“best scoring rewrite”):**
 1. Generate 3 rewrites for the question.
 2. For each rewrite `r`, run **Stage‑1 hybrid retrieval** (BM25 + Dense + RRF).
 3. Compute the **rank of the gold control** in that fused Stage‑1 ranking.
-4. Choose the rewrite with the **lowest (best) gold rank**.  
+4. Choose the rewrite with the **lowest (best) gold rank**.
    (Tie‑break by the fused score.)
 
-Because this uses the gold label, it is **not a production method**. It is a tool to answer:  
+Because this uses the gold label, it is **not a production method**. It is a tool to answer:
 > “If rewrite selection were perfect, would this design choice help or hurt?”
 
 ---
@@ -147,7 +146,7 @@ CANDIDATE_SET_SIZE         = 50
 
 ## 6) Evaluation contract (what “correct” means)
 
-**Correctness unit:** control ID hit (e.g., `AC-2`).  
+**Correctness unit:** control ID hit (e.g., `AC-2`).
 Even though we retrieve over clause content, we evaluate whether the **gold control** appears in the top‑K ranked control list.
 
 **Metrics written per query:**
