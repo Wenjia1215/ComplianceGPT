@@ -12,6 +12,11 @@ Exports (used by pipeline):
 - load_org_profile
 - normalize_contract
 - apply_odp_logic  (compat helper; pipeline is source of truth for ODP policy)
+
+Generator contract policy:
+- Generator selects IDs only.
+- Generator does NOT own ODP policy.
+- Pipeline owns final status transitions involving ODP handling.
 """
 
 from __future__ import annotations
@@ -308,9 +313,51 @@ class ComplianceGenerator:
                             break
         return None
 
+    def _sanitize_selection(
+        self,
+        contract: Dict[str, Any],
+        docs: List[Dict[str, Any]],
+    ) -> Dict[str, Any]:
+        """
+        Keep only valid, in-context source IDs and make the contract strictly selector-only.
+        """
+        valid_ids = {
+            str(d.get("id", "")).strip()
+            for d in docs
+            if str(d.get("id", "")).strip()
+        }
+
+        cleaned_spans: List[Dict[str, str]] = []
+        seen_ids = set()
+
+        for span in contract.get("evidence_spans", []):
+            if not isinstance(span, dict):
+                continue
+            sid = str(span.get("source_id", "")).strip()
+            if not sid or sid not in valid_ids or sid in seen_ids:
+                continue
+            seen_ids.add(sid)
+            cleaned_spans.append({"source_id": sid, "span_text": ""})
+
+        raw_status = str(contract.get("status", "OK")).strip().upper()
+        if raw_status == "ERROR":
+            status = "ERROR"
+        elif not cleaned_spans:
+            status = "NO_EVIDENCE"
+        else:
+            # Selector returns evidence IDs only; ODP policy belongs to pipeline.
+            status = "OK"
+
+        return {
+            "status": status,
+            "answer_text": "",
+            "evidence_spans": cleaned_spans,
+            "odp_required_list": [],
+        }
+
     def generate(self, query: str, docs: List[Dict[str, Any]], profile: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
-        Return the Selector Contract (IDs only). Pipeline fills span_text + answer_text.
+        Return the Selector Contract (IDs only). Pipeline fills span_text, answer_text, and ODP policy.
         """
         # Build context string
         ctx_parts: List[str] = []
@@ -358,29 +405,7 @@ class ComplianceGenerator:
             }
 
         contract = normalize_contract(parsed)
-
-        # Force ID-only: no copied text
-        for s in contract.get("evidence_spans", []):
-            if isinstance(s, dict):
-                s["span_text"] = ""
-
-        # Status coherence with selection + ODP placeholders from the ORIGINAL doc texts
-        if not contract.get("evidence_spans"):
-            contract["status"] = "NO_EVIDENCE"
-            contract["odp_required_list"] = []
-        else:
-            selected_ids = [str(s.get("source_id", "")).strip() for s in contract.get("evidence_spans", []) if str(s.get("source_id", "")).strip()]
-            text_by_id = {str(d.get("id", "")).strip(): str(d.get("text", "")).strip() for d in docs if str(d.get("id", "")).strip()}
-
-            odp_ids: List[str] = []
-            for sid in selected_ids:
-                odp_ids.extend(_extract_keys(text_by_id.get(sid, "")))
-
-            odp_ids = list(dict.fromkeys([x for x in odp_ids if x]))  # stable de-dup
-            contract["odp_required_list"] = odp_ids
-            contract["status"] = "PARAMS_REQUIRED" if odp_ids else "OK"
-
-        contract["answer_text"] = ""  # pipeline builds this
+        contract = self._sanitize_selection(contract, docs)
         contract["raw_output"] = raw_text
         return contract
 

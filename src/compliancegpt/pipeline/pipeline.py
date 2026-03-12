@@ -29,7 +29,7 @@ from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, rep
 # ----------------------------
 from compliancegpt.generator.generator import ComplianceGenerator, load_org_profile, normalize_contract  # type: ignore
 
-PIPELINE_PATCH_ID = "2026-02-23-clause-span-fallback-v1"
+PIPELINE_PATCH_ID = "2026-03-12-odp-statement-rescue-v3"
 
 _VERIFY_IMPORT_ERROR = None
 try:
@@ -942,6 +942,118 @@ def _apply_odp_policy_to_answer(
         return text, [], "OK"
 
     raise ValueError(f"Unknown resolution_policy={pol_raw!r}")
+
+
+def _normalize_resolution_policy(policy: Any) -> str:
+    """Normalize resolution policy to one of ASK / PRESERVE / FILL_FROM_PROFILE."""
+    try:
+        pol = "" if policy is None else str(policy).strip().upper()
+    except Exception:
+        pol = ""
+    if pol in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
+        pol = "FILL_FROM_PROFILE"
+    if pol in {"FILL", "PROFILE", "FILL_PROFILE"}:
+        pol = "FILL_FROM_PROFILE"
+    return pol
+
+
+def _rescue_odp_statement_spans(
+    *,
+    filled_spans: List[Dict[str, str]],
+    winner_control: str,
+    record_by_id: Dict[str, Dict[str, Any]],
+    resolution_policy: Any,
+    allow_enhancements: bool = False,
+    max_add: int = 4,
+) -> Tuple[List[Dict[str, str]], List[str], bool]:
+    """
+    Deterministic guardrail for ASK/FILL_FROM_PROFILE paths.
+
+    If the current final evidence contains no unresolved ODP markers, but the selected
+    base control has statement clauses with ODP placeholders, prepend those statement
+    clauses so downstream ODP policy can see them.
+
+    This does not consult any gold labels and remains fully extractive.
+    """
+    pol = _normalize_resolution_policy(resolution_policy)
+    if pol not in {"ASK", "FILL_FROM_PROFILE"}:
+        return list(filled_spans or []), [], False
+
+    current = "\n\n".join([str(s.get("span_text", "") or "") for s in (filled_spans or [])]).strip()
+    keys_now, has_assign_now = _extract_odp_ids(current)
+    if keys_now or has_assign_now:
+        return list(filled_spans or []), [], False
+
+    wc = normalize_control_id(winner_control)
+    if not wc:
+        return list(filled_spans or []), [], False
+
+    wc_low = wc.lower()
+    existing_ids: Set[str] = {
+        str(s.get("source_id", "")).strip() for s in (filled_spans or [])
+        if str(s.get("source_id", "")).strip()
+    }
+
+    def _sort_key(sid: str) -> Tuple[int, str]:
+        s = str(sid or "").strip().lower()
+        base_leaf_prefix = f"{wc_low}_smt."
+        base_exact = f"{wc_low}_smt"
+        if s.startswith(base_leaf_prefix):
+            return (0, s)
+        if s == base_exact:
+            return (1, s)
+        return (2, s)
+
+    rescue: List[Dict[str, str]] = []
+    for sid, rec in sorted((record_by_id or {}).items(), key=lambda kv: _sort_key(kv[0])):
+        if len(rescue) >= int(max_add):
+            break
+        if sid in existing_ids:
+            continue
+        if not isinstance(rec, dict):
+            continue
+
+        rid = str(rec.get("id", sid) or sid).strip()
+        if not rid:
+            continue
+        if rid in existing_ids:
+            continue
+        if not allow_enhancements and _is_enhancement_clause_id(rid):
+            continue
+
+        rec_ctl = normalize_control_id(rec.get("control_id", ""))
+        if str(rec_ctl or "").upper() != wc.upper():
+            continue
+
+        kind = str(rec.get("kind", "") or "").strip().lower()
+        if kind != "smt":
+            continue
+
+        txt = str(rec.get("text", "") or "").strip()
+        if not txt:
+            continue
+
+        keys, has_assign = _extract_odp_ids(txt)
+        if not keys and not has_assign:
+            continue
+
+        rescue.append({"source_id": rid, "span_text": txt})
+
+    if not rescue:
+        return list(filled_spans or []), [], False
+
+    merged: List[Dict[str, str]] = []
+    seen: Set[str] = set()
+    for sp in rescue + list(filled_spans or []):
+        sid = str(sp.get("source_id", "")).strip()
+        txt = str(sp.get("span_text", "") or "").strip()
+        if not sid or not txt or sid in seen:
+            continue
+        seen.add(sid)
+        merged.append({"source_id": sid, "span_text": txt})
+
+    added_ids = [str(sp.get("source_id", "")).strip() for sp in rescue if str(sp.get("source_id", "")).strip()]
+    return merged, added_ids, True
 def _verifier_result_to_dict(ver: Any) -> Optional[Dict[str, Any]]:
     """Normalize verifier output (dataclass / dict / unknown) to a JSON-friendly dict."""
     if ver is None:
@@ -1013,6 +1125,14 @@ def _wrap_out(contract: Dict[str, Any]) -> Dict[str, Any]:
     c["verifier_errors"] = verifier_errors
     if verifier_metrics:
         c["verifier_metrics"] = verifier_metrics
+
+    # Acceptance-tests compatibility aliases
+    if "answer_text_with_citation" not in c:
+        c["answer_text_with_citation"] = str(c.get("answer_text_with_citations", c.get("answer_text", "")) or "")
+    if "answer_text_with_citations" not in c:
+        c["answer_text_with_citations"] = str(c.get("answer_text_with_citation", c.get("answer_text", "")) or "")
+    if "contract_mode" not in c:
+        c["contract_mode"] = "provably_extractive"
 
     out: Dict[str, Any] = {"contract": c}
     # Flatten for legacy callers that expect the contract directly
@@ -1414,6 +1534,54 @@ class ComplianceGPTPipeline:
         added = [x for x in expanded if x not in original_set]
         return expanded, added
 
+
+    def _resolve_rewrites(
+        self,
+        query: str,
+        rewrites: Any = None,
+    ) -> List[str]:
+        """
+        Resolve query rewrites for a single run.
+
+        Priority:
+          1) caller-provided rewrites
+          2) auto-generated rewrites from QUR (when enabled)
+          3) empty list
+        """
+        if rewrites is not None:
+            out: List[str] = []
+            if isinstance(rewrites, (list, tuple)):
+                for r in rewrites:
+                    if isinstance(r, str) and r.strip():
+                        out.append(r.strip())
+                    elif isinstance(r, dict):
+                        txt = str(r.get("rewrite") or r.get("text") or "").strip()
+                        if txt:
+                            out.append(txt)
+                    elif r is not None:
+                        txt = str(r).strip()
+                        if txt:
+                            out.append(txt)
+            elif isinstance(rewrites, str):
+                txt = rewrites.strip()
+                if txt:
+                    out = [txt]
+            else:
+                txt = str(rewrites).strip()
+                if txt:
+                    out = [txt]
+            return list(dict.fromkeys(out))
+
+        if self.use_qur and self.qur is not None:
+            try:
+                gen = self.qur.generate(str(query))
+                out = [str(x).strip() for x in (gen or []) if str(x).strip()]
+                return list(dict.fromkeys(out))
+            except Exception:
+                return []
+
+        return []
+
     def answer(
         self,
         query: str,
@@ -1422,7 +1590,7 @@ class ComplianceGPTPipeline:
         gold_row: Optional[Dict[str, Any]] = None,
         use_generator: bool = True,
         run_verify: bool = False,
-        doc_filter_mode: str = "prefer_smt_drop_params",
+        doc_filter_mode: Optional[str] = None,
         statement_only_on_param_queries: bool = True,
     ) -> Dict[str, Any]:
         """
@@ -1450,6 +1618,27 @@ class ComplianceGPTPipeline:
             return _wrap_out(err_contract)
 
         self._assert_ccs_loaded()
+        rewrites_used = self._resolve_rewrites(q, rewrites)
+
+        def _attach_contract_validity(contract_obj: Dict[str, Any]) -> Dict[str, Any]:
+            if "verify_contract_validity" in globals() and callable(globals().get("verify_contract_validity")):
+                try:
+                    vp, verrs = verify_contract_validity(
+                        json_output=contract_obj,
+                        corpus=self._get_verifier_corpus(),
+                        org_profile=self.org_profile,
+                        strict_verbatim=bool(self.verify_strict_verbatim),
+                    )
+                    contract_obj["validity_check"] = {
+                        "is_pass": bool(vp),
+                        "errors": list(verrs or []),
+                    }
+                except Exception as e:
+                    contract_obj["validity_check"] = {
+                        "is_pass": False,
+                        "errors": [f"ValidityCheckException:{repr(e)}"],
+                    }
+            return contract_obj
 
         # 1) Retrieve docs (clause-level)
         top_k = max(1, int(top_k))
@@ -1457,9 +1646,9 @@ class ComplianceGPTPipeline:
         retrieved_docs: List[Dict[str, Any]] = []
         try:
             if hasattr(self.retriever, "retrieve_debug"):
-                retrieved_docs, retrieval_meta = self.retriever.retrieve_debug(q, top_k=top_k, rewrites=rewrites)
+                retrieved_docs, retrieval_meta = self.retriever.retrieve_debug(q, top_k=top_k, rewrites=rewrites_used)
             else:
-                retrieved_docs = self.retriever.retrieve(q, top_k=top_k, rewrites=rewrites)
+                retrieved_docs = self.retriever.retrieve(q, top_k=top_k, rewrites=rewrites_used)
                 retrieval_meta = dict(getattr(self.retriever, "last_meta", {}) or {})
         except Exception as e:
             err_contract = {
@@ -1487,8 +1676,13 @@ class ComplianceGPTPipeline:
                 "odp_required_list": [],
                 "primary_citation": "",
                 "all_citations": "",
-                "debug": {"retrieval_meta": retrieval_meta, "retrieved_docs": 0},
+                "debug": {
+                    "query_plan": {"original_query": q, "rewrites": rewrites_used},
+                    "retrieval_meta": retrieval_meta,
+                    "retrieved_docs": 0,
+                },
             }
+            no_ev = _attach_contract_validity(no_ev)
             # Even if no evidence, allow verifier call to label agreement metrics.
             if bool(run_verify) and gold_row is not None:
                 ver = verify_answer(
@@ -1566,7 +1760,11 @@ class ComplianceGPTPipeline:
         # 4) Doc filtering for generator window
         # Policy-aware default: when we are ASK-ing or FILL-ing, keep both statement + guidance
         # and do not apply any query-keyword heuristics.
-        doc_filter_mode_used = str(doc_filter_mode or "all").strip().lower()
+        doc_filter_mode_used = str(
+            doc_filter_mode if doc_filter_mode is not None else self.doc_filter_mode
+        ).strip().lower()
+        if not doc_filter_mode_used:
+            doc_filter_mode_used = "prefer_smt_keep_params"
         pol_eff = str(self.resolution_policy or "").strip().upper()
         if pol_eff in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
             pol_eff = "FILL_FROM_PROFILE"
@@ -1825,6 +2023,18 @@ class ComplianceGPTPipeline:
                 secondary_fallback_selected_id = best_id
                 filled_spans = [{"source_id": best_id, "span_text": best_txt}]
 
+        odp_statement_rescue_used = False
+        odp_statement_rescue_added_ids: List[str] = []
+        if filled_spans:
+            filled_spans, odp_statement_rescue_added_ids, odp_statement_rescue_used = _rescue_odp_statement_spans(
+                filled_spans=filled_spans,
+                winner_control=winner_control,
+                record_by_id=self.retriever.record_by_id,
+                resolution_policy=self.resolution_policy,
+                allow_enhancements=allow_enh,
+                max_add=4,
+            )
+
         if not filled_spans:
             final_contract = {
                 "question": q,
@@ -1837,11 +2047,13 @@ class ComplianceGPTPipeline:
                 "primary_citation": "",
                 "all_citations": "",
                 "debug": {
+                    "query_plan": {"original_query": q, "rewrites": rewrites_used},
                     "retrieval_meta": retrieval_meta,
                     "allowed_controls": allowed_controls,
                     "doc_filter_mode_used": doc_filter_mode_used,
                     "primary_first_applied": primary_first_applied,
                     "winner_control": winner_control,
+                    "selector_raw": contract,
                     "hierarchy_added_ids": added_ids,
                     "fallback_used": fallback_used,
                     "fallback_reason": fallback_reason,
@@ -1849,8 +2061,11 @@ class ComplianceGPTPipeline:
                     "secondary_fallback_reason": secondary_fallback_reason,
                     "secondary_fallback_selected_id": secondary_fallback_selected_id,
                     "secondary_fallback_candidates_checked": secondary_fallback_candidates_checked[:10],
+                    "odp_statement_rescue_used": odp_statement_rescue_used,
+                    "odp_statement_rescue_added_ids": odp_statement_rescue_added_ids,
                 },
             }
+            final_contract = _attach_contract_validity(final_contract)
             if bool(run_verify) and gold_row is not None:
                 ver = verify_answer(
                     json_output=final_contract,
@@ -1926,11 +2141,13 @@ class ComplianceGPTPipeline:
             "primary_citation": primary_citation,
             "all_citations": all_citations,
             "debug": {
+                "query_plan": {"original_query": q, "rewrites": rewrites_used},
                 "retrieval_meta": retrieval_meta,
                 "allowed_controls": allowed_controls,
                 "control_widen_tier": widen_tier,
                 "primary_control": primary_control,
                 "winner_control": winner_control,
+                "selector_raw": contract,
                 "doc_filter_mode_used": doc_filter_mode_used,
                 "primary_first_applied": primary_first_applied,
                 "hierarchy_added_ids": added_ids,
@@ -1948,6 +2165,8 @@ class ComplianceGPTPipeline:
             },
         }
 
+        final_contract = _attach_contract_validity(final_contract)
+
         # 10) Verifier (gold-only)
         if bool(run_verify) and gold_row is not None:
             ver = verify_answer(
@@ -1961,19 +2180,6 @@ class ComplianceGPTPipeline:
                 strict_version=bool(self.verify_strict_version),
             )
             final_contract["verification"] = _verifier_result_to_dict(ver)
-
-            # Optional: contract-only validity checks (no gold dependence)
-            if "verify_contract_validity" in globals() and callable(globals().get("verify_contract_validity")):
-                try:
-                    vp, verrs = verify_contract_validity(
-                        json_output=final_contract,
-                        corpus=self._get_verifier_corpus(),
-                        org_profile=self.org_profile,
-                        strict_verbatim=bool(self.verify_strict_verbatim),
-                    )
-                    final_contract["verification_validity"] = {"is_pass": bool(vp), "errors": list(verrs or [])}
-                except Exception:
-                    pass
 
         return _wrap_out(final_contract)
 
