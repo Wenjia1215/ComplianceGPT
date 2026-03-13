@@ -1,0 +1,51 @@
+# Baseline Generative Answerer (RQ2)
+
+This package implements the **baseline generative RAG** system used for **RQ2**.
+
+Goal:
+- keep the same retrieval stack as ComplianceGPT,
+- keep the same model family,
+- change only the **final answer construction** step.
+
+That means the comparison is:
+
+- **ComplianceGPT answerer** = selector-only model + deterministic verbatim assembly
+- **Baseline generative answerer** = same retrieved evidence + free-form LLM answer
+
+## Main classes
+
+- `BaselineGenerativeAnswerer`
+  - prompts the model to return JSON with:
+    - `status`
+    - `answer_text`
+    - `cited_source_ids`
+    - `odp_required_list`
+  - normalizes outputs in a fail-closed way when status/citations/ODP fields are inconsistent
+- `BaselineGenerativeRAGPipeline`
+  - subclasses the existing ComplianceGPT pipeline
+  - reuses retriever, QUR, CCS loading, model loading, and verifier integration
+  - swaps the final answerer from deterministic assembly to free-form generation
+  - labels returned contracts with `contract_mode = "generative_rag_baseline"`
+
+## Why this is the correct RQ2 baseline
+
+This baseline isolates the dissertation claim about **answer construction**.
+
+It does **not** change:
+- retriever
+- corpus
+- QUR mode
+- framework version
+- verification dataset
+
+It changes only:
+- deterministic citation-contract assembly -> free-form generative answer synthesis
+
+## Intended use
+
+This package is for:
+- single-query demonstrations
+- batch RQ2 experiments
+- answerer-vs-answerer comparison tables
+
+It is **not** the main production answerer.

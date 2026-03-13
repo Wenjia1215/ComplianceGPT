@@ -1,0 +1,2 @@
+n_compared_questions,compliancegpt_strict_win_rate,generative_false_complete_vs_compliancegpt_safe_warning_rate,generative_missed_right_control_vs_compliancegpt_rate,same_final_status_rate
+100,0.44,0.78,0.05,0.17
