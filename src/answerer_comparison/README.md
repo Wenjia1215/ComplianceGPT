@@ -30,7 +30,6 @@ Related files outside this folder:
 - `../generative_answerer/generator.py`
 - `../generative_answerer/pipeline.py`
 - `../generative_answerer/Batch_Run_Generative_Baseline_Compare.ipynb`
-- `../generative_answerer/Single_Run_Generative.ipynb`
 
 ---
 
@@ -76,6 +75,61 @@ The current RQ2 comparison was run in the **no-profile** setting. That detail ma
 - if an answer depends on unresolved organization-defined parameters,
 - and there is no approved profile value to fill them,
 - then the correct behavior is to return **`PARAMS_REQUIRED`**, not a complete-looking final answer.
+
+---
+
+## Read this first: what these metrics mean, and what they do NOT mean
+
+### These metrics do **not** mean the answer text is 100% identical to the gold answer text
+
+This comparison is **not** mainly a natural-language exact-match evaluation.
+
+A metric like **Audit-Ready Answer Rate**, it does **not** mean:
+
+- the generated answer sentence is identical to the gold wording,
+- the model reproduced the gold answer text word for word,
+- or the system got every phrasing detail exactly the same as the gold set.
+
+Instead, this comparison asks whether the system made the **correct compliance decision** and whether the final answer satisfied the project's answer contract.
+
+### What the gold set is used for here
+
+The gold set is used mainly to check things like:
+
+- did the system reach the **right control**?
+- did it reach the **right clause(s)**?
+- did it recover the **full gold clause set**, when that is required?
+- did it produce a final status consistent with the gold expectation, especially for ODP cases?
+- did it avoid pretending an unresolved ODP requirement was complete?
+
+So the gold set here is functioning mainly as a **compliance-decision and evidence reference**, not as a single target paragraph that the system must copy exactly.
+
+### What “audit-ready” means in this README
+
+In this README, **audit-ready** means:
+
+> the final answer passed the project's strict contract-validity check for this experiment.
+
+In plain language, that means the answer was acceptable under the current evaluation rules as a safe, contract-valid compliance answer.
+
+It does **not** mean the answer text was literally the same as the gold answer text.
+
+### Why this matters for RQ2
+
+This distinction is important because RQ2 is trying to show that:
+
+- a system can retrieve the right control,
+- and even produce a fluent answer,
+- but still be **unsafe** if it hides unresolved ODPs or presents incomplete requirements as complete.
+
+That is why this comparison emphasizes:
+
+- audit-ready answer rate,
+- ODP correct handling rate,
+- ODP false complete rate,
+- and right control found rate.
+
+Those metrics are more important here than natural-language similarity.
 
 ---
 
@@ -206,12 +260,25 @@ This makes the comparison much stronger than a generic “RAG vs RAG” comparis
 
 ## Metric guide
 
+### First, the count columns
+
+#### `n_questions`
+Number of questions evaluated for that system on that framework.
+
+#### `n_compared_questions`
+Number of paired questions used in the direct head-to-head comparison.
+
+#### `n_odp_questions`
+Number of questions in that dataset that are ODP-bearing for the current evaluation setup.
+
 ### Primary committee-facing metrics
 
 #### `audit_ready_answer_rate`
 Fraction of questions whose final answer passes strict contract validity.
 
 Use this as the main overall answer-quality metric for RQ2.
+
+Important: this does **not** mean the final answer text is 100% identical to the gold answer text. It means the final answer satisfied the project's contract-validity rules for this experiment.
 
 #### `right_control_found_rate`
 Fraction of questions where the system reaches the correct gold control.
@@ -251,10 +318,22 @@ On ODP-bearing questions, fraction where the system explicitly surfaces unresolv
 #### `odp_unresolved_hidden_rate`
 On ODP-bearing questions, fraction where the system hides unresolved ODP structure.
 
+#### `strict_verbatim_grounding_rate`
+Fraction of questions passing the current strict verbatim grounding check.
+
+This metric is currently reported for completeness, but it is **not** a headline RQ2 metric in this README.
+
+#### `normalized_verbatim_grounding_rate`
+Fraction of questions passing the current normalized verbatim grounding check.
+
+This metric is currently reported for completeness, but it is **not** a headline RQ2 metric in this README.
+
 ### Head-to-head metrics
 
 #### `compliancegpt_strict_win_rate`
 Fraction of compared questions where ComplianceGPT passes strict validity and the generative baseline does not.
+
+This is one of the most important RQ2 metrics.
 
 #### `generative_false_complete_vs_compliancegpt_safe_warning_rate`
 Fraction of compared questions where the generative baseline returns `OK` while ComplianceGPT returns `PARAMS_REQUIRED`.
@@ -305,7 +384,7 @@ This is exactly the kind of compliance failure that ordinary generative RAG is p
 
 Use:
 
-- `../compliancegpt/pipeline/batch_run/Batch_Run_Generative_Baseline_Compare.ipynb`
+- `../generative_answerer/Batch_Run_Generative_Baseline_Compare.ipynb`
 
 This notebook should:
 
