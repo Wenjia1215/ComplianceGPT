@@ -132,6 +132,173 @@ def normalize_scores_minmax(x: np.ndarray) -> np.ndarray:
 
 
 # ==========================================================
+# 1b) Retrieval-query planning (generic, category-level)
+# ==========================================================
+_RETRIEVAL_META_PATTERNS = (
+    re.compile(r"\b(?:under|based on|in)\s+nist\s+sp\s*800\s*[-–]?\s*53\b", re.IGNORECASE),
+    re.compile(r"\bplease\s+(?:also\s+)?include\s+(?:the\s+)?control\s+citation(?:s)?\b", re.IGNORECASE),
+    re.compile(r"\binclude\s+(?:the\s+)?control\s+citation(?:s)?\b", re.IGNORECASE),
+    re.compile(r"\binclude\s+(?:the\s+)?citation(?:s)?\b", re.IGNORECASE),
+    re.compile(r"\bwith\s+(?:the\s+)?control\s+citation(?:s)?\b", re.IGNORECASE),
+    re.compile(r"\bwith\s+(?:the\s+)?citation(?:s)?\b", re.IGNORECASE),
+    re.compile(r"\b(?:what|which)\s+control\s+(?:says|requires|covers)\b", re.IGNORECASE),
+    re.compile(r"\bcontrol\s+citation(?:s)?\b", re.IGNORECASE),
+)
+
+_ADMIN_PAT = re.compile(r"\badmins?\b|\badministrators?\b|\bsuperusers?\b|\broot\b", re.IGNORECASE)
+_NON_PRIV_PAT = re.compile(r"\bnon[\s-]?privileged\b|\bregular\s+users?\b|\bordinary\s+users?\b", re.IGNORECASE)
+_PRIV_PAT = re.compile(r"\bprivileged\b", re.IGNORECASE)
+_MFA_PAT = re.compile(r"\bmfa\b|\bmulti[\s-]?factor\b|\bmultifactor\b", re.IGNORECASE)
+
+
+def _mentions_mfa(text: str) -> bool:
+    return bool(_MFA_PAT.search(str(text or "")))
+
+
+def _detect_privilege_scope(text: str) -> str:
+    q = str(text or "")
+    if _NON_PRIV_PAT.search(q):
+        return "non_privileged"
+    if _PRIV_PAT.search(q) or _ADMIN_PAT.search(q):
+        return "privileged"
+    return "neutral"
+
+
+def _control_privilege_scope(text: str) -> str:
+    q = str(text or "")
+    if _NON_PRIV_PAT.search(q):
+        return "non_privileged"
+    if _PRIV_PAT.search(q):
+        return "privileged"
+    return "neutral"
+
+
+def _strip_retrieval_meta(text: str) -> Tuple[str, List[str]]:
+    raw = str(text or "").strip()
+    if not raw:
+        return "", []
+    out = raw
+    notes: List[str] = []
+    for pat in _RETRIEVAL_META_PATTERNS:
+        new_out = pat.sub(" ", out)
+        if new_out != out:
+            notes.append(pat.pattern)
+            out = new_out
+    out = re.sub(r"\b(?:please|kindly)\b", " ", out, flags=re.IGNORECASE)
+    out = re.sub(r"[,:;]+", " ", out)
+    out = _WS_RE.sub(" ", out).strip(" .,-:\n\t")
+    return out, notes
+
+
+def build_retrieval_query(
+    query: str,
+    *,
+    strip_meta: bool = True,
+    expand_scope_terms: bool = True,
+) -> Tuple[str, Dict[str, Any]]:
+    raw = str(query or "").strip()
+    if not raw:
+        return "", {"raw_query": "", "retrieval_query": "", "scope": "neutral", "meta_removed": [], "expansions": []}
+
+    scope = _detect_privilege_scope(raw)
+    work = raw
+    removed: List[str] = []
+    if strip_meta:
+        work, removed = _strip_retrieval_meta(work)
+        if not work:
+            work = raw
+
+    expansions: List[str] = []
+    q_norm = normalize_text(work)
+    if expand_scope_terms:
+        if _mentions_mfa(q_norm):
+            expansions.extend(["multi-factor authentication", "mfa"])
+        if scope == "privileged":
+            expansions.extend(["privileged account", "privileged accounts"])
+            if _ADMIN_PAT.search(raw):
+                expansions.extend(["privileged user", "privileged users"])
+        elif scope == "non_privileged":
+            expansions.extend(["non-privileged account", "non-privileged accounts", "non-privileged user"])
+
+    extras: List[str] = []
+    seen_extra: Set[str] = set()
+    low_work = work.lower()
+    for e in expansions:
+        ee = str(e or "").strip()
+        if not ee:
+            continue
+        eel = ee.lower()
+        if eel in low_work or eel in seen_extra:
+            continue
+        seen_extra.add(eel)
+        extras.append(ee)
+
+    retrieval_query = work
+    if extras:
+        retrieval_query = (work + " " + " ".join(extras)).strip()
+
+    retrieval_query = _WS_RE.sub(" ", retrieval_query).strip()
+    if not retrieval_query:
+        retrieval_query = raw
+
+    meta = {
+        "raw_query": raw,
+        "retrieval_query": retrieval_query,
+        "scope": scope,
+        "meta_removed": removed,
+        "expansions": extras,
+        "changed": retrieval_query != raw,
+    }
+    return retrieval_query, meta
+
+
+def _apply_privilege_scope_bias(
+    rrf_scores: Dict[str, float],
+    *,
+    query_scope: str,
+    control_text_by_control: Dict[str, str],
+    match_ratio: float,
+    mismatch_ratio: float,
+) -> Dict[str, float]:
+    if query_scope not in {"privileged", "non_privileged"}:
+        return {"query_scope": query_scope, "applied": False, "reason": "neutral_query_scope"}
+    if not rrf_scores:
+        return {"query_scope": query_scope, "applied": False, "reason": "no_candidates"}
+
+    try:
+        peak = max(float(v) for v in rrf_scores.values())
+    except Exception:
+        peak = 0.0
+    if peak <= 0.0:
+        return {"query_scope": query_scope, "applied": False, "reason": "nonpositive_scores"}
+
+    bonus = max(0.0, float(match_ratio)) * peak
+    penalty = max(0.0, float(mismatch_ratio)) * peak
+    matched = 0
+    penalized = 0
+
+    for cid in list(rrf_scores.keys()):
+        surface_scope = _control_privilege_scope(control_text_by_control.get(cid, ""))
+        if surface_scope == "neutral":
+            continue
+        if surface_scope == query_scope:
+            rrf_scores[cid] = float(rrf_scores.get(cid, 0.0)) + bonus
+            matched += 1
+        else:
+            rrf_scores[cid] = float(rrf_scores.get(cid, 0.0)) - penalty
+            penalized += 1
+
+    return {
+        "query_scope": query_scope,
+        "applied": bool(matched or penalized),
+        "match_bonus": float(bonus),
+        "mismatch_penalty": float(penalty),
+        "matched_controls": int(matched),
+        "penalized_controls": int(penalized),
+    }
+
+
+# ==========================================================
 # 2) CCS JSONL loader (clause-level)
 # ==========================================================
 def load_clause_records_jsonl(
@@ -635,6 +802,9 @@ def s7_rank_controls(
     rerank_skip_enabled: bool = True,
     rerank_skip_min_base_margin_ratio: float = 0.10,
     rerank_skip_require_top1_agreement: bool = False,
+    query_scope: str = "neutral",
+    scope_match_bias_ratio: float = 0.08,
+    scope_mismatch_penalty_ratio: float = 0.06,
 ) -> Tuple[List[str], Dict[str, Any]]:
     """
     Returns:
@@ -665,6 +835,14 @@ def s7_rank_controls(
             cid = normalize_control_id(str(raw_cid)).upper()
             rrf_scores[cid] += float(w) * (1.0 / (float(rrf_k) + float(rank)))
 
+    scope_bias_meta = _apply_privilege_scope_bias(
+        rrf_scores,
+        query_scope=str(query_scope or "neutral"),
+        control_text_by_control=reranker_text_by_control,
+        match_ratio=float(scope_match_bias_ratio),
+        mismatch_ratio=float(scope_mismatch_penalty_ratio),
+    )
+
     fused = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[: int(candidate_set_size)]
     cids_all = [c for c, _ in fused]
 
@@ -675,6 +853,7 @@ def s7_rank_controls(
             "rerank_applied": False,
             "skip_reason": "no_candidates",
             "num_variants": len(variants),
+            "scope_bias": scope_bias_meta,
         }
 
     # Base confidence signal (raw RRF margin ratio).
@@ -744,6 +923,7 @@ def s7_rank_controls(
                     "rerank_margin_ratio": None,
                     "rerank_top1": None,
                     "top_candidates": [],
+                    "scope_bias": scope_bias_meta,
                 }
                 return cids_all, meta
 
@@ -778,6 +958,7 @@ def s7_rank_controls(
             "rerank_skip_require_top1_agreement": bool(rerank_skip_require_top1_agreement),
             "final_top1": base_top1,
             "final_margin_ratio": float(base_margin_ratio),
+            "scope_bias": scope_bias_meta,
         }
 
     pred = reranker.predict(pairs, show_progress_bar=False)
@@ -871,6 +1052,7 @@ def s7_rank_controls(
         "final_top1": final_top1,
         "rerank_margin_ratio": float(rerank_margin_ratio),
         "final_margin_ratio": float(final_margin_ratio),
+        "scope_bias": scope_bias_meta,
     }
     return final_ranked, meta
 
@@ -918,6 +1100,12 @@ class RetrievalConfig:
 
     # Prefer more specific statement subclauses (e.g., *_smt.a) over top-level statements
     prefer_depth1_subclauses: bool = True
+
+    # Retrieval-query planning (generic, demo-safe category improvements)
+    strip_meta_instructions_for_retrieval: bool = True
+    expand_scope_terms_for_retrieval: bool = True
+    scope_match_bias_ratio: float = 0.08
+    scope_mismatch_penalty_ratio: float = 0.06
 
 
 class ComplianceGPTRetriever:
@@ -969,6 +1157,49 @@ class ComplianceGPTRetriever:
 
         # 6) Control fallback text for reranker inputs
         self.reranker_text_by_control = build_control_fallback_text_map(self.records)
+
+    def _prepare_retrieval_plan(self, query: str, rewrites: Any = None) -> Dict[str, Any]:
+        raw_rewrites = _coerce_rewrite_list(rewrites)
+        retrieval_query, query_meta = build_retrieval_query(
+            query,
+            strip_meta=bool(getattr(self.config, "strip_meta_instructions_for_retrieval", True)),
+            expand_scope_terms=bool(getattr(self.config, "expand_scope_terms_for_retrieval", True)),
+        )
+
+        retrieval_rewrites: List[str] = []
+        rewrite_debug: List[Dict[str, Any]] = []
+        seen: Set[str] = set()
+        if retrieval_query:
+            seen.add(retrieval_query)
+
+        for r in raw_rewrites:
+            rr, rr_meta = build_retrieval_query(
+                r,
+                strip_meta=bool(getattr(self.config, "strip_meta_instructions_for_retrieval", True)),
+                expand_scope_terms=bool(getattr(self.config, "expand_scope_terms_for_retrieval", True)),
+            )
+            rewrite_debug.append(rr_meta)
+            if rr and rr not in seen:
+                seen.add(rr)
+                retrieval_rewrites.append(rr)
+
+        variants = build_query_variants(
+            retrieval_query,
+            retrieval_rewrites,
+            max_rewrites=self.config.max_rewrites,
+            jaccard_min=self.config.rewrite_jaccard_min,
+        )
+
+        return {
+            "raw_query": str(query or "").strip(),
+            "retrieval_query": retrieval_query,
+            "raw_rewrites": raw_rewrites,
+            "retrieval_rewrites": retrieval_rewrites,
+            "rewrites_debug": rewrite_debug,
+            "query_meta": query_meta,
+            "variants": variants,
+            "query_scope": str((query_meta or {}).get("scope") or "neutral"),
+        }
 
     def _select_clauses_for_controls(self, query: str, controls: List[str]) -> Dict[str, List[str]]:
         """
@@ -1091,13 +1322,12 @@ class ComplianceGPTRetriever:
         - `top_k` is the number of top controls to return evidence for.
         - total returned docs ~= top_k * clauses_per_control (minus missing).
         """
-        rewrite_list = _coerce_rewrite_list(rewrites)
-        variants = build_query_variants(
-            query, rewrite_list, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
-        )
+        plan = self._prepare_retrieval_plan(query, rewrites)
+        retrieval_query = str(plan.get("retrieval_query") or query)
+        variants = list(plan.get("variants") or [retrieval_query])
 
         ranked_controls, _meta = s7_rank_controls(
-            original_query=query,
+            original_query=retrieval_query,
             variants=variants,
             bm25_retriever=self.bm25,
             bm25_control_ids=self.bm25_control_ids,
@@ -1112,11 +1342,22 @@ class ComplianceGPTRetriever:
             rerank_skip_enabled=self.config.rerank_skip_enabled,
             rerank_skip_min_base_margin_ratio=self.config.rerank_skip_min_base_margin_ratio,
             rerank_skip_require_top1_agreement=self.config.rerank_skip_require_top1_agreement,
+            query_scope=str(plan.get("query_scope") or "neutral"),
+            scope_match_bias_ratio=float(getattr(self.config, "scope_match_bias_ratio", 0.08)),
+            scope_mismatch_penalty_ratio=float(getattr(self.config, "scope_mismatch_penalty_ratio", 0.06)),
         )
 
         # Expose last retrieval diagnostics for pipeline-level debugging (no effect on ranking)
         try:
             self.last_meta = dict(_meta or {})
+            self.last_meta["query_transform"] = {
+                "raw_query": plan.get("raw_query"),
+                "retrieval_query": retrieval_query,
+                "raw_rewrites": list(plan.get("raw_rewrites") or []),
+                "retrieval_rewrites": list(plan.get("retrieval_rewrites") or []),
+                "query_scope": plan.get("query_scope"),
+                "query_meta": dict(plan.get("query_meta") or {}),
+            }
             self.last_ranked_controls = list(ranked_controls or [])
             self.last_variants = list(variants or [])
         except Exception:
@@ -1128,7 +1369,7 @@ class ComplianceGPTRetriever:
         if not controls:
             return []
 
-        ctl_to_clause_ids = self._select_clauses_for_controls(query, controls)
+        ctl_to_clause_ids = self._select_clauses_for_controls(retrieval_query, controls)
 
         docs: List[Dict[str, Any]] = []
         for ctl in controls:
@@ -1158,13 +1399,12 @@ class ComplianceGPTRetriever:
         - docs: same as `retrieve()`
         - meta: includes ranking diagnostics (control ranking + rerank gate info) and how clauses were selected.
         """
-        rewrite_list = _coerce_rewrite_list(rewrites)
-        variants = build_query_variants(
-            query, rewrite_list, max_rewrites=self.config.max_rewrites, jaccard_min=self.config.rewrite_jaccard_min
-        )
+        plan = self._prepare_retrieval_plan(query, rewrites)
+        retrieval_query = str(plan.get("retrieval_query") or query)
+        variants = list(plan.get("variants") or [retrieval_query])
 
         ranked_controls, meta = s7_rank_controls(
-            original_query=query,
+            original_query=retrieval_query,
             variants=variants,
             bm25_retriever=self.bm25,
             bm25_control_ids=self.bm25_control_ids,
@@ -1179,6 +1419,9 @@ class ComplianceGPTRetriever:
             rerank_skip_enabled=self.config.rerank_skip_enabled,
             rerank_skip_min_base_margin_ratio=self.config.rerank_skip_min_base_margin_ratio,
             rerank_skip_require_top1_agreement=self.config.rerank_skip_require_top1_agreement,
+            query_scope=str(plan.get("query_scope") or "neutral"),
+            scope_match_bias_ratio=float(getattr(self.config, "scope_match_bias_ratio", 0.08)),
+            scope_mismatch_penalty_ratio=float(getattr(self.config, "scope_mismatch_penalty_ratio", 0.06)),
         )
 
         controls = [normalize_control_id(c).upper() for c in ranked_controls][: int(top_k)]
@@ -1187,7 +1430,7 @@ class ComplianceGPTRetriever:
             meta.update({"variants": variants, "ranked_controls": ranked_controls, "selected_controls": []})
             return [], meta
 
-        ctl_to_clause_ids = self._select_clauses_for_controls(query, controls)
+        ctl_to_clause_ids = self._select_clauses_for_controls(retrieval_query, controls)
 
         docs: List[Dict[str, Any]] = []
         for ctl in controls:
@@ -1206,6 +1449,14 @@ class ComplianceGPTRetriever:
                 )
 
         meta = dict(meta or {})
+        meta["query_transform"] = {
+            "raw_query": plan.get("raw_query"),
+            "retrieval_query": retrieval_query,
+            "raw_rewrites": list(plan.get("raw_rewrites") or []),
+            "retrieval_rewrites": list(plan.get("retrieval_rewrites") or []),
+            "query_scope": plan.get("query_scope"),
+            "query_meta": dict(plan.get("query_meta") or {}),
+        }
         meta.update(
             {
                 "variants": variants,

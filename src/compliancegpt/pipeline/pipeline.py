@@ -128,6 +128,40 @@ def load_odp_registry(path: Optional[str]) -> Dict[str, Any]:
     except Exception:
         return {}
 
+
+def _build_query_plan_debug(original_query: str, rewrites: Any, retrieval_meta: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    plan: Dict[str, Any] = {
+        "original_query": str(original_query or ""),
+        "rewrites": list(rewrites or []),
+    }
+    try:
+        qt = dict(((retrieval_meta or {}).get("query_transform") or {}))
+    except Exception:
+        qt = {}
+
+    rq = str(qt.get("retrieval_query") or "").strip()
+    if rq:
+        plan["retrieval_query"] = rq
+
+    rr = qt.get("retrieval_rewrites")
+    if isinstance(rr, list):
+        plan["retrieval_rewrites"] = list(rr)
+
+    qs = str(qt.get("query_scope") or "").strip()
+    if qs:
+        plan["query_scope"] = qs
+
+    qmeta = qt.get("query_meta")
+    if isinstance(qmeta, dict):
+        removed = qmeta.get("meta_removed")
+        expansions = qmeta.get("expansions")
+        if isinstance(removed, list) and removed:
+            plan["retrieval_meta_removed"] = list(removed)
+        if isinstance(expansions, list) and expansions:
+            plan["retrieval_expansions"] = list(expansions)
+
+    return plan
+
 def _doc_id_suffix(doc_id: str) -> str:
     s = str(doc_id or "").strip().lower()
     if not s:
@@ -1677,7 +1711,7 @@ class ComplianceGPTPipeline:
                 "primary_citation": "",
                 "all_citations": "",
                 "debug": {
-                    "query_plan": {"original_query": q, "rewrites": rewrites_used},
+                    "query_plan": _build_query_plan_debug(q, rewrites_used, retrieval_meta),
                     "retrieval_meta": retrieval_meta,
                     "retrieved_docs": 0,
                 },
@@ -2047,7 +2081,7 @@ class ComplianceGPTPipeline:
                 "primary_citation": "",
                 "all_citations": "",
                 "debug": {
-                    "query_plan": {"original_query": q, "rewrites": rewrites_used},
+                    "query_plan": _build_query_plan_debug(q, rewrites_used, retrieval_meta),
                     "retrieval_meta": retrieval_meta,
                     "allowed_controls": allowed_controls,
                     "doc_filter_mode_used": doc_filter_mode_used,
@@ -2120,7 +2154,8 @@ class ComplianceGPTPipeline:
             ask_list = _build_ask_list(odp_final, filled_spans, self.odp_registry)
         # 9) Citations fields
         cite_ids = [str(s.get("source_id", "")).strip() for s in filled_spans if str(s.get("source_id", "")).strip()]
-        primary_citation = _best_primary_citation(q, filled_spans) if cite_ids else ""
+        citation_query = str((((retrieval_meta or {}).get("query_transform") or {}).get("retrieval_query")) or q)
+        primary_citation = _best_primary_citation(citation_query, filled_spans) if cite_ids else ""
         all_citations = ", ".join(cite_ids)
 
         suffix = _build_citation_suffix(self.framework_version)
@@ -2141,7 +2176,7 @@ class ComplianceGPTPipeline:
             "primary_citation": primary_citation,
             "all_citations": all_citations,
             "debug": {
-                "query_plan": {"original_query": q, "rewrites": rewrites_used},
+                "query_plan": _build_query_plan_debug(q, rewrites_used, retrieval_meta),
                 "retrieval_meta": retrieval_meta,
                 "allowed_controls": allowed_controls,
                 "control_widen_tier": widen_tier,
