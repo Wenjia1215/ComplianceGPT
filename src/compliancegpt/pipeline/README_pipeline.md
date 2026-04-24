@@ -573,7 +573,7 @@ These results indicate that the current answerer is stable enough to serve as th
 This pipeline folder should be distinguished from the following experiment areas under `experiments/`:
 
 ### `experiments/retriever_ablation/`
-This contains retriever-only system comparisons such as S1–S8, error analysis, benchmark notebooks, and retriever result reports.
+This contains retriever-only system comparisons such as S1–S7, error analysis, benchmark notebooks, and retriever result reports.
 
 ### `experiments/micro_ablations/`
 This contains targeted micro-ablation notebooks such as S4b vs. S7a comparisons.

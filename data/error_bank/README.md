@@ -4,7 +4,7 @@
 
 ## How to build
 
-Execute section 1 of AblationStudy_S1_8.ipynb
+Execute section 1 of AblationStudy_S1_7_clean.ipynb
 
 ## Why an Error Bank?
 

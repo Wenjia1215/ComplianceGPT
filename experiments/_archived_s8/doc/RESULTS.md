@@ -1,6 +1,6 @@
-# Ablation Study Results (S1–S7)
+# Ablation Study Results (S1–S8)
 
-This document reports the retrieval performance of seven retrieval systems (S1–S7) used in the ComplianceGPT pipeline.
+This document reports the retrieval performance of eight retrieval systems (S1–S8) used in the ComplianceGPT pipeline.
 
 We evaluate on four query sets:
 
@@ -39,12 +39,13 @@ We report standard retrieval metrics:
 | S5 | Hybrid RRF | BM25 + Dense fused via RRF |
 | S6 | Hybrid + Rerank | S5 candidates reranked using cross-encoder |
 | S7 | ComplianceGPT | multi-stage pipeline (rewrites + hybrid + safe blending rerank) |
+| S8 | Adaptive | routes queries between fast hybrid vs heavy S7 path |
 
 ---
 
 ## Executive Summary (Main Takeaways)
 
-1. **S7 leads the active ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
+1. **S7/S8 lead on Rev5/Rev4 Gold Sets** (best Recall@1 and MRR@10 overall), and also lead strongly on ODP subsets.  
 2. **Hybrid retrieval (S5) is a strong baseline** and improves over BM25-only or Dense-only, showing retrieval complementarity.  
 3. **Reranking (S6) is mixed**: it can help significantly on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Recall@1 versus pure hybrid on easier sets.  
 4. **ErrorBank is the best diagnostic**: improvements there matter more than small changes on the relatively easy gold sets.
@@ -64,6 +65,7 @@ We report standard retrieval metrics:
 | S5 | 0.8900 | 0.9900 | 0.9900 | 0.9400 |
 | S6 | 0.8000 | 0.9600 | 1.0000 | 0.8742 |
 | S7 | 0.9000 | 0.9900 | 1.0000 | 0.9460 |
+| S8 | 0.9000 | 0.9900 | 1.0000 | 0.9460 |
 
 ## ODP Subset (n=63)
 
@@ -76,6 +78,7 @@ We report standard retrieval metrics:
 | S5 | 0.9048 | 1.0000 | 1.0000 | 0.9524 |
 | S6 | 0.7619 | 0.9524 | 1.0000 | 0.8531 |
 | S7 | 0.9206 | 1.0000 | 1.0000 | 0.9603 |
+| S8 | 0.9206 | 1.0000 | 1.0000 | 0.9603 |
 
 ---
 
@@ -92,6 +95,7 @@ We report standard retrieval metrics:
 | S5 | 0.8056 | 0.9722 | 1.0000 | 0.8790 |
 | S6 | 0.8056 | 1.0000 | 1.0000 | 0.8981 |
 | S7 | 0.9167 | 1.0000 | 1.0000 | 0.9583 |
+| S8 | 0.9167 | 1.0000 | 1.0000 | 0.9583 |
 
 ## ODP Subset (n=19)
 
@@ -104,6 +108,7 @@ We report standard retrieval metrics:
 | S5 | 0.8947 | 0.9474 | 1.0000 | 0.9286 |
 | S6 | 0.6316 | 1.0000 | 1.0000 | 0.8070 |
 | S7 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| S8 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
 
 ---
 
@@ -120,6 +125,7 @@ We report standard retrieval metrics:
 | S5 | 0.5417 | 0.9583 | 0.9583 | 0.7500 |
 | S6 | 0.5417 | 0.8333 | 1.0000 | 0.6807 |
 | S7 | 0.7083 | 0.9583 | 1.0000 | 0.8375 |
+| S8 | 0.7083 | 0.9583 | 1.0000 | 0.8375 |
 
 ## ODP Subset (n=14)
 
@@ -132,6 +138,7 @@ We report standard retrieval metrics:
 | S5 | 0.5714 | 1.0000 | 1.0000 | 0.7857 |
 | S6 | 0.5714 | 0.7857 | 1.0000 | 0.6900 |
 | S7 | 0.7857 | 1.0000 | 1.0000 | 0.8929 |
+| S8 | 0.7857 | 1.0000 | 1.0000 | 0.8929 |
 
 ---
 
@@ -148,6 +155,7 @@ We report standard retrieval metrics:
 | S5 | 0.4615 | 0.9231 | 1.0000 | 0.6648 |
 | S6 | 0.8462 | 1.0000 | 1.0000 | 0.9231 |
 | S7 | 0.7692 | 1.0000 | 1.0000 | 0.8846 |
+| S8 | 0.7692 | 1.0000 | 1.0000 | 0.8846 |
 
 ## ODP Subset (n=5)
 
@@ -160,6 +168,7 @@ We report standard retrieval metrics:
 | S5 | 0.6000 | 0.8000 | 1.0000 | 0.7286 |
 | S6 | 0.6000 | 1.0000 | 1.0000 | 0.8000 |
 | S7 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
+| S8 | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
 
 ---
 
@@ -175,7 +184,7 @@ We report standard retrieval metrics:
 
 Run the ablation notebook:
 
-`AblationStudy_S1_7_clean.ipynb`
+`AblationStudy_S1_8.ipynb`
 
 Outputs include:
 

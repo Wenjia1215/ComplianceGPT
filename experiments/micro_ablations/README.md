@@ -4,7 +4,7 @@ This folder contains a **focused micro‑ablation** that validates two architect
 
 **Scope constraints (current phase):**
 - **Only NIST SP 800-53** (Rev. 4 / Rev. 5).
-- This notebook **does NOT rerun baselines S4 or S7**; we compare against the S4/S7 results produced by our main `AblationStudy_S1_8.ipynb`.
+- This notebook **does NOT rerun baselines S4 or S7**; we compare against the S4/S7 results produced by our main `AblationStudy_S1_7_clean.ipynb`.
 
 ---
 
@@ -19,7 +19,7 @@ We proactively designed this micro‑ablation to stress‑test two plausible dou
    For the cross‑encoder reranker, should we rerank using the **original user query**, or a “cleaner” rewrite?
 
 Earlier versions of this micro‑ablation wrote several separate markdown reports and even included ODP subsets and broad claims based on an older corpus.
-This **new version** is intentionally minimal (one notebook + one README) and aligned to our **current clause‑level CCS** and our **current S4/S7 logic** (extracted from `AblationStudy_S1_8.ipynb`).
+This **new version** is intentionally minimal (one notebook + one README) and aligned to our **current clause‑level CCS** and our **current S4/S7 logic** (extracted from `AblationStudy_S1_7_clean.ipynb`).
 
 ---
 
@@ -235,12 +235,12 @@ This section summarizes the **oracle-only** outputs produced by this notebook:
 
 **Interpretation (bounded):**
 - These results are **upper bounds** because they use gold labels to select the “best” rewrite.
-- To answer the original design questions (S4b vs S4, and S7a vs S7), compare these CSVs against the corresponding baseline outputs from `AblationStudy_S1_8.ipynb` using `(dataset, question_id)` joins.
+- To answer the original design questions (S4b vs S4, and S7a vs S7), compare these CSVs against the corresponding baseline outputs from `AblationStudy_S1_7_clean.ipynb` using `(dataset, question_id)` joins.
 
 
 ## 10) Comparing to baselines (S4 / S7 from main ablation)
 
-We compare S4b vs S4 and S7a vs S7 using the S4/S7 CSV outputs from `AblationStudy_S1_8.ipynb`.
+We compare S4b vs S4 and S7a vs S7 using the S4/S7 CSV outputs from `AblationStudy_S1_7_clean.ipynb`.
 
 Recommended join keys:
 - `dataset`

@@ -1,209 +1,208 @@
-# Retrieval Systems (S1–S8): Design Rationale + Role in Ablation
+# Retrieval Systems (S1–S7): Design Rationale and Role in Ablation
 
-This ablation study evaluates eight retrieval systems (S1–S8) used to build the ComplianceGPT retriever.
+This frozen ablation study evaluates seven retrieval systems used to build and justify the ComplianceGPT retriever.
 
-The goal is not only to maximize Recall@K, but to scientifically isolate:
-1) which retrieval failure modes occur in compliance QA, and  
-2) which architectural components reduce those failures.
+The goal is not only to maximize Recall@K. The study also isolates which retrieval failure modes occur in compliance QA and which architectural components reduce those failures.
 
-All systems retrieve NIST SP 800-53 controls from the same Canonical Clause Store (CCS),
-and are evaluated with the same gold sets and diagnostic ErrorBank.
+All systems retrieve NIST SP 800-53 controls from the same Canonical Clause Store (CCS) and are evaluated with the same gold sets and diagnostic ErrorBank.
 
 ---
 
-## Big Picture: What the Ablation Is Testing
+## Big Picture: What the Ablation Tests
 
 Compliance QA retrieval fails for predictable reasons:
 
-- **Lexical mismatch**: the question uses words that do not appear in the relevant control text
-- **Semantic ambiguity**: multiple controls look similar in meaning
-- **ODP sensitivity**: parameter-heavy questions require stable retrieval grounding
-- **Ranking instability**: rerankers may promote plausible-but-wrong controls (“rank reversal”)
+- **Lexical mismatch:** the question uses words that do not appear in the relevant control text.
+- **Semantic ambiguity:** multiple controls look similar in meaning.
+- **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding.
+- **Ranking instability:** rerankers may promote plausible but wrong controls.
 
-The systems below form a controlled ladder from basic to advanced,
-so each system isolates one additional capability.
+The systems below form a controlled ladder from basic to advanced, so each system isolates one additional capability.
 
 ---
 
-# S1 — BM25 Baseline (Lexical Retrieval)
+## S1 — BM25 Baseline
 
 **Why we build it**
+
 - BM25 is the standard sparse retrieval baseline.
-- In compliance, BM25 represents “keyword search” used in many real audit workflows.
+- In compliance, BM25 represents keyword search used in many audit workflows.
 
 **How it works**
-- Tokenize + normalize query
-- BM25 retrieves top-K control IDs by lexical overlap
+
+- Tokenize and normalize the query.
+- Retrieve top-K control IDs by lexical overlap.
 
 **What it tests**
+
 - Pure lexical matching performance.
-- Serves as the baseline used to create portions of ErrorBank.
+- Baseline behavior used to identify portions of the diagnostic ErrorBank.
 
 **Expected behavior**
-- Strong on simple literal queries
-- Weak on paraphrases and semantic mismatch
+
+- Strong on simple literal queries.
+- Weak on paraphrases and semantic mismatch.
 
 ---
 
-# S2 — Dense Baseline (Semantic Retrieval)
+## S2 — Dense Baseline
 
 **Why we build it**
-- Dense embeddings handle paraphrases and semantic similarity better than BM25.
+
+- Dense embeddings can handle paraphrase and semantic similarity better than sparse lexical matching.
 
 **How it works**
-- Encode query into embedding space
-- Retrieve top-K nearest controls by vector similarity
+
+- Encode the query into embedding space.
+- Retrieve top-K nearest controls by vector similarity.
 
 **What it tests**
+
 - Whether semantic retrieval alone is sufficient for compliance QA.
-- Particularly informative on ErrorBank and paraphrase-heavy queries.
+- Performance on paraphrase-heavy and ErrorBank cases.
 
 **Expected behavior**
-- Stronger than BM25 on semantic mismatch
-- Can confuse “neighboring controls” with similar meaning
+
+- Stronger than BM25 on semantic mismatch.
+- Can confuse neighboring controls with similar meaning.
 
 ---
 
-# S3 — Rewrite-only (Single Rewrite Replacement)
+## S3 — Rewrite-only
 
 **Why we build it**
+
 - Query rewriting is common in retrieval systems, but it can help or harm.
 - S3 isolates the effect of rewriting without hybrid retrieval or reranking.
 
 **How it works**
-- Replace the original query with a rewrite (if available)
-- Run BM25 on the rewritten query
+
+- Replace the original query with one rewrite if available.
+- Run BM25 on the rewritten query.
 
 **What it tests**
-- Whether rewriting helps lexical mismatch or introduces drift.
-- A failure here proves that naive rewriting is risky.
+
+- Whether rewriting alone bridges terminology mismatch.
+- Whether rewriting causes topic drift when used without fusion.
 
 **Expected behavior**
-- Can improve BM25 on paraphrase queries
-- Can degrade performance if rewrites change intent
+
+- Can improve some semantic mismatch cases.
+- Can degrade performance if the rewrite drops important terms.
 
 ---
 
-# S4 — QUR + RRF (Rewrite Fusion)
+## S4 — QUR + RRF
 
 **Why we build it**
-- Instead of trusting one rewrite, we fuse multiple query variants.
-- This reduces the risk of a bad rewrite dominating.
+
+- Single-rewrite replacement is fragile.
+- Fusing the original query with multiple rewrites is safer than replacing the query.
 
 **How it works**
-- Build query set: {original + filtered rewrites}
-- Retrieve with BM25 for each variant
-- Fuse rankings with weighted Reciprocal Rank Fusion (RRF)
+
+- Retrieve with BM25 for the original query and accepted rewrites.
+- Fuse rankings using Reciprocal Rank Fusion.
 
 **What it tests**
-- Whether rewrite fusion improves recall reliably.
-- Tests robustness against rewrite noise.
+
+- Whether controlled query rewriting improves lexical retrieval.
+- Whether keeping the original query reduces rewrite drift.
 
 **Expected behavior**
-- More stable than S3
-- May still miss cases that require semantic retrieval (dense)
+
+- More stable than S3.
+- Still limited because it uses lexical retrieval only.
 
 ---
 
-# S5 — Hybrid Retrieval via RRF (BM25 + Dense)
+## S5 — Hybrid RRF
 
 **Why we build it**
-- BM25 and Dense retrieve complementary evidence.
-- Fusion is a standard strategy in high-reliability retrieval.
+
+- BM25 and dense retrieval capture different signals.
+- Hybrid retrieval tests whether lexical and semantic evidence complement each other.
 
 **How it works**
-- BM25 top-N candidates + Dense top-N candidates
-- Fuse both ranked lists using Reciprocal Rank Fusion (RRF)
+
+- Run BM25 retrieval.
+- Run dense retrieval.
+- Fuse both result lists using Reciprocal Rank Fusion.
 
 **What it tests**
-- Whether retrieval complementarity improves performance without learning.
-- This is the core “strong retriever” baseline used by later systems.
+
+- Whether lexical and semantic retrieval complement each other.
+- Whether hybrid fusion improves recall and rank stability.
 
 **Expected behavior**
-- Usually strong overall
-- Still struggles with ranking errors in ambiguous cases
+
+- Stronger than either BM25-only or dense-only on most sets.
+- May still require reranking for fine-grained top-1 accuracy.
 
 ---
 
-# S6 — Hybrid + Rerank (Cross-Encoder Reranking)
+## S6 — Hybrid + Rerank
 
 **Why we build it**
+
 - Rank@1 often depends on correct fine-grained ordering.
-- A cross-encoder reranker can refine ordering using deep query-document interaction.
+- A cross-encoder reranker can refine ordering using direct query-document interaction.
 
 **How it works**
-- Generate candidate set using S5
-- Apply cross-encoder scoring on (query, candidate_text) pairs
-- Reorder candidates by reranker score
+
+- Generate a candidate set using S5.
+- Apply cross-encoder scoring on `(query, candidate_text)` pairs.
+- Reorder candidates by reranker score.
 
 **What it tests**
+
 - Whether reranking improves top-1 accuracy.
-- Also reveals the risk of “rank reversal” (plausible but wrong promotions).
+- Whether reranking introduces rank reversal errors.
 
 **Expected behavior**
-- Improves Recall@1 on many datasets
-- May degrade if reranker is overconfident on wrong matches
+
+- Can improve Recall@1 on harder datasets.
+- Can degrade results if the reranker is overconfident on wrong matches.
 
 ---
 
-# ## S7 — ComplianceGPT Retriever (Safe Multi-Stage Retrieval)
-
-### Why we build it
-S7 is designed as the best reliability-focused retriever for compliance.
-It integrates rewriting, hybrid retrieval, and reranking, but adds safety constraints.
-
-### How it works (high level)
-1) Generate query variants: original + filtered rewrites
-2) Run weighted hybrid retrieval (BM25 + Dense) across variants
-3) Fuse candidates using weighted RRF
-4) Rerank with cross-encoder using safe blending
-   - blend base retrieval score with reranker score
-   - avoid full rank reversal when reranker evidence is weak
-
-### Gating: performance + accuracy
-- Pre-rerank skip gate (performance):
-  - Compute base_margin_ratio on the raw fused (weighted-RRF) scores: (s1 - s2) / max(s1, eps)
-  - If base_margin_ratio >= RERANK_SKIP_MIN_BASE_MARGIN_RATIO, do not call the reranker
-- Post-rerank no-harm gate (accuracy):
-  - If reranking changes top-1 but rerank_margin_ratio < RERANK_APPLY_MIN_MARGIN_RATIO, revert to base order
-- Audit fields recorded in system_meta (when available):
-  - reranker_called, rerank_applied, skip_reason
-  - base_margin_ratio, rerank_margin_ratio, final_margin_ratio
-
-### Benchmark variants (used in Performance_Benchmark)
-- S7_gated: production S7 with skip gate enabled (can reduce latency)
-- S7_worst_always_rerank: same ranking/rerank pipeline but skip gate disabled (reranker always called)
-  - typically also sets RERANK_APPLY_MIN_MARGIN_RATIO to 0.0 to avoid post-rerank reverts
-
-### What it tests
-- The full ComplianceGPT retrieval hypothesis:
-  multi-stage retrieval with safety constraints reduces compliance failure modes.
-
-### Expected behavior
-- Best overall Recall@1 / robustness
-- Strong performance on ErrorBank and ODP queries
-
----
-
-# S8 — Adaptive Retrieval (FAST vs HEAVY Routing)
+## S7 — ComplianceGPT Retriever
 
 **Why we build it**
-- S7 is strongest but expensive (rewrites + rerank).
-- S8 tests whether we can match S7 quality at lower cost by routing queries.
+
+S7 is the final reliability-focused retriever used by ComplianceGPT. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
 
 **How it works**
-- Compute fast hybrid results (S5-style) + statistics
-- Compute confidence score from agreement + margin
-- If confident → return FAST (S5)
-- Else → call HEAVY retrieval (S7)
+
+1. Generate query variants: original query plus filtered rewrites.
+2. Run weighted hybrid retrieval across variants.
+3. Fuse candidates using weighted Reciprocal Rank Fusion.
+4. Rerank with a cross-encoder using safe blending.
+5. Apply gating to reduce unnecessary reranking and avoid weak rank reversals.
+6. Extract clause-level evidence for downstream evidence selection.
+
+**Gating behavior**
+
+- Pre-rerank skip gate:
+  - compute `base_margin_ratio = (s1 - s2) / max(s1, eps)` on fused base scores;
+  - skip reranking if the base ranking is already sufficiently confident.
+- Post-rerank no-harm gate:
+  - if reranking changes top-1 but the rerank margin is too weak, revert to the base order.
+- Audit fields, when available, include `reranker_called`, `rerank_applied`, `skip_reason`, `base_margin_ratio`, `rerank_margin_ratio`, and `final_margin_ratio`.
+
+**Benchmark variants used in the performance benchmark**
+
+- `S7_gated`: production S7 with skip gate enabled.
+- `S7_worst_always_rerank`: same ranking/rerank pipeline but skip gate disabled.
 
 **What it tests**
-- Whether performance can be preserved with fewer heavy rerank calls.
-- A system-level engineering question: quality vs cost.
+
+- The full ComplianceGPT retrieval hypothesis: multi-stage retrieval with safety constraints reduces compliance retrieval failure modes.
 
 **Expected behavior**
-- Ideally close to S7 accuracy with fewer HEAVY calls
-- Provides a cost-aware extension, not necessarily a higher-recall model
+
+- Best overall robustness in the active ablation ladder.
+- Strong performance on ErrorBank and ODP queries.
 
 ---
 
@@ -211,23 +210,19 @@ It integrates rewriting, hybrid retrieval, and reranking, but adds safety constr
 
 This ablation supports three conclusions:
 
-1) **Hybrid retrieval (S5) is a strong foundation**
-   - BM25 and Dense complement each other
-
-2) **Reranking must be constrained (S7 > S6)**
-   - naive reranking can cause rank reversal
-   - safe blending / no-harm gating improves reliability
-
-3) **Adaptive routing (S8) is an engineering extension**
-   - its value is reduced heavy calls while preserving S7-level accuracy
+1. **Hybrid retrieval is a strong foundation.** BM25 and dense retrieval complement each other.
+2. **Reranking must be constrained.** Unconstrained reranking can cause rank reversal, while safe blending and no-harm gating improve reliability.
+3. **S7 is the frozen ComplianceGPT retriever.** The final retriever combines controlled rewrites, hybrid retrieval, constrained reranking, and clause extraction.
 
 ---
 
-## Reproducibility Notes (What Must Stay Constant)
+## Reproducibility Notes
 
-For a fair ablation comparison, all systems must share:
-- the same CCS corpus version (Rev4/Rev5 JSONL)
-- the same gold sets + ErrorBank
-- the same preprocessing (control ID normalization)
-  - enhancement canonicalization: treat AC-2.1 and AC-2(1) as equivalent
-- the same evaluation function and metrics
+For a fair comparison, all systems must share:
+
+- the same CCS corpus version for Rev4 and Rev5,
+- the same gold sets and ErrorBank,
+- the same preprocessing,
+- the same control-ID normalization,
+- the same enhancement canonicalization rules,
+- the same evaluation function and metrics.

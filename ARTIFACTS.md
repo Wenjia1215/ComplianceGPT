@@ -84,7 +84,7 @@ These are the **frozen inputs** that define your corpus and evaluation. If any o
 | `data/DATA_VERSIONS.md` | 1010 | `21a3b855d8e255f52ac7f9953486c9264bb30ad82c302d81bc3bab43a4862c3f` |
 | `data/ccs/nist800-53/README_ccs.md` | 6803 | `2780054ac7842d2eafd25cb8597d97f20c6efdef7775a8a3ac47dfdf78354d71` |
 | `data/gold_standard_datasets/nist800-53/README.md` | 4719 | `de33cfd66f994de64aaa52cab5a1d8fc80968f3b71dedcf3df334ac3839e203f` |
-| `data/error_bank/README.md` | 2405 | `35129512098fca3c9190c3c02b81727c5be865f9c3d223d329e83fab0e177d44` |
+| `data/error_bank/README.md` | 2411 | `e72753adeea42007f078ccbbafb88abd8b51c4cc8541d40a8aee82f90784bfaf` |
 | `data/error_bank/Labeling_Rationale.md` | 73314 | `2728c63b470886f9aa864cf08a5e304127e4ea1beb8f1c8c4fac483b65c4677b` |
 | `data/ODP/README_ODP_template.md` | 5667 | `e796b68b71fb6da96bd699bd8ed321ed756f4f294d7f05de510416794e8c33ed` |
 
@@ -93,10 +93,10 @@ These files are produced by running the evaluation / ablation workflows in this 
 
 | Path | Size | SHA-256 |
 |---|---|---|
-| `experiments/retriever_ablation/README.md` | 2727 | `aeb33cf89c6e5a9689d81203f7d6b265a756f682be8cc8abcadf4fd4bb0e1c8e` |
-| `experiments/retriever_ablation/RESULTS.md` | 6721 | `f3b3de13739984c5dba873c8ba77e621550fe3377ee3d70a9771bd8157617a2a` |
-| `experiments/retriever_ablation/SYSTEMS.md` | 7844 | `1d516a3d97f918a5f4f462bc54cea7191168033afe762db9a9c45dfc8a76b0a0` |
-| `experiments/retriever_ablation/WORKFLOW.md` | 3043 | `90dab6e3ba500d2a3c512a30dbafcd997e0300101b145033ce1ebc32154426bf` |
+| `experiments/retriever_ablation/README.md` | 2768 | `a07a121a6f54a422f69a9bbd1512e1b5c3d7815d527f66f89277781aad11c976` |
+| `experiments/retriever_ablation/RESULTS.md` | 6308 | `19013b8808236bfd046a778dfe976aaabb8446726d96b1381e242cacc19c3d79` |
+| `experiments/retriever_ablation/SYSTEMS.md` | 6882 | `5284cff7f03bd6d344fcbc127854818955361c6f7175585f889762af48636a84` |
+| `experiments/retriever_ablation/WORKFLOW.md` | 3239 | `3be4dcc3d6eaa3e3c834aff44080b63d42ce9935b072563b475d424f685dad69` |
 | `experiments/retriever_ablation/ablation_outputs/system_1_bm25/S1_bm25_error_bank_rev4_results.csv` | 3800 | `b62d10ca68b19f7fd5cb301099cb32df5fd4ba9a96815b08ed2649adddc31a02` |
 | `experiments/retriever_ablation/ablation_outputs/system_1_bm25/S1_bm25_error_bank_rev5_results.csv` | 7353 | `e4891a1c82f3e4e582a6e84cf866cb2b8c43dfefaf9a739f8c6277ef460eb881` |
 | `experiments/retriever_ablation/ablation_outputs/system_1_bm25/S1_bm25_report.md` | 1087 | `a1d88da5a801bcb80f75e8fb1732f7867733f5481812414eab16321f05c217c0` |
@@ -132,11 +132,6 @@ These files are produced by running the evaluation / ablation workflows in this 
 | `experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_report.md` | 1754 | `496470296409b107f01bd4d8a5e6b1f72cc94902f06a0b0e9b0afe9a9baea2d3` |
 | `experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev4_results.csv` | 28471 | `3ad554cc5d63925341453368d74481728e0f04ff7ef7adc5f9e706b77f2ec999` |
 | `experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev5_results.csv` | 82478 | `bc0f8e51a3afcb90739ba746e0ead8b34aca5616b3a52d4cb6049dc23318219a` |
-| `experiments/retriever_ablation/ablation_outputs/system_8_adaptive/S8_adaptive_error_bank_rev4_results.csv` | 12239 | `64f93f571f8ebb80cc2073f6110490f3266ff5e7b36fed89f81c2dec91b7f3ea` |
-| `experiments/retriever_ablation/ablation_outputs/system_8_adaptive/S8_adaptive_error_bank_rev5_results.csv` | 23178 | `0ddb48f1f21b920880ceecb524fe853edc568cceb8581def99f35b2c4f4382ab` |
-| `experiments/retriever_ablation/ablation_outputs/system_8_adaptive/S8_adaptive_report.md` | 1730 | `2f8057567ce2adaa7d952e6ea5154ad7aded8b8c60b63c8856735b538237ae6b` |
-| `experiments/retriever_ablation/ablation_outputs/system_8_adaptive/S8_adaptive_rev4_results.csv` | 33014 | `6b6e5e2977cf8cae7719661832f2d94fcdf039f62e73ab06f339b239da907515` |
-| `experiments/retriever_ablation/ablation_outputs/system_8_adaptive/S8_adaptive_rev5_results.csv` | 90815 | `f49eea3d140d6d4462fd45a8b417b04587d515f74b5dab1de6a7e52ad1a0c0a5` |
 | `experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_meta_rev5_20q.json` | 1333 | `09556813ec970c285043d23c14cbd620f61e0ebb2c9e5d261c9304755d8bc6cd` |
 | `experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_rev5_20q.csv` | 700 | `876ae9f045e850a9a607d06738a8421648d1d4400089fdb1460d1221140f767e` |
 | `experiments/retriever_ablation/performance_benchmark/output/retriever_performance_benchmark_runs_rev5_20q.csv` | 44716 | `e451fc7b1b3c08eec18bed400758b0f30dc371a59016596e207846a5908d1ef1` |
