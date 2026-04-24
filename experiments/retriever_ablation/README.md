@@ -49,7 +49,7 @@ Query rewrite sets used by S3, S4, and S7:
 This experiment is designed to run in a single notebook session so BM25, dense indexes, and reranker resources can be reused across systems.
 
 1. Open the main notebook:
-   - `AblationStudy_S1_7_clean.ipynb`
+   - `AblationStudy_S1_7.ipynb`
 2. Mount Google Drive.
 3. In the configuration cell, set the correct file paths for CCS, gold sets, ErrorBank, and QUR rewrite files.
 4. Run all cells from top to bottom.

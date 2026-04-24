@@ -175,7 +175,7 @@ We report standard retrieval metrics:
 
 Run the ablation notebook:
 
-`AblationStudy_S1_7_clean.ipynb`
+`AblationStudy_S1_7.ipynb`
 
 Outputs include:
 

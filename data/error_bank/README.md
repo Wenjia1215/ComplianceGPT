@@ -1,10 +1,10 @@
 # Error Bank (MisRank !=1) — Build Specification & Rationale (Updated)
 
-> **Status:** current CSV = `error_bank_v1_new.csv` 
+> **Status:** current CSV = `error_bank_v1.csv` 
 
 ## How to build
 
-Execute section 1 of AblationStudy_S1_7_clean.ipynb
+Execute section 1 of AblationStudy_S1_7.ipynb
 
 ## Why an Error Bank?
 

@@ -9,7 +9,7 @@ This document gives the step-by-step reproduction workflow for the frozen S1–S
 **Action:** Run the ErrorBank bootstrap section of:
 
 ```text
-experiments/retriever_ablation/notebook/AblationStudy_S1_7_clean.ipynb
+experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb
 ```
 
 **What it does:** Runs the BM25 baseline to identify failed queries for diagnostic analysis.
@@ -63,7 +63,7 @@ src/compliancegpt/QUR_generator/QUR_Generator_UT.ipynb
 **Action:** Run the frozen S1–S7 ablation notebook:
 
 ```text
-experiments/retriever_ablation/notebook/AblationStudy_S1_7_clean.ipynb
+experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb
 ```
 
 **Input:** Uses the CCS, gold sets, ErrorBank, and QUR rewrite outputs from Step 3.
