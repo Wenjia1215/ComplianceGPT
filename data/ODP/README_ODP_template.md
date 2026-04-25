@@ -79,7 +79,7 @@ The Generator treats the organization profile as a **state object** that can be 
    Example:  
    > “How often do we review accounts?”
 
-2. **Retriever fetches the relevant control**  
+2. **The retriever ranks clause-level statement and guidance records. If the selected clause text contains ODP placeholders, the pipeline detects those placeholders, canonicalizes the corresponding ODP/PRM IDs, and applies the active ODP policy using the registry and organization profile.**  
    Example context snippet:  
    > “The organization reviews accounts `{{ insert: ac-02_odp.05 }}`.”
 

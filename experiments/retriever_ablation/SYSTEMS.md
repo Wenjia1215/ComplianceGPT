@@ -14,7 +14,7 @@ Compliance QA retrieval fails for predictable reasons:
 
 - **Lexical mismatch:** the question uses words that do not appear in the relevant control text.
 - **Semantic ambiguity:** multiple controls look similar in meaning.
-- **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding.
+- **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding. ODP-sensitive retrieval is evaluated through questions whose governing clauses contain unresolved parameter placeholders. The frozen S1–S7 retrieval corpus does not treat standalone ODP/PRM records as ordinary cited evidence candidates.
 - **Ranking instability:** rerankers may promote plausible but wrong controls.
 
 The systems below form a controlled ladder from basic to advanced, so each system isolates one additional capability.

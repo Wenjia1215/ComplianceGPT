@@ -349,6 +349,7 @@ The pipeline should be built with:
 ```python
 ComplianceGPTPipeline(..., doc_filter_mode="prefer_smt_keep_params", ...)
 ```
+Note: `prefer_smt_keep_params` is a legacy mode name. In the frozen pipeline, it does not pass standalone ODP/PRM records into the generator. It prioritizes statement records while retaining guidance records, and ODP placeholders are preserved when they appear inside selected clause text.
 
 This matters because batch behavior should match the validated single-run and acceptance-tested routine.
 

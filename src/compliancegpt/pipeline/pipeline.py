@@ -1275,8 +1275,11 @@ class ComplianceGPTPipeline:
 
 
 
-        # Ensure parameter/ODP chunks are available to the retriever (ranking/boosting requires access).
-        # Principle: never delete ODP/parameter material at load time.
+        # Keep the default retrieval corpus clause-level: statements and guidance only.
+        # The retriever also loads the full CCS inventory into record_by_id, including
+        # ODP/PRM parameter records, so the pipeline can canonicalize parameters,
+        # validate ODP IDs, apply ODP policy, and support verifier checks.
+        # Parameter records are not default evidence-ranking candidates.
         try:
             keep_raw = getattr(retriever_config, "keep_kinds", None)
             keep_norm = tuple(str(k).lower() for k in (keep_raw or ()))
@@ -1290,7 +1293,8 @@ class ComplianceGPTPipeline:
             # Respect explicit keep_kinds from config; do not auto-expand with params.
             new_keep_kinds = tuple(keep_norm)
 
-        # Prefer selection order: statements first, then parameters, then guidance (stable).
+        # Stable kind priority for downstream inventory ordering and diagnostics.
+        # Evidence generation remains gated to clause-level kinds (smt/gdn).
         try:
             kp_raw = getattr(retriever_config, "kind_priority", None)
             kp = [str(k).lower() for k in (kp_raw or ())]

@@ -7,7 +7,7 @@ v2 features:
 - Synthesizes text for structural nodes (no direct prose) by concatenating descendant prose (verbatim).
 - Optional gold coverage validation with robust parsing and ID normalization (ac_11 -> ac-11).
 
-This script is intended to produce the JSONL schema your ComplianceGPT retriever expects:
+This script is intended to produce the JSONL schema ComplianceGPT retriever expects:
   {"id": "...", "text": "...", "control_id": "...", "title": "...", ...}
 """
 

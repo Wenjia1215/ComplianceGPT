@@ -19,7 +19,9 @@ Each JSONL line is one OSCAL **part** record from the control tree, at one of th
 - **Guidance**: `*_gdn*`
 - **Assessment objectives**: `*_obj*`
 
-These records are what your retriever and generator cite (evidence IDs should match these part IDs).
+These records are what the retriever and generator cite (evidence IDs should match these part IDs).
+
+In the frozen ComplianceGPT pipeline, the default retrieval-ranking corpus uses statement and guidance records (`smt`, `gdn`). Parameter records (`odp`, `prm`) remain in the full CCS inventory for canonicalization, ODP registry alignment, profile validation, and verifier support, but they are not default cited evidence records.
 
 ### 1.2 Parameter records (ODP/PRM) — optional but recommended for evaluation hygiene
 Many NIST parts contain placeholders like:
