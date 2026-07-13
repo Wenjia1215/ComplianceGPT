@@ -29,6 +29,7 @@ from typing import List, Dict, Any, Optional, Tuple, Iterable, Set
 
 
 _ASSIGNMENT_REQUIRED_SENTINEL = "__ASSIGNMENT_REQUIRED__"
+VERIFIER_PATCH_ID = "2026-07-12-contract-validity-fix"
 
 
 # ==========================================================
@@ -73,6 +74,7 @@ __all__ = [
     "AnswerContract",
     "GoldLabel",
     "VerifierResult",
+    "VERIFIER_PATCH_ID",
     "normalize_version",
     "normalize_control_id",
     "normalize_odp_id",
@@ -88,6 +90,8 @@ __all__ = [
     "check_odp_behavior",
     "check_version_correctness",
     "verify_answer",
+    "parse_answer_contract",
+    "verify_contract_validity",
 ]
 
 
@@ -801,6 +805,30 @@ def verify_answer(
 # Contract-only validity checks (no gold dependence)
 # ==========================================================
 
+def parse_answer_contract(json_output: Dict[str, Any]) -> AnswerContract:
+    """Parse runtime-visible contract fields without consulting gold labels."""
+    spans_raw = json_output.get("evidence_spans", []) or []
+    evidence_spans: List[EvidenceSpan] = []
+
+    for span in spans_raw:
+        if isinstance(span, dict):
+            evidence_spans.append(EvidenceSpan(
+                source_id=str(span.get("source_id", "")),
+                span_text=str(span.get("span_text", "")),
+            ))
+        else:
+            evidence_spans.append(EvidenceSpan(
+                source_id=str(span),
+                span_text="",
+            ))
+
+    return AnswerContract(
+        answer_text=str(json_output.get("answer_text", "")),
+        evidence_spans=evidence_spans,
+        status=str(json_output.get("status", "ERROR")),
+        odp_required_list=_split_listish(json_output.get("odp_required_list", [])),
+    )
+
 def verify_contract_validity(
     json_output: Dict[str, Any],
     corpus: Optional[Dict[str, str]] = None,
@@ -843,7 +871,7 @@ def verify_contract_validity(
     else:
         errors.append("UnknownStatus")
 
-    for i, sp in enumerate(spans):
+    for sp in spans:
         if not isinstance(sp, dict):
             errors.append("EvidenceSpanNotDict")
             continue
@@ -855,12 +883,13 @@ def verify_contract_validity(
             errors.append("MissingSpanText")
 
         if corpus is not None and sid:
-            official = resolve_official_text(sid, corpus)
-            if not official:
+            official, _matched_key = resolve_official_text(sid, corpus)
+            if official is None:
                 errors.append("UnknownSourceId")
             else:
-                ok, _ = verify_span(official, stxt, strict_verbatim=bool(strict_verbatim))
-                if not ok:
+                strict_ok, normalized_ok = verify_span_against_corpus(stxt, official)
+                span_ok = strict_ok if strict_verbatim else normalized_ok
+                if not span_ok:
                     errors.append("SpanNotVerbatim")
 
     # Contract consistency checks (placeholders vs odp list vs status)

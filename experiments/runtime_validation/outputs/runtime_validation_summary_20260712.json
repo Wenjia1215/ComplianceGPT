@@ -1,0 +1,67 @@
+{
+  "gold_labels_used": false,
+  "runs": [
+    {
+      "ccs_file": "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl",
+      "ccs_sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+      "error_counts": {},
+      "failed": 0,
+      "pass_rate": 1.0,
+      "passed": 100,
+      "revision": "rev5",
+      "source_contract_file": "experiments/pipeline_runs/pipeline_rev5_contracts_20260312_150620.csv",
+      "source_contract_sha256": "90ca4d66ae09fd0cf50f68c6ebf770871e9827272dbda2d8ed180d2fa583c694",
+      "system": "ComplianceGPT",
+      "total": 100,
+      "verifier_patch_id": "2026-07-12-contract-validity-fix"
+    },
+    {
+      "ccs_file": "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl",
+      "ccs_sha256": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "error_counts": {},
+      "failed": 0,
+      "pass_rate": 1.0,
+      "passed": 36,
+      "revision": "rev4",
+      "source_contract_file": "experiments/pipeline_runs/pipeline_rev4_contracts_20260312_152654.csv",
+      "source_contract_sha256": "741ea6cbe50bce44f1dda15760430d6c2144c7c64566ea58a39366918348c598",
+      "system": "ComplianceGPT",
+      "total": 36,
+      "verifier_patch_id": "2026-07-12-contract-validity-fix"
+    },
+    {
+      "ccs_file": "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl",
+      "ccs_sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+      "error_counts": {
+        "OKButUnresolvedODPPlaceholders": 58,
+        "StatusERROR": 3
+      },
+      "failed": 61,
+      "pass_rate": 0.39,
+      "passed": 39,
+      "revision": "rev5",
+      "source_contract_file": "experiments/answerer_comparison/baseline_runs/generative_baseline_rev5_contracts_20260313_121821.csv",
+      "source_contract_sha256": "e3f3ddc40f7e4475d9322ead0ac6b4ae102a761d4384a2542af5a8d2684c18b6",
+      "system": "Generative baseline",
+      "total": 100,
+      "verifier_patch_id": "2026-07-12-contract-validity-fix"
+    },
+    {
+      "ccs_file": "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl",
+      "ccs_sha256": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "error_counts": {
+        "OKButUnresolvedODPPlaceholders": 22
+      },
+      "failed": 22,
+      "pass_rate": 0.3888888888888889,
+      "passed": 14,
+      "revision": "rev4",
+      "source_contract_file": "experiments/answerer_comparison/baseline_runs/generative_baseline_rev4_contracts_20260313_121821.csv",
+      "source_contract_sha256": "707a19c587d916a1d87d2de968cdbbb36374018acd2c536257e3a8f75aa96e7f",
+      "system": "Generative baseline",
+      "total": 36,
+      "verifier_patch_id": "2026-07-12-contract-validity-fix"
+    }
+  ],
+  "verifier_patch_id": "2026-07-12-contract-validity-fix"
+}
