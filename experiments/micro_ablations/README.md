@@ -31,7 +31,7 @@ same process:
 - All four use the same CCS files, stored rewrites, filtering, metrics, and
   evaluation rows.
 
-The evaluated model configuration is:
+The matched diagnostic configuration is:
 
 - dense encoder: `intfloat/e5-small-v2`
 - cross encoder: `BAAI/bge-reranker-base`
@@ -82,6 +82,11 @@ with the frozen main-ablation rows.  This comparison makes source evolution
 visible.  Dissertation contrasts between a baseline and its diagnostic
 variant use the matched rerun, not results produced under a different
 implementation state.
+
+The per-query CSVs retain gate decisions, margins, query transformations, and
+ranked controls.  They omit the canonical retriever's verbose candidate debug
+array because it duplicates score details that are not used by this study's
+metrics or paired comparisons.
 
 `MicroAblation_S4b_S7a.ipynb` is retained only as the original exploratory
 interface.  Its execution state has been cleared; canonical results come from
