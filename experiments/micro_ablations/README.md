@@ -11,10 +11,12 @@ they do not extend the S1--S7 retrieval ladder.
 - **S7a:** What happens when S7 keeps its candidate construction unchanged but
   uses that selected rewrite as the cross-encoder query?
 
-The selection procedure tests each of up to three stored rewrites in the
-hybrid stage and chooses the one giving the best gold-control rank.  It uses
-the gold label and is therefore not available in deployment.  These variants
-are diagnostic counterfactuals, not claims of a deployable upper bound.
+The selection procedure applies the canonical S7 query transformation and
+rewrite filter, tests each of up to three accepted stored rewrites in the
+base hybrid stage, and chooses the one giving the best gold-control rank.  It
+uses the gold label and is therefore not available in deployment.  These
+variants are diagnostic counterfactuals, not claims of a deployable upper
+bound.
 
 ## Matched design
 
@@ -22,7 +24,10 @@ are diagnostic counterfactuals, not claims of a deployable upper bound.
 same process:
 
 - S4 and S4b share BM25 control documents and RRF settings.
-- S7 and S7a share the complete candidate set; only the reranker query changes.
+- S7 imports query planning, weighted fusion, privilege-scope adjustment, and
+  reranking guards from `src/compliancegpt/retriever/retriever_s7.py`.
+- S7 and S7a share the complete candidate set; only the cross-encoder query
+  changes.
 - All four use the same CCS files, stored rewrites, filtering, metrics, and
   evaluation rows.
 
@@ -36,11 +41,13 @@ The evaluated model configuration is:
 - rewrite Jaccard threshold: 0.15
 - S7 rerank blend: 0.65 base / 0.35 cross encoder
 - S7 skip margin: 0.10
-- S7 adoption margin: 0.15
+- S7 adoption margin: 0.15, reduced to 0.10 when the base margin is below 0.08
+- privilege-scope match adjustment: 0.08 of the peak fused score
+- privilege-scope mismatch adjustment: -0.06 of the peak fused score
 
 Pinned Python dependencies are in `requirements.txt`.  Each run records package
-versions, model repository revisions, input SHA-256 hashes, and output hashes
-in `run_metadata.json`.
+versions, model repository revisions, input SHA-256 hashes, the canonical
+retriever source hash, and output hashes in `run_metadata.json`.
 
 ## Run
 
@@ -56,8 +63,8 @@ python experiments/micro_ablations/run_micro_ablations.py \
   --aggregate-only --parts-root /tmp/micro-parts
 ```
 
-The GitHub Actions workflow runs the revisions in separate jobs, aggregates
-the artifacts, and validates row counts and identifiers.
+The manually triggered GitHub Actions workflow runs the revisions in separate
+jobs, aggregates the artifacts, and validates row counts and identifiers.
 
 ## Outputs
 
@@ -69,11 +76,12 @@ the artifacts, and validates row counts and identifiers.
 - `baseline_validation.csv`
 - `run_metadata.json`
 
-`baseline_validation.csv` compares the newly matched S4 and S7 rows with the
-frozen main-ablation rows.  Dissertation comparisons between a baseline and
-its diagnostic variant use the matched rerun, not results produced under a
-different model configuration.
+`baseline_validation.csv` compares the newly matched S4 and canonical S7 rows
+with the frozen main-ablation rows.  This comparison makes source evolution
+visible.  Dissertation contrasts between a baseline and its diagnostic
+variant use the matched rerun, not results produced under a different
+implementation state.
 
 `MicroAblation_S4b_S7a.ipynb` is retained only as the original exploratory
-interface.  Its embedded outputs predate the matched runner and are not result
-artifacts.
+interface.  Its execution state has been cleared; canonical results come from
+the standalone runner.
