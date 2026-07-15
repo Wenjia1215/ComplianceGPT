@@ -522,6 +522,7 @@ def run_revision(repo_root: Path, revision: str, parts_root: Path) -> None:
         },
         "python": sys.version,
         "platform": platform.platform(),
+        "compute_device": resources.dense.index.device,
         "packages": package_versions(),
         "canonical_retriever": {
             "path": "src/compliancegpt/retriever/retriever_s7.py",
