@@ -72,6 +72,7 @@ jobs:
             experiments/micro_ablations/S7_matched_ALL.csv
             experiments/micro_ablations/S7a_rerank_best_ALL.csv
             experiments/micro_ablations/micro_ablation_summary.csv
+            experiments/micro_ablations/paired_diagnostics.csv
             experiments/micro_ablations/baseline_validation.csv
             experiments/micro_ablations/run_metadata.json
           if-no-files-found: error
