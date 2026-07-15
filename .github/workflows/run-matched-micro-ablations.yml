@@ -1,0 +1,85 @@
+name: Run matched retrieval micro-ablations
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/run-matched-micro-ablations.yml
+      - experiments/micro_ablations/run_micro_ablations.py
+      - experiments/micro_ablations/requirements.txt
+
+permissions:
+  contents: read
+
+jobs:
+  run-revision:
+    name: Run ${{ matrix.revision }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        revision: [rev4, rev5]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: experiments/micro_ablations/requirements.txt
+      - name: Install matched-study dependencies
+        run: python -m pip install --requirement experiments/micro_ablations/requirements.txt
+      - name: Run matched study
+        env:
+          TOKENIZERS_PARALLELISM: "false"
+        run: >-
+          python experiments/micro_ablations/run_micro_ablations.py
+          --repo-root .
+          --revision ${{ matrix.revision }}
+          --parts-root /tmp/micro-parts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: micro-parts-${{ matrix.revision }}
+          path: /tmp/micro-parts
+          if-no-files-found: error
+          retention-days: 7
+
+  aggregate:
+    name: Validate and package matched results
+    needs: run-revision
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install aggregation dependencies
+        run: python -m pip install numpy==1.26.4 pandas==2.2.3
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: micro-parts-*
+          path: /tmp/all-parts
+          merge-multiple: true
+      - name: Aggregate and validate results
+        run: >-
+          python experiments/micro_ablations/run_micro_ablations.py
+          --repo-root .
+          --aggregate-only
+          --parts-root /tmp/all-parts
+          --output-dir experiments/micro_ablations
+      - uses: actions/upload-artifact@v4
+        with:
+          name: matched-micro-results
+          path: |
+            experiments/micro_ablations/S4_matched_ALL.csv
+            experiments/micro_ablations/S4b_rrf_best_ALL.csv
+            experiments/micro_ablations/S7_matched_ALL.csv
+            experiments/micro_ablations/S7a_rerank_best_ALL.csv
+            experiments/micro_ablations/micro_ablation_summary.csv
+            experiments/micro_ablations/baseline_validation.csv
+            experiments/micro_ablations/run_metadata.json
+          if-no-files-found: error
+          retention-days: 7
