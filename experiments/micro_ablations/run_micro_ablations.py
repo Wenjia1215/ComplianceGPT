@@ -320,6 +320,13 @@ def rank_current_s7(
     return ranked, metadata
 
 
+def compact_system_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
+    """Keep decision provenance without duplicating the verbose candidate debug trace."""
+    compact = dict(metadata)
+    compact.pop("top_candidates", None)
+    return compact
+
+
 def select_gold_informed_rewrite(
     resources: RetrievalResources,
     retrieval_query: str,
@@ -400,12 +407,16 @@ def evaluate_row(
             s4b_ranked,
             {"sys": "S4b", "n_vars": 2 if selected else 1, "gold_informed_rewrite_used": bool(selected)},
         ),
-        ("S7", s7_ranked, {**s7_meta, **common_s7_meta, "sys": "S7"}),
+        (
+            "S7",
+            s7_ranked,
+            {**compact_system_metadata(s7_meta), **common_s7_meta, "sys": "S7"},
+        ),
         (
             "S7a",
             s7a_ranked,
             {
-                **s7a_meta,
+                **compact_system_metadata(s7a_meta),
                 **common_s7_meta,
                 "sys": "S7a",
                 "gold_informed_rewrite_used": bool(selected),
