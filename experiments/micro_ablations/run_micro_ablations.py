@@ -595,6 +595,48 @@ def aggregate(repo_root: Path, parts_root: Path, output_dir: Path) -> None:
     )
     summary.to_csv(output_dir / "micro_ablation_summary.csv", index=False, float_format="%.6f")
 
+    paired_rows: list[dict[str, Any]] = []
+    for baseline, variant in (("S4", "S4b"), ("S7", "S7a")):
+        left = combined.loc[
+            combined["system"].eq(baseline),
+            ["dataset", "question_id", "is_hit_at_1", "mrr@10", "ndcg@10"],
+        ].copy()
+        right = combined.loc[
+            combined["system"].eq(variant),
+            ["dataset", "question_id", "is_hit_at_1", "mrr@10", "ndcg@10"],
+        ].copy()
+        paired = left.merge(
+            right,
+            on=["dataset", "question_id"],
+            suffixes=("_baseline", "_variant"),
+            validate="one_to_one",
+        )
+        for dataset, group in paired.groupby("dataset", sort=False):
+            delta_mrr = group["mrr@10_variant"] - group["mrr@10_baseline"]
+            paired_rows.append(
+                {
+                    "comparison": f"{variant}-{baseline}",
+                    "dataset": dataset,
+                    "N": len(group),
+                    "improved_questions": int(delta_mrr.gt(0).sum()),
+                    "tied_questions": int(delta_mrr.eq(0).sum()),
+                    "worsened_questions": int(delta_mrr.lt(0).sum()),
+                    "delta_Recall_at_1": float(
+                        group["is_hit_at_1_variant"].mean() - group["is_hit_at_1_baseline"].mean()
+                    ),
+                    "delta_MRR_at_10": float(delta_mrr.mean()),
+                    "delta_nDCG_at_10": float(
+                        (group["ndcg@10_variant"] - group["ndcg@10_baseline"]).mean()
+                    ),
+                }
+            )
+    paired_diagnostics = pd.DataFrame(paired_rows)
+    paired_diagnostics.to_csv(
+        output_dir / "paired_diagnostics.csv",
+        index=False,
+        float_format="%.6f",
+    )
+
     validation_rows = []
     for system in ("S4", "S7"):
         for dataset in expected_datasets:
@@ -633,7 +675,12 @@ def aggregate(repo_root: Path, parts_root: Path, output_dir: Path) -> None:
         "runs": [json.loads(path.read_text(encoding="utf-8")) for path in metadata_paths],
         "output_sha256": {
             name: sha256_file(output_dir / name)
-            for name in [*output_names.values(), "micro_ablation_summary.csv", "baseline_validation.csv"]
+            for name in [
+                *output_names.values(),
+                "micro_ablation_summary.csv",
+                "paired_diagnostics.csv",
+                "baseline_validation.csv",
+            ]
         },
     }
     (output_dir / "run_metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
