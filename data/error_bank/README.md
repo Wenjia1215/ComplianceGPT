@@ -59,3 +59,8 @@ This set enables:
 ## Notes for Reporting
 
 When presenting results, group the Error Bank by `failure_category` and show per-mode improvements for each retrieval system.
+
+`question_id` values are revision-local and repeat across Rev.4 and Rev.5.  Any
+join to retrieval outputs must therefore use `(version, question_id)` and
+validate the question text and gold control, as implemented by
+`experiments/retriever_ablation/error_analysis/run_error_mode_analysis.py`.
