@@ -14,6 +14,7 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import platform
 import re
 import sys
@@ -504,6 +505,10 @@ def run_revision(repo_root: Path, revision: str, parts_root: Path) -> None:
 
     metadata = {
         "revision": revision,
+        "execution": {
+            "github_actions_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+            "git_commit": os.environ.get("GITHUB_SHA", ""),
+        },
         "python": sys.version,
         "platform": platform.platform(),
         "packages": package_versions(),
@@ -672,6 +677,14 @@ def aggregate(repo_root: Path, parts_root: Path, output_dir: Path) -> None:
     metadata = {
         "study": "matched gold-informed rewrite diagnostic",
         "warning": "S4b and S7a use gold labels for rewrite selection and are not deployable systems.",
+        "execution": {
+            "github_actions_run_id": os.environ.get("GITHUB_RUN_ID", ""),
+            "git_commit": os.environ.get("GITHUB_SHA", ""),
+        },
+        "runner": {
+            "path": "experiments/micro_ablations/run_micro_ablations.py",
+            "sha256": sha256_file(Path(__file__).resolve()),
+        },
         "runs": [json.loads(path.read_text(encoding="utf-8")) for path in metadata_paths],
         "output_sha256": {
             name: sha256_file(output_dir / name)
