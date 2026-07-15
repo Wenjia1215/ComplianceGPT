@@ -106,7 +106,6 @@ ComplianceGPT_v2/
     answerer_comparison/          # Baseline vs. citation-contract comparison outputs
     pipeline_runs/                # Batch pipeline contracts and reports
     micro_ablations/              # Focused retrieval diagnostics
-    _archived_s8/                 # Archived exploratory variant retained for provenance
 
   img/                            # Architecture and result figures
   ARTIFACTS.md                    # Frozen-input manifest and checksums
