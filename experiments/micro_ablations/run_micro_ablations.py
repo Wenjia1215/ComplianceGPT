@@ -3,9 +3,9 @@
 
 S4b and S7a use the gold control to select one of the existing query rewrites.
 They are diagnostic variants, not deployable retrieval systems.  This runner
-uses the same model IDs, corpus construction, rewrite filtering, RRF weights,
-rerank blend, and gates as the frozen S1--S7 ablation notebook.  It also reruns
-S4 and S7 in the same process so every reported contrast is matched.
+imports the canonical S7 query planner, fusion, scope adjustment, and guard
+logic from ``src/compliancegpt/retriever/retriever_s7.py``.  It also reruns S4
+and S7 in the same process so every reported contrast is matched.
 """
 
 from __future__ import annotations
@@ -20,10 +20,18 @@ import sys
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
+SOURCE_ROOT = REPOSITORY_ROOT / "src"
+if str(SOURCE_ROOT) not in sys.path:
+    sys.path.insert(0, str(SOURCE_ROOT))
+
+from compliancegpt.retriever import retriever_s7 as canonical_s7
 
 
 TOP_N = 10
@@ -40,6 +48,8 @@ REWRITE_JACCARD_MIN = 0.15
 RERANK_ALPHA = 0.65
 RERANK_APPLY_MIN_MARGIN_RATIO = 0.15
 RERANK_SKIP_MIN_BASE_MARGIN_RATIO = 0.10
+SCOPE_MATCH_BIAS_RATIO = 0.08
+SCOPE_MISMATCH_PENALTY_RATIO = 0.06
 
 PUNCT_RE = re.compile(r"[^0-9A-Za-z_\s]+")
 WS_RE = re.compile(r"\s+")
@@ -71,16 +81,6 @@ def normalize_control_id(control_id: object) -> str:
     return value
 
 
-def control_id_aliases(control_id: str) -> str:
-    canonical = normalize_control_id(control_id)
-    aliases = {canonical, canonical.replace("-", ""), canonical.replace("-", " ")}
-    match = CONTROL_ID_PAREN_RE.match(canonical)
-    if match:
-        dot = f"{match.group(1)}.{match.group(2)}"
-        aliases.update({dot, dot.replace("-", ""), dot.replace("-", " ")})
-    return " ".join(sorted(aliases))
-
-
 def strict_key(text: object) -> str:
     return "".join(character.lower() for character in str(text) if character.isalnum())
 
@@ -91,103 +91,6 @@ def jaccard_overlap(left: str, right: str) -> float:
     if not left_tokens or not right_tokens:
         return 0.0
     return len(left_tokens & right_tokens) / float(len(left_tokens | right_tokens))
-
-
-def load_clause_records(path: Path) -> list[dict[str, str]]:
-    records: list[dict[str, str]] = []
-    with path.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            if not line.strip():
-                continue
-            source = json.loads(line)
-            kind = str(source.get("kind", "")).lower()
-            text = str(source.get("text", "")).strip()
-            if kind not in {"smt", "gdn"} or not text:
-                continue
-            records.append(
-                {
-                    "clause_id": str(source.get("id", "")).strip(),
-                    "control_id": normalize_control_id(source.get("control_id") or source.get("control") or ""),
-                    "title": str(source.get("title", "")).strip(),
-                    "text": text,
-                    "kind": kind,
-                }
-            )
-    if not records:
-        raise ValueError(f"No statement or guidance clauses found in {path}")
-    return records
-
-
-def build_control_docs(records: Iterable[dict[str, str]]) -> list[dict[str, str]]:
-    texts: dict[str, list[str]] = defaultdict(list)
-    titles: dict[str, str] = {}
-    for record in records:
-        control = record["control_id"]
-        if not control:
-            continue
-        texts[control].append(record["text"])
-        if record["title"]:
-            titles[control] = record["title"]
-    documents = []
-    for control, parts in texts.items():
-        header = [control_id_aliases(control)]
-        if titles.get(control):
-            header.append(titles[control])
-        documents.append({"control_id": control, "text": "\n".join(header + parts)})
-    return documents
-
-
-def build_fallback_texts(records: Iterable[dict[str, str]]) -> dict[str, str]:
-    by_control: dict[str, list[str]] = defaultdict(list)
-    for record in records:
-        if record["control_id"]:
-            by_control[record["control_id"]].append(record["text"])
-    return {control: "\n".join(parts[:8]) for control, parts in by_control.items()}
-
-
-class BM25Okapi:
-    def __init__(self, corpus_tokens: list[list[str]], k1: float = BM25_K1, b: float = BM25_B):
-        self.k1 = float(k1)
-        self.b = float(b)
-        self.size = len(corpus_tokens)
-        self.doc_len = np.array([len(document) for document in corpus_tokens], dtype=np.float32)
-        self.avgdl = float(self.doc_len.mean()) if self.size else 0.0
-        self.term_frequencies: list[dict[str, int]] = []
-        document_frequencies: dict[str, int] = {}
-        for document in corpus_tokens:
-            frequencies: dict[str, int] = {}
-            for term in document:
-                frequencies[term] = frequencies.get(term, 0) + 1
-            self.term_frequencies.append(frequencies)
-            for term in frequencies:
-                document_frequencies[term] = document_frequencies.get(term, 0) + 1
-        self.idf = {
-            term: math.log((self.size - frequency + 0.5) / (frequency + 0.5) + 1)
-            for term, frequency in document_frequencies.items()
-        }
-
-    def get_scores(self, query_tokens: list[str]) -> np.ndarray:
-        scores = np.zeros(self.size, dtype=np.float32)
-        for term in query_tokens:
-            if term not in self.idf:
-                continue
-            for index, frequencies in enumerate(self.term_frequencies):
-                frequency = frequencies.get(term, 0)
-                if not frequency:
-                    continue
-                numerator = frequency * (self.k1 + 1.0)
-                denominator = frequency + self.k1 * (
-                    1.0 - self.b + self.b * (self.doc_len[index] / max(self.avgdl, 1e-9))
-                )
-                scores[index] += float(self.idf[term]) * float(numerator / denominator)
-        return scores
-
-    def get_top_n(self, query_tokens: list[str], n: int) -> list[int]:
-        scores = self.get_scores(query_tokens)
-        if n >= len(scores):
-            return np.argsort(-scores).tolist()
-        indices = np.argpartition(-scores, n - 1)[:n]
-        return indices[np.argsort(-scores[indices])].tolist()
 
 
 class DenseIndex:
@@ -263,7 +166,7 @@ class ClauseDenseControlAdapter:
 
 @dataclass
 class RetrievalResources:
-    bm25: BM25Okapi
+    bm25: Any
     control_ids: list[str]
     dense: ClauseDenseControlAdapter
     reranker: Any
@@ -274,10 +177,9 @@ def build_resources(catalog_path: Path) -> RetrievalResources:
     from sentence_transformers import CrossEncoder
     import torch
 
-    records = load_clause_records(catalog_path)
-    documents = build_control_docs(records)
-    bm25 = BM25Okapi([tokenize(normalize_text(document["text"])) for document in documents])
-    control_ids = [document["control_id"] for document in documents]
+    records = canonical_s7.load_clause_records_jsonl(str(catalog_path), keep_kinds={"smt", "gdn"})
+    documents = canonical_s7.build_control_docs_from_clauses(records)
+    bm25, control_ids = canonical_s7.build_bm25(documents, k1=BM25_K1, b=BM25_B)
 
     clause_ids: list[str] = []
     dense_texts: list[str] = []
@@ -285,17 +187,18 @@ def build_resources(catalog_path: Path) -> RetrievalResources:
     clause_text: dict[str, str] = {}
     for record in records:
         packed = f"{record['control_id']} {record['title']} ({record['kind']})\n{record['text']}"
-        clause_ids.append(record["clause_id"])
+        clause_ids.append(record["id"])
         dense_texts.append(f"passage: {packed}")
-        clause_to_control[record["clause_id"]] = record["control_id"]
-        clause_text[record["clause_id"]] = packed
+        clause_to_control[record["id"]] = record["control_id"]
+        clause_text[record["id"]] = packed
 
     dense_index = DenseIndex(DENSE_MODEL_ID)
     dense_index.build(dense_texts, clause_ids)
     dense = ClauseDenseControlAdapter(dense_index, clause_to_control, clause_text)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     reranker = CrossEncoder(RERANKER_MODEL_ID, device=device)
-    return RetrievalResources(bm25, control_ids, dense, reranker, build_fallback_texts(records))
+    fallback_text = canonical_s7.build_control_fallback_text_map(records)
+    return RetrievalResources(bm25, control_ids, dense, reranker, fallback_text)
 
 
 def get_rewrites(query: str, rewrite_frame: pd.DataFrame, max_rewrites: int) -> list[str]:
@@ -308,6 +211,64 @@ def get_rewrites(query: str, rewrite_frame: pd.DataFrame, max_rewrites: int) -> 
         if rewrite not in rewrites:
             rewrites.append(rewrite)
     return rewrites[: int(max_rewrites)]
+
+
+def get_stored_rewrites(query: str, rewrite_frame: pd.DataFrame) -> list[str]:
+    """Return unique stored rewrites before canonical S7 planning and filtering."""
+    matches = rewrite_frame.loc[rewrite_frame["strict_key"].eq(strict_key(query))]
+    rewrites: list[str] = []
+    for value in matches["rewritten_query"].tolist():
+        rewrite = str(value).strip()
+        if len(rewrite) >= 6 and rewrite not in rewrites:
+            rewrites.append(rewrite)
+    return rewrites
+
+
+def prepare_s7_plan(query: str, rewrite_frame: pd.DataFrame) -> dict[str, Any]:
+    """Mirror ``ComplianceGPTRetriever._prepare_retrieval_plan`` with rewrite provenance."""
+    retrieval_query, query_meta = canonical_s7.build_retrieval_query(
+        query,
+        strip_meta=True,
+        expand_scope_terms=True,
+    )
+    transformed_pairs: list[dict[str, str]] = []
+    seen = {retrieval_query} if retrieval_query else set()
+    for raw_rewrite in get_stored_rewrites(query, rewrite_frame):
+        transformed, _ = canonical_s7.build_retrieval_query(
+            raw_rewrite,
+            strip_meta=True,
+            expand_scope_terms=True,
+        )
+        if transformed and transformed not in seen:
+            seen.add(transformed)
+            transformed_pairs.append({"raw": raw_rewrite, "transformed": transformed})
+
+    query_tokens = set(canonical_s7.tokenize(retrieval_query))
+    accepted_pairs: list[dict[str, str]] = []
+    for pair in transformed_pairs:
+        rewrite_tokens = set(canonical_s7.tokenize(pair["transformed"]))
+        if query_tokens and rewrite_tokens:
+            union = query_tokens | rewrite_tokens
+            overlap = len(query_tokens & rewrite_tokens) / float(len(union)) if union else 0.0
+            if overlap < REWRITE_JACCARD_MIN:
+                continue
+        accepted_pairs.append(pair)
+        if len(accepted_pairs) >= S7_MAX_REWRITES:
+            break
+
+    variants = canonical_s7.build_query_variants(
+        retrieval_query,
+        [pair["transformed"] for pair in transformed_pairs],
+        max_rewrites=S7_MAX_REWRITES,
+        jaccard_min=REWRITE_JACCARD_MIN,
+    )
+    return {
+        "raw_query": query,
+        "retrieval_query": retrieval_query,
+        "query_scope": str(query_meta.get("scope") or "neutral"),
+        "accepted_rewrites": accepted_pairs,
+        "variants": variants,
+    }
 
 
 def rrf_fuse(ranked_lists: list[list[str]], weights: list[float]) -> tuple[list[str], dict[str, float]]:
@@ -338,153 +299,66 @@ def bm25_rrf(resources: RetrievalResources, variants: list[str], top_n: int = TO
     return ranked[: int(top_n)]
 
 
-def prepare_hybrid(resources: RetrievalResources, variants: list[str]) -> dict[str, Any]:
-    weights = [1.0] + [REWRITE_WEIGHT] * (len(variants) - 1)
-    scores: dict[str, float] = defaultdict(float)
-    best_text: dict[str, str] = {}
-    bm25_top1 = ""
-    dense_top1 = ""
-    for variant_index, (variant, weight) in enumerate(zip(variants, weights)):
-        indices = resources.bm25.get_top_n(tokenize(normalize_text(variant)), n=CANDIDATE_SET_SIZE)
-        if variant_index == 0 and indices:
-            bm25_top1 = normalize_control_id(resources.control_ids[indices[0]])
-        for rank, index in enumerate(indices, start=1):
-            control = normalize_control_id(resources.control_ids[index])
-            scores[control] += float(weight) / float(RRF_K + rank)
-            best_text.setdefault(control, resources.fallback_text.get(control, ""))
-
-        dense_hits = resources.dense.search(variant, top_k=CANDIDATE_SET_SIZE)
-        if variant_index == 0 and dense_hits:
-            dense_top1 = normalize_control_id(dense_hits[0][0])
-        for rank, (control_id, _) in enumerate(dense_hits, start=1):
-            control = normalize_control_id(control_id)
-            scores[control] += float(weight) / float(RRF_K + rank)
-            clause_text = resources.dense.best_clause_text(variant, control)
-            if clause_text:
-                best_text[control] = clause_text
-
-    fused = sorted(scores.items(), key=lambda item: item[1], reverse=True)[:CANDIDATE_SET_SIZE]
-    return {
-        "controls": [control for control, _ in fused],
-        "scores": dict(scores),
-        "best_text": best_text,
-        "bm25_top1": bm25_top1,
-        "dense_top1": dense_top1,
-        "num_variants": len(variants),
-    }
-
-
-def normalize_scores(values: np.ndarray) -> np.ndarray:
-    if values.size == 0:
-        return values
-    minimum = float(np.min(values))
-    maximum = float(np.max(values))
-    if maximum - minimum < 1e-12:
-        return np.zeros_like(values, dtype=np.float32)
-    return ((values - minimum) / (maximum - minimum)).astype(np.float32)
-
-
-def rerank_prepared(
+def rank_current_s7(
     resources: RetrievalResources,
-    prepared: dict[str, Any],
-    rerank_query: str,
+    retrieval_query: str,
+    variants: list[str],
+    query_scope: str,
+    *,
+    rerank_query: Optional[str] = None,
+    force_base_order: bool = False,
 ) -> tuple[list[str], dict[str, Any]]:
-    candidates = list(prepared["controls"])
-    if not candidates:
-        return [], {"reranker_called": False, "rerank_applied": False, "skip_reason": "no_candidates"}
-
-    valid_controls: list[str] = []
-    pairs: list[list[str]] = []
-    for control in candidates:
-        text = prepared["best_text"].get(control) or resources.fallback_text.get(control, "")
-        if text:
-            pairs.append([rerank_query, text])
-            valid_controls.append(control)
-    base_controls = valid_controls if valid_controls else candidates
-    scores = prepared["scores"]
-    base_values = np.asarray([scores.get(control, 0.0) for control in base_controls], dtype=np.float32)
-    base_normalized = normalize_scores(base_values)
-    if len(base_controls) >= 2:
-        first = float(scores.get(base_controls[0], 0.0))
-        second = float(scores.get(base_controls[1], 0.0))
-        base_margin = (first - second) / max(first, 1e-9)
-    else:
-        base_margin = 1.0
-    base_top1 = base_controls[0] if base_controls else ""
-
-    common_meta = {
-        "num_variants": int(prepared["num_variants"]),
-        "bm25_top1": prepared["bm25_top1"],
-        "dense_top1": prepared["dense_top1"],
-        "base_top1": base_top1,
-        "base_margin_ratio": float(base_margin),
-        "rerank_alpha": RERANK_ALPHA,
-        "rerank_apply_min_margin_ratio": RERANK_APPLY_MIN_MARGIN_RATIO,
-        "rerank_skip_min_base_margin_ratio": RERANK_SKIP_MIN_BASE_MARGIN_RATIO,
-    }
-    if base_margin >= RERANK_SKIP_MIN_BASE_MARGIN_RATIO:
-        return base_controls, {
-            **common_meta,
-            "reranker_called": False,
-            "rerank_applied": False,
-            "skip_reason": "base_confident",
-            "final_top1": base_top1,
-        }
-    if not pairs:
-        return candidates, {
-            **common_meta,
-            "reranker_called": False,
-            "rerank_applied": False,
-            "skip_reason": "no_text_for_rerank",
-            "final_top1": candidates[0],
-        }
-
-    predictions = resources.reranker.predict(
-        pairs,
-        batch_size=32,
-        convert_to_numpy=True,
-        show_progress_bar=False,
+    """Call the repository's canonical S7 control-ranking implementation."""
+    ranked, metadata = canonical_s7.s7_rank_controls(
+        original_query=rerank_query or retrieval_query,
+        variants=variants,
+        bm25_retriever=resources.bm25,
+        bm25_control_ids=resources.control_ids,
+        dense_adapter=resources.dense,
+        reranker=resources.reranker,
+        reranker_text_by_control=resources.fallback_text,
+        candidate_set_size=CANDIDATE_SET_SIZE,
+        rrf_k=RRF_K,
+        rewrite_weight=REWRITE_WEIGHT,
+        rerank_alpha=RERANK_ALPHA,
+        rerank_apply_min_margin_ratio=RERANK_APPLY_MIN_MARGIN_RATIO,
+        rerank_skip_enabled=True,
+        rerank_skip_min_base_margin_ratio=(0.0 if force_base_order else RERANK_SKIP_MIN_BASE_MARGIN_RATIO),
+        rerank_skip_require_top1_agreement=False,
+        query_scope=query_scope,
+        scope_match_bias_ratio=SCOPE_MATCH_BIAS_RATIO,
+        scope_mismatch_penalty_ratio=SCOPE_MISMATCH_PENALTY_RATIO,
     )
-    rerank_normalized = normalize_scores(np.asarray(predictions, dtype=np.float32))
-    final_scores = RERANK_ALPHA * base_normalized[: len(rerank_normalized)] + (
-        1.0 - RERANK_ALPHA
-    ) * rerank_normalized
-    order = np.argsort(-final_scores)
-    reranked = [valid_controls[int(index)] for index in order]
-    if len(order) >= 2:
-        first = float(final_scores[int(order[0])])
-        second = float(final_scores[int(order[1])])
-        rerank_margin = (first - second) / max(first, 1e-9)
-    else:
-        rerank_margin = 1.0
-    rerank_top1 = reranked[0] if reranked else ""
-    applied = not (rerank_top1 != base_top1 and rerank_margin < RERANK_APPLY_MIN_MARGIN_RATIO)
-    final = reranked if applied else base_controls
-    return final, {
-        **common_meta,
-        "reranker_called": True,
-        "rerank_applied": bool(applied),
-        "skip_reason": None,
-        "rerank_top1": rerank_top1,
-        "rerank_margin_ratio": float(rerank_margin),
-        "final_top1": final[0] if final else "",
-    }
+    return ranked, metadata
 
 
 def select_gold_informed_rewrite(
     resources: RetrievalResources,
-    query: str,
+    retrieval_query: str,
+    query_scope: str,
     gold_control: str,
-    rewrites: list[str],
-) -> Optional[str]:
-    best_rewrite: Optional[str] = None
+    rewrite_pairs: list[dict[str, str]],
+) -> Optional[dict[str, str]]:
+    best_rewrite: Optional[dict[str, str]] = None
     best_rank: Optional[int] = None
-    for rewrite in rewrites[:S7_MAX_REWRITES]:
-        prepared = prepare_hybrid(resources, [query, rewrite])
-        candidate_rank = rank_of(gold_control, prepared["controls"], CANDIDATE_SET_SIZE)
+    for pair in rewrite_pairs:
+        variants = canonical_s7.build_query_variants(
+            retrieval_query,
+            [pair["transformed"]],
+            max_rewrites=1,
+            jaccard_min=REWRITE_JACCARD_MIN,
+        )
+        ranked, _ = rank_current_s7(
+            resources,
+            retrieval_query,
+            variants,
+            query_scope,
+            force_base_order=True,
+        )
+        candidate_rank = rank_of(gold_control, ranked, CANDIDATE_SET_SIZE)
         if candidate_rank and (best_rank is None or candidate_rank < best_rank):
             best_rank = candidate_rank
-            best_rewrite = rewrite
+            best_rewrite = pair
     return best_rewrite
 
 
@@ -499,14 +373,37 @@ def evaluate_row(
     query = str(row["question"])
     gold = normalize_control_id(row[gold_column])
     rewrites_s4 = get_rewrites(query, rewrite_frame, S4_MAX_REWRITES)
-    rewrites_s7 = rewrites_s4[:S7_MAX_REWRITES]
-    selected = select_gold_informed_rewrite(resources, query, gold, rewrites_s7)
+    plan = prepare_s7_plan(query, rewrite_frame)
+    selected = select_gold_informed_rewrite(
+        resources,
+        plan["retrieval_query"],
+        plan["query_scope"],
+        gold,
+        plan["accepted_rewrites"],
+    )
+    selected_raw = selected["raw"] if selected else ""
+    selected_transformed = selected["transformed"] if selected else ""
 
     s4_ranked = bm25_rrf(resources, [query] + rewrites_s4)
-    s4b_ranked = bm25_rrf(resources, [query] + ([selected] if selected else []))
-    prepared = prepare_hybrid(resources, [query] + rewrites_s7)
-    s7_ranked, s7_meta = rerank_prepared(resources, prepared, query)
-    s7a_ranked, s7a_meta = rerank_prepared(resources, prepared, selected or query)
+    s4b_ranked = bm25_rrf(resources, [query] + ([selected_raw] if selected else []))
+    s7_ranked, s7_meta = rank_current_s7(
+        resources,
+        plan["retrieval_query"],
+        plan["variants"],
+        plan["query_scope"],
+    )
+    s7a_ranked, s7a_meta = rank_current_s7(
+        resources,
+        plan["retrieval_query"],
+        plan["variants"],
+        plan["query_scope"],
+        rerank_query=selected_transformed or plan["retrieval_query"],
+    )
+
+    common_s7_meta = {
+        "retrieval_query": plan["retrieval_query"],
+        "query_scope": plan["query_scope"],
+    }
 
     systems = [
         ("S4", s4_ranked, {"sys": "S4", "n_vars": 1 + len(rewrites_s4)}),
@@ -515,11 +412,16 @@ def evaluate_row(
             s4b_ranked,
             {"sys": "S4b", "n_vars": 2 if selected else 1, "gold_informed_rewrite_used": bool(selected)},
         ),
-        ("S7", s7_ranked, {**s7_meta, "sys": "S7"}),
+        ("S7", s7_ranked, {**s7_meta, **common_s7_meta, "sys": "S7"}),
         (
             "S7a",
             s7a_ranked,
-            {**s7a_meta, "sys": "S7a", "gold_informed_rewrite_used": bool(selected)},
+            {
+                **s7a_meta,
+                **common_s7_meta,
+                "sys": "S7a",
+                "gold_informed_rewrite_used": bool(selected),
+            },
         ),
     ]
     results = []
@@ -541,7 +443,8 @@ def evaluate_row(
                 "ndcg@10": 1.0 / math.log2(rank + 1) if rank else 0.0,
                 "top_1_hit": top[0] if top else "",
                 "retrieved_control_ids": json.dumps(top),
-                "selected_rewrite": selected or "",
+                "selected_rewrite": selected_raw,
+                "selected_retrieval_rewrite": selected_transformed,
                 "system_meta": json.dumps(metadata, sort_keys=True),
             }
         )
@@ -617,6 +520,10 @@ def run_revision(repo_root: Path, revision: str, parts_root: Path) -> None:
         "python": sys.version,
         "platform": platform.platform(),
         "packages": package_versions(),
+        "canonical_retriever": {
+            "path": "src/compliancegpt/retriever/retriever_s7.py",
+            "sha256": sha256_file(repo_root / "src/compliancegpt/retriever/retriever_s7.py"),
+        },
         "models": {
             "dense": {"id": DENSE_MODEL_ID, "revision": model_revision(DENSE_MODEL_ID)},
             "reranker": {"id": RERANKER_MODEL_ID, "revision": model_revision(RERANKER_MODEL_ID)},
@@ -633,6 +540,10 @@ def run_revision(repo_root: Path, revision: str, parts_root: Path) -> None:
             "rewrite_jaccard_min": REWRITE_JACCARD_MIN,
             "s4_max_rewrites": S4_MAX_REWRITES,
             "s7_max_rewrites": S7_MAX_REWRITES,
+            "strip_meta_instructions_for_retrieval": True,
+            "expand_scope_terms_for_retrieval": True,
+            "scope_match_bias_ratio": SCOPE_MATCH_BIAS_RATIO,
+            "scope_mismatch_penalty_ratio": SCOPE_MISMATCH_PENALTY_RATIO,
             "rerank_alpha": RERANK_ALPHA,
             "rerank_apply_min_margin_ratio": RERANK_APPLY_MIN_MARGIN_RATIO,
             "rerank_skip_min_base_margin_ratio": RERANK_SKIP_MIN_BASE_MARGIN_RATIO,
