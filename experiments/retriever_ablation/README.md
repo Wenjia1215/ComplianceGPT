@@ -2,7 +2,17 @@
 
 This directory contains the frozen retrieval ablation study for ComplianceGPT. The active dissertation evaluation compares seven retrieval systems (S1–S7) on NIST SP 800-53 Rev.5 and Rev.4 using gold-standard QA sets, ODP subsets, and the diagnostic ErrorBank.
 
-The goal is to measure retrieval reliability using Recall@K, MRR@10, and nDCG@10, and to justify S7 as the final ComplianceGPT retriever design used by the answerer pipeline.
+The goal is to measure retrieval reliability using Recall@K, MRR@10, and nDCG@10, and to evaluate the frozen S7 design that informed the ComplianceGPT retriever.
+
+## Implementation boundary
+
+The notebook-local S7 that produced the stored RQ1 outputs is not byte
+equivalent to the current revision-specific runtime in
+`src/compliancegpt/retriever/retriever_s7.py`.  The current source also applies
+retrieval-query transformation, privilege-scope score adjustment, and a lower
+rerank adoption margin under low base confidence.  The primary ablation
+results remain frozen.  The matched current-source rerun and its gold-informed
+S4b/S7a diagnostics are isolated under `experiments/micro_ablations/`.
 
 ---
 
@@ -40,7 +50,7 @@ Query rewrite sets used by S3, S4, and S7:
 | S4 | QUR-RRF | BM25 over original query plus rewrites, fused with RRF |
 | S5 | Hybrid RRF | Fuse BM25 and dense retrieval using RRF |
 | S6 | Hybrid + Rerank | Rerank S5 candidates using a cross-encoder |
-| S7 | ComplianceGPT Retriever | Filtered rewrites plus hybrid ranking stack plus safe reranking and clause extraction |
+| S7 | Frozen guarded retriever | Filtered rewrites plus hybrid ranking, fixed guard logic, and clause extraction |
 
 ---
 
