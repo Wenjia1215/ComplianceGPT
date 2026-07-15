@@ -135,33 +135,22 @@ class ClauseDenseControlAdapter:
         self,
         dense_index: DenseIndex,
         clause_to_control: dict[str, str],
-        clause_text: dict[str, str],
     ):
         self.index = dense_index
         self.clause_to_control = clause_to_control
-        self.clause_text = clause_text
-        self.cache: dict[tuple[str, int], tuple[list[tuple[str, float]], dict[str, str]]] = {}
+        self.cache: dict[tuple[str, int], list[tuple[str, float]]] = {}
 
     def search(self, query: str, top_k: int = CANDIDATE_SET_SIZE) -> list[tuple[str, float]]:
         key = (query, int(top_k))
         if key not in self.cache:
             best_scores: dict[str, float] = {}
-            best_clauses: dict[str, str] = {}
             for clause_id, score in self.index.search(query, top_k=int(top_k) * 5):
                 control = normalize_control_id(self.clause_to_control.get(clause_id, ""))
                 if control and score > best_scores.get(control, -1.0):
                     best_scores[control] = score
-                    best_clauses[control] = clause_id
             ranked = sorted(best_scores.items(), key=lambda item: item[1], reverse=True)[: int(top_k)]
-            self.cache[key] = (ranked, best_clauses)
-        return list(self.cache[key][0])
-
-    def best_clause_text(self, query: str, control_id: str, top_k: int = CANDIDATE_SET_SIZE) -> str:
-        key = (query, int(top_k))
-        if key not in self.cache:
-            self.search(query, top_k=top_k)
-        clause_id = self.cache[key][1].get(normalize_control_id(control_id), "")
-        return self.clause_text.get(clause_id, "")
+            self.cache[key] = ranked
+        return list(self.cache[key])
 
 
 @dataclass
@@ -184,17 +173,15 @@ def build_resources(catalog_path: Path) -> RetrievalResources:
     clause_ids: list[str] = []
     dense_texts: list[str] = []
     clause_to_control: dict[str, str] = {}
-    clause_text: dict[str, str] = {}
     for record in records:
         packed = f"{record['control_id']} {record['title']} ({record['kind']})\n{record['text']}"
         clause_ids.append(record["id"])
         dense_texts.append(f"passage: {packed}")
         clause_to_control[record["id"]] = record["control_id"]
-        clause_text[record["id"]] = packed
 
     dense_index = DenseIndex(DENSE_MODEL_ID)
     dense_index.build(dense_texts, clause_ids)
-    dense = ClauseDenseControlAdapter(dense_index, clause_to_control, clause_text)
+    dense = ClauseDenseControlAdapter(dense_index, clause_to_control)
     device = "cuda" if torch.cuda.is_available() else "cpu"
     reranker = CrossEncoder(RERANKER_MODEL_ID, device=device)
     fallback_text = canonical_s7.build_control_fallback_text_map(records)
