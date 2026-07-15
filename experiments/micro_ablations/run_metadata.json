@@ -1,0 +1,151 @@
+{
+  "study": "matched gold-informed rewrite diagnostic",
+  "warning": "S4b and S7a use gold labels for rewrite selection and are not deployable systems.",
+  "execution": {
+    "workflow": ".github/workflows/run-matched-micro-ablations.yml",
+    "github_actions_run_id": 29434558254,
+    "action_commit": "a1c214e1477337fa7ae093d25bf8eb2c17555c89",
+    "runner_image": "ubuntu-24.04 (20260714.240)",
+    "compute_device": "cpu",
+    "jobs": {
+      "rev4": 87417792293,
+      "rev5": 87417792224,
+      "validation_and_packaging": 87447118976
+    },
+    "artifacts": {
+      "micro-parts-rev4": {
+        "id": 8352490861,
+        "digest": "sha256:de5d4497ba655293f1f9d5da82f9c5dfdcc678332c4c0d11ca0a745f2737ffcb"
+      },
+      "micro-parts-rev5": {
+        "id": 8354284612,
+        "digest": "sha256:29d6e5171f00bd6ba300207e9fee632028c04f64de6cc641e50ddfd5ebc70753"
+      },
+      "matched-micro-results": {
+        "id": 8354304362,
+        "digest": "sha256:d379d725c93e15c3e29382f327604a86a2c9ae6ec50c3037726d59412e41521a"
+      }
+    }
+  },
+  "runner": {
+    "path": "experiments/micro_ablations/run_micro_ablations.py",
+    "executed_git_blob": "dec60206c337ab09399c66b3a889cf8719197966",
+    "current_git_blob": "2b7c5c68e19d7c9d7bd0d332a88c4dc1827c5575",
+    "current_sha256": "a7ea1e64b365dc618cf8931aac4794b10149362580651e9b85fdfa646aca2d26"
+  },
+  "packaging": {
+    "postprocessing": "The final per-query files remove only the redundant verbose candidate-debug arrays from system_meta. Ranked controls, selected rewrites, gate decisions, margins, identifiers, and metrics are unchanged from the GitHub Actions artifact.",
+    "paired_diagnostics": "paired_diagnostics.csv and the output hashes were generated from the unchanged rankings and metrics with the current aggregation runner."
+  },
+  "runs": [
+    {
+      "revision": "rev4",
+      "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+      "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+      "packages": {
+        "numpy": "1.26.4",
+        "pandas": "2.2.3",
+        "torch": "2.4.1",
+        "sentence-transformers": "3.1.1",
+        "transformers": "4.57.6",
+        "huggingface-hub": "0.36.2"
+      },
+      "canonical_retriever": {
+        "path": "src/compliancegpt/retriever/retriever_s7.py",
+        "sha256": "98abe0c6ef21d4328de5e3a3cf83e6a7750f1c7da2c3ae17dd283be1dd2e988c"
+      },
+      "models": {
+        "dense": {
+          "id": "intfloat/e5-small-v2",
+          "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+        },
+        "reranker": {
+          "id": "BAAI/bge-reranker-base",
+          "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+        }
+      },
+      "inputs": {
+        "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+        "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+        "data/error_bank/error_bank_v1.csv": "61f871db3a1611a62a5895c69d78bf38ae58b71bfed6b10cdaa519db19ee894a",
+        "data/qur_outputs/qur_rewrites_rev4.csv": "13c7657154dbc5ee307ed8c674c7e6e30558faa3fa3990ec851a8bcb0ce105e7",
+        "data/qur_outputs/qur_rewrites_error_bank.csv": "866eb98c761358bf916cd5477571c9cc8cf30df53ba3360d026c06f4a45a8de4"
+      },
+      "configuration": {
+        "top_n": 10,
+        "candidate_set_size": 50,
+        "rrf_k": 60,
+        "rewrite_weight": 0.25,
+        "rewrite_jaccard_min": 0.15,
+        "s4_max_rewrites": 5,
+        "s7_max_rewrites": 3,
+        "strip_meta_instructions_for_retrieval": true,
+        "expand_scope_terms_for_retrieval": true,
+        "scope_match_bias_ratio": 0.08,
+        "scope_mismatch_penalty_ratio": 0.06,
+        "rerank_alpha": 0.65,
+        "rerank_apply_min_margin_ratio": 0.15,
+        "rerank_skip_min_base_margin_ratio": 0.1
+      }
+    },
+    {
+      "revision": "rev5",
+      "python": "3.11.15 (main, Jun 16 2026, 21:41:52) [GCC 13.3.0]",
+      "platform": "Linux-6.17.0-1020-azure-x86_64-with-glibc2.39",
+      "packages": {
+        "numpy": "1.26.4",
+        "pandas": "2.2.3",
+        "torch": "2.4.1",
+        "sentence-transformers": "3.1.1",
+        "transformers": "4.57.6",
+        "huggingface-hub": "0.36.2"
+      },
+      "canonical_retriever": {
+        "path": "src/compliancegpt/retriever/retriever_s7.py",
+        "sha256": "98abe0c6ef21d4328de5e3a3cf83e6a7750f1c7da2c3ae17dd283be1dd2e988c"
+      },
+      "models": {
+        "dense": {
+          "id": "intfloat/e5-small-v2",
+          "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+        },
+        "reranker": {
+          "id": "BAAI/bge-reranker-base",
+          "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+        }
+      },
+      "inputs": {
+        "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+        "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+        "data/error_bank/error_bank_v1.csv": "61f871db3a1611a62a5895c69d78bf38ae58b71bfed6b10cdaa519db19ee894a",
+        "data/qur_outputs/qur_rewrites_rev5.csv": "ae20478163cbae94e5ccba5b27d401a707fe0c5bb4dd46e31061aa11191ddd82",
+        "data/qur_outputs/qur_rewrites_error_bank.csv": "866eb98c761358bf916cd5477571c9cc8cf30df53ba3360d026c06f4a45a8de4"
+      },
+      "configuration": {
+        "top_n": 10,
+        "candidate_set_size": 50,
+        "rrf_k": 60,
+        "rewrite_weight": 0.25,
+        "rewrite_jaccard_min": 0.15,
+        "s4_max_rewrites": 5,
+        "s7_max_rewrites": 3,
+        "strip_meta_instructions_for_retrieval": true,
+        "expand_scope_terms_for_retrieval": true,
+        "scope_match_bias_ratio": 0.08,
+        "scope_mismatch_penalty_ratio": 0.06,
+        "rerank_alpha": 0.65,
+        "rerank_apply_min_margin_ratio": 0.15,
+        "rerank_skip_min_base_margin_ratio": 0.1
+      }
+    }
+  ],
+  "output_sha256": {
+    "S4_matched_ALL.csv": "940786f2991943f236c00d4c78d7a88524b38481a59582b63ddcec35ddb775f5",
+    "S4b_rrf_best_ALL.csv": "60d4af28fea8364063322ade721e4c12049c53624b321f34e25463ffc0921e1c",
+    "S7_matched_ALL.csv": "51dc7f85a0b47bf66008004a2dd6a7c4720a2b67e4ef5973fb3ab94067fddbdc",
+    "S7a_rerank_best_ALL.csv": "d83b13b717976d80437f42faeb616d8e82c9ddce81c8d7312fe8db7d635d1e84",
+    "micro_ablation_summary.csv": "5f979c4a1dc6a1e2b94f7000f8ad79f5a114f6952516fd88ebe176d04df66d9c",
+    "paired_diagnostics.csv": "ff99e879d817b3bf2955047765072d92ad46115851e4df38e481f65d9601a573",
+    "baseline_validation.csv": "843800617935b7fb0b9a8eb801305302cad874ecd7b018aa6e9d9104d310771a"
+  }
+}

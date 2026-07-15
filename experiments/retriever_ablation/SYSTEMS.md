@@ -17,7 +17,10 @@ Compliance QA retrieval fails for predictable reasons:
 - **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding. ODP-sensitive retrieval is evaluated through questions whose governing clauses contain unresolved parameter placeholders. The frozen S1–S7 retrieval corpus does not treat standalone ODP/PRM records as ordinary cited evidence candidates.
 - **Ranking instability:** rerankers may promote plausible but wrong controls.
 
-The systems below form a controlled ladder from basic to advanced, so each system isolates one additional capability.
+The systems form a controlled comparison rather than a strictly cumulative
+sequence. S3 and S4 make up the rewrite branch, S5 and S6 make up the hybrid
+and reranking branch, and S7 combines the relevant mechanisms with guard
+logic.
 
 ---
 
@@ -166,11 +169,20 @@ The systems below form a controlled ladder from basic to advanced, so each syste
 
 ---
 
-## S7 — ComplianceGPT Retriever
+## S7 — Frozen Guarded Retriever
+
+This section describes the notebook-local implementation that produced the
+stored RQ1 rows.  The current revision-specific runtime is tracked separately
+because it also transforms retrieval queries, applies privilege-scope score
+adjustments, and relaxes the adoption margin under low base confidence.  The
+matched current-source study is documented in `experiments/micro_ablations/`.
+Stored answerer traces preserve an intermediate recorded state with raw query
+variants and the relaxed margin; those traces are not relabeled as current
+source results.
 
 **Why we build it**
 
-S7 is the final reliability-focused retriever used by ComplianceGPT. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
+S7 is the reliability-focused design evaluated in the frozen ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
 
 **How it works**
 
@@ -190,29 +202,35 @@ S7 is the final reliability-focused retriever used by ComplianceGPT. It integrat
   - if reranking changes top-1 but the rerank margin is too weak, revert to the base order.
 - Audit fields, when available, include `reranker_called`, `rerank_applied`, `skip_reason`, `base_margin_ratio`, `rerank_margin_ratio`, and `final_margin_ratio`.
 
-**Benchmark variants used in the performance benchmark**
+**Related variants used in the separate performance benchmark**
 
-- `S7_gated`: production S7 with skip gate enabled.
+- `S7_gated`: benchmark configuration with the skip gate enabled.
 - `S7_worst_always_rerank`: same ranking/rerank pipeline but skip gate disabled.
 
 **What it tests**
 
 - The full ComplianceGPT retrieval hypothesis: multi-stage retrieval with safety constraints reduces compliance retrieval failure modes.
 
-**Expected behavior**
+**Evaluated behavior**
 
-- Best overall robustness in the active ablation ladder.
-- Strong performance on ErrorBank and ODP queries.
+- Strongest governing-control ranking on both main frozen gold sets.
+- Strong diagnostic performance, although S2 and S6 lead several early-rank
+  measures on the small Rev4 ErrorBank subset.
 
 ---
 
 ## Interpreting the Ablation
 
-This ablation supports three conclusions:
+This ablation supports three bounded conclusions:
 
-1. **Hybrid retrieval is a strong foundation.** BM25 and dense retrieval complement each other.
-2. **Reranking must be constrained.** Unconstrained reranking can cause rank reversal, while safe blending and no-harm gating improve reliability.
-3. **S7 is the frozen ComplianceGPT retriever.** The final retriever combines controlled rewrites, hybrid retrieval, constrained reranking, and clause extraction.
+1. **The hybrid path is competitive but not uniformly dominant.** S5 is strong
+   on several datasets, while dense S2 leads several Rev4 measures.
+2. **Reranking has mixed effects.** S6 improves some hard cases and worsens
+   others; the ladder does not isolate the guard as the sole cause of S7's
+   result.
+3. **Frozen S7 is strongest on the two main gold sets as configured.** The
+   current runtime remains a separate implementation state with additional
+   query-planning and scope logic.
 
 ---
 

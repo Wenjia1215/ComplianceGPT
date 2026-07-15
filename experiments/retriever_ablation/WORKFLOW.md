@@ -78,17 +78,20 @@ experiments/retriever_ablation/ablation_outputs/
 
 ## 5. Performance Benchmark: Latency and Gate Audit
 
-**Action:** Run the performance benchmark notebook that imports the production S7 retriever:
+**Action:** Run the performance benchmark notebook that imports the checked S7 retriever source:
 
 ```text
 src/compliancegpt/retriever/retriever_s7.py
 ```
 
-**Purpose:** Quantify latency and confirm that the pre-rerank skip gate reduces reranker calls while preserving retrieval quality.
+**Purpose:** Measure retrieval-only latency and reranker-call behavior for one
+diagnostic workload. The stored benchmark uses a 0.01 skip margin, while the
+frozen RQ1 notebook and current checked source use 0.10; its latency is not an
+exact measurement of either reported S7 state.
 
 **Systems of interest:**
 
-- `S7_gated`: production S7 with skip gate enabled.
+- `S7_gated`: benchmark configuration with the skip gate enabled.
 - `S7_worst_always_rerank`: same ranking/rerank pipeline but skip gate disabled.
 
 **Output:** Benchmark CSV/MD artifacts, including latency tables, per-run data, and reranker audit fields such as `reranker_called` and `rerank_applied`.
@@ -99,9 +102,13 @@ src/compliancegpt/retriever/retriever_s7.py
 
 **Action:** Run:
 
-```text
-experiments/retriever_ablation/error_analysis/error_mode_analyze.ipynb
+```bash
+python experiments/retriever_ablation/error_analysis/run_error_mode_analysis.py
 ```
+
+The script joins ErrorBank labels to frozen retrieval rows by
+`(version, question_id)` and validates the question and gold control before
+writing the category reports.
 
 **Input:**
 

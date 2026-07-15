@@ -1,8 +1,13 @@
 ---
 
-#Retriever Performance Benchmark (S1–S7)
+# Retriever Performance Benchmark (S1–S7)
 
 This artifact benchmarks the **retrieval-only engineering cost (latency)** for the S1–S7 retriever systems using the clause-level **NIST SP 800-53 CCS** and pre-generated **QUR rewrites**.
+
+The stored `S7_gated` configuration uses a 0.01 rerank-skip margin. The frozen
+RQ1 notebook and current checked S7 source use 0.10. These measurements are
+therefore a diagnostic gate workload, not the exact latency of either reported
+S7 implementation state.
 
 ---
 

@@ -1,6 +1,6 @@
 # Ablation Study Results (S1–S7)
 
-This document reports the retrieval performance of seven retrieval systems (S1–S7) used in the ComplianceGPT pipeline.
+This document reports the frozen retrieval performance of seven systems (S1–S7). The S7 rows belong to the notebook-local implementation preserved with these outputs; current-source results are reported separately under `experiments/micro_ablations/`.
 
 We evaluate on four query sets:
 
@@ -15,9 +15,11 @@ Each benchmark also includes an **ODP Subset** (queries involving organization-d
 
 ## Metric Definitions
 
-We report standard retrieval metrics:
+The evaluator uses one normalized gold control per question. It reports:
 
-- **Recall@K**: % queries whose gold control ID is found in the top K retrieved results  
+- **Recall@K**: historical field name for the proportion of queries whose one
+  gold control ID is found in the top K retrieved results; this is a query hit
+  rate, not set recall over all required clauses  
 - **MRR@10**: Mean Reciprocal Rank within top 10  
 - **nDCG@10**: Normalized Discounted Cumulative Gain at 10  
 
@@ -44,10 +46,10 @@ We report standard retrieval metrics:
 
 ## Executive Summary (Main Takeaways)
 
-1. **S7 leads the active ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
-2. **Hybrid retrieval (S5) is a strong baseline** and improves over BM25-only or Dense-only, showing retrieval complementarity.  
+1. **Frozen S7 leads the ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
+2. **Hybrid retrieval (S5) is competitive but not uniformly stronger than both single-channel baselines.** Dense S2 is stronger on several Rev4 measures.  
 3. **Reranking (S6) is mixed**: it can help significantly on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Recall@1 versus pure hybrid on easier sets.  
-4. **ErrorBank is the best diagnostic**: improvements there matter more than small changes on the relatively easy gold sets.
+4. **ErrorBank is a targeted diagnostic derived from BM25 failures.** It helps localize difficult cases but does not estimate failure prevalence or population performance.
 
 ---
 
@@ -165,9 +167,13 @@ We report standard retrieval metrics:
 
 ## Notes
 
-- ErrorBank results matter the most for diagnosing real failure cases, since the gold sets are relatively easy.
-- Improvements on Recall@1 in ErrorBank are strong evidence that the pipeline mitigates retrieval mismatch failure modes.
-- ODP subsets confirm that the pipeline improves parameter-heavy compliance queries rather than only “easy” lexical matches.
+- ErrorBank results support failure analysis within a selected set of known hard
+  cases; they do not support population-level inference.
+- Early-rank changes in ErrorBank are descriptive evidence about those cases,
+  not proof that a retrieval design generally eliminates a failure mode.
+- ODP-subset metrics measure governing-control rank for questions whose gold
+  material contains ODPs. They do not measure exact parameter recovery or ODP
+  policy correctness.
 
 ---
 

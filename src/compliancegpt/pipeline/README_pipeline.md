@@ -33,7 +33,8 @@ This folder is the place to:
 - run full Rev5 and Rev4 batch evaluations,
 - save pipeline outputs and evaluation reports.
 
-This folder is **not** the place for retriever ablation experiments or micro-ablation notebooks. Those live under `experiments/`.
+This folder is **not** the place for retriever ablation experiments or matched
+retrieval diagnostics. Those live under `experiments/`.
 
 ---
 
@@ -577,7 +578,9 @@ This pipeline folder should be distinguished from the following experiment areas
 This contains retriever-only system comparisons such as S1–S7, error analysis, benchmark notebooks, and retriever result reports.
 
 ### `experiments/micro_ablations/`
-This contains targeted micro-ablation notebooks such as S4b vs. S7a comparisons.
+This contains the matched S4/S4b and S7/S7a rewrite diagnostic. The standalone
+runner is authoritative; the notebook is retained only as an exploratory
+interface.
 
 ### `experiments/pipeline_runs/`
 This contains official pipeline run outputs and evaluation reports.
@@ -585,6 +588,8 @@ This contains official pipeline run outputs and evaluation reports.
 Practical rule:
 - if you are running the end-to-end answerer, use `pipeline/`
 - if you are studying retriever variants, use `experiments/retriever_ablation/`
+- if you are reproducing the matched rewrite diagnostic, use the standalone
+  runner in `experiments/micro_ablations/`
 - if you are inspecting saved pipeline artifacts, use `experiments/pipeline_runs/`
 
 ---

@@ -9,7 +9,7 @@ This document explains *how each query was labeled* into one of three failure ca
 ### Current Error Bank Snapshot
 
 - rows: 37 (rev5: 24 / rev4: 13)
-- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 17, 'Semantic Gap': 2}
+- failure_category_counts: {'Terminology Mismatch': 22, 'Generic Phrasing': 13, 'Semantic Gap': 2}
 
 ## Decision Procedure (per query)
 
