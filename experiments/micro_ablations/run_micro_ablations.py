@@ -580,7 +580,11 @@ def model_revision(model_id: str) -> str:
 
 def run_revision(repo_root: Path, revision: str, parts_root: Path) -> None:
     catalog = repo_root / f"data/ccs/nist800-53/NIST_SP-800-53_{revision}_catalog.jsonl"
-    gold_path = repo_root / f"data/gold_standard_datasets/nist800-53/nist_sp800-53_{revision}-gold-set_{'100q' if revision == 'rev5' else '36q'}.csv"
+    gold_filename = {
+        "rev5": "nist_sp800-53_rev5_gold-set_100q.csv",
+        "rev4": "nist_sp800-53_rev4_gold-set_36q.csv",
+    }[revision]
+    gold_path = repo_root / "data/gold_standard_datasets/nist800-53" / gold_filename
     error_path = repo_root / "data/error_bank/error_bank_v1.csv"
     gold_rewrites_path = repo_root / f"data/qur_outputs/qur_rewrites_{revision}.csv"
     error_rewrites_path = repo_root / "data/qur_outputs/qur_rewrites_error_bank.csv"
