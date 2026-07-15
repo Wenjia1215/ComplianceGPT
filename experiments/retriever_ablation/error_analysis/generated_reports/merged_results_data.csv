@@ -1,38 +1,38 @@
-question_id,question,S1_MRR,S2_MRR,S5_MRR,S6_MRR,S7_MRR,failure_category
-2,What must an organization enforce regarding logical access to its information and systems?,0.5000,1.0000,1.0000,0.5000,1.0000,UNLABELED
-4,How must a system be configured to handle consecutive invalid logon attempts?,0.5000,1.0000,0.5000,1.0000,1.0000,UNLABELED
-10,What method does AT-3(3) specify for reinforcing objectives in role-based security training?,0.5000,0.5000,1.0000,1.0000,1.0000,UNLABELED
-12,What information must each audit record contain to support after-the-fact investigation of security incidents?,0.3333,0.5000,0.5000,0.3333,0.5000,UNLABELED
-14,"What is the required process for reviewing system audit records, and what actions should be taken based on the findings?",0.5000,1.0000,1.0000,0.5000,1.0000,UNLABELED
-15,What are the requirements for generating and recording time stamps in audit records to ensure accuracy?,0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-16,"Describe the key steps of the formal control assessment process, from planning to reporting.",0.0000,1.0000,0.5000,1.0000,1.0000,UNLABELED
-23,What should be analyzed before implementing a system change?,0.0000,0.5000,0.0000,0.5000,0.1000,UNLABELED
-24,"How should configuration settings be established, approved, and monitored?",0.5000,0.2000,0.5000,0.5000,0.5000,UNLABELED
-25,"What are the requirements for developing, maintaining, and updating a system component inventory?",0.3333,1.0000,0.5000,1.0000,1.0000,UNLABELED
-26,"What are the key elements that must be included in a contingency plan, and how should it be reviewed, distributed, and updated?",0.5000,1.0000,0.5000,1.0000,1.0000,UNLABELED
-39,What information should organizations maintain and analyze when documenting and reviewing security incidents?,0.2500,1.0000,1.0000,0.2000,1.0000,UNLABELED
-44,What process should be established for authorizing maintenance personnel and ensuring appropriate escorting and access control during maintenance?,0.5000,1.0000,0.5000,1.0000,0.5000,UNLABELED
-56,What is the guidance of control PL-2?,0.1429,1.0000,1.0000,0.1429,1.0000,UNLABELED
-59,What should security and privacy architectures describe to ensure protection of information and integration with the enterprise architecture?,0.5000,0.5000,0.5000,0.2500,0.5000,UNLABELED
-65,"What are the key components of an organization's risk management strategy, and how should it be implemented and updated?",0.5000,1.0000,1.0000,0.1667,1.0000,UNLABELED
-67,When and how must individuals be screened before authorizing or maintaining access to organizational systems?,0.1250,1.0000,1.0000,1.0000,1.0000,UNLABELED
-68,What steps must be taken when an individual's employment or role is terminated?,0.3333,1.0000,1.0000,1.0000,0.5000,UNLABELED
-72,"What must organizations identify and document about the purposes and conditions for collecting, using, and sharing PII, and how should they handle changes to those purposes?",0.5000,0.2500,1.0000,1.0000,1.0000,UNLABELED
-76,"What steps are required to categorize a system and its information, and who must approve the decision?",0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-77,"How should organizations conduct and document risk assessments, and how often should the results be reviewed?",0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-87,What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?,0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-89,"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",0.5000,0.2500,0.5000,1.0000,0.5000,UNLABELED
-93,"How should systems be monitored to detect attacks, unauthorized connections, and anomalous activities, and how should such events be analyzed and reported?",0.3333,1.0000,1.0000,0.1000,1.0000,UNLABELED
-1,What does AC-2 require the organization to do when managing information system accounts?,0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-6,What audit record contents are the system required to generate?,0.3333,1.0000,1.0000,1.0000,1.0000,UNLABELED
-10,What are the requirements for establishing and documenting configuration settings?,0.5000,0.5000,1.0000,1.0000,1.0000,UNLABELED
-11,What does CP-2 require in developing a contingency plan for the information system?,0.2500,1.0000,1.0000,1.0000,1.0000,UNLABELED
-13,What identification and authentication requirement does IA-2 specify for organizational users?,0.3333,0.5000,0.5000,1.0000,0.5000,UNLABELED
-15,What incident handling capability does IR-4 require the organization to implement?,0.5000,1.0000,1.0000,1.0000,1.0000,UNLABELED
-21,What are the requirements for enforcing physical access authorizations at facility entry/exit points?,0.3333,1.0000,0.5000,0.5000,1.0000,UNLABELED
-22,What does PE-6 require regarding monitoring physical access to the facility?,0.5000,1.0000,0.5000,1.0000,0.5000,UNLABELED
-26,"What specific documentation artifacts must the organization employ to record information security resource requirements during capital planning, and how must exceptions to resource inclusion be handled?",0.5000,1.0000,0.5000,1.0000,1.0000,UNLABELED
-29,What does RA-2 require regarding categorizing the information system and its resident information?,0.0000,1.0000,0.2500,1.0000,1.0000,UNLABELED
-31,What does SA-3 require about managing the system?,0.0000,1.0000,0.1429,1.0000,1.0000,UNLABELED
-32,What does SA-4 require including in acquisition contracts for information systems?,0.0000,1.0000,0.2500,1.0000,1.0000,UNLABELED
-35,"What does SI-2 require for identifying, reporting, and correcting system flaws?",0.3333,1.0000,1.0000,1.0000,1.0000,UNLABELED
+failure_category,gold_control_id,question_id,question,version,S1_rank,S1_RR@10,S2_rank,S2_RR@10,S3_rank,S3_RR@10,S4_rank,S4_RR@10,S5_rank,S5_RR@10,S6_rank,S6_RR@10,S7_rank,S7_RR@10
+Generic Phrasing,AC-2,1,What does AC-2 require the organization to do when managing information system accounts?,rev4,2,0.500000,1,1.000000,1,1.000000,1,1.000000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,AU-3,6,What audit record contents are the system required to generate?,rev4,3,0.333333,1,1.000000,3,0.333333,2,0.500000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,CM-6,10,What are the requirements for establishing and documenting configuration settings?,rev4,2,0.500000,2,0.500000,3,0.333333,1,1.000000,1,1.000000,2,0.500000,1,1.000000
+Generic Phrasing,CP-2,11,What does CP-2 require in developing a contingency plan for the information system?,rev4,4,0.250000,1,1.000000,2,0.500000,2,0.500000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,IA-2,13,What identification and authentication requirement does IA-2 specify for organizational users?,rev4,3,0.333333,2,0.500000,2,0.500000,3,0.333333,2,0.500000,1,1.000000,2,0.500000
+Generic Phrasing,IR-4,15,What incident handling capability does IR-4 require the organization to implement?,rev4,4,0.250000,1,1.000000,3,0.333333,5,0.200000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,PE-3,21,What are the requirements for enforcing physical access authorizations at facility entry/exit points?,rev4,3,0.333333,1,1.000000,0,0.000000,3,0.333333,2,0.500000,2,0.500000,1,1.000000
+Generic Phrasing,PE-6,22,What does PE-6 require regarding monitoring physical access to the facility?,rev4,2,0.500000,1,1.000000,2,0.500000,2,0.500000,2,0.500000,1,1.000000,2,0.500000
+Terminology Mismatch,PM-3,26,"What specific documentation artifacts must the organization employ to record information security resource requirements during capital planning, and how must exceptions to resource inclusion be handled?",rev4,2,0.500000,1,1.000000,2,0.500000,2,0.500000,2,0.500000,1,1.000000,2,0.500000
+Generic Phrasing,RA-2,29,What does RA-2 require regarding categorizing the information system and its resident information?,rev4,0,0.000000,1,1.000000,0,0.000000,0,0.000000,4,0.250000,1,1.000000,1,1.000000
+Generic Phrasing,SA-3,31,What does SA-3 require about managing the system?,rev4,0,0.000000,1,1.000000,0,0.000000,0,0.000000,7,0.142857,1,1.000000,1,1.000000
+Generic Phrasing,SA-4,32,What does SA-4 require including in acquisition contracts for information systems?,rev4,0,0.000000,1,1.000000,3,0.333333,0,0.000000,4,0.250000,1,1.000000,1,1.000000
+Generic Phrasing,SI-2,35,"What does SI-2 require for identifying, reporting, and correcting system flaws?",rev4,3,0.333333,1,1.000000,4,0.250000,2,0.500000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,AC-3,2,What must an organization enforce regarding logical access to its information and systems?,rev5,2,0.500000,1,1.000000,2,0.500000,1,1.000000,1,1.000000,2,0.500000,1,1.000000
+Terminology Mismatch,AC-7,4,How must a system be configured to handle consecutive invalid logon attempts?,rev5,2,0.500000,1,1.000000,1,1.000000,1,1.000000,2,0.500000,1,1.000000,1,1.000000
+Terminology Mismatch,AT-3.3,10,What method does AT-3(3) specify for reinforcing objectives in role-based security training?,rev5,2,0.500000,2,0.500000,2,0.500000,2,0.500000,2,0.500000,1,1.000000,1,1.000000
+Terminology Mismatch,AU-3,12,What information must each audit record contain to support after-the-fact investigation of security incidents?,rev5,3,0.333333,2,0.500000,0,0.000000,3,0.333333,2,0.500000,3,0.333333,2,0.500000
+Terminology Mismatch,AU-6,14,"What is the required process for reviewing system audit records, and what actions should be taken based on the findings?",rev5,2,0.500000,1,1.000000,0,0.000000,3,0.333333,1,1.000000,2,0.500000,1,1.000000
+Terminology Mismatch,AU-8,15,What are the requirements for generating and recording time stamps in audit records to ensure accuracy?,rev5,2,0.500000,1,1.000000,0,0.000000,6,0.166667,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,CA-2,16,"Describe the key steps of the formal control assessment process, from planning to reporting.",rev5,0,0.000000,1,1.000000,1,1.000000,0,0.000000,2,0.500000,1,1.000000,1,1.000000
+Generic Phrasing,CM-4,23,What should be analyzed before implementing a system change?,rev5,0,0.000000,2,0.500000,0,0.000000,0,0.000000,0,0.000000,2,0.500000,10,0.100000
+Semantic Gap,CM-6,24,"How should configuration settings be established, approved, and monitored?",rev5,2,0.500000,5,0.200000,2,0.500000,1,1.000000,2,0.500000,2,0.500000,2,0.500000
+Terminology Mismatch,CM-8,25,"What are the requirements for developing, maintaining, and updating a system component inventory?",rev5,3,0.333333,1,1.000000,0,0.000000,3,0.333333,2,0.500000,1,1.000000,1,1.000000
+Terminology Mismatch,CP-2,26,"What are the key elements that must be included in a contingency plan, and how should it be reviewed, distributed, and updated?",rev5,3,0.333333,4,0.250000,1,1.000000,2,0.500000,2,0.500000,7,0.142857,1,1.000000
+Generic Phrasing,IR-5,39,What information should organizations maintain and analyze when documenting and reviewing security incidents?,rev5,4,0.250000,1,1.000000,3,0.333333,2,0.500000,1,1.000000,5,0.200000,1,1.000000
+Generic Phrasing,MA-5,44,What process should be established for authorizing maintenance personnel and ensuring appropriate escorting and access control during maintenance?,rev5,2,0.500000,1,1.000000,1,1.000000,2,0.500000,2,0.500000,1,1.000000,2,0.500000
+Generic Phrasing,PL-2,56,What is the guidance of control PL-2?,rev5,7,0.142857,1,1.000000,6,0.166667,4,0.250000,1,1.000000,7,0.142857,1,1.000000
+Generic Phrasing,PL-8,59,What should security and privacy architectures describe to ensure protection of information and integration with the enterprise architecture?,rev5,2,0.500000,2,0.500000,2,0.500000,2,0.500000,2,0.500000,4,0.250000,2,0.500000
+Terminology Mismatch,PM-9,65,"What are the key components of an organization's risk management strategy, and how should it be implemented and updated?",rev5,2,0.500000,1,1.000000,0,0.000000,4,0.250000,1,1.000000,6,0.166667,1,1.000000
+Terminology Mismatch,PS-3,67,When and how must individuals be screened before authorizing or maintaining access to organizational systems?,rev5,8,0.125000,1,1.000000,5,0.200000,1,1.000000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,PS-4,68,What steps must be taken when an individual's employment or role is terminated?,rev5,3,0.333333,1,1.000000,3,0.333333,2,0.500000,1,1.000000,1,1.000000,2,0.500000
+Terminology Mismatch,PT-3,72,"What must organizations identify and document about the purposes and conditions for collecting, using, and sharing PII, and how should they handle changes to those purposes?",rev5,2,0.500000,4,0.250000,2,0.500000,1,1.000000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,RA-2,76,"What steps are required to categorize a system and its information, and who must approve the decision?",rev5,2,0.500000,1,1.000000,0,0.000000,5,0.200000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,RA-3,77,"How should organizations conduct and document risk assessments, and how often should the results be reviewed?",rev5,2,0.500000,1,1.000000,10,0.100000,1,1.000000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,SC-8,87,What measures should be implemented to protect the confidentiality and integrity of transmitted information across internal and external networks?,rev5,2,0.500000,1,1.000000,1,1.000000,5,0.200000,1,1.000000,1,1.000000,1,1.000000
+Terminology Mismatch,SC-13,89,"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",rev5,2,0.500000,4,0.250000,0,0.000000,4,0.250000,2,0.500000,1,1.000000,2,0.500000
+Semantic Gap,SI-4,93,"How should systems be monitored to detect attacks, unauthorized connections, and anomalous activities, and how should such events be analyzed and reported?",rev5,3,0.333333,1,1.000000,6,0.166667,1,1.000000,1,1.000000,10,0.100000,1,1.000000
