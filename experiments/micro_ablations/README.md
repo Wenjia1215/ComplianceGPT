@@ -73,6 +73,7 @@ jobs, aggregates the artifacts, and validates row counts and identifiers.
 - `S7_matched_ALL.csv`
 - `S7a_rerank_best_ALL.csv`
 - `micro_ablation_summary.csv`
+- `paired_diagnostics.csv`
 - `baseline_validation.csv`
 - `run_metadata.json`
 
