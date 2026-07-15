@@ -173,6 +173,9 @@ stored RQ1 rows.  The current revision-specific runtime is tracked separately
 because it also transforms retrieval queries, applies privilege-scope score
 adjustments, and relaxes the adoption margin under low base confidence.  The
 matched current-source study is documented in `experiments/micro_ablations/`.
+Stored answerer traces preserve an intermediate recorded state with raw query
+variants and the relaxed margin; those traces are not relabeled as current
+source results.
 
 **Why we build it**
 
