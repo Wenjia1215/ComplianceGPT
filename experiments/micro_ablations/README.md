@@ -77,6 +77,25 @@ jobs, aggregates the artifacts, and validates row counts and identifiers.
 - `baseline_validation.csv`
 - `run_metadata.json`
 
+## Validated findings
+
+GitHub Actions run `29434558254` completed the Rev. 4 and Rev. 5 jobs and a
+separate aggregation check.  Each system has 173 rows: 100 Rev. 5 gold, 36
+Rev. 4 gold, 24 Rev. 5 ErrorBank, and 13 Rev. 4 ErrorBank rows.
+
+| Dataset | S4 MRR@10 | S4b MRR@10 | S7 MRR@10 | S7a MRR@10 |
+|---|---:|---:|---:|---:|
+| Rev. 5 gold | 0.8509 | 0.8110 | 0.9400 | 0.9450 |
+| Rev. 4 gold | 0.7880 | 0.7688 | 0.9583 | 0.9583 |
+| Rev. 5 ErrorBank | 0.4504 | 0.4125 | 0.7813 | 0.8194 |
+| Rev. 4 ErrorBank | 0.4615 | 0.3974 | 0.9231 | 0.8205 |
+
+S4b lowers MRR@10 on all four datasets.  S7a gives small gains on the two
+Rev. 5 datasets, ties S7 on the Rev. 4 gold set, and is worse on the Rev. 4
+ErrorBank set.  Gold-informed rewrite selection therefore does not provide a
+uniform benefit.  `paired_diagnostics.csv` records improve/tie/worsen counts
+and exact metric differences for every matched contrast.
+
 `baseline_validation.csv` compares the newly matched S4 and canonical S7 rows
 with the frozen main-ablation rows.  This comparison makes source evolution
 visible.  Dissertation contrasts between a baseline and its diagnostic
