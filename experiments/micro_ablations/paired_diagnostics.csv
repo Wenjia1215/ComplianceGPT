@@ -1,0 +1,9 @@
+comparison,dataset,N,improved_questions,tied_questions,worsened_questions,delta_Recall_at_1,delta_MRR_at_10,delta_nDCG_at_10
+S4b-S4,error_bank_rev4,13,0,11,2,-0.076923,-0.064103,-0.048533
+S4b-S4,rev4_gold,36,0,31,5,0.000000,-0.019180,-0.015540
+S4b-S4,error_bank_rev5,24,4,14,6,-0.083333,-0.037897,-0.027678
+S4b-S4,rev5_gold,100,7,78,15,-0.080000,-0.039921,-0.029431
+S7a-S7,error_bank_rev4,13,0,11,2,-0.153846,-0.102564,-0.076923
+S7a-S7,rev4_gold,36,0,36,0,0.000000,0.000000,0.000000
+S7a-S7,error_bank_rev5,24,2,22,0,0.041667,0.038194,0.029177
+S7a-S7,rev5_gold,100,2,97,1,0.020000,0.005000,0.001072
