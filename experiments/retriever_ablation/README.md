@@ -13,6 +13,9 @@ retrieval-query transformation, privilege-scope score adjustment, and a lower
 rerank adoption margin under low base confidence.  The primary ablation
 results remain frozen.  The matched current-source rerun and its gold-informed
 S4b/S7a diagnostics are isolated under `experiments/micro_ablations/`.
+Stored answerer contract traces represent a separate recorded state: they show
+raw query variants and the lower effective margin, but do not record the
+current query-transformation or scope-adjustment fields.
 
 ---
 
