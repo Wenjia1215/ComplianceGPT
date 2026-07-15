@@ -1,6 +1,6 @@
 # Ablation Study Results (S1–S7)
 
-This document reports the retrieval performance of seven retrieval systems (S1–S7) used in the ComplianceGPT pipeline.
+This document reports the frozen retrieval performance of seven systems (S1–S7). The S7 rows belong to the notebook-local implementation preserved with these outputs; current-source results are reported separately under `experiments/micro_ablations/`.
 
 We evaluate on four query sets:
 
@@ -44,7 +44,7 @@ We report standard retrieval metrics:
 
 ## Executive Summary (Main Takeaways)
 
-1. **S7 leads the active ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
+1. **Frozen S7 leads the ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
 2. **Hybrid retrieval (S5) is a strong baseline** and improves over BM25-only or Dense-only, showing retrieval complementarity.  
 3. **Reranking (S6) is mixed**: it can help significantly on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Recall@1 versus pure hybrid on easier sets.  
 4. **ErrorBank is the best diagnostic**: improvements there matter more than small changes on the relatively easy gold sets.
