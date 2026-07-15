@@ -34,7 +34,7 @@ This set enables:
 
 ```
 - rows: 37
-- failure_category_counts: {'Generic Phrasing': 18, 'Terminology Mismatch': 17, 'Semantic Gap': 2}
+- failure_category_counts: {'Terminology Mismatch': 22, 'Generic Phrasing': 13, 'Semantic Gap': 2}
 ```
 
 ## Column Schema (current)
