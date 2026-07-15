@@ -166,11 +166,17 @@ The systems below form a controlled ladder from basic to advanced, so each syste
 
 ---
 
-## S7 — ComplianceGPT Retriever
+## S7 — Frozen Guarded Retriever
+
+This section describes the notebook-local implementation that produced the
+stored RQ1 rows.  The current revision-specific runtime is tracked separately
+because it also transforms retrieval queries, applies privilege-scope score
+adjustments, and relaxes the adoption margin under low base confidence.  The
+matched current-source study is documented in `experiments/micro_ablations/`.
 
 **Why we build it**
 
-S7 is the final reliability-focused retriever used by ComplianceGPT. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
+S7 is the reliability-focused design evaluated in the frozen ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
 
 **How it works**
 
@@ -190,7 +196,7 @@ S7 is the final reliability-focused retriever used by ComplianceGPT. It integrat
   - if reranking changes top-1 but the rerank margin is too weak, revert to the base order.
 - Audit fields, when available, include `reranker_called`, `rerank_applied`, `skip_reason`, `base_margin_ratio`, `rerank_margin_ratio`, and `final_margin_ratio`.
 
-**Benchmark variants used in the performance benchmark**
+**Related variants used in the separate performance benchmark**
 
 - `S7_gated`: production S7 with skip gate enabled.
 - `S7_worst_always_rerank`: same ranking/rerank pipeline but skip gate disabled.
@@ -212,7 +218,7 @@ This ablation supports three conclusions:
 
 1. **Hybrid retrieval is a strong foundation.** BM25 and dense retrieval complement each other.
 2. **Reranking must be constrained.** Unconstrained reranking can cause rank reversal, while safe blending and no-harm gating improve reliability.
-3. **S7 is the frozen ComplianceGPT retriever.** The final retriever combines controlled rewrites, hybrid retrieval, constrained reranking, and clause extraction.
+3. **Frozen S7 establishes the guarded design.** The current runtime preserves that design family while adding separately recorded query-planning and scope logic.
 
 ---
 
