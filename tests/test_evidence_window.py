@@ -6,6 +6,11 @@ from compliancegpt.pipeline.evidence_window import (
     evidence_window_manifest,
     select_allowed_controls,
 )
+from compliancegpt.pipeline.pipeline import (
+    _extract_control_hints,
+    _query_allows_enhancements,
+)
+from generative_answerer.pipeline import _ordered_unique_citation_ids
 
 
 def normalize_control(value):
@@ -83,6 +88,20 @@ class EvidenceWindowTests(unittest.TestCase):
         changed[0]["text"] = "changed"
         with self.assertRaises(AssertionError):
             assert_same_evidence_window(original, evidence_window_manifest(changed))
+
+
+class MatchedAnswerPathRegressionTests(unittest.TestCase):
+    def test_parenthesized_enhancement_is_recognized(self):
+        question = "What method does AT-3(3) specify?"
+        self.assertTrue(_query_allows_enhancements(question))
+        self.assertEqual(_extract_control_hints(question), ["AT-3.3"])
+
+    def test_locked_window_enhancement_citations_are_preserved(self):
+        citations = ["at-3.3_smt", "at-3.3_gdn", "at-3.3_smt", ""]
+        self.assertEqual(
+            _ordered_unique_citation_ids(citations),
+            ["at-3.3_smt", "at-3.3_gdn"],
+        )
 
 
 if __name__ == "__main__":
