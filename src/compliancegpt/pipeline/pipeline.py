@@ -874,7 +874,7 @@ def _query_allows_enhancements(query: str) -> bool:
     q = str(query or "").upper()
     if not q:
         return False
-    return bool(re.search(r"\b[A-Z]{2}-\d{1,2}\(\d+\)\b", q)) or ("ENHANCEMENT" in q)
+    return bool(re.search(r"\b[A-Z]{2}-\d{1,2}\(\d+\)(?!\w)", q)) or ("ENHANCEMENT" in q)
 
 
 def _extract_control_hints(query: str) -> List[str]:
@@ -890,7 +890,7 @@ def _extract_control_hints(query: str) -> List[str]:
     out: List[str] = []
 
     # Enhancements: AC-2(1) -> AC-2.1
-    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)\b", q):
+    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)(?!\w)", q):
         base = str(m.group(1) or "").upper()
         num = str(m.group(2) or "").strip()
         try:
