@@ -119,5 +119,8 @@ compliancegpt_rq2_matched_v3/
 └── run_config.json
 ```
 
-The result ZIP is the evidence package for the Chapter 5 update. Results must
-not be copied into the dissertation until paired validation succeeds.
+The validated v3 evidence package, uncompressed manifests and summaries, and
+independent audit report are in [`results_v3/`](results_v3/). The audit passed
+with 100 Revision 5 and 36 Revision 4 paired rows, zero context, evidence-window,
+and model mismatches, and no loss of a baseline citation already validated
+against the locked window.

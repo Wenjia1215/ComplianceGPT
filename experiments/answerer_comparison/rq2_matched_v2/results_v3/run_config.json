@@ -1,0 +1,41 @@
+{
+  "determinism": {
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "seed": 42,
+    "torch_deterministic_algorithms": true
+  },
+  "evidence_policy": "one immutable ordered window shared by both answer paths",
+  "experiment_code_files": {
+    "experiments/answerer_comparison/rq2_matched_v2/requirements-colab.txt": "3fe92db98982377cf61ea6b6c067878c44a362790fbbf48d26fe5b4b47b20127",
+    "experiments/answerer_comparison/rq2_matched_v2/run_matched_rq2.py": "990af2d8d87430e81ae5d59d93554240e66b2633c4f458bd1e2536b2367a067d",
+    "src/answerer_comparison/matched_window_runner.py": "0dbc6c33bcf993a113e5cd9f63e10399b9f245f026e634c808ca6b32ea2a23df",
+    "src/compliancegpt/generator/citation_contract_80053.md": "7859aef90da277b63385265b552594f76a03d91848cb9967bd79d5bf3bc24d54",
+    "src/compliancegpt/generator/generator.py": "80bd0ac08d1dafb299ad6badb9a080f0a3f7ce4a266e9b9583f736e8f4b49c6c",
+    "src/compliancegpt/generator/verifier/verifier.py": "6f5a16a47b94e0c17d756f0de58ecf6663bc7e7dd006b9ba10445c1e0210d6af",
+    "src/compliancegpt/pipeline/evidence_window.py": "0e098761074a7ce949adf0d0cf2d89e3e2bb34517b5089793564df66ac816b3d",
+    "src/compliancegpt/pipeline/pipeline.py": "2f5cbaa24e3746d5815e76b2d3553491b3ccfc917ab0b4e22e1886c42d75d181",
+    "src/compliancegpt/retriever/retriever_s7.py": "98abe0c6ef21d4328de5e3a3cf83e6a7750f1c7da2c3ae17dd283be1dd2e988c",
+    "src/generative_answerer/generator.py": "dd31b57f4f6a9db343c023e01b5dd2953bc8aa869af4c3f113dbab5f874ef827",
+    "src/generative_answerer/pipeline.py": "10034299b3aea6b608b87625ccc04a69d5ee37870f0d62bb6cc30a043f525be1"
+  },
+  "experiment_code_sha256": "fc9dbb0fe93d0cff8eb7070e2b5f584660ab1004697b75d571feaf52c6b67f8f",
+  "gold_policy": "gold excluded from prepared context and used only by verifier",
+  "load_in_4bit": true,
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "repo_commit": "be862bcadfa61b474d795303e01ce9394909fdcc",
+  "repo_commits_observed": [
+    "be862bcadfa61b474d795303e01ce9394909fdcc"
+  ],
+  "retrieval_policy": "frozen stored S7 trace; no live retrieval",
+  "revisions": [
+    "rev5",
+    "rev4"
+  ],
+  "schema_version": "compliancegpt-rq2-matched-config-v3",
+  "systems": [
+    "compliancegpt",
+    "generative_baseline"
+  ]
+}
