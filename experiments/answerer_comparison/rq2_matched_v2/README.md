@@ -60,9 +60,13 @@ a new versioned output directory.
    experiment-code fingerprint, model revision, context hash, or
    evidence-window hash changes. A commit that changes only the notebook does
    not invalidate compatible model outputs.
-8. Paired validation must report zero context, evidence-window, and model
+8. The generative path preserves every model-selected source id already
+   validated against the immutable window. It does not apply ComplianceGPT's
+   enhancement gate after generation, because that would add an asymmetric
+   deterministic filter to the baseline.
+9. Paired validation must report zero context, evidence-window, and model
    mismatches before metrics are summarized.
-9. The active input files and the generated Revision 4 and Revision 5 context
+10. The active input files and the generated Revision 4 and Revision 5 context
    files must match the SHA-256 regression values established before the GPU
    run. Any drift stops the run before model loading.
 
@@ -77,14 +81,18 @@ a new versioned output directory.
 4. Select **Runtime > Run all** and approve the Google Drive mount.
 
 The notebook checkpoints to
-`MyDrive/compliancegpt_rq2_matched_v2`. If Colab disconnects, run the same
+`MyDrive/compliancegpt_rq2_matched_v3`. If Colab disconnects, run the same
 notebook again; completed questions are validated and skipped. At completion,
-the notebook downloads `compliancegpt_rq2_matched_v2.zip`.
+the notebook downloads `compliancegpt_rq2_matched_v3.zip`.
 
 The notebook refreshes its disposable `/content` clone when the branch has
 advanced. If an earlier attempt wrote only `run_config.json` and no model-output
 rows, the runner safely migrates that pre-run configuration. It never migrates
 or mixes existing model outputs produced by different experiment code.
+
+The v3 checkpoint directory is intentionally new. Do not reuse the earlier v2
+model-output checkpoints after this correction, because the experiment-code
+fingerprint has changed.
 
 The equivalent command in a CUDA environment is:
 
