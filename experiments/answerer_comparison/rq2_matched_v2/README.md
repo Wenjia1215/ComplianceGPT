@@ -68,7 +68,10 @@ a new versioned output directory.
 
 1. Open `RQ2_Matched_Window_Rerun.ipynb` in Colab.
 2. Select a T4 GPU or better.
-3. Add a Colab secret named `GITHUB_TOKEN` with read access to this repository.
+3. Create a fine-grained token with resource owner `Wenjia1215`, select only
+   `ComplianceGPT_v2`, and grant `Repository permissions > Contents:
+   Read-only`. Store it in a Colab secret named `GITHUB_TOKEN`, enable notebook
+   access, and never paste it into notebook code.
 4. Select **Runtime > Run all** and approve the Google Drive mount.
 
 The notebook checkpoints to
