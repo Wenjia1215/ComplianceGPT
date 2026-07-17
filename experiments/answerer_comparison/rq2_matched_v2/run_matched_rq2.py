@@ -10,7 +10,9 @@ verifier.  Outputs are checkpointed after every question and can be resumed.
 from __future__ import annotations
 
 import argparse
+import csv
 import gc
+import hashlib
 import json
 import os
 import random
@@ -52,6 +54,20 @@ INPUTS = {
     },
 }
 
+EXPERIMENT_CODE_PATHS = (
+    "experiments/answerer_comparison/rq2_matched_v2/run_matched_rq2.py",
+    "src/answerer_comparison/matched_window_runner.py",
+    "src/compliancegpt/pipeline/evidence_window.py",
+    "src/compliancegpt/pipeline/pipeline.py",
+    "src/compliancegpt/retriever/retriever_s7.py",
+    "src/generative_answerer/pipeline.py",
+    "src/compliancegpt/generator/generator.py",
+    "src/generative_answerer/generator.py",
+    "src/compliancegpt/generator/verifier/verifier.py",
+    "src/compliancegpt/generator/citation_contract_80053.md",
+    "experiments/answerer_comparison/rq2_matched_v2/requirements-colab.txt",
+)
+
 
 def parse_args() -> argparse.Namespace:
     default_root = Path(__file__).resolve().parents[3]
@@ -90,6 +106,46 @@ def git_head(repo_root: Path) -> str:
         ).strip()
     except Exception:
         return ""
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def experiment_code_manifest(repo_root: Path) -> Dict[str, Any]:
+    files: Dict[str, str] = {}
+    for relative in EXPERIMENT_CODE_PATHS:
+        path = repo_root / relative
+        if not path.is_file():
+            raise FileNotFoundError(f"Experiment code input is missing: {path}")
+        files[relative] = _sha256_file(path)
+    canonical = json.dumps(files, sort_keys=True, separators=(",", ":"))
+    return {
+        "experiment_code_files": files,
+        "experiment_code_sha256": hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+    }
+
+
+def has_contract_checkpoints(output_dir: Path) -> bool:
+    """Return True only after at least one model-output row was checkpointed."""
+
+    contracts_dir = output_dir / "contracts"
+    if not contracts_dir.is_dir():
+        return False
+    for path in contracts_dir.glob("*.csv"):
+        try:
+            with path.open("r", encoding="utf-8", newline="") as handle:
+                reader = csv.reader(handle)
+                next(reader, None)
+                if next(reader, None) is not None:
+                    return True
+        except Exception:
+            return True
+    return False
 
 
 def resolve_model_revision(model_id: str, requested: str | None) -> str:
@@ -163,12 +219,31 @@ def load_or_create_run_config(
 ) -> Dict[str, Any]:
     path = output_dir / "run_config.json"
     current_commit = git_head(repo_root)
+    code_manifest = experiment_code_manifest(repo_root)
     requested_revisions = list(revisions)
     requested_systems = list(systems)
     if path.exists():
         config = json.loads(path.read_text(encoding="utf-8"))
+        checkpoints_exist = has_contract_checkpoints(output_dir)
+
+        stored_code_hash = str(config.get("experiment_code_sha256", "") or "")
+        current_code_hash = str(code_manifest["experiment_code_sha256"])
+        if stored_code_hash and stored_code_hash != current_code_hash and checkpoints_exist:
+            raise RuntimeError(
+                "Experiment code changed after model-output checkpoints were written. "
+                "Use a new output directory instead of mixing experiments."
+            )
+        if not stored_code_hash and checkpoints_exist:
+            raise RuntimeError(
+                "The existing run predates code-fingerprint validation and already contains "
+                "model outputs. Use a new output directory instead of migrating it."
+            )
+
+        # A stale pre-run config is safe to migrate when no model rows exist.
+        # Repository commits may also change because the notebook itself was
+        # saved; only the experiment-code fingerprint governs resumability.
+        config.update(code_manifest)
         checks = {
-            "repo_commit": current_commit,
             "model_id": model_id,
             "revisions": requested_revisions,
             "systems": requested_systems,
@@ -182,12 +257,26 @@ def load_or_create_run_config(
                 )
         if requested_revision and config.get("model_revision") != requested_revision:
             raise RuntimeError("Requested model revision differs from the existing run.")
+        observed = [
+            str(value)
+            for value in list(config.get("repo_commits_observed", []) or [])
+            if str(value).strip()
+        ]
+        previous_commit = str(config.get("repo_commit", "") or "")
+        for value in (previous_commit, current_commit):
+            if value and value not in observed:
+                observed.append(value)
+        config["repo_commit"] = current_commit
+        config["repo_commits_observed"] = observed
+        config["schema_version"] = "compliancegpt-rq2-matched-config-v3"
+        write_json(path, config)
         return config
 
     resolved_revision = resolve_model_revision(model_id, requested_revision)
     config = {
-        "schema_version": "compliancegpt-rq2-matched-config-v2",
+        "schema_version": "compliancegpt-rq2-matched-config-v3",
         "repo_commit": current_commit,
+        "repo_commits_observed": [current_commit] if current_commit else [],
         "model_id": model_id,
         "model_revision": resolved_revision,
         "revisions": requested_revisions,
@@ -196,6 +285,7 @@ def load_or_create_run_config(
         "retrieval_policy": "frozen stored S7 trace; no live retrieval",
         "evidence_policy": "one immutable ordered window shared by both answer paths",
         "gold_policy": "gold excluded from prepared context and used only by verifier",
+        **code_manifest,
     }
     write_json(path, config)
     return config
