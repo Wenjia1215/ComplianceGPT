@@ -18,11 +18,9 @@ from compliancegpt.pipeline.pipeline import (
     _build_ask_list,
     _build_citation_suffix,
     _canonicalize_param_list,
-    _extract_control_hints,
     _filter_docs_to_controls,
     _normalize_resolution_policy,
     _normalize_fw,
-    _query_allows_enhancements,
     _verifier_result_to_dict,
     normalize_control_id,
     verify_contract_validity,
@@ -36,6 +34,19 @@ from compliancegpt.pipeline.evidence_window import (
 )
 
 from .generator import BaselineGenerativeAnswerer
+
+
+def _ordered_unique_citation_ids(values: Any) -> List[str]:
+    """Preserve model-selected ids already validated against the locked window."""
+
+    cited_ids: List[str] = []
+    seen_ids = set()
+    for value in values or []:
+        source_id = str(value or "").strip()
+        if source_id and source_id not in seen_ids:
+            seen_ids.add(source_id)
+            cited_ids.append(source_id)
+    return cited_ids
 
 
 def _wrap_out_generative(contract: Dict[str, Any]) -> Dict[str, Any]:
@@ -280,17 +291,11 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
 
         raw_answer = self.generative_answerer.generate(q, docs_for_gen)
 
-        cited_ids: List[str] = []
-        seen_ids = set()
-        for sid in raw_answer.get("cited_source_ids", []):
-            s = str(sid).strip()
-            if s and s not in seen_ids:
-                seen_ids.add(s)
-                cited_ids.append(s)
-
-        allow_enh = bool(_query_allows_enhancements(q)) or any("." in c for c in (_extract_control_hints(q) or []))
-        if bool(getattr(self, "block_enhancements_by_default", False)) and not allow_enh:
-            cited_ids = [cid for cid in cited_ids if "." not in cid.split("_", 1)[0]]
+        # BaselineGenerativeAnswerer has already rejected source ids outside the
+        # immutable model-visible window. Preserve the remaining model choices;
+        # applying ComplianceGPT's enhancement policy here would add a second,
+        # asymmetric post-generation filter to the comparison.
+        cited_ids = _ordered_unique_citation_ids(raw_answer.get("cited_source_ids", []))
 
         filled_spans: List[Dict[str, str]] = []
         for sid in cited_ids:
