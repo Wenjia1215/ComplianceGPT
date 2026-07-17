@@ -56,8 +56,10 @@ a new versioned output directory.
    Face model commit is resolved once and recorded on every output row.
 6. Prepared contexts reject fields whose names begin with `gold`. Gold rows are
    passed only to the post-generation verifier.
-7. A checkpoint is written after every question. Resume is refused if the code
-   commit, model revision, context hash, or evidence-window hash changes.
+7. A checkpoint is written after every question. Resume is refused if the
+   experiment-code fingerprint, model revision, context hash, or
+   evidence-window hash changes. A commit that changes only the notebook does
+   not invalidate compatible model outputs.
 8. Paired validation must report zero context, evidence-window, and model
    mismatches before metrics are summarized.
 9. The active input files and the generated Revision 4 and Revision 5 context
@@ -78,6 +80,11 @@ The notebook checkpoints to
 `MyDrive/compliancegpt_rq2_matched_v2`. If Colab disconnects, run the same
 notebook again; completed questions are validated and skipped. At completion,
 the notebook downloads `compliancegpt_rq2_matched_v2.zip`.
+
+The notebook refreshes its disposable `/content` clone when the branch has
+advanced. If an earlier attempt wrote only `run_config.json` and no model-output
+rows, the runner safely migrates that pre-run configuration. It never migrates
+or mixes existing model outputs produced by different experiment code.
 
 The equivalent command in a CUDA environment is:
 
