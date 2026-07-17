@@ -1,4 +1,4 @@
-# RQ2 matched-window rerun (v2)
+# RQ2 matched-window rerun (corrected)
 
 This directory contains the corrected primary experiment for RQ2. It compares
 the ComplianceGPT answer path with the free-form generative answer path while
@@ -99,13 +99,13 @@ The equivalent command in a CUDA environment is:
 ```bash
 python experiments/answerer_comparison/rq2_matched_v2/run_matched_rq2.py \
   --repo-root . \
-  --output-dir /path/to/compliancegpt_rq2_matched_v2
+  --output-dir /path/to/compliancegpt_rq2_matched_v3
 ```
 
 ## Output structure
 
 ```text
-compliancegpt_rq2_matched_v2/
+compliancegpt_rq2_matched_v3/
 ├── contexts/
 │   ├── rev4_prepared_contexts.jsonl
 │   └── rev5_prepared_contexts.jsonl
