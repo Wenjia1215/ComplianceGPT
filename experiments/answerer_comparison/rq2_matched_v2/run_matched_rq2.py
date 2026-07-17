@@ -25,18 +25,20 @@ from typing import Any, Dict, Iterable, Tuple
 
 MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 EXPECTED_ROWS = {"rev5": 100, "rev4": 36}
+# Raw-source values match the active Git blobs and the 2026-07-12 runtime
+# validation manifest. Derived values independently lock parsed model context.
 EXPECTED_CONTEXT_HASHES = {
     "rev5": {
         "context_jsonl_sha256": "6a9c42001b7268eab469c9f0b4952efb1f7ae8d5e33b4078498bd677ce99d963",
         "window_hashes_sha256": "80e4b20ba4c32c5ef7375b0426273b217747bc1e52966bddfb8f1163a44435f5",
-        "contracts_csv_sha256": "1132810eb9f486821479a50865b3176946823d336a2fed3e216bff5113518bfc",
-        "ccs_sha256": "0d4bf5e6e237318aee0b757c2c01c900b4447c5e8a61bf8bfdb8dc5b8a289113",
+        "contracts_csv_sha256": "90ca4d66ae09fd0cf50f68c6ebf770871e9827272dbda2d8ed180d2fa583c694",
+        "ccs_sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
     },
     "rev4": {
         "context_jsonl_sha256": "2f3570a1bf0fccb2b9eea3b0e4f935af6350d99fcf23eb67178bf97b99bc5787",
         "window_hashes_sha256": "f03caa7f9954a12685f4cc302d582564b242047ff23035d79a7e9b6833d656c1",
-        "contracts_csv_sha256": "c0b66ee611fba755a9a667644021c324b441b486558ab57047bcfe0d57d4ca04",
-        "ccs_sha256": "fedfb47c566dd9d85059159b9c6e7fa5f82fdcf4b928079e699c5ab433fbd08c",
+        "contracts_csv_sha256": "741ea6cbe50bce44f1dda15760430d6c2144c7c64566ea58a39366918348c598",
+        "ccs_sha256": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
     },
 }
 INPUTS = {
@@ -375,13 +377,18 @@ def main() -> None:
             framework_version=revision,
             expected_rows=EXPECTED_ROWS[revision],
         )
+        hash_mismatches = []
         for field, expected_hash in EXPECTED_CONTEXT_HASHES[revision].items():
             actual_hash = str(context_manifests[revision].get(field, "") or "")
             if actual_hash != expected_hash:
-                raise RuntimeError(
-                    f"Frozen {revision} input/context hash changed for {field}: "
-                    f"expected {expected_hash}, got {actual_hash}."
+                hash_mismatches.append(
+                    f"{field}: expected {expected_hash}, got {actual_hash}"
                 )
+        if hash_mismatches:
+            raise RuntimeError(
+                f"Frozen {revision} input/context hashes changed:\n"
+                + "\n".join(hash_mismatches)
+            )
         contexts[revision] = load_context_file(context_path)
         gold_rows[revision] = load_gold_rows(
             repo_root / paths["gold"], expected_rows=EXPECTED_ROWS[revision]
