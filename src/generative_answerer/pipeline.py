@@ -8,6 +8,7 @@ selector-only deterministic assembly with a free-form generative answerer.
 
 from __future__ import annotations
 
+import copy
 from typing import Any, Dict, List, Optional, Set
 
 from compliancegpt.generator.verifier.verifier import verify_answer
@@ -17,17 +18,35 @@ from compliancegpt.pipeline.pipeline import (
     _build_ask_list,
     _build_citation_suffix,
     _canonicalize_param_list,
-    _extract_control_hints,
     _filter_docs_to_controls,
     _normalize_resolution_policy,
-    _query_allows_enhancements,
+    _normalize_fw,
     _verifier_result_to_dict,
     normalize_control_id,
     verify_contract_validity,
     _ASSIGNMENT_REQUIRED_SENTINEL,
 )
+from compliancegpt.pipeline.evidence_window import (
+    assert_same_evidence_window,
+    build_evidence_window,
+    evidence_window_manifest,
+    select_allowed_controls,
+)
 
 from .generator import BaselineGenerativeAnswerer
+
+
+def _ordered_unique_citation_ids(values: Any) -> List[str]:
+    """Preserve model-selected ids already validated against the locked window."""
+
+    cited_ids: List[str] = []
+    seen_ids = set()
+    for value in values or []:
+        source_id = str(value or "").strip()
+        if source_id and source_id not in seen_ids:
+            seen_ids.add(source_id)
+            cited_ids.append(source_id)
+    return cited_ids
 
 
 def _wrap_out_generative(contract: Dict[str, Any]) -> Dict[str, Any]:
@@ -101,6 +120,7 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
         run_verify: bool = False,
         doc_filter_mode: Optional[str] = None,
         statement_only_on_param_queries: bool = True,
+        prepared_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         del use_generator
         del statement_only_on_param_queries
@@ -123,7 +143,17 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
             return _wrap_out_generative(err_contract)
 
         self._assert_ccs_loaded()
-        rewrites_used = self._resolve_rewrites(q, rewrites)
+        context = dict(prepared_context or {})
+        if context:
+            context_question = str(context.get("question", "") or "").strip()
+            context_revision = str(context.get("framework_version", "") or "").strip().lower()
+            if context_question and context_question != q:
+                raise ValueError("Prepared RQ2 context question does not match the requested question.")
+            if context_revision and _normalize_fw(context_revision) != self.framework_version:
+                raise ValueError("Prepared RQ2 context revision does not match the pipeline revision.")
+            rewrites_used = self._resolve_rewrites(q, context.get("rewrites", []))
+        else:
+            rewrites_used = self._resolve_rewrites(q, rewrites)
 
         def _attach_contract_validity(contract_obj: Dict[str, Any]) -> Dict[str, Any]:
             try:
@@ -148,7 +178,10 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
         retrieval_meta: Dict[str, Any] = {}
         retrieved_docs: List[Dict[str, Any]] = []
         try:
-            if hasattr(self.retriever, "retrieve_debug"):
+            if context:
+                retrieved_docs = copy.deepcopy(list(context.get("retrieved_docs", []) or []))
+                retrieval_meta = copy.deepcopy(dict(context.get("retrieval_meta", {}) or {}))
+            elif hasattr(self.retriever, "retrieve_debug"):
                 retrieved_docs, retrieval_meta = self.retriever.retrieve_debug(q, top_k=top_k, rewrites=rewrites_used)
             else:
                 retrieved_docs = self.retriever.retrieve(q, top_k=top_k, rewrites=rewrites_used)
@@ -202,56 +235,25 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
                 no_ev["verification"] = _verifier_result_to_dict(ver)
             return _wrap_out_generative(no_ev)
 
-        controls: List[str] = []
-        try:
-            controls = [normalize_control_id(c).upper() for c in (retrieval_meta.get("selected_controls") or []) if normalize_control_id(c)]
-        except Exception:
-            controls = []
-        if not controls:
-            seen_ctl: Set[str] = set()
-            for d in retrieved_docs:
-                cid = normalize_control_id(d.get("control_id", ""))
-                if not cid:
-                    continue
-                cu = cid.upper()
-                if cu in seen_ctl:
-                    continue
-                seen_ctl.add(cu)
-                controls.append(cu)
-
-        primary_control = controls[0] if controls else ""
-        allowed_controls: List[str] = [primary_control] if primary_control else []
-        widen_tier = 0
-
         try:
             topn = max(1, int(getattr(self, "gen_control_gate_topn", 1)))
         except Exception:
             topn = 1
-        if primary_control:
-            allowed_controls = controls[:topn] if controls else [primary_control]
-        else:
-            allowed_controls = controls[:1] if controls else []
-
-        try:
-            fm = float(retrieval_meta.get("final_margin_ratio", 1.0) or 1.0)
-        except Exception:
-            fm = 1.0
         try:
             low2 = float(getattr(self, "gen_control_gate_lowconf_top2", 0.08))
             low3 = float(getattr(self, "gen_control_gate_lowconf_top3", 0.04))
             maxn = max(1, int(getattr(self, "gen_control_gate_lowconf_maxn", 3)))
         except Exception:
             low2, low3, maxn = 0.08, 0.04, 3
-
-        if primary_control and len(controls) >= 2:
-            if fm < low3 and len(controls) >= 3:
-                n = min(len(controls), maxn, 3)
-                allowed_controls = controls[:n]
-                widen_tier = max(0, n - 1)
-            elif fm < low2:
-                n = min(len(controls), maxn, 2)
-                allowed_controls = controls[:n]
-                widen_tier = max(0, n - 1)
+        controls, primary_control, allowed_controls, widen_tier = select_allowed_controls(
+            retrieved_docs=retrieved_docs,
+            retrieval_meta=retrieval_meta,
+            normalize_control_id=normalize_control_id,
+            topn=topn,
+            lowconf_top2=low2,
+            lowconf_top3=low3,
+            lowconf_maxn=maxn,
+        )
 
         doc_filter_mode_used = str(doc_filter_mode if doc_filter_mode is not None else self.doc_filter_mode).strip().lower()
         if not doc_filter_mode_used:
@@ -260,27 +262,40 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
         if pol_eff in {"ASK", "FILL_FROM_PROFILE"} and doc_filter_mode_used == "all":
             doc_filter_mode_used = "prefer_smt_keep_params"
 
-        docs_gen_pool = _filter_docs_to_controls(list(retrieved_docs), allowed_controls)
-        docs_for_gen = _apply_doc_filter_mode(docs_gen_pool, doc_filter_mode_used)
-        docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
-        if not docs_for_gen:
-            docs_for_gen = _apply_doc_filter_mode(_filter_docs_to_controls(retrieved_docs, [primary_control]), "smt_only")
-            docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
-        docs_for_gen = docs_for_gen[: int(getattr(self, "gen_docs_k", 24))]
+        try:
+            primary_first_min_margin = float(getattr(self, "gen_primary_first_min_margin_ratio", 0.06))
+        except Exception:
+            primary_first_min_margin = 0.06
+        docs_for_gen, window_audit = build_evidence_window(
+            retrieved_docs=retrieved_docs,
+            retrieval_meta=retrieval_meta,
+            allowed_controls=allowed_controls,
+            primary_control=primary_control,
+            doc_filter_mode=doc_filter_mode_used,
+            gen_docs_k=int(getattr(self, "gen_docs_k", 24)),
+            filter_docs_to_controls=_filter_docs_to_controls,
+            apply_doc_filter_mode=_apply_doc_filter_mode,
+            primary_first_min_margin_ratio=primary_first_min_margin,
+        )
+        if context.get("evidence_window") is not None:
+            locked_docs = copy.deepcopy(list(context.get("evidence_window", []) or []))
+            locked_manifest = evidence_window_manifest(locked_docs)
+            expected_manifest = dict(context.get("evidence_window_manifest", {}) or locked_manifest)
+            assert_same_evidence_window(
+                window_audit.get("evidence_window", {}),
+                locked_manifest,
+                expected_manifest,
+            )
+            docs_for_gen = locked_docs
+            window_audit["evidence_window"] = locked_manifest
 
         raw_answer = self.generative_answerer.generate(q, docs_for_gen)
 
-        cited_ids: List[str] = []
-        seen_ids = set()
-        for sid in raw_answer.get("cited_source_ids", []):
-            s = str(sid).strip()
-            if s and s not in seen_ids:
-                seen_ids.add(s)
-                cited_ids.append(s)
-
-        allow_enh = bool(_query_allows_enhancements(q)) or any("." in c for c in (_extract_control_hints(q) or []))
-        if bool(getattr(self, "block_enhancements_by_default", False)) and not allow_enh:
-            cited_ids = [cid for cid in cited_ids if "." not in cid.split("_", 1)[0]]
+        # BaselineGenerativeAnswerer has already rejected source ids outside the
+        # immutable model-visible window. Preserve the remaining model choices;
+        # applying ComplianceGPT's enhancement policy here would add a second,
+        # asymmetric post-generation filter to the comparison.
+        cited_ids = _ordered_unique_citation_ids(raw_answer.get("cited_source_ids", []))
 
         filled_spans: List[Dict[str, str]] = []
         for sid in cited_ids:
@@ -374,6 +389,9 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
                 "control_widen_tier": widen_tier,
                 "primary_control": primary_control,
                 "doc_filter_mode_used": doc_filter_mode_used,
+                "primary_first_applied": bool(window_audit.get("primary_first_applied", False)),
+                "evidence_window": window_audit.get("evidence_window", {}),
+                "prepared_context_sha256": str(context.get("context_sha256", "") or ""),
                 "counts": {
                     "retrieved_docs": int(len(retrieved_docs)),
                     "docs_for_gen": int(len(docs_for_gen)),

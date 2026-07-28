@@ -1,0 +1,58 @@
+{
+  "framework_version": "rev4",
+  "n_questions": 36,
+  "odp_subset": {
+    "compliancegpt": {
+      "exact_odp_list_count": 12,
+      "exact_odp_list_rate": 0.631578947368421,
+      "false_complete_count": 0,
+      "false_complete_rate": 0.0,
+      "n": 19,
+      "params_required_count": 19,
+      "params_required_rate": 1.0
+    },
+    "generative_baseline": {
+      "exact_odp_list_count": 6,
+      "exact_odp_list_rate": 0.3157894736842105,
+      "false_complete_count": 19,
+      "false_complete_rate": 1.0,
+      "n": 19,
+      "params_required_count": 0,
+      "params_required_rate": 0.0
+    }
+  },
+  "paired_strict_pass": {
+    "compliancegpt_only": 22,
+    "exact_mcnemar_two_sided_p": 5.7220458984375e-06,
+    "generative_baseline_only": 1
+  },
+  "schema_version": "compliancegpt-rq2-matched-run-v2",
+  "status_counts": {
+    "compliancegpt": {
+      "OK": 8,
+      "PARAMS_REQUIRED": 28
+    },
+    "generative_baseline": {
+      "OK": 36
+    }
+  },
+  "strict_verifier_pass": {
+    "compliancegpt_count": 29,
+    "compliancegpt_rate": 0.8055555555555556,
+    "generative_baseline_count": 8,
+    "generative_baseline_rate": 0.2222222222222222
+  },
+  "validation": {
+    "baseline_csv_sha256": "86b0c407aa9e3419a04e5d18e0909f056759112ecbe41d6a631c1f3d468f9004",
+    "compliance_csv_sha256": "30267b46a91be99c5fa7fdcc8136a768a34fc0fd371b7c4e870001e0180bf5d9",
+    "context_mismatches": 0,
+    "evidence_window_mismatches": 0,
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_mismatches": 0,
+    "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "paired_rows": 36,
+    "schema_version": "compliancegpt-rq2-matched-run-v2",
+    "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+  }
+}

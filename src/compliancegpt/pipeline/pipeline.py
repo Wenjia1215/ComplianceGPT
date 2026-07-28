@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import re
 import json
+import copy
 
 # Control id regex used by normalize_control_id().
 # Matches variants like 'AC-2', 'AC 02', 'ac-2_smt.h.1', and 'AC-2(1)'.
@@ -28,6 +29,12 @@ from dataclasses import fields as _dc_fields, is_dataclass as _is_dataclass, rep
 # Imports
 # ----------------------------
 from compliancegpt.generator.generator import ComplianceGenerator, load_org_profile, normalize_contract  # type: ignore
+from compliancegpt.pipeline.evidence_window import (  # type: ignore
+    assert_same_evidence_window,
+    build_evidence_window,
+    evidence_window_manifest,
+    select_allowed_controls,
+)
 
 PIPELINE_PATCH_ID = "2026-03-12-odp-statement-rescue-v3"
 
@@ -867,7 +874,7 @@ def _query_allows_enhancements(query: str) -> bool:
     q = str(query or "").upper()
     if not q:
         return False
-    return bool(re.search(r"\b[A-Z]{2}-\d{1,2}\(\d+\)\b", q)) or ("ENHANCEMENT" in q)
+    return bool(re.search(r"\b[A-Z]{2}-\d{1,2}\(\d+\)(?!\w)", q)) or ("ENHANCEMENT" in q)
 
 
 def _extract_control_hints(query: str) -> List[str]:
@@ -883,7 +890,7 @@ def _extract_control_hints(query: str) -> List[str]:
     out: List[str] = []
 
     # Enhancements: AC-2(1) -> AC-2.1
-    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)\b", q):
+    for m in re.finditer(r"\b([A-Za-z]{2}-\d{1,2})\((\d+)\)(?!\w)", q):
         base = str(m.group(1) or "").upper()
         num = str(m.group(2) or "").strip()
         try:
@@ -1211,9 +1218,14 @@ class ComplianceGPTPipeline:
         *,
         framework_version: str = "rev5",
         model_id: str = "Qwen/Qwen2.5-7B-Instruct",
+        model_revision: Optional[str] = None,
+        shared_model: Any = None,
+        shared_tokenizer: Any = None,
+        retriever_instance: Any = None,
         use_qur: bool = True,
         doc_filter_mode: str = "all",
         ccs_path: Optional[str] = None,
+        odp_registry_path: Optional[str] = None,
         strict_ccs_assert: bool = True,
         min_ccs_docs: int = 1000,
         org_profile_path: Optional[str] = None,
@@ -1236,6 +1248,7 @@ class ComplianceGPTPipeline:
     ):
         self.framework_version = _normalize_fw(framework_version)
         self.model_id = str(model_id)
+        self.model_revision = str(model_revision).strip() if model_revision else None
         self.use_qur = bool(use_qur)
         self.doc_filter_mode = str(doc_filter_mode)
 
@@ -1270,7 +1283,11 @@ class ComplianceGPTPipeline:
         self.org_profile: Dict[str, Any] = load_org_profile(org_profile_path) if org_profile_path else {}
 
         # ODP registry (labels/prompts only; never contains values)
-        self.odp_registry_path = resolve_default_odp_registry_path(self.framework_version)
+        self.odp_registry_path = (
+            str(odp_registry_path)
+            if odp_registry_path
+            else resolve_default_odp_registry_path(self.framework_version)
+        )
         self.odp_registry: Dict[str, Any] = load_odp_registry(self.odp_registry_path)
 
 
@@ -1316,14 +1333,41 @@ class ComplianceGPTPipeline:
             kind_priority=tuple(new_kp),
         )
 
-        self.retriever = ComplianceGPTRetriever(ccs_path=self.ccs_path, config=retriever_config)
+        # A prepared-context RQ2 run must not initialize or invoke a live
+        # retriever.  It only needs the frozen CCS inventory for deterministic
+        # citation filling and verification.  Supplying ``retriever_instance``
+        # makes that separation explicit while preserving the normal runtime
+        # path when it is omitted.
+        if retriever_instance is None:
+            self.retriever = ComplianceGPTRetriever(ccs_path=self.ccs_path, config=retriever_config)
+        else:
+            self.retriever = retriever_instance
         self._assert_ccs_loaded()
         # Verifier corpus cache (built lazily; avoids O(N_queries * N_docs) rebuild in batch).
         self._verifier_corpus_cache: Optional[Dict[str, str]] = None
 
 
         # 2) Model + tokenizer (shared with generator and optionally QUR)
-        self.model, self.tokenizer = self._load_model(self.model_id, load_in_4bit=load_in_4bit)
+        if (shared_model is None) != (shared_tokenizer is None):
+            raise ValueError("shared_model and shared_tokenizer must be supplied together.")
+        if shared_model is not None:
+            self.model, self.tokenizer = shared_model, shared_tokenizer
+        else:
+            self.model, self.tokenizer = self._load_model(
+                self.model_id,
+                load_in_4bit=load_in_4bit,
+                revision=self.model_revision,
+            )
+        self.model_resolved_revision = str(
+            getattr(getattr(self.model, "config", None), "_commit_hash", "")
+            or self.model_revision
+            or ""
+        ).strip()
+        self.tokenizer_resolved_revision = str(
+            (getattr(self.tokenizer, "init_kwargs", {}) or {}).get("_commit_hash", "")
+            or self.model_revision
+            or ""
+        ).strip()
 
         # 3) Generator (ID selector)
         self.generator = ComplianceGenerator(self.model, self.tokenizer)
@@ -1339,11 +1383,21 @@ class ComplianceGPTPipeline:
     # --------------------------
     # Model loading (robust)
     # --------------------------
-    def _load_model(self, model_id: str, *, load_in_4bit: bool) -> Tuple[Any, Any]:
+    def _load_model(
+        self,
+        model_id: str,
+        *,
+        load_in_4bit: bool,
+        revision: Optional[str] = None,
+    ) -> Tuple[Any, Any]:
         from transformers import AutoModelForCausalLM, AutoTokenizer  # type: ignore
         import torch  # type: ignore
 
-        tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        tok = AutoTokenizer.from_pretrained(
+            model_id,
+            revision=revision,
+            trust_remote_code=True,
+        )
 
         quant_cfg = None
         if load_in_4bit:
@@ -1358,6 +1412,8 @@ class ComplianceGPTPipeline:
                 quant_cfg = None
 
         kwargs: Dict[str, Any] = {"trust_remote_code": True}
+        if revision:
+            kwargs["revision"] = str(revision)
         if torch.cuda.is_available():
             kwargs["device_map"] = "auto"
             kwargs["torch_dtype"] = torch.float16
@@ -1630,6 +1686,7 @@ class ComplianceGPTPipeline:
         run_verify: bool = False,
         doc_filter_mode: Optional[str] = None,
         statement_only_on_param_queries: bool = True,
+        prepared_context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         End-to-end single query -> extractive contract.
@@ -1656,7 +1713,17 @@ class ComplianceGPTPipeline:
             return _wrap_out(err_contract)
 
         self._assert_ccs_loaded()
-        rewrites_used = self._resolve_rewrites(q, rewrites)
+        context = dict(prepared_context or {})
+        if context:
+            context_question = str(context.get("question", "") or "").strip()
+            context_revision = str(context.get("framework_version", "") or "").strip().lower()
+            if context_question and context_question != q:
+                raise ValueError("Prepared RQ2 context question does not match the requested question.")
+            if context_revision and _normalize_fw(context_revision) != self.framework_version:
+                raise ValueError("Prepared RQ2 context revision does not match the pipeline revision.")
+            rewrites_used = self._resolve_rewrites(q, context.get("rewrites", []))
+        else:
+            rewrites_used = self._resolve_rewrites(q, rewrites)
 
         def _attach_contract_validity(contract_obj: Dict[str, Any]) -> Dict[str, Any]:
             if "verify_contract_validity" in globals() and callable(globals().get("verify_contract_validity")):
@@ -1683,7 +1750,10 @@ class ComplianceGPTPipeline:
         retrieval_meta: Dict[str, Any] = {}
         retrieved_docs: List[Dict[str, Any]] = []
         try:
-            if hasattr(self.retriever, "retrieve_debug"):
+            if context:
+                retrieved_docs = copy.deepcopy(list(context.get("retrieved_docs", []) or []))
+                retrieval_meta = copy.deepcopy(dict(context.get("retrieval_meta", {}) or {}))
+            elif hasattr(self.retriever, "retrieve_debug"):
                 retrieved_docs, retrieval_meta = self.retriever.retrieve_debug(q, top_k=top_k, rewrites=rewrites_used)
             else:
                 retrieved_docs = self.retriever.retrieve(q, top_k=top_k, rewrites=rewrites_used)
@@ -1736,64 +1806,25 @@ class ComplianceGPTPipeline:
                 no_ev["verification"] = _verifier_result_to_dict(ver)
             return _wrap_out(no_ev)
 
-        # 2) Determine primary control(s)
-        controls = []
-        try:
-            controls = [normalize_control_id(c).upper() for c in (retrieval_meta.get("selected_controls") or []) if normalize_control_id(c)]
-        except Exception:
-            controls = []
-        if not controls:
-            # fall back: use control_id fields from docs (stable order)
-            seen_ctl: Set[str] = set()
-            for d in retrieved_docs:
-                cid = normalize_control_id(d.get("control_id", ""))
-                if not cid:
-                    continue
-                cu = cid.upper()
-                if cu in seen_ctl:
-                    continue
-                seen_ctl.add(cu)
-                controls.append(cu)
-
-        primary_control = controls[0] if controls else ""
-        allowed_controls: List[str] = [primary_control] if primary_control else []
-        widen_tier = 0
-
-        # 3) Control widening / generator control gating (no gold use)
-        # Default: keep generator evidence within top-N retrieved controls.
         try:
             topn = max(1, int(getattr(self, "gen_control_gate_topn", 1)))
         except Exception:
             topn = 1
-        if primary_control:
-            allowed_controls = controls[:topn] if controls else [primary_control]
-        else:
-            allowed_controls = controls[:1] if controls else []
-        widen_tier = 0
-
-        # If retriever confidence is low (small margin), temporarily widen the generator pool.
-        try:
-            final_margin = retrieval_meta.get("final_margin_ratio", None)
-            fm = float(final_margin) if final_margin is not None else 1.0
-        except Exception:
-            fm = 1.0
-
         try:
             low2 = float(getattr(self, "gen_control_gate_lowconf_top2", 0.08))
             low3 = float(getattr(self, "gen_control_gate_lowconf_top3", 0.04))
             maxn = max(1, int(getattr(self, "gen_control_gate_lowconf_maxn", 3)))
         except Exception:
             low2, low3, maxn = 0.08, 0.04, 3
-
-        if primary_control and len(controls) >= 2:
-            if fm < low3 and len(controls) >= 3:
-                n = min(len(controls), maxn, 3)
-                allowed_controls = controls[:n]
-                widen_tier = max(0, n - 1)
-            elif fm < low2:
-                n = min(len(controls), maxn, 2)
-                allowed_controls = controls[:n]
-                widen_tier = max(0, n - 1)
+        controls, primary_control, allowed_controls, widen_tier = select_allowed_controls(
+            retrieved_docs=retrieved_docs,
+            retrieval_meta=retrieval_meta,
+            normalize_control_id=normalize_control_id,
+            topn=topn,
+            lowconf_top2=low2,
+            lowconf_top3=low3,
+            lowconf_maxn=maxn,
+        )
 
         # 4) Doc filtering for generator window
         # Policy-aware default: when we are ASK-ing or FILL-ing, keep both statement + guidance
@@ -1812,42 +1843,33 @@ class ComplianceGPTPipeline:
         if pol_eff in {"ASK", "FILL_FROM_PROFILE"} and doc_filter_mode_used == "all":
             doc_filter_mode_used = "prefer_smt_keep_params"
 
-        docs_gen_pool = list(retrieved_docs)
-
-        # No inventory backfill by default (explicit opt-in only).
-        docs_gen_pool = _filter_docs_to_controls(docs_gen_pool, allowed_controls)
-
-        # Generator window prioritization: when primary control selection is confident,
-        # present primary-control clauses first to reduce cross-control noise.
         try:
             primary_first_min_margin = float(getattr(self, "gen_primary_first_min_margin_ratio", 0.06))
         except Exception:
             primary_first_min_margin = 0.06
-        try:
-            mratio = float(retrieval_meta.get("final_margin_ratio", 0.0) or 0.0)
-        except Exception:
-            mratio = 0.0
-
-        primary_first_applied = False
-        if primary_control and mratio >= primary_first_min_margin:
-            primary_docs = _filter_docs_to_controls(docs_gen_pool, [primary_control])
-            if primary_docs:
-                primary_ids = {str(d.get("id", "")).strip() for d in primary_docs if str(d.get("id", "")).strip()}
-                other_docs = [d for d in docs_gen_pool if str(d.get("id", "")).strip() not in primary_ids]
-                docs_gen_pool = primary_docs + other_docs
-                primary_first_applied = True
-
-        docs_for_gen = _apply_doc_filter_mode(docs_gen_pool, doc_filter_mode_used)
-
-        # Drop empty-text docs (some controls have container ids like "cp-2_smt" with no leaf text).
-        docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
-
-        if not docs_for_gen:
-            # If filtering dropped everything, fall back to statement docs for the primary control.
-            docs_for_gen = _apply_doc_filter_mode(_filter_docs_to_controls(retrieved_docs, [primary_control]), "smt_only")
-            docs_for_gen = [d for d in docs_for_gen if str(d.get("text") or "").strip()]
-
-        docs_for_gen = docs_for_gen[: int(getattr(self, "gen_docs_k", 24))]
+        docs_for_gen, window_audit = build_evidence_window(
+            retrieved_docs=retrieved_docs,
+            retrieval_meta=retrieval_meta,
+            allowed_controls=allowed_controls,
+            primary_control=primary_control,
+            doc_filter_mode=doc_filter_mode_used,
+            gen_docs_k=int(getattr(self, "gen_docs_k", 24)),
+            filter_docs_to_controls=_filter_docs_to_controls,
+            apply_doc_filter_mode=_apply_doc_filter_mode,
+            primary_first_min_margin_ratio=primary_first_min_margin,
+        )
+        if context.get("evidence_window") is not None:
+            locked_docs = copy.deepcopy(list(context.get("evidence_window", []) or []))
+            locked_manifest = evidence_window_manifest(locked_docs)
+            expected_manifest = dict(context.get("evidence_window_manifest", {}) or locked_manifest)
+            assert_same_evidence_window(
+                window_audit.get("evidence_window", {}),
+                locked_manifest,
+                expected_manifest,
+            )
+            docs_for_gen = locked_docs
+            window_audit["evidence_window"] = locked_manifest
+        primary_first_applied = bool(window_audit.get("primary_first_applied", False))
 
         # 5) Evidence selection
         fallback_used = False
@@ -2189,6 +2211,8 @@ class ComplianceGPTPipeline:
                 "selector_raw": contract,
                 "doc_filter_mode_used": doc_filter_mode_used,
                 "primary_first_applied": primary_first_applied,
+                "evidence_window": window_audit.get("evidence_window", {}),
+                "prepared_context_sha256": str(context.get("context_sha256", "") or ""),
                 "hierarchy_added_ids": added_ids,
                 "fallback_used": fallback_used,
                 "fallback_reason": fallback_reason,

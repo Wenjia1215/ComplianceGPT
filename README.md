@@ -145,7 +145,7 @@ The current evaluation package uses:
 | Rev4 / Rev5 CCS files | Canonical source records used for retrieval and answer construction. |
 | Rev4 / Rev5 ODP registries | Organization-defined-parameter detection and handling. |
 
-The authoritative checksum manifest is `ARTIFACTS.md`. It intentionally focuses on frozen inputs such as CCS files, gold sets, ErrorBank files, and ODP registries. Code is controlled by Git commit history. Generated outputs are not checksum-managed because they are reproducible from code and frozen inputs.
+`ARTIFACTS.md` is authoritative for frozen input checksums, including CCS files, gold sets, ErrorBank files, and ODP registries. Code is controlled by Git commit history. Active dissertation result artifacts are managed separately: the matched v3 package checksum is recorded in `experiments/answerer_comparison/rq2_matched_v2/results_v3/README.md`, and the dissertation source supplement includes `artifact_manifests/dissertation_result_manifest_sha256.txt` for the complete active result set. Generated outputs not named by either record are not checksum-managed.
 
 ---
 

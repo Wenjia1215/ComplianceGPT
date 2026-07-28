@@ -1,0 +1,26 @@
+{
+  "rev4": {
+    "ccs_path": "/content/ComplianceGPT_v2_rq2/data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl",
+    "ccs_sha256": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "context_jsonl": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contexts/rev4_prepared_contexts.jsonl",
+    "context_jsonl_sha256": "2f3570a1bf0fccb2b9eea3b0e4f935af6350d99fcf23eb67178bf97b99bc5787",
+    "contracts_csv": "/content/ComplianceGPT_v2_rq2/experiments/pipeline_runs/pipeline_rev4_contracts_20260312_152654.csv",
+    "contracts_csv_sha256": "741ea6cbe50bce44f1dda15760430d6c2144c7c64566ea58a39366918348c598",
+    "framework_version": "rev4",
+    "row_count": 36,
+    "schema_version": "compliancegpt-rq2-prepared-context-v2",
+    "window_hashes_sha256": "f03caa7f9954a12685f4cc302d582564b242047ff23035d79a7e9b6833d656c1"
+  },
+  "rev5": {
+    "ccs_path": "/content/ComplianceGPT_v2_rq2/data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl",
+    "ccs_sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "context_jsonl": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contexts/rev5_prepared_contexts.jsonl",
+    "context_jsonl_sha256": "6a9c42001b7268eab469c9f0b4952efb1f7ae8d5e33b4078498bd677ce99d963",
+    "contracts_csv": "/content/ComplianceGPT_v2_rq2/experiments/pipeline_runs/pipeline_rev5_contracts_20260312_150620.csv",
+    "contracts_csv_sha256": "90ca4d66ae09fd0cf50f68c6ebf770871e9827272dbda2d8ed180d2fa583c694",
+    "framework_version": "rev5",
+    "row_count": 100,
+    "schema_version": "compliancegpt-rq2-prepared-context-v2",
+    "window_hashes_sha256": "80e4b20ba4c32c5ef7375b0426273b217747bc1e52966bddfb8f1163a44435f5"
+  }
+}
