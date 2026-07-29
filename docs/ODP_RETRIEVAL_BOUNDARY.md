@@ -1,6 +1,6 @@
-# ODP Retrieval Boundary Note
+# ODP Retrieval Boundary
 
-This note fixes the wording boundary for ODP/PRM records in ComplianceGPT.
+This document defines the operational role of ODP/PRM records in ComplianceGPT.
 
 ## Canonical Wording
 

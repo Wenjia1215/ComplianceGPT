@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Revalidate frozen answer artifacts with the gold-independent contract checker."""
+"""Revalidate recorded answer artifacts with the gold-independent contract checker."""
 
 from __future__ import annotations
 

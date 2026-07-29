@@ -1,17 +1,26 @@
-# ComplianceGPT Artifact Manifest
+# ComplianceGPT Evaluation Input Checksums
 
 **Hash Algorithm:** SHA-256
-**Purpose:** This manifest records all frozen input artifacts (source data, clause stores, configuration profiles, and evaluation sets) required to reproduce the ComplianceGPT experimental results.
+**Purpose:** This document records SHA-256 identities for the canonical source and benchmark inputs listed below.
+
+Code is identified by Git commits. Dependencies, model revisions, prepared
+contexts, and generated results are documented in their experiment-specific
+records; they are outside the scope of this input-only checksum list.
 
 ---
 
-## Verification Command
-To verify a file from the project root, run:
-`shasum -a 256 <file_path>`
+## Verification Commands
+
+From the project root, use either:
+
+```bash
+shasum -a 256 <file_path>  # macOS
+sha256sum <file_path>      # Linux and Google Colab
+```
 
 ---
 
-## Frozen Input Hashes
+## Evaluation Input Hashes
 
 ### 1. Official NIST Source Inputs
 | Path | SHA-256 |

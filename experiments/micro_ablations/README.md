@@ -97,16 +97,12 @@ uniform benefit.  `paired_diagnostics.csv` records improve/tie/worsen counts
 and exact metric differences for every matched contrast.
 
 `baseline_validation.csv` compares the newly matched S4 and canonical S7 rows
-with the frozen main-ablation rows.  This comparison makes source evolution
-visible.  Dissertation contrasts between a baseline and its diagnostic
+with the recorded main-ablation rows. This comparison makes source evolution
+visible. Contrasts between a baseline and its diagnostic
 variant use the matched rerun, not results produced under a different
 implementation state.
 
 The per-query CSVs retain gate decisions, margins, query transformations, and
-ranked controls.  They omit the canonical retriever's verbose candidate debug
+ranked controls. They omit the canonical retriever's verbose candidate debug
 array because it duplicates score details that are not used by this study's
 metrics or paired comparisons.
-
-`MicroAblation_S4b_S7a.ipynb` is retained only as the original exploratory
-interface.  Its execution state has been cleared; canonical results come from
-the standalone runner.

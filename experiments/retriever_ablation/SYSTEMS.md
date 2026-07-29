@@ -1,6 +1,6 @@
 # Retrieval Systems (S1–S7): Design Rationale and Role in Ablation
 
-This frozen ablation study evaluates seven retrieval systems used to build and justify the ComplianceGPT retriever.
+This recorded ablation study evaluates seven retrieval systems used to build and justify the ComplianceGPT retriever.
 
 The goal is not only to maximize Recall@K. The study also isolates which retrieval failure modes occur in compliance QA and which architectural components reduce those failures.
 
@@ -14,7 +14,7 @@ Compliance QA retrieval fails for predictable reasons:
 
 - **Lexical mismatch:** the question uses words that do not appear in the relevant control text.
 - **Semantic ambiguity:** multiple controls look similar in meaning.
-- **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding. ODP-sensitive retrieval is evaluated through questions whose governing clauses contain unresolved parameter placeholders. The frozen S1–S7 retrieval corpus does not treat standalone ODP/PRM records as ordinary cited evidence candidates.
+- **ODP sensitivity:** parameter-heavy questions require stable retrieval grounding. ODP-sensitive retrieval is evaluated through questions whose governing clauses contain unresolved parameter placeholders. The recorded S1–S7 retrieval corpus does not treat standalone ODP/PRM records as ordinary cited evidence candidates.
 - **Ranking instability:** rerankers may promote plausible but wrong controls.
 
 The systems form a controlled comparison rather than a strictly cumulative
@@ -169,7 +169,7 @@ logic.
 
 ---
 
-## S7 — Frozen Guarded Retriever
+## S7 — Guarded Retriever
 
 This section describes the notebook-local implementation that produced the
 stored RQ1 rows.  The current revision-specific runtime is tracked separately
@@ -182,7 +182,7 @@ source results.
 
 **Why we build it**
 
-S7 is the reliability-focused design evaluated in the frozen ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
+S7 is the reliability-focused design evaluated in the recorded ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
 
 **How it works**
 
@@ -213,7 +213,7 @@ S7 is the reliability-focused design evaluated in the frozen ladder. It integrat
 
 **Evaluated behavior**
 
-- Strongest governing-control ranking on both main frozen gold sets.
+- Strongest governing-control ranking on both main recorded gold sets.
 - Strong diagnostic performance, although S2 and S6 lead several early-rank
   measures on the small Rev4 ErrorBank subset.
 
@@ -228,7 +228,7 @@ This ablation supports three bounded conclusions:
 2. **Reranking has mixed effects.** S6 improves some hard cases and worsens
    others; the ladder does not isolate the guard as the sole cause of S7's
    result.
-3. **Frozen S7 is strongest on the two main gold sets as configured.** The
+3. **The recorded S7 configuration is strongest on the two main gold sets.** The
    current runtime remains a separate implementation state with additional
    query-planning and scope logic.
 
