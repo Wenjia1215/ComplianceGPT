@@ -62,7 +62,7 @@ This experiment is designed to run in a single notebook session so all models
 
 Outputs are written under:
 
-`/content/drive/MyDrive/ComplianceGPT_v2/experiments/retriever_ablation/ablation_outputs`
+`/content/drive/MyDrive/ComplianceGPT/experiments/retriever_ablation/ablation_outputs`
 
 Each system has its own folder:
 - `system_1_bm25/`

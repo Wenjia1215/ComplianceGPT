@@ -98,11 +98,11 @@ import os
 @dataclass
 class Config:
     # 1. Base Paths
-    drive_base: Path = Path('/content/drive/MyDrive/ComplianceGPT_v2')
+    drive_base: Path = Path('/content/drive/MyDrive/ComplianceGPT')
     local_base: Path = Path('/mnt/data')  # Fallback
 
     # 2. Output Directory
-    output_dir: Path = Path('/content/drive/MyDrive/ComplianceGPT_v2/data/qur_outputs')
+    output_dir: Path = Path('/content/drive/MyDrive/ComplianceGPT/data/qur_outputs')
 
     # 3. File Paths (Initialized as None, set in __post_init__)
     rev5_gold: Path = None

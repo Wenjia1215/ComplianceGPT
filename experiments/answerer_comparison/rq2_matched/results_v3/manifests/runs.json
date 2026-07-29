@@ -1,0 +1,126 @@
+{
+  "rev4_compliancegpt": {
+    "output_csv": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contracts/rev4_compliancegpt.csv",
+    "output_csv_sha256": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt"
+  },
+  "rev4_generative_baseline": {
+    "output_csv": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contracts/rev4_generative_baseline.csv",
+    "output_csv_sha256": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "generative_baseline"
+  },
+  "rev5_compliancegpt": {
+    "output_csv": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contracts/rev5_compliancegpt.csv",
+    "output_csv_sha256": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt"
+  },
+  "rev5_generative_baseline": {
+    "output_csv": "/content/drive/MyDrive/compliancegpt_rq2_matched_v3/contracts/rev5_generative_baseline.csv",
+    "output_csv_sha256": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+      "python": "3.12.13",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "generative_baseline"
+  }
+}

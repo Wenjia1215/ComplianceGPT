@@ -75,7 +75,7 @@ This experiment is designed to run in a single notebook session so BM25, dense i
 Outputs are written under:
 
 ```text
-/content/drive/MyDrive/ComplianceGPT_v2/experiments/retriever_ablation/ablation_outputs
+/content/drive/MyDrive/ComplianceGPT/experiments/retriever_ablation/ablation_outputs
 ```
 
 Each active system has its own folder:

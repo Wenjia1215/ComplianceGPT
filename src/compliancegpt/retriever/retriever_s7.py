@@ -774,9 +774,9 @@ def build_query_variants(
     out: List[str] = []
     for v in base:
         out.append(v)
-        v2 = _augment_enhancements(v)
-        if v2 != v:
-            out.append(v2)
+        augmented = _augment_enhancements(v)
+        if augmented != v:
+            out.append(augmented)
 
     # De-dup preserve order
     seen: Set[str] = set()

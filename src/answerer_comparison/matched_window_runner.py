@@ -24,8 +24,8 @@ from compliancegpt.pipeline.pipeline import (
 )
 
 
-CONTEXT_SCHEMA = "compliancegpt-rq2-prepared-context-v2"
-RUN_SCHEMA = "compliancegpt-rq2-matched-run-v2"
+CONTEXT_SCHEMA = "compliancegpt-rq2-prepared-context"
+RUN_SCHEMA = "compliancegpt-rq2-matched-run"
 
 RUN_FIELDNAMES = [
     "query_id",

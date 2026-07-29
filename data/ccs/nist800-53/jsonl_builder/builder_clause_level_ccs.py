@@ -2,7 +2,7 @@
 """
 Build clause-level JSONL catalogs from NIST SP 800-53 OSCAL JSON.
 
-v2 features:
+Current features:
 - Includes statement (_smt), guidance (_gdn), and objective (_obj) parts.
 - Synthesizes text for structural nodes (no direct prose) by concatenating descendant prose (verbatim).
 - Optional gold coverage validation with robust parsing and ID normalization (ac_11 -> ac-11).

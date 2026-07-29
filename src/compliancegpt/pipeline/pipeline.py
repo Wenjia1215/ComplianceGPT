@@ -9,7 +9,7 @@ Single source of truth:
 - The pipeline deterministically fills verbatim `span_text` from CCS and constructs `answer_text`.
 
 This file is designed to live at:
-  /content/drive/MyDrive/ComplianceGPT_v2/src/compliancegpt/pipeline/pipeline.py
+  /content/drive/MyDrive/ComplianceGPT/src/compliancegpt/pipeline/pipeline.py
 """
 
 from __future__ import annotations
@@ -104,7 +104,7 @@ def _normalize_fw(framework_version: str) -> str:
 
 def resolve_default_ccs_path(framework_version: str) -> str:
     fw = _normalize_fw(framework_version)
-    base = Path("/content/drive/MyDrive/ComplianceGPT_v2/data/ccs/nist800-53")
+    base = Path("/content/drive/MyDrive/ComplianceGPT/data/ccs/nist800-53")
     if fw == "rev5":
         return str(base / "NIST_SP-800-53_rev5_catalog.jsonl")
     return str(base / "NIST_SP-800-53_rev4_catalog.jsonl")
@@ -112,7 +112,7 @@ def resolve_default_ccs_path(framework_version: str) -> str:
 
 def resolve_default_odp_registry_path(framework_version: str) -> str:
     fw = _normalize_fw(framework_version)
-    base = Path("/content/drive/MyDrive/ComplianceGPT_v2/data/ODP")
+    base = Path("/content/drive/MyDrive/ComplianceGPT/data/ODP")
     if fw == "rev5":
         return str(base / "rev5" / "odp_registry_rev5.json")
     return str(base / "rev4" / "odp_registry_rev4.json")

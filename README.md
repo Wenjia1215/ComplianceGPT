@@ -81,7 +81,7 @@ These statuses are part of the safety boundary. The system should expose missing
 ## Repository map
 
 ```text
-ComplianceGPT_v2/
+ComplianceGPT/
   data/
     ccs/                         # Canonical Clause Store files
     ODP/                         # ODP registries and organization profiles
@@ -145,7 +145,7 @@ The current evaluation package uses:
 | Rev4 / Rev5 CCS files | Canonical source records used for retrieval and answer construction. |
 | Rev4 / Rev5 ODP registries | Organization-defined-parameter detection and handling. |
 
-`ARTIFACTS.md` is authoritative for frozen input checksums, including CCS files, gold sets, ErrorBank files, and ODP registries. Code is controlled by Git commit history. Active dissertation result artifacts are managed separately: the matched v3 package checksum is recorded in `experiments/answerer_comparison/rq2_matched_v2/results_v3/README.md`, and the dissertation source supplement includes `artifact_manifests/dissertation_result_manifest_sha256.txt` for the complete active result set. Generated outputs not named by either record are not checksum-managed.
+`ARTIFACTS.md` is authoritative for frozen input checksums, including CCS files, gold sets, ErrorBank files, and ODP registries. Code is controlled by Git commit history. Active dissertation result artifacts are managed separately: the matched v3 package checksum is recorded in `experiments/answerer_comparison/rq2_matched/results_v3/README.md`, and the dissertation source supplement includes `artifact_manifests/dissertation_result_manifest_sha256.txt` for the complete active result set. Generated outputs not named by either record are not checksum-managed.
 
 ---
 

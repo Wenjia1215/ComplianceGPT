@@ -4,7 +4,7 @@ ComplianceGPT Verifier (v3 - Research Grade, compatibility-preserving)
 
 Goal: Mechanically verifiable, auditable QA checks for NIST SP 800-53.
 
-This refactor is intentionally *API-stable* relative to verifier.py (v2) in this repo:
+This refactor is intentionally *API-stable* relative to the prior verifier implementation:
 - Same dataclasses: EvidenceSpan, AnswerContract, GoldLabel, VerifierResult
 - Same helper function names (normalize_control_id, normalize_version, normalize_odp_id, etc.)
 - Same main entrypoint signature:
@@ -12,7 +12,7 @@ This refactor is intentionally *API-stable* relative to verifier.py (v2) in this
                   corpus_version=None, strict_extras=True, strict_verbatim=True, strict_version=False)
 - Same metrics keys returned.
 
-Key improvements vs v2 (without changing pass/fail semantics unless explicitly noted):
+Key improvements over the prior implementation (without changing pass/fail semantics unless explicitly noted):
 - More robust ODP placeholder extraction: supports { ... } or {{ ... }} and optional "param,"
   (aligned with pipeline placeholder acceptance).
 - De-duplicated regex definitions and hardened normalization.
@@ -547,7 +547,7 @@ def check_odp_behavior(
 
         elif policy == "FILL_FROM_PROFILE":
             if org_profile is None:
-                # Preserve v2 behavior: treat as a hard error (not WARN) because we cannot validate fill.
+                # Preserve prior behavior: treat as a hard error (not WARN) because we cannot validate fill.
                 errors.append("GoldPolicyFillFromProfileButNoOrgProfileProvided")
             else:
                 odp_values = org_profile.get("odp_values", org_profile) if isinstance(org_profile, dict) else {}
@@ -654,7 +654,7 @@ def verify_answer(
     """
     Verify a single model output against a single gold row.
 
-    Pass criteria (default, unchanged from v2):
+    Pass criteria (default, unchanged from the prior implementation):
       - no hard errors
       - 100% control-id recall (when gold control_id exists)
       - verbatim strict proof passes for all spans (when corpus provided and strict_verbatim=True)
