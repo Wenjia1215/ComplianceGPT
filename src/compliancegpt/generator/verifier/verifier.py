@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-ComplianceGPT Verifier (v3 - Research Grade, compatibility-preserving)
+ComplianceGPT Verifier (compatibility-preserving)
 
 Goal: Mechanically verifiable, auditable QA checks for NIST SP 800-53.
 

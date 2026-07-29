@@ -1,7 +1,7 @@
 # ErrorBank category analysis
 
 `run_error_mode_analysis.py` regenerates the category-level retrieval report
-from the labeled ErrorBank and the frozen S1--S7 result files.
+from the labeled ErrorBank and the recorded S1--S7 result files.
 
 ## Why the revision is part of the key
 
@@ -33,7 +33,7 @@ It writes:
 
 For one gold control per query, RR@10 is `1/rank` for ranks 1--10 and zero
 otherwise.  The category mean is therefore MRR@10.  Category counts are
-included in the pivot and must sum to the frozen 37-row ErrorBank.
+included in the pivot and must sum to the recorded 37-row ErrorBank.
 
 ## Interpretation boundary
 

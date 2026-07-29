@@ -27,8 +27,7 @@ retrieval and answer construction at the same time.
 
 ## Active inputs
 
-The runner reads only the active repository paths below. No archived directory
-is read, moved, or modified.
+The runner reads only the active repository paths below.
 
 - `experiments/pipeline_runs/pipeline_rev5_contracts_20260312_150620.csv`
 - `experiments/pipeline_runs/pipeline_rev4_contracts_20260312_152654.csv`

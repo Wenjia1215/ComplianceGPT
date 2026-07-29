@@ -1,11 +1,12 @@
 # Runtime contract revalidation
 
-This directory contains deterministic, gold-independent revalidation of the frozen
-ComplianceGPT and matched generative-baseline answer artifacts.
+This directory contains deterministic, gold-independent revalidation of the
+recorded ComplianceGPT and generative-baseline answer artifacts.
 
 The repair identified by `2026-07-12-contract-validity-fix` corrects the
 contract-only validator without rerunning retrieval, query rewriting, evidence
-selection, or answer generation. Original frozen CSV artifacts remain unchanged.
+selection, or answer generation. The recorded source CSV artifacts remain
+unchanged.
 
 Run from the repository root:
 

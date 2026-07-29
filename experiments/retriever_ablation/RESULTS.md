@@ -1,6 +1,6 @@
 # Ablation Study Results (S1–S7)
 
-This document reports the frozen retrieval performance of seven systems (S1–S7). The S7 rows belong to the notebook-local implementation preserved with these outputs; current-source results are reported separately under `experiments/micro_ablations/`.
+This document reports the recorded retrieval performance of seven systems (S1–S7). The S7 rows belong to the notebook-local implementation preserved with these outputs; current-source results are reported separately under `experiments/micro_ablations/`.
 
 We evaluate on four query sets:
 
@@ -46,7 +46,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Executive Summary (Main Takeaways)
 
-1. **Frozen S7 leads the ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**  
+1. **The recorded S7 configuration leads the ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**
 2. **Hybrid retrieval (S5) is competitive but not uniformly stronger than both single-channel baselines.** Dense S2 is stronger on several Rev4 measures.  
 3. **Reranking (S6) is mixed**: it can help significantly on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Recall@1 versus pure hybrid on easier sets.  
 4. **ErrorBank is a targeted diagnostic derived from BM25 failures.** It helps localize difficult cases but does not estimate failure prevalence or population performance.

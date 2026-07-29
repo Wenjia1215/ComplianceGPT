@@ -116,7 +116,7 @@ def build_evidence_window(
 ) -> Tuple[List[Doc], Dict[str, Any]]:
     """Build the sole model-visible evidence window for both RQ2 answer paths.
 
-    The function preserves the frozen ComplianceGPT policy: filter to the
+    The function preserves the recorded ComplianceGPT policy: filter to the
     allowed controls, conditionally prioritize the primary control, apply the
     configured evidence-kind ordering, drop empty records, and then truncate.
     """

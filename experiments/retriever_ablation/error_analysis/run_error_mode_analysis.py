@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the ErrorBank category analysis from frozen S1--S7 outputs.
+"""Regenerate the ErrorBank category analysis from recorded S1--S7 outputs.
 
 The ErrorBank reuses question identifiers across NIST revisions.  Revision and
 question_id therefore form the analysis key; joining on question_id alone is
@@ -174,7 +174,7 @@ def run(repo_root: Path) -> None:
     if int(pivot["N"].sum()) != expected_rows:
         raise AssertionError("Category counts do not sum to the ErrorBank size")
     if expected_rows != 37:
-        raise AssertionError(f"Expected the frozen 37-row ErrorBank; found {expected_rows}")
+        raise AssertionError(f"Expected the recorded 37-row ErrorBank; found {expected_rows}")
 
     merged.to_csv(report_dir / "merged_results_data.csv", index=False, float_format="%.6f")
     pivot.to_csv(report_dir / "pivot_table.csv", index=False, float_format="%.4f")

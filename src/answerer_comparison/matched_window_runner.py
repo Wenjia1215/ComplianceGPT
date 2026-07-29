@@ -65,7 +65,7 @@ class FrozenCCSRetriever:
     The object intentionally refuses retrieval calls.  Its only purpose is to
     provide the canonical records needed for citation filling, ODP
     canonicalization, hierarchy lookup, and verification after the evidence
-    window has already been frozen.
+    window has already been recorded.
     """
 
     def __init__(self, records: Mapping[str, Mapping[str, Any]]) -> None:
@@ -150,7 +150,7 @@ def reconstruct_retrieved_docs(
     contract: Mapping[str, Any],
     ccs_by_id: Mapping[str, Mapping[str, Any]],
 ) -> List[Dict[str, Any]]:
-    """Rebuild the frozen retrieved-document order from a stored contract trace."""
+    """Rebuild the recorded retrieved-document order from a stored contract trace."""
 
     debug = dict(contract.get("debug", {}) or {})
     retrieval_meta = dict(debug.get("retrieval_meta", {}) or {})

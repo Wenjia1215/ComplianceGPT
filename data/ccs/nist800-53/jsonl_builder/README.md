@@ -136,4 +136,4 @@ Rebuild CCS only if:
 - the upstream OSCAL JSON files change, or
 - `builder_clause_level_ccs.py` changes.
 
-Otherwise, treat the JSONL CCS as a frozen artifact for reproducible experiments.
+Otherwise, treat the JSONL CCS as a versioned artifact for reproducible experiments.

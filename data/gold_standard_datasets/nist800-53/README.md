@@ -26,7 +26,7 @@ Evaluation uses `odp_required` to specify which parameter IDs must be recognized
 ### **N/A**
 - Use when the question does **not** involve any ODP/PRM.
 - Expected behavior: normal citation-grounded answer, status `OK` (assuming evidence exists).
-- New or revised datasets should store `N/A` explicitly. The frozen dissertation gold CSVs predate this convention and use blank `resolution_policy` cells when `odp_required` is empty. Evaluators normalize those blank cells as the non-ODP case; the frozen CSVs are not rewritten.
+- New or revised datasets should store `N/A` explicitly. The recorded dissertation gold CSVs predate this convention and use blank `resolution_policy` cells when `odp_required` is empty. Evaluators normalize those blank cells as the non-ODP case; the recorded CSVs are not rewritten.
 
 ### **FILL_FROM_PROFILE**
 - Use when the required values are standard organization-wide settings that reasonably live in an `org_profile`.
@@ -111,12 +111,12 @@ To keep evaluation deterministic across tools:
 - Trim whitespace around IDs
 - Avoid NaN/blank ambiguity in new or revised datasets:
   - If `odp_required` is empty, set `resolution_policy` to `N/A`.
-  - Preserve blank cells in already frozen dissertation CSVs unless a new experimental state is declared; evaluators must normalize them as non-ODP rows.
+  - Preserve blank cells in already recorded dissertation CSVs unless a new experimental state is declared; evaluators must normalize them as non-ODP rows.
 
 ---
 
 ## 7) Changelog
 
-- **2026-07**: Documented the preserved blank `resolution_policy` cells in the frozen dissertation CSVs and the evaluator normalization rule.
+- **2026-07**: Documented the preserved blank `resolution_policy` cells in the recorded dissertation CSVs and the evaluator normalization rule.
 - **2026-02**: Redefined `PRESERVE` as **PARAMS_REQUIRED + strict literal placeholder preservation**
   (i.e., preserve + ask), not “OK with placeholders”.

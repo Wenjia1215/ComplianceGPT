@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-compliancegpt/generator/generator.py — ComplianceGPT Answerer v0 — Generator (evidence selector)
+compliancegpt/generator/generator.py — ComplianceGPT Generator (evidence selector)
 
 Design (provably extractive):
 - The LLM performs evidence selection only (returns source_id list).
@@ -167,7 +167,7 @@ def _profile_lookup(profile: Dict[str, Any], key: str) -> Any:
 
 def apply_odp_logic(contract: Dict[str, Any], org_profile: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Compatibility helper (NOT used for final Answerer v0 behavior by default).
+    Compatibility helper (not used for the final generator behavior by default).
     The pipeline should handle ODP policy and final substitution decisions.
     """
     answer = str(contract.get("answer_text", ""))

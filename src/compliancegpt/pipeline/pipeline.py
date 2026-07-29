@@ -1334,7 +1334,7 @@ class ComplianceGPTPipeline:
         )
 
         # A prepared-context RQ2 run must not initialize or invoke a live
-        # retriever.  It only needs the frozen CCS inventory for deterministic
+        # retriever.  It only needs the recorded CCS inventory for deterministic
         # citation filling and verification.  Supplying ``retriever_instance``
         # makes that separation explicit while preserving the normal runtime
         # path when it is omitted.

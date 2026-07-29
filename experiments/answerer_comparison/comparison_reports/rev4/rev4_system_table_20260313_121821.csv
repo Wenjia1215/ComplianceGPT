@@ -1,3 +1,0 @@
-system,n_questions,audit_ready_answer_rate,right_control_found_rate,right_clause_found_rate,full_gold_clause_coverage_rate,answer_has_supporting_evidence_rate,average_supporting_span_count,strict_verbatim_grounding_rate,normalized_verbatim_grounding_rate,n_odp_questions,odp_correct_handling_rate,odp_false_complete_rate,odp_unresolved_detected_rate,odp_unresolved_hidden_rate
-ComplianceGPT,36,0.75,1.0,0.9722222222222222,0.75,1.0,4.222222222222222,1.0,1.0,19,1.0,0.0,1.0,0.0
-Generative RAG baseline,36,0.2222222222222222,1.0,0.8333333333333334,0.5555555555555556,1.0,2.7222222222222223,1.0,1.0,19,0.0,1.0,0.3157894736842105,0.6842105263157895

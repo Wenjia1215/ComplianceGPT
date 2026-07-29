@@ -151,7 +151,7 @@ Files currently present:
 - `eval_rev4.csv`
 - `eval_rev5.csv`
 
-Treat this folder as lightweight score artifacts that belong to the pipeline evaluation layer, not as the authoritative run archive. The authoritative run outputs live in `experiments/pipeline_runs/`.
+Treat this folder as lightweight score artifacts that belong to the pipeline evaluation layer, not as the authoritative run record. The authoritative run outputs live in `experiments/pipeline_runs/`.
 
 ---
 
@@ -350,7 +350,7 @@ The pipeline should be built with:
 ```python
 ComplianceGPTPipeline(..., doc_filter_mode="prefer_smt_keep_params", ...)
 ```
-Note: `prefer_smt_keep_params` is a legacy mode name. In the frozen pipeline, it does not pass standalone ODP/PRM records into the generator. It prioritizes statement records while retaining guidance records, and ODP placeholders are preserved when they appear inside selected clause text.
+Note: `prefer_smt_keep_params` is a legacy mode name. In the recorded pipeline, it does not pass standalone ODP/PRM records into the generator. It prioritizes statement records while retaining guidance records, and ODP placeholders are preserved when they appear inside selected clause text.
 
 This matters because batch behavior should match the validated single-run and acceptance-tested routine.
 

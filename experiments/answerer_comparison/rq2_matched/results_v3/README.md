@@ -18,7 +18,7 @@ matched-window experiment. The complete evidence package is
 - Archive SHA-256:
   `56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328`
 
-The run reconstructed each prepared context from the frozen stored S7 trace.
+The run reconstructed each prepared context from the recorded S7 trace.
 It made no live retrieval call. One ordered evidence window was prepared per
 question and supplied unchanged to both answer paths. Gold rows entered only
 after answer construction, through the offline verifier.

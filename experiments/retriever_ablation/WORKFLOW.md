@@ -1,6 +1,6 @@
 # Workflow: ComplianceGPT Retrieval Ablation
 
-This document gives the step-by-step reproduction workflow for the frozen S1–S7 retrieval ablation study.
+This document gives the step-by-step reproduction workflow for the reported S1–S7 retrieval ablation study.
 
 ---
 
@@ -60,7 +60,7 @@ src/compliancegpt/QUR_generator/QUR_Generator_UT.ipynb
 
 ## 4. Experiment: Run S1–S7
 
-**Action:** Run the frozen S1–S7 ablation notebook:
+**Action:** Run the recorded S1–S7 ablation notebook:
 
 ```text
 experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb
@@ -86,7 +86,7 @@ src/compliancegpt/retriever/retriever_s7.py
 
 **Purpose:** Measure retrieval-only latency and reranker-call behavior for one
 diagnostic workload. The stored benchmark uses a 0.01 skip margin, while the
-frozen RQ1 notebook and current checked source use 0.10; its latency is not an
+recorded RQ1 notebook and current checked source use 0.10; its latency is not an
 exact measurement of either reported S7 state.
 
 **Systems of interest:**
@@ -106,7 +106,7 @@ exact measurement of either reported S7 state.
 python experiments/retriever_ablation/error_analysis/run_error_mode_analysis.py
 ```
 
-The script joins ErrorBank labels to frozen retrieval rows by
+The script joins ErrorBank labels to recorded retrieval rows by
 `(version, question_id)` and validates the question and gold control before
 writing the category reports.
 

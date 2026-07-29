@@ -1,6 +1,7 @@
 # Baseline Generative Answerer (RQ2)
 
-This package implements the **baseline generative RAG** system used for **RQ2**.
+This package implements the **baseline generative RAG** answer path used in the
+corrected matched answerer evaluation.
 
 Goal:
 - keep the same retrieval stack as ComplianceGPT,
@@ -29,7 +30,7 @@ That means the comparison is:
 
 ## Why this is the correct RQ2 baseline
 
-This baseline isolates the dissertation claim about **answer construction**.
+This baseline isolates the research question about **answer construction**.
 
 It does **not** change:
 - retriever
@@ -45,7 +46,7 @@ It changes only:
 
 This package is for:
 - single-query demonstrations
-- batch RQ2 experiments
-- answerer-vs-answerer comparison tables
+- the matched answerer experiment under
+  `experiments/answerer_comparison/rq2_matched/`
 
 It is **not** the main production answerer.
