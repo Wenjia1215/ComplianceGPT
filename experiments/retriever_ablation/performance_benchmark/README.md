@@ -91,17 +91,17 @@ S7 implementation state.
 
 ## Gate Audit
 
-This run records behavior for both the **Performance Gate** (Pre-Rerank) and **Accuracy Gate** (Post-Rerank).
+This run records behavior for both the **Performance Gate** (Pre-Rerank) and **Adoption Gate** (Post-Rerank).
 
 ### 1. Performance Gate (Skip Logic)
 
 * **Reranker Called Rate:** `10%` (10/100 runs)
 * **Skip Reason:** `base_confident` (90/100 runs)
 
-### 2. Accuracy Gate (No-Harm Logic)
+### 2. Rerank Adoption Gate
 
 * **Rerank Applied Rate:** `0%` (0/100 runs)
-* **Interpretation:** The reranker was called 10 times. In all 10 cases, it proposed a new Top-1, but the margin was too low (`< 0.15`), so the system reverted to the base ordering.
+* **Interpretation:** The reranker was called 10 times. In all 10 cases, it proposed a new Top-1, but the margin was too low (`< 0.15`), so the system reverted to the base ordering. This timing diagnostic did not adjudicate whether the reverted or proposed Top-1 was correct.
 
 ---
 

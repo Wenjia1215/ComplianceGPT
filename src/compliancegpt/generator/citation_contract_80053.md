@@ -80,6 +80,9 @@ After retrieval + generator selection, the pipeline returns the final, verifier-
   ],
   "status": "OK" | "NO_EVIDENCE" | "PARAMS_REQUIRED" | "ERROR",
   "odp_required_list": ["<string>"],
+  "provenance": [
+    {"source_id": "<string>", "origin": "<selector|fallback|rescue|hierarchy>", "in_evidence_window": true}
+  ],
   "primary_citation": "<string>",
   "all_citations": "<string>",
   "answer_text_with_citation": "<string>",
@@ -99,6 +102,12 @@ After retrieval + generator selection, the pipeline returns the final, verifier-
 - **`source_id` format**
   - Recommended to use the canonical CCS ID (e.g., `ac-2_smt.a`, `pl-11_gdn`, etc.).
   - Fully-qualified formats are allowed (the verifier attempts reasonable resolution), but the last segment must still map to a CCS key.
+
+- **`provenance`**
+  - Positively enumerates the runtime path that introduced every final `source_id`.
+  - Must be ordered one-to-one with `evidence_spans`.
+  - Each identifier has exactly one origin: `selector`, `fallback`, `rescue`, or `hierarchy`.
+  - `in_evidence_window` records membership in the question-specific bounded evidence window.
 
 - **ODP behavior**
   - If filled evidence contains unresolved placeholders (e.g., `{{ insert: param, ac-02_odp.05 }}`), the pipeline must set `status="PARAMS_REQUIRED"` and populate `odp_required_list`.
@@ -137,6 +146,7 @@ The Verifier consumes the **Final Answer Contract**, and checks:
   "evidence_spans": [{"source_id": "ac-1_smt.a", "span_text": "<verbatim from CCS>"}],
   "status": "OK",
   "odp_required_list": [],
+  "provenance": [{"source_id": "ac-1_smt.a", "origin": "selector", "in_evidence_window": true}],
   "primary_citation": "ac-1_smt.a",
   "all_citations": "ac-1_smt.a",
   "answer_text_with_citation": "<answer> (CITE: ac-1_smt.a)",

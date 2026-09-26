@@ -13,7 +13,7 @@ Design goals (clean + pipeline-friendly)
 
 Retrieval idea
 - Control ranking: weighted RRF fusion over BM25(control) + Dense(control via clause adapter)
-- Optional rerank: cross-encoder scoring + "safe blending" + "no-harm gate"
+- Optional rerank: cross-encoder scoring + blended ranking + adoption gate
 - Evidence selection: return multiple clause snippets per top control (statement + guidance, etc.)
 
 Dependencies (same as before)
@@ -484,6 +484,15 @@ def build_control_fallback_text_map(records: List[Dict[str, Any]], max_parts: in
 
     return out
 class BM25Okapi:
+    """Independent Okapi BM25 implementation used by the frozen retriever.
+
+    The default ``k1=1.5`` and ``b=0.75`` match the defaults exposed by the
+    commonly used ``rank_bm25`` package. This class is not copied from that
+    package: in particular, its IDF expression uses a Lucene-style ``+1``
+    form rather than ``rank_bm25``'s negative-IDF epsilon floor. See
+    ``CONSTANTS_PROVENANCE.md`` before interpreting or changing the values.
+    """
+
     def __init__(self, corpus_tokens: List[List[str]], k1: float = 1.5, b: float = 0.75):
         self.k1 = float(k1)
         self.b = float(b)
@@ -594,6 +603,11 @@ class DenseIndex:
         if top_k <= 0:
             return []
 
+        # Reproduction compatibility: the frozen runs encoded raw transformed
+        # queries here even though E5 recommends a ``query: `` prefix. Corpus
+        # text is prefixed with ``passage: `` in build_dense_retriever(). Do
+        # not silently change this path while claiming comparability with the
+        # published metrics; rerun and version any corrected-prefix results.
         q_emb = self.model.encode([query], normalize_embeddings=True)
         q = np.asarray(q_emb, dtype=np.float32)[0]
 
@@ -812,7 +826,7 @@ def s7_rank_controls(
 
     Meta includes:
       - reranker_called: whether cross-encoder was executed (performance proof)
-      - rerank_applied: whether reranked order was applied (no-harm gate outcome)
+      - rerank_applied: whether the reranked order passed the adoption gate
       - skip_reason: why reranking was skipped (if skipped)
       - base_margin_ratio: confidence of base fused top-1 vs top-2 (raw RRF)
       - rerank_margin_ratio: confidence of reranked top-1 vs top-2 (blended score space)
@@ -867,7 +881,7 @@ def s7_rank_controls(
         base_margin_ratio = 1.0
 
 
-    # Effective apply threshold for the no-harm gate.
+    # Effective apply threshold for the rerank adoption gate.
     # In uncertain base-ranking scenarios, allow a slightly lower margin requirement so the reranker
     # can correct control-id mistakes without being overly constrained.
     effective_apply_min = float(rerank_apply_min_margin_ratio)
@@ -927,7 +941,7 @@ def s7_rank_controls(
                 }
                 return cids_all, meta
 
-    # 3) Rerank (safe blend + no-harm gate)
+    # 3) Rerank (score blend + adoption gate)
     pairs: List[List[str]] = []
     valid_cids: List[str] = []
     missing_text_cids: List[str] = []
@@ -984,7 +998,7 @@ def s7_rank_controls(
 
     rerank_top1 = reranked_full[0] if reranked_full else ""
 
-    # No-harm gate: if reranker changes top1 but with weak margin, keep base ordering.
+    # Adoption gate: if reranker changes top1 but with weak margin, keep base ordering.
     # Patch (rerankgate_v1): when the base fused ranking is low-confidence, relax the apply threshold modestly.
     rerank_applied = True
     final_ranked = reranked_full
@@ -1065,7 +1079,7 @@ class RetrievalConfig:
     # CCS filtering
     keep_kinds: Tuple[str, ...] = ("smt", "gdn")
 
-    # BM25 params
+    # BM25 params: package-common defaults, not universal optima.
     bm25_k1: float = 1.5
     bm25_b: float = 0.75
 
@@ -1073,7 +1087,8 @@ class RetrievalConfig:
     dense_model_id: str = "intfloat/e5-small-v2"
     reranker_model_id: str = "BAAI/bge-reranker-base"
 
-    # Ranking params
+    # Ranking params: RRF k=60 is traceable to Cormack et al.; pool size is a
+    # fixed project choice. See CONSTANTS_PROVENANCE.md for the full boundary.
     candidate_set_size: int = 50
     rrf_k: int = 60
 
@@ -1082,7 +1097,7 @@ class RetrievalConfig:
     rewrite_weight: float = 0.25
     rewrite_jaccard_min: float = 0.15
 
-    # Safe rerank blending + no-harm gate
+    # Rerank blending + adoption gate
     rerank_alpha: float = 0.65
     rerank_apply_min_margin_ratio: float = 0.15
 

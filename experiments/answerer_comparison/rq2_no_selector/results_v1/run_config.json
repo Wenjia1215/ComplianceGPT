@@ -1,0 +1,45 @@
+{
+  "created_utc": "2026-09-25T15:25:08.570704+00:00",
+  "frozen_archive": "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+  "frozen_archive_sha256_after": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_archive_sha256_before": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_member_sha256": {
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+  },
+  "input_sha256": {
+    "rev4": {
+      "ccs": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "gold": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2"
+    },
+    "rev5": {
+      "ccs": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+      "gold": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+    }
+  },
+  "outputs_sha256": {
+    "SUMMARY.md": "b9e73961897533152bcd5f3a4c036b67f2e3c6fa567890485b66226a89f31e18",
+    "contracts/rev4_no_selector.csv": "af05e97e7c0078a1f576700922ca292331bc778db4d9948337b38d6364be7602",
+    "contracts/rev5_no_selector.csv": "606024e83dacdabac8e0dcbe7bbd37aa61d7a9823d23341b3de6d1d58fcfff3d",
+    "per_row_comparison.csv": "ccda66d90dd0dfead4279cd6769d0a0d27fc8621d564ec1f3b83c47cd141ae7d",
+    "summary.json": "e4eda83a64d2e6fabd74c11859236f83e6f6e56213edb2030c7848473ab1d317"
+  },
+  "policy": {
+    "fallback": "disabled",
+    "hierarchy_closure": "disabled",
+    "rescue": "disabled",
+    "resolution_policy": "ASK with no organization profile",
+    "retrieval": "none; consume frozen prepared contexts",
+    "selector": "bypassed; retain every record in the frozen evidence window",
+    "strict_extras": false,
+    "strict_verbatim": true
+  },
+  "repo_root": ".",
+  "result_id": "rq2_no_selector_v1",
+  "result_summary_sha256": "65a562595d32452894d8ebcbc96a3e61d7597f03949fb63a36798a1657821b7d",
+  "schema_version": "compliancegpt-rq2-no-selector-v1",
+  "script": "experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py",
+  "script_sha256": "69324892261e78178cdda108d805385ef0fdbafc72f63b68a738a1a06460e978"
+}

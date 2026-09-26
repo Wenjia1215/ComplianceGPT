@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-09-25T19:26:02.451569+00:00",
+  "frozen_archive": "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+  "frozen_archive_sha256_after": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_archive_sha256_before": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_member_sha256": {
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+  },
+  "input_sha256": {
+    "rev4": {
+      "ccs": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "gold": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+      "odp_registry": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c"
+    },
+    "rev5": {
+      "ccs": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+      "gold": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+      "odp_registry": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+    }
+  },
+  "outputs_sha256": {
+    "SUMMARY.md": "0c947edc506de90833b4d1f71f6e4ed35494c7f6cc1f6ceb7ee3ed7ea387d2fc",
+    "contracts/rev4_rescue_off.csv": "1f707ab93063fc82dd4c014a55396da872f4fa7cf780b405dcebcd313daa1b45",
+    "contracts/rev4_rescue_on.csv": "5a29bce877990ef3f52a270a4d8038464bf3b7973409ae35e87e630dddae8aa8",
+    "contracts/rev5_rescue_off.csv": "df0a9884fe8f8f284a2bf38d7c110d361faf12c63e46204e082496d022e176c6",
+    "contracts/rev5_rescue_on.csv": "369587fe442acd0b5f80039af034d3fa412823fdb0ec020deeced2b86829c59f",
+    "per_row_comparison.csv": "a1d10aea90ff5fe2528121aeeb1ec86aceb76b8328247157b1adb35f80001ced",
+    "summary.json": "5eb7df5865c308be0df1a7d82dee206929e8d0dc15d70011996f57c86ec733ec"
+  },
+  "policy": {
+    "fallback": "reuse the two fallbacks already recorded in frozen selector_raw",
+    "gold_during_construction": false,
+    "hierarchy_closure": "required absent",
+    "rescue_off": "retain recovered pre-rescue spans",
+    "rescue_on": "implemented deterministic ODP-statement rescue, max_add=4",
+    "resolution_policy": "ASK with no organization profile",
+    "retrieval": "none; consume frozen prepared contexts",
+    "secondary_fallback": "required absent",
+    "selector": "none; recover stored normalized selector result",
+    "strict_extras": false,
+    "strict_verbatim": true
+  },
+  "repo_root": ".",
+  "result_id": "rq2_rescue_ablation_v1",
+  "result_summary_sha256": "1d3885401046fb109d7ebf54e567fafb1b5630fc54dbca95f14ecd34f2c8a9d0",
+  "schema_version": "compliancegpt-rq2-rescue-ablation-v1",
+  "script": "experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py",
+  "script_sha256": "488976dc53886719289b592eb682694ac913129713176a0c8a5a9d752d84d75a"
+}

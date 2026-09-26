@@ -1,0 +1,52 @@
+{
+  "frozen_archive": "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+  "frozen_archive_sha256_after": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_archive_sha256_before": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "frozen_member_sha256": {
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+  },
+  "input_sha256": {
+    "rev4": {
+      "ccs": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "odp_registry": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c"
+    },
+    "rev5": {
+      "ccs": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+      "odp_registry": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+    }
+  },
+  "outputs_sha256": {
+    "SUMMARY.md": "1b975d3203d971d7d775dbdf5389bd52e61aea58753acb2c7077f4fe3c0223de",
+    "contracts_with_provenance.jsonl": "34eacf7a7bc1bc3ab78358ca6b5409b946d1c7ea76fa517af042346062b2261a",
+    "identifier_provenance.csv": "33f0dd1358fb9bf17d585d84bae996486ab3eec865894bf611e382f65adcf62b",
+    "per_contract_provenance.csv": "24e57cccc1df032b17700d3fc0f1267cc370039d224d43ea1574dd2062514781",
+    "summary.json": "0d2f7e0e720a65c8458370cf0efa41307065ebb3889f099ff93a3ad5dfce2187"
+  },
+  "policy": {
+    "containment_reference": "question-specific frozen shared evidence window",
+    "fallback": "reuse recorded deterministic fallback state",
+    "gold_during_construction_or_attribution": false,
+    "hierarchy_closure": "disabled in frozen RQ2 configuration",
+    "provenance_origins": [
+      "selector",
+      "fallback",
+      "rescue",
+      "hierarchy"
+    ],
+    "rescue": "implemented deterministic ODP-statement rescue, max_add=4",
+    "retrieval": "none; consume frozen prepared contexts",
+    "selector": "none; replay frozen normalized selector output"
+  },
+  "repo_root": ".",
+  "rescue_replay_runner_sha256": "488976dc53886719289b592eb682694ac913129713176a0c8a5a9d752d84d75a",
+  "result_id": "rq2_identifier_provenance_v1",
+  "result_summary_sha256": "3b28dc088b553e50a5aa4521debc9318071c2e9c2450ea4c4407dd562c57a298",
+  "runtime_pipeline_sha256": "040cfaf42cf4961b1865a5a39f283645f898669c1eb24e99dc55962fe0e29eca",
+  "schema_version": "compliancegpt-rq2-identifier-provenance-v1",
+  "script": "experiments/answerer_comparison/rq2_identifier_provenance/run_identifier_provenance.py",
+  "script_sha256": "131728db5c69674d8ec0f0a0b7a96aa8b32e42ef87812d6d5622cbb7bc72b55a",
+  "source_result_id": "rq2_matched_v3"
+}

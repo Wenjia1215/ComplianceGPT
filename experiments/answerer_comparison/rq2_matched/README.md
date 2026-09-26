@@ -20,10 +20,13 @@ The primary paired comparison is:
 | Answer path | Free-form answer generation | Evidence selection followed by deterministic assembly |
 | Gold labels visible during generation | No | No |
 
-This design isolates the effect of the answer path. A conventional
-BM25-to-generator system would be a useful supplemental end-to-end baseline,
-but it is not a substitute for this paired RQ2 comparison because it changes
-retrieval and answer construction at the same time.
+This design holds the upstream evidence window and loaded model constant for a
+comparison of the two complete answer paths. It does not isolate deterministic
+assembly: the paths also differ in prompts, schemas, token budgets, retries,
+fallback or rescue behavior, postprocessing, and final construction. A
+conventional BM25-to-generator system would be a useful supplemental
+end-to-end baseline, but it is not a substitute for this paired RQ2 comparison
+because it changes retrieval and answer construction at the same time.
 
 ## Active inputs
 

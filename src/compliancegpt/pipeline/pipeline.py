@@ -35,6 +35,13 @@ from compliancegpt.pipeline.evidence_window import (  # type: ignore
     evidence_window_manifest,
     select_allowed_controls,
 )
+from compliancegpt.pipeline.odp_policy import (
+    ASSIGNMENT_REQUIRED_SENTINEL as _ASSIGNMENT_REQUIRED_SENTINEL,
+    apply_odp_policy_to_answer as _apply_odp_policy_to_answer,
+    extract_odp_ids as _extract_odp_ids,
+    normalize_resolution_policy as _normalize_resolution_policy,
+    profile_lookup as _profile_lookup,
+)
 
 PIPELINE_PATCH_ID = "2026-03-12-odp-statement-rescue-v3"
 
@@ -654,51 +661,6 @@ def _build_citation_suffix(framework_version: str) -> str:
     return "NIST SP 800-53 Rev. 4"
 
 
-# ODP placeholder patterns (must align with verifier.py)
-_PARAM_CURLY_RE = re.compile(r"\{+\s*insert:\s*(?:param,\s*)?([^}]+?)\s*\}+", re.IGNORECASE)
-_PARAM_ASSIGNMENT_RE = re.compile(r"\[assignment:\s*([^\]]+?)\s*\]", re.IGNORECASE)
-
-_ASSIGNMENT_REQUIRED_SENTINEL = "__ASSIGNMENT_REQUIRED__"
-
-
-def _extract_odp_ids(text: str) -> Tuple[List[str], bool]:
-    """
-    Returns (odp_ids, has_assignment_placeholder).
-    odp_ids are normalized strings like 'ac-02_odp.05' when present inside curly placeholders.
-    """
-    if not isinstance(text, str):
-        text = "" if text is None else str(text)
-
-    keys = []
-    for m in _PARAM_CURLY_RE.finditer(text):
-        k = m.group(1).strip()
-        if k:
-            keys.append(k)
-
-    # assignment placeholders are human-language (no canonical key guaranteed)
-    has_assignment = bool(_PARAM_ASSIGNMENT_RE.search(text))
-    # normalize + de-dupe
-    keys = sorted(set(k.strip() for k in keys if k.strip()))
-    return keys, has_assignment
-
-
-def _profile_lookup(profile: Dict[str, Any], key: str) -> Optional[Any]:
-    """
-    Look up ODP values in org_profile.
-
-    Supported shapes:
-      profile["odp_values"][key]
-      profile["odps"][key]
-      profile[key]
-    """
-    if not isinstance(profile, dict) or not key:
-        return None
-    for top in ("odp_values", "odps"):
-        if isinstance(profile.get(top), dict) and key in profile[top]:
-            return profile[top][key]
-    return profile.get(key)
-
-
 def _build_ask_list(
     required_param_ids: List[str],
     filled_spans: List[Dict[str, str]],
@@ -920,84 +882,6 @@ def _extract_control_hints(query: str) -> List[str]:
     return final
 
 
-def _apply_odp_policy_to_answer(
-    answer_text: str,
-    policy: str,
-    org_profile: Dict[str, Any],
-) -> Tuple[str, List[str], str]:
-    """
-    Apply ODP resolution policy to the final answer_text cleanly.
-
-    No query regex heuristics. Extractive presence dictates the requirement.
-
-    Returns: (new_answer_text, odp_required_list, status_override)
-    """
-    pol_raw = policy
-    try:
-        pol = "" if pol_raw is None else str(pol_raw).strip().upper()
-    except Exception:
-        pol = ""
-
-    # Default to profile-filling when policy is missing/empty-ish
-    if pol in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
-        pol = "FILL_FROM_PROFILE"
-    if pol in {"FILL", "PROFILE", "FILL_PROFILE"}:
-        pol = "FILL_FROM_PROFILE"
-
-    text = str(answer_text or "")
-    keys, has_assignment = _extract_odp_ids(text)
-
-    if not keys and not has_assignment:
-        return text, [], "OK"
-
-    if pol == "PRESERVE":
-        # Keep placeholders verbatim; do not force PARAMS_REQUIRED.
-        req = list(keys)
-        if has_assignment:
-            req.append(_ASSIGNMENT_REQUIRED_SENTINEL)
-        return text, req, "OK"
-
-    if pol in {"ASK", "FILL_FROM_PROFILE"}:
-        missing: List[str] = []
-        for k in keys:
-            val = _profile_lookup(org_profile, k)
-
-            if pol == "FILL_FROM_PROFILE" and val is not None and str(val).strip():
-                # Fill known value
-                val_str = str(val)
-                rep_braces = r"\{+\s*insert:\s*(?:param,\s*)?" + re.escape(k) + r"\s*\}+"
-                try:
-                    text = re.sub(rep_braces, val_str, text, flags=re.IGNORECASE)
-                except re.error:
-                    missing.append(k)
-            else:
-                missing.append(k)
-
-        req = list(sorted(set(missing)))
-        if has_assignment:
-            req.append(_ASSIGNMENT_REQUIRED_SENTINEL)
-
-        # If placeholders remain unresolved in the final text, trigger PARAMS_REQUIRED.
-        if req:
-            return text, req, "PARAMS_REQUIRED"
-        return text, [], "OK"
-
-    raise ValueError(f"Unknown resolution_policy={pol_raw!r}")
-
-
-def _normalize_resolution_policy(policy: Any) -> str:
-    """Normalize resolution policy to one of ASK / PRESERVE / FILL_FROM_PROFILE."""
-    try:
-        pol = "" if policy is None else str(policy).strip().upper()
-    except Exception:
-        pol = ""
-    if pol in {"", "NAN", "NA", "N/A", "NONE", "NULL", "AUTO"}:
-        pol = "FILL_FROM_PROFILE"
-    if pol in {"FILL", "PROFILE", "FILL_PROFILE"}:
-        pol = "FILL_FROM_PROFILE"
-    return pol
-
-
 def _rescue_odp_statement_spans(
     *,
     filled_spans: List[Dict[str, str]],
@@ -1095,6 +979,65 @@ def _rescue_odp_statement_spans(
 
     added_ids = [str(sp.get("source_id", "")).strip() for sp in rescue if str(sp.get("source_id", "")).strip()]
     return merged, added_ids, True
+
+
+def _build_identifier_provenance(
+    *,
+    final_spans: List[Dict[str, str]],
+    selector_ids: List[str],
+    fallback_ids: List[str],
+    hierarchy_ids: List[str],
+    rescue_ids: List[str],
+    evidence_window_ids: Optional[List[str]] = None,
+) -> List[Dict[str, Any]]:
+    """Emit one positive runtime origin for every final source identifier."""
+    selector_set = {str(value).strip() for value in selector_ids if str(value).strip()}
+    fallback_set = {str(value).strip() for value in fallback_ids if str(value).strip()}
+    hierarchy_set = {str(value).strip() for value in hierarchy_ids if str(value).strip()}
+    rescue_set = {str(value).strip() for value in rescue_ids if str(value).strip()}
+    window_set = (
+        {str(value).strip() for value in evidence_window_ids if str(value).strip()}
+        if evidence_window_ids is not None
+        else None
+    )
+
+    provenance: List[Dict[str, Any]] = []
+    seen: Set[str] = set()
+    for span in final_spans or []:
+        source_id = str(span.get("source_id", "") or "").strip()
+        if not source_id:
+            raise ValueError("A final evidence span has no source_id.")
+        if source_id in seen:
+            raise ValueError(f"Duplicate final source_id: {source_id}")
+        seen.add(source_id)
+
+        matching_origins = [
+            origin
+            for origin, identifiers in (
+                ("selector", selector_set),
+                ("fallback", fallback_set),
+                ("hierarchy", hierarchy_set),
+                ("rescue", rescue_set),
+            )
+            if source_id in identifiers
+        ]
+        if len(matching_origins) != 1:
+            raise ValueError(
+                f"Expected exactly one provenance origin for {source_id}; "
+                f"found {matching_origins}."
+            )
+
+        record: Dict[str, Any] = {
+            "source_id": source_id,
+            "origin": matching_origins[0],
+        }
+        if window_set is not None:
+            record["in_evidence_window"] = source_id in window_set
+        provenance.append(record)
+
+    return provenance
+
+
 def _verifier_result_to_dict(ver: Any) -> Optional[Dict[str, Any]]:
     """Normalize verifier output (dataclass / dict / unknown) to a JSON-friendly dict."""
     if ver is None:
@@ -2106,6 +2049,7 @@ class ComplianceGPTPipeline:
                 "odp_required_list": [],
                 "primary_citation": "",
                 "all_citations": "",
+                "provenance": [],
                 "debug": {
                     "query_plan": _build_query_plan_debug(q, rewrites_used, retrieval_meta),
                     "retrieval_meta": retrieval_meta,
@@ -2190,6 +2134,23 @@ class ComplianceGPTPipeline:
         else:
             answer_text_with_citations = answer_text2
 
+        selector_origin_ids = [] if fallback_used else list(sel_ids_raw)
+        fallback_origin_ids = list(sel_ids_raw) if fallback_used else []
+        if secondary_fallback_used and secondary_fallback_selected_id:
+            selector_origin_ids = []
+            fallback_origin_ids = [secondary_fallback_selected_id]
+        evidence_window_ids = list(
+            dict(window_audit.get("evidence_window", {}) or {}).get("source_ids", []) or []
+        )
+        provenance = _build_identifier_provenance(
+            final_spans=filled_spans,
+            selector_ids=selector_origin_ids,
+            fallback_ids=fallback_origin_ids,
+            hierarchy_ids=added_ids,
+            rescue_ids=odp_statement_rescue_added_ids,
+            evidence_window_ids=evidence_window_ids,
+        )
+
         final_contract = {
             "question": q,
             "framework_version": self.framework_version,
@@ -2201,6 +2162,7 @@ class ComplianceGPTPipeline:
             "ask_list": ask_list,
             "primary_citation": primary_citation,
             "all_citations": all_citations,
+            "provenance": provenance,
             "debug": {
                 "query_plan": _build_query_plan_debug(q, rewrites_used, retrieval_meta),
                 "retrieval_meta": retrieval_meta,
@@ -2216,10 +2178,12 @@ class ComplianceGPTPipeline:
                 "hierarchy_added_ids": added_ids,
                 "fallback_used": fallback_used,
                 "fallback_reason": fallback_reason,
-                    "secondary_fallback_used": secondary_fallback_used,
-                    "secondary_fallback_reason": secondary_fallback_reason,
-                    "secondary_fallback_selected_id": secondary_fallback_selected_id,
-                    "secondary_fallback_candidates_checked": secondary_fallback_candidates_checked[:10],
+                "secondary_fallback_used": secondary_fallback_used,
+                "secondary_fallback_reason": secondary_fallback_reason,
+                "secondary_fallback_selected_id": secondary_fallback_selected_id,
+                "secondary_fallback_candidates_checked": secondary_fallback_candidates_checked[:10],
+                "odp_statement_rescue_used": odp_statement_rescue_used,
+                "odp_statement_rescue_added_ids": odp_statement_rescue_added_ids,
                 "counts": {
                     "retrieved_docs": int(len(retrieved_docs)),
                     "docs_for_gen": int(len(docs_for_gen)),

@@ -1,0 +1,197 @@
+{
+  "baseline_contracts": 136,
+  "baseline_passed": 136,
+  "by_revision": {
+    "rev4": {
+      "drop_odp_entry": {
+        "attempted": 28,
+        "detected": 15,
+        "detection_rate": 0.5357142857142857
+      },
+      "flip_status": {
+        "attempted": 36,
+        "detected": 36,
+        "detection_rate": 1.0
+      },
+      "rev4_only_id_in_rev5": {
+        "attempted": 0,
+        "detected": 0,
+        "detection_rate": null
+      },
+      "span_character_change": {
+        "attempted": 36,
+        "detected": 36,
+        "detection_rate": 1.0
+      },
+      "valid_active_id_swap": {
+        "attempted": 36,
+        "detected": 36,
+        "detection_rate": 1.0
+      }
+    },
+    "rev5": {
+      "drop_odp_entry": {
+        "attempted": 83,
+        "detected": 26,
+        "detection_rate": 0.3132530120481928
+      },
+      "flip_status": {
+        "attempted": 100,
+        "detected": 100,
+        "detection_rate": 1.0
+      },
+      "rev4_only_id_in_rev5": {
+        "attempted": 100,
+        "detected": 100,
+        "detection_rate": 1.0
+      },
+      "span_character_change": {
+        "attempted": 100,
+        "detected": 100,
+        "detection_rate": 1.0
+      },
+      "valid_active_id_swap": {
+        "attempted": 100,
+        "detected": 100,
+        "detection_rate": 1.0
+      }
+    }
+  },
+  "interpretation_boundary": "Detection rates apply only to the five deterministic operators and the implemented gold-independent predicates. They do not measure evidence completeness, semantic or legal correctness, or general mutation adequacy.",
+  "operators": {
+    "drop_odp_entry": {
+      "attempted": 111,
+      "detected": 41,
+      "detection_rate": 0.36936936936936937,
+      "label": "Remove one ODP-list entry",
+      "trigger_tag_counts": {
+        "ParamsRequiredButODPListEmpty": 41
+      },
+      "undetected": 70,
+      "undetected_examples": [
+        {
+          "field": "odp_required_list[3]",
+          "mutated_value": "<removed>",
+          "original_value": "ac-02_odp.08",
+          "query_id": "1",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[2]",
+          "mutated_value": "<removed>",
+          "original_value": "ac-07_odp.03",
+          "query_id": "4",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[4]",
+          "mutated_value": "<removed>",
+          "original_value": "at-2_prm_2",
+          "query_id": "6",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[4]",
+          "mutated_value": "<removed>",
+          "original_value": "at-2_prm_2",
+          "query_id": "7",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[4]",
+          "mutated_value": "<removed>",
+          "original_value": "at-2_prm_2",
+          "query_id": "9",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[3]",
+          "mutated_value": "<removed>",
+          "original_value": "at-3_prm_1",
+          "query_id": "10",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[2]",
+          "mutated_value": "<removed>",
+          "original_value": "au-2_prm_2",
+          "query_id": "11",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[2]",
+          "mutated_value": "<removed>",
+          "original_value": "au-06_odp.03",
+          "query_id": "14",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[1]",
+          "mutated_value": "<removed>",
+          "original_value": "ca-02_odp.02",
+          "query_id": "16",
+          "revision": "rev5"
+        },
+        {
+          "field": "odp_required_list[1]",
+          "mutated_value": "<removed>",
+          "original_value": "ca-03_odp.03",
+          "query_id": "17",
+          "revision": "rev5"
+        }
+      ]
+    },
+    "flip_status": {
+      "attempted": 136,
+      "detected": 136,
+      "detection_rate": 1.0,
+      "label": "Status flip",
+      "trigger_tag_counts": {
+        "OKButUnresolvedODPPlaceholders": 111,
+        "ParamsRequiredButNoPlaceholders": 25,
+        "ParamsRequiredButODPListEmpty": 25
+      },
+      "undetected": 0,
+      "undetected_examples": []
+    },
+    "rev4_only_id_in_rev5": {
+      "attempted": 100,
+      "detected": 100,
+      "detection_rate": 1.0,
+      "label": "Rev. 4-only ID in Rev. 5",
+      "trigger_tag_counts": {
+        "UnknownSourceId": 100
+      },
+      "undetected": 0,
+      "undetected_examples": []
+    },
+    "span_character_change": {
+      "attempted": 136,
+      "detected": 136,
+      "detection_rate": 1.0,
+      "label": "One-character span alteration",
+      "trigger_tag_counts": {
+        "SpanNotVerbatim": 136
+      },
+      "undetected": 0,
+      "undetected_examples": []
+    },
+    "valid_active_id_swap": {
+      "attempted": 136,
+      "detected": 136,
+      "detection_rate": 1.0,
+      "label": "Valid active-revision ID swap",
+      "trigger_tag_counts": {
+        "SpanNotVerbatim": 136
+      },
+      "undetected": 0,
+      "undetected_examples": []
+    }
+  },
+  "planned_operator_cells": 680,
+  "pooled_detection_rate": 0.8869143780290791,
+  "result_id": "runtime_verifier_mutation_v1",
+  "schema_version": "compliancegpt-runtime-verifier-mutation-v1",
+  "total_attempted_mutations": 619,
+  "total_detected_mutations": 549
+}

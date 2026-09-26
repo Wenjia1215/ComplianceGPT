@@ -1,0 +1,398 @@
+{
+  "result_id": "rq2_no_selector_v1",
+  "revisions": {
+    "rev4": {
+      "delta_no_selector_minus_selector": {
+        "exact_odp_list_rate": -0.5263157894736842,
+        "full_gold_clause_coverage_rate": 0.16666666666666663,
+        "mean_additional_evidence_count": 9.694444444444445,
+        "mean_answer_word_count": 437.7777777777778,
+        "mean_citation_char_count": 123.05555555555557,
+        "mean_gold_clause_precision": -0.2899822745862478,
+        "mean_selected_clause_count": 10.13888888888889,
+        "non_odp_status_expansion_rate": 0.2941176470588235,
+        "offline_strict_pass_rate": 0.16666666666666663,
+        "right_control_rate": 0.0
+      },
+      "no_selector_v1": {
+        "any_gold_clause": {
+          "count": 36,
+          "rate": 1.0
+        },
+        "full_gold_clause_coverage": {
+          "count": 35,
+          "rate": 0.9722222222222222
+        },
+        "n_questions": 36,
+        "non_odp_status_expansion": {
+          "n": 17,
+          "params_required_count": 14,
+          "params_required_rate": 0.8235294117647058
+        },
+        "odp_subset": {
+          "exact_odp_list_count": 2,
+          "exact_odp_list_rate": 0.10526315789473684,
+          "n": 19,
+          "params_required_count": 19,
+          "params_required_rate": 1.0
+        },
+        "offline_strict_pass": {
+          "count": 35,
+          "rate": 0.9722222222222222
+        },
+        "review_burden": {
+          "additional_evidence_count": {
+            "max": 23.0,
+            "mean": 11.777777777777779,
+            "median": 11.0,
+            "min": 1.0,
+            "p95": 23.0
+          },
+          "answer_char_count": {
+            "max": 8712.0,
+            "mean": 4640.444444444444,
+            "median": 4632.5,
+            "min": 838.0,
+            "p95": 7368.5
+          },
+          "answer_word_count": {
+            "max": 1160.0,
+            "mean": 604.9444444444445,
+            "median": 595.5,
+            "min": 105.0,
+            "p95": 954.5
+          },
+          "citation_char_count": {
+            "max": 305.0,
+            "mean": 168.19444444444446,
+            "median": 168.0,
+            "min": 54.0,
+            "p95": 298.5
+          },
+          "gold_clause_precision": {
+            "max": 0.8,
+            "mean": 0.21491190530793214,
+            "median": 0.13392857142857142,
+            "min": 0.041666666666666664,
+            "p95": 0.6730769230769231
+          },
+          "selected_clause_count": {
+            "max": 24.0,
+            "mean": 14.166666666666666,
+            "median": 14.0,
+            "min": 5.0,
+            "p95": 24.0
+          }
+        },
+        "right_control": {
+          "count": 36,
+          "rate": 1.0
+        },
+        "runtime_contract_pass": {
+          "count": 36,
+          "rate": 1.0
+        },
+        "status_counts": {
+          "OK": 3,
+          "PARAMS_REQUIRED": 33
+        }
+      },
+      "paired": {
+        "full_gold_clause_coverage": {
+          "both": 29,
+          "exact_mcnemar_two_sided_p": 0.03125,
+          "neither": 1,
+          "no_selector_only": 6,
+          "selector_only": 0
+        },
+        "offline_strict_pass": {
+          "both": 29,
+          "exact_mcnemar_two_sided_p": 0.03125,
+          "neither": 1,
+          "no_selector_only": 6,
+          "selector_only": 0
+        }
+      },
+      "selector_v3": {
+        "any_gold_clause": {
+          "count": 34,
+          "rate": 0.9444444444444444
+        },
+        "full_gold_clause_coverage": {
+          "count": 29,
+          "rate": 0.8055555555555556
+        },
+        "n_questions": 36,
+        "non_odp_status_expansion": {
+          "n": 17,
+          "params_required_count": 9,
+          "params_required_rate": 0.5294117647058824
+        },
+        "odp_subset": {
+          "exact_odp_list_count": 12,
+          "exact_odp_list_rate": 0.631578947368421,
+          "n": 19,
+          "params_required_count": 19,
+          "params_required_rate": 1.0
+        },
+        "offline_strict_pass": {
+          "count": 29,
+          "rate": 0.8055555555555556
+        },
+        "review_burden": {
+          "additional_evidence_count": {
+            "max": 6.0,
+            "mean": 2.0833333333333335,
+            "median": 1.0,
+            "min": 0.0,
+            "p95": 5.25
+          },
+          "answer_char_count": {
+            "max": 3835.0,
+            "mean": 1285.6666666666667,
+            "median": 1010.0,
+            "min": 147.0,
+            "p95": 3220.0
+          },
+          "answer_word_count": {
+            "max": 526.0,
+            "mean": 167.16666666666666,
+            "median": 131.0,
+            "min": 20.0,
+            "p95": 423.25
+          },
+          "citation_char_count": {
+            "max": 100.0,
+            "mean": 45.138888888888886,
+            "median": 44.0,
+            "min": 18.0,
+            "p95": 84.5
+          },
+          "gold_clause_precision": {
+            "max": 1.0,
+            "mean": 0.50489417989418,
+            "median": 0.5,
+            "min": 0.0,
+            "p95": 1.0
+          },
+          "selected_clause_count": {
+            "max": 8.0,
+            "mean": 4.027777777777778,
+            "median": 4.0,
+            "min": 2.0,
+            "p95": 7.25
+          }
+        },
+        "right_control": {
+          "count": 36,
+          "rate": 1.0
+        },
+        "runtime_contract_pass": {
+          "count": 36,
+          "rate": 1.0
+        },
+        "status_counts": {
+          "OK": 8,
+          "PARAMS_REQUIRED": 28
+        }
+      }
+    },
+    "rev5": {
+      "delta_no_selector_minus_selector": {
+        "exact_odp_list_rate": -0.4920634920634921,
+        "full_gold_clause_coverage_rate": 0.28,
+        "mean_additional_evidence_count": 7.1,
+        "mean_answer_word_count": 380.99,
+        "mean_citation_char_count": 94.4,
+        "mean_gold_clause_precision": -0.2779605824079003,
+        "mean_selected_clause_count": 7.7299999999999995,
+        "non_odp_status_expansion_rate": 0.2432432432432432,
+        "offline_strict_pass_rate": 0.27,
+        "right_control_rate": 0.0
+      },
+      "no_selector_v1": {
+        "any_gold_clause": {
+          "count": 96,
+          "rate": 0.96
+        },
+        "full_gold_clause_coverage": {
+          "count": 93,
+          "rate": 0.93
+        },
+        "n_questions": 100,
+        "non_odp_status_expansion": {
+          "n": 37,
+          "params_required_count": 29,
+          "params_required_rate": 0.7837837837837838
+        },
+        "odp_subset": {
+          "exact_odp_list_count": 24,
+          "exact_odp_list_rate": 0.38095238095238093,
+          "n": 63,
+          "params_required_count": 63,
+          "params_required_rate": 1.0
+        },
+        "offline_strict_pass": {
+          "count": 92,
+          "rate": 0.92
+        },
+        "review_burden": {
+          "additional_evidence_count": {
+            "max": 22.0,
+            "mean": 8.85,
+            "median": 8.0,
+            "min": 1.0,
+            "p95": 20.0
+          },
+          "answer_char_count": {
+            "max": 12457.0,
+            "mean": 4470.48,
+            "median": 4289.5,
+            "min": 452.0,
+            "p95": 9554.05
+          },
+          "answer_word_count": {
+            "max": 1781.0,
+            "mean": 601.66,
+            "median": 580.5,
+            "min": 61.0,
+            "p95": 1283.55
+          },
+          "citation_char_count": {
+            "max": 309.0,
+            "mean": 143.18,
+            "median": 138.5,
+            "min": 18.0,
+            "p95": 282.49999999999994
+          },
+          "gold_clause_precision": {
+            "max": 0.8333333333333334,
+            "mean": 0.306118421921104,
+            "median": 0.26785714285714285,
+            "min": 0.0,
+            "p95": 0.6679487179487178
+          },
+          "selected_clause_count": {
+            "max": 24.0,
+            "mean": 12.1,
+            "median": 12.0,
+            "min": 2.0,
+            "p95": 24.0
+          }
+        },
+        "right_control": {
+          "count": 97,
+          "rate": 0.97
+        },
+        "runtime_contract_pass": {
+          "count": 100,
+          "rate": 1.0
+        },
+        "status_counts": {
+          "OK": 8,
+          "PARAMS_REQUIRED": 92
+        }
+      },
+      "paired": {
+        "full_gold_clause_coverage": {
+          "both": 65,
+          "exact_mcnemar_two_sided_p": 7.450580596923828e-09,
+          "neither": 7,
+          "no_selector_only": 28,
+          "selector_only": 0
+        },
+        "offline_strict_pass": {
+          "both": 65,
+          "exact_mcnemar_two_sided_p": 1.4901161193847656e-08,
+          "neither": 8,
+          "no_selector_only": 27,
+          "selector_only": 0
+        }
+      },
+      "selector_v3": {
+        "any_gold_clause": {
+          "count": 93,
+          "rate": 0.93
+        },
+        "full_gold_clause_coverage": {
+          "count": 65,
+          "rate": 0.65
+        },
+        "n_questions": 100,
+        "non_odp_status_expansion": {
+          "n": 37,
+          "params_required_count": 20,
+          "params_required_rate": 0.5405405405405406
+        },
+        "odp_subset": {
+          "exact_odp_list_count": 55,
+          "exact_odp_list_rate": 0.873015873015873,
+          "n": 63,
+          "params_required_count": 63,
+          "params_required_rate": 1.0
+        },
+        "offline_strict_pass": {
+          "count": 65,
+          "rate": 0.65
+        },
+        "review_burden": {
+          "additional_evidence_count": {
+            "max": 12.0,
+            "mean": 1.75,
+            "median": 1.0,
+            "min": 0.0,
+            "p95": 5.0
+          },
+          "answer_char_count": {
+            "max": 4926.0,
+            "mean": 1631.36,
+            "median": 1484.0,
+            "min": 141.0,
+            "p95": 3324.1999999999994
+          },
+          "answer_word_count": {
+            "max": 642.0,
+            "mean": 220.67,
+            "median": 207.0,
+            "min": 18.0,
+            "p95": 451.3499999999999
+          },
+          "citation_char_count": {
+            "max": 162.0,
+            "mean": 48.78,
+            "median": 44.0,
+            "min": 8.0,
+            "p95": 92.89999999999995
+          },
+          "gold_clause_precision": {
+            "max": 1.0,
+            "mean": 0.5840790043290043,
+            "median": 0.6,
+            "min": 0.0,
+            "p95": 1.0
+          },
+          "selected_clause_count": {
+            "max": 12.0,
+            "mean": 4.37,
+            "median": 4.0,
+            "min": 1.0,
+            "p95": 8.049999999999997
+          }
+        },
+        "right_control": {
+          "count": 97,
+          "rate": 0.97
+        },
+        "runtime_contract_pass": {
+          "count": 100,
+          "rate": 1.0
+        },
+        "status_counts": {
+          "OK": 17,
+          "PARAMS_REQUIRED": 83
+        }
+      }
+    }
+  },
+  "schema_version": "compliancegpt-rq2-no-selector-v1"
+}

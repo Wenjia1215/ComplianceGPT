@@ -2,7 +2,7 @@
 
 This directory contains the reported retrieval ablation study for ComplianceGPT. The dissertation evaluation compares seven retrieval systems (S1–S7) on NIST SP 800-53 Rev.5 and Rev.4 using gold-standard QA sets, ODP subsets, and the diagnostic ErrorBank.
 
-The goal is to measure retrieval reliability using Recall@K, MRR@10, and nDCG@10, and to evaluate the recorded S7 design that informed the ComplianceGPT retriever.
+The goal is to measure retrieval reliability using Success@K, MRR@10, and nDCG@10, and to evaluate the recorded S7 design that informed the ComplianceGPT retriever. Stored scripts and frozen reports retain the historical `Recall@K` field name; because each question has one labeled governing control, the dissertation reports that query hit rate as `Success@K`.
 
 ## Implementation boundary
 

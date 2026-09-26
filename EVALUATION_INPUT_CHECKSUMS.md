@@ -7,6 +7,10 @@ Code is identified by Git commits. Dependencies, model revisions, prepared
 contexts, and generated results are documented in their experiment-specific
 records; they are outside the scope of this input-only checksum list.
 
+Upstream NIST release tags, exact source URLs, embedded catalog metadata, and
+the relationship between SP 800-53 and SP 800-53A material are recorded in
+[`data/DATA_VERSIONS.md`](data/DATA_VERSIONS.md).
+
 ---
 
 ## Verification Commands
@@ -56,3 +60,10 @@ sha256sum <file_path>      # Linux and Google Colab
 | `data/ODP/rev5/odp_registry_rev5.json` | `3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545` |
 | `data/ODP/rev5/org_profile_blank_rev5.yaml` | `7fcc7ccb2bd16b4cb13249cd78273d7121f93c4abaff0f10f80e70379791c1fd` |
 | `data/ODP/rev5/org_profile_example_rev5.yaml` | `a40b2102699333f66e126e74039c09fc382e172360117c8479b38d2e7760ae17` |
+
+### 5. Frozen Query-Rewrite Inputs
+| Path | SHA-256 |
+|---|---|
+| `data/qur_outputs/qur_rewrites_rev5.csv` | `ae20478163cbae94e5ccba5b27d401a707fe0c5bb4dd46e31061aa11191ddd82` |
+| `data/qur_outputs/qur_rewrites_rev4.csv` | `13c7657154dbc5ee307ed8c674c7e6e30558faa3fa3990ec851a8bcb0ce105e7` |
+| `data/qur_outputs/qur_rewrites_error_bank.csv` | `866eb98c761358bf916cd5477571c9cc8cf30df53ba3360d026c06f4a45a8de4` |

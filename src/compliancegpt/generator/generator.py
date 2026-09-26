@@ -27,7 +27,10 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
-from transformers import GenerationConfig
+try:
+    from transformers import GenerationConfig
+except ImportError:  # Allow dependency-light imports for policy/unit tests.
+    GenerationConfig = None  # type: ignore[assignment]
 
 
 # ==========================================================
@@ -262,6 +265,10 @@ class ComplianceGenerator:
         max_parse_retries: int = 2,
         contract_path: Optional[str] = None,
     ):
+        if GenerationConfig is None:
+            raise ImportError(
+                "ComplianceGenerator requires the optional 'transformers' dependency."
+            )
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens

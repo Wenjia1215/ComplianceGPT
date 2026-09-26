@@ -1,0 +1,133 @@
+{
+  "combined": {
+    "by_origin": {
+      "fallback": {
+        "contracts_with_origin": 2,
+        "identifier_occurrences": 2,
+        "unique_identifiers": 2,
+        "window_containment_rate": 1.0,
+        "window_present_occurrences": 2
+      },
+      "hierarchy": {
+        "contracts_with_origin": 0,
+        "identifier_occurrences": 0,
+        "unique_identifiers": 0,
+        "window_containment_rate": null,
+        "window_present_occurrences": 0
+      },
+      "rescue": {
+        "contracts_with_origin": 24,
+        "identifier_occurrences": 50,
+        "unique_identifiers": 45,
+        "window_containment_rate": 1.0,
+        "window_present_occurrences": 50
+      },
+      "selector": {
+        "contracts_with_origin": 134,
+        "identifier_occurrences": 530,
+        "unique_identifiers": 435,
+        "window_containment_rate": 1.0,
+        "window_present_occurrences": 530
+      }
+    },
+    "contracts": 136,
+    "contracts_all_identifiers_in_window": 136,
+    "contracts_complete_provenance": 136,
+    "contracts_matching_frozen_core": 136,
+    "identifier_occurrences": 582,
+    "runtime_contract_pass": 136,
+    "window_containment_rate": 1.0,
+    "window_present_occurrences": 582
+  },
+  "interpretation_boundary": {
+    "gold_used_for_provenance": false,
+    "hierarchy_closure_enabled_in_frozen_run": false,
+    "retrieval_or_model_inference": false,
+    "zero_hierarchy_additions_interpretation": "No hierarchy additions were observed because hierarchy closure was disabled; this does not evaluate enabled hierarchy behavior."
+  },
+  "result_id": "rq2_identifier_provenance_v1",
+  "revisions": {
+    "rev4": {
+      "by_origin": {
+        "fallback": {
+          "contracts_with_origin": 0,
+          "identifier_occurrences": 0,
+          "unique_identifiers": 0,
+          "window_containment_rate": null,
+          "window_present_occurrences": 0
+        },
+        "hierarchy": {
+          "contracts_with_origin": 0,
+          "identifier_occurrences": 0,
+          "unique_identifiers": 0,
+          "window_containment_rate": null,
+          "window_present_occurrences": 0
+        },
+        "rescue": {
+          "contracts_with_origin": 2,
+          "identifier_occurrences": 6,
+          "unique_identifiers": 6,
+          "window_containment_rate": 1.0,
+          "window_present_occurrences": 6
+        },
+        "selector": {
+          "contracts_with_origin": 36,
+          "identifier_occurrences": 139,
+          "unique_identifiers": 139,
+          "window_containment_rate": 1.0,
+          "window_present_occurrences": 139
+        }
+      },
+      "contracts": 36,
+      "contracts_all_identifiers_in_window": 36,
+      "contracts_complete_provenance": 36,
+      "contracts_matching_frozen_core": 36,
+      "identifier_occurrences": 145,
+      "runtime_contract_pass": 36,
+      "window_containment_rate": 1.0,
+      "window_present_occurrences": 145
+    },
+    "rev5": {
+      "by_origin": {
+        "fallback": {
+          "contracts_with_origin": 2,
+          "identifier_occurrences": 2,
+          "unique_identifiers": 2,
+          "window_containment_rate": 1.0,
+          "window_present_occurrences": 2
+        },
+        "hierarchy": {
+          "contracts_with_origin": 0,
+          "identifier_occurrences": 0,
+          "unique_identifiers": 0,
+          "window_containment_rate": null,
+          "window_present_occurrences": 0
+        },
+        "rescue": {
+          "contracts_with_origin": 22,
+          "identifier_occurrences": 44,
+          "unique_identifiers": 39,
+          "window_containment_rate": 1.0,
+          "window_present_occurrences": 44
+        },
+        "selector": {
+          "contracts_with_origin": 98,
+          "identifier_occurrences": 391,
+          "unique_identifiers": 377,
+          "window_containment_rate": 1.0,
+          "window_present_occurrences": 391
+        }
+      },
+      "contracts": 100,
+      "contracts_all_identifiers_in_window": 100,
+      "contracts_complete_provenance": 100,
+      "contracts_matching_frozen_core": 100,
+      "identifier_occurrences": 437,
+      "runtime_contract_pass": 100,
+      "window_containment_rate": 1.0,
+      "window_present_occurrences": 437
+    }
+  },
+  "schema_version": "compliancegpt-rq2-identifier-provenance-v1",
+  "source_result_id": "rq2_matched_v3"
+}

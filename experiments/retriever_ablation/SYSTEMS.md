@@ -2,7 +2,7 @@
 
 This recorded ablation study evaluates seven retrieval systems used to build and justify the ComplianceGPT retriever.
 
-The goal is not only to maximize Recall@K. The study also isolates which retrieval failure modes occur in compliance QA and which architectural components reduce those failures.
+The goal is not only to maximize Success@K, the hit rate for one labeled governing control per question. The study also isolates which retrieval failure modes occur in compliance QA and which architectural components reduce those failures. Stored evaluators retain `Recall@K` as a historical field name.
 
 All systems retrieve NIST SP 800-53 controls from the same Canonical Clause Store (CCS) and are evaluated with the same gold sets and diagnostic ErrorBank.
 
@@ -164,7 +164,7 @@ logic.
 
 **Expected behavior**
 
-- Can improve Recall@1 on harder datasets.
+- Can improve Success@1 on harder datasets.
 - Can degrade results if the reranker is overconfident on wrong matches.
 
 ---
@@ -182,14 +182,14 @@ source results.
 
 **Why we build it**
 
-S7 is the reliability-focused design evaluated in the recorded ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with safety constraints.
+S7 is the multi-stage design evaluated in the recorded ladder. It integrates controlled rewriting, hybrid retrieval, and reranking with margin-based adoption rules.
 
 **How it works**
 
 1. Generate query variants: original query plus filtered rewrites.
 2. Run weighted hybrid retrieval across variants.
 3. Fuse candidates using weighted Reciprocal Rank Fusion.
-4. Rerank with a cross-encoder using safe blending.
+4. Rerank with a cross-encoder using score blending.
 5. Apply gating to reduce unnecessary reranking and avoid weak rank reversals.
 6. Extract clause-level evidence for downstream evidence selection.
 
@@ -198,7 +198,7 @@ S7 is the reliability-focused design evaluated in the recorded ladder. It integr
 - Pre-rerank skip gate:
   - compute `base_margin_ratio = (s1 - s2) / max(s1, eps)` on fused base scores;
   - skip reranking if the base ranking is already sufficiently confident.
-- Post-rerank no-harm gate:
+- Post-rerank adoption gate:
   - if reranking changes top-1 but the rerank margin is too weak, revert to the base order.
 - Audit fields, when available, include `reranker_called`, `rerank_applied`, `skip_reason`, `base_margin_ratio`, `rerank_margin_ratio`, and `final_margin_ratio`.
 
@@ -209,7 +209,7 @@ S7 is the reliability-focused design evaluated in the recorded ladder. It integr
 
 **What it tests**
 
-- The full ComplianceGPT retrieval hypothesis: multi-stage retrieval with safety constraints reduces compliance retrieval failure modes.
+- The combined ComplianceGPT retrieval configuration: multi-stage retrieval with conditional reranking and auditable adoption decisions.
 
 **Evaluated behavior**
 

@@ -17,9 +17,9 @@ Each benchmark also includes an **ODP Subset** (queries involving organization-d
 
 The evaluator uses one normalized gold control per question. It reports:
 
-- **Recall@K**: historical field name for the proportion of queries whose one
-  gold control ID is found in the top K retrieved results; this is a query hit
-  rate, not set recall over all required clauses  
+- **Success@K**: proportion of queries whose one labeled governing control is
+  found in the top K retrieved results; stored scripts and frozen per-system
+  reports retain `Recall@K` as the historical field name  
 - **MRR@10**: Mean Reciprocal Rank within top 10  
 - **nDCG@10**: Normalized Discounted Cumulative Gain at 10  
 
@@ -46,10 +46,26 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Executive Summary (Main Takeaways)
 
-1. **The recorded S7 configuration leads the ablation ladder on the main Rev5/Rev4 gold sets and performs strongly on ODP subsets.**
+1. **The recorded S7 configuration has the highest main-set early-ranking point estimates, but its Success@1 lead is one question in each revision and does not establish superiority.**
 2. **Hybrid retrieval (S5) is competitive but not uniformly stronger than both single-channel baselines.** Dense S2 is stronger on several Rev4 measures.  
-3. **Reranking (S6) is mixed**: it can help significantly on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Recall@1 versus pure hybrid on easier sets.  
+3. **Reranking (S6) is mixed**: it can help on harder sets (e.g., ErrorBank-Rev4 overall) but may reduce Success@1 versus pure hybrid on easier sets.  
 4. **ErrorBank is a targeted diagnostic derived from BM25 failures.** It helps localize difficult cases but does not estimate failure prevalence or population performance.
+
+The main-set one-question Success@1 leads are not statistically distinguishable
+in post hoc paired comparisons. On Rev5, S7 succeeds where S5 fails on five
+questions and fails where S5 succeeds on four; on Rev4, the corresponding
+S7-versus-S2 counts are three and two. The two-sided exact McNemar value is
+`1.0` for both comparisons. Wilson intervals for every main-set Success@K
+proportion, the paired counts, and the rerank adoption-gate audit can be
+recomputed with:
+
+```bash
+python experiments/retriever_ablation/statistical_audit.py
+```
+
+The adoption gate rejects six changed-top cases across the two main sets. It
+prevents two errors but blocks four corrections, so it is not a no-harm
+guarantee.
 
 ---
 
@@ -57,7 +73,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Overall Results
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.7600 | 0.9600 | 0.9800 | 0.8518 |
 | S2 | 0.8400 | 1.0000 | 1.0000 | 0.9053 |
@@ -69,7 +85,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## ODP Subset (n=63)
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.7778 | 0.9683 | 0.9841 | 0.8644 |
 | S2 | 0.8254 | 1.0000 | 1.0000 | 0.8960 |
@@ -85,7 +101,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Overall Results
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.6389 | 0.9167 | 0.9167 | 0.7454 |
 | S2 | 0.8889 | 1.0000 | 1.0000 | 0.9398 |
@@ -97,7 +113,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## ODP Subset (n=19)
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.7368 | 0.9474 | 0.9474 | 0.8246 |
 | S2 | 0.8421 | 1.0000 | 1.0000 | 0.9123 |
@@ -113,7 +129,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Overall Results
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.0000 | 0.8333 | 0.9167 | 0.3827 |
 | S2 | 0.6667 | 1.0000 | 1.0000 | 0.7896 |
@@ -125,7 +141,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## ODP Subset (n=14)
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.0000 | 0.8571 | 0.9286 | 0.3899 |
 | S2 | 0.7143 | 1.0000 | 1.0000 | 0.8000 |
@@ -141,7 +157,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## Overall Results
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.0000 | 0.7692 | 0.7692 | 0.2949 |
 | S2 | 0.8462 | 1.0000 | 1.0000 | 0.9231 |
@@ -153,7 +169,7 @@ The evaluator uses one normalized gold control per question. It reports:
 
 ## ODP Subset (n=5)
 
-| System | Recall@1 | Recall@5 | Recall@10 | MRR@10 |
+| System | Success@1 | Success@5 | Success@10 | MRR@10 |
 |-------:|---------:|---------:|----------:|-------:|
 | S1 | 0.0000 | 0.8000 | 0.8000 | 0.3333 |
 | S2 | 0.8000 | 1.0000 | 1.0000 | 0.9000 |

@@ -59,6 +59,25 @@ These values measure agreement with the implemented gold-based rules under the
 fixed questions, evidence windows, model revision, and outputs. They do not
 establish legal sufficiency, auditor approval, or complete semantic correctness.
 
+### Strict-pass decomposition
+
+| Revision | System | Full gold clause coverage | Clause-complete but fails another strict predicate | Offline strict pass |
+|---|---|---:|---:|---:|
+| Revision 5 | ComplianceGPT | 65 | 0 | 65 |
+| Revision 5 | Generative baseline | 53 | 28 | 25 |
+| Revision 4 | ComplianceGPT | 29 | 0 | 29 |
+| Revision 4 | Generative baseline | 18 | 10 | 8 |
+
+All 28 Revision 5 and 10 Revision 4 clause-complete baseline failures include
+an `OKButUnresolvedODPPlaceholders` error. This separates expected-clause
+coverage from failure of an additional contract predicate; it does not assign
+the difference causally to deterministic assembly alone. Recompute the table
+and its error-tag audit with:
+
+```bash
+python experiments/answerer_comparison/rq2_matched/decomposition_audit.py
+```
+
 ## RQ3 no-profile results
 
 | Revision | System | ODP rows | `PARAMS_REQUIRED` | `OK` | Exact ODP set |

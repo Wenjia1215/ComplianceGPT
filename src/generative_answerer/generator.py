@@ -16,7 +16,10 @@ import json
 import re
 from typing import Any, Dict, List, Optional
 
-from transformers import GenerationConfig
+try:
+    from transformers import GenerationConfig
+except ImportError:  # Allow dependency-light imports for utility/unit tests.
+    GenerationConfig = None  # type: ignore[assignment]
 
 
 ALLOWED_STATUS = {"OK", "NO_EVIDENCE", "PARAMS_REQUIRED", "ERROR"}
@@ -70,6 +73,10 @@ class BaselineGenerativeAnswerer:
         max_new_tokens: int = 640,
         max_parse_retries: int = 2,
     ) -> None:
+        if GenerationConfig is None:
+            raise ImportError(
+                "BaselineGenerativeAnswerer requires the optional 'transformers' dependency."
+            )
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = int(max_new_tokens)

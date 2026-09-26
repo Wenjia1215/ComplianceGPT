@@ -23,9 +23,10 @@ At a high level, the pipeline takes a user question and produces a **provably ex
 3. retrieves candidate clause evidence from the clause-level CCS,
 4. uses the generator in **selector-only** mode,
 5. fills evidence spans deterministically from canonical source text,
-6. applies ODP policy handling,
-7. returns a structured final answer contract,
-8. optionally runs verifier-based evaluation against a gold row.
+6. records one positive runtime origin for every final source identifier,
+7. applies ODP policy handling,
+8. returns a structured final answer contract,
+9. optionally runs verifier-based evaluation against a gold row.
 
 This folder is the place to:
 - run a single freeform demo query,
@@ -93,6 +94,7 @@ Current role of `pipeline.py`:
 - fill final evidence spans from canonical CCS text,
 - assemble `answer_text` deterministically,
 - apply ODP policy,
+- emit ordered per-identifier provenance (`selector`, `fallback`, `rescue`, or `hierarchy`),
 - normalize and flatten the final contract,
 - optionally run verifier-based evaluation.
 
