@@ -1,8 +1,8 @@
 # Notebook Audit
 
-Audit date: 2026-09-24
+Audit date: 2026-09-27
 
-This audit covers every `*.ipynb` file in the repository (11 notebooks). The
+This audit covers every `*.ipynb` file in the repository (12 notebooks). The
 secondary micro-ablation is implemented by
 `experiments/micro_ablations/run_micro_ablations.py`; there is no separate
 MicroAblation notebook in this release.
@@ -26,19 +26,22 @@ MicroAblation notebook in this release.
 - The matched-window rerun notebook instructs users to store a read-only GitHub
   token in Colab Secrets and never paste it into code. No token is stored in
   the notebook.
+- The Batch 5A control-gate notebook clones the public repository at its
+  registered runner commit and requires no GitHub or Hugging Face credential.
 - Colab-specific `/content/drive` paths and `drive.mount` calls remain because
   they are part of the recorded Colab workflows. They are environmental
   dependencies, not portable local paths.
 - Transient top-level `widgets` state was removed from 10 notebooks. This
   removes UI serialization without changing cells, source code, execution
   counts, or stored outputs.
-- The remaining notebook source-cell URLs are limited to the authenticated
-  GitHub bootstrap in the matched-window rerun notebook. No unattributed block
-  identified by this audit required removal. This repository audit does not,
-  by itself, prove the authorship history of every code fragment.
+- The remaining notebook source-cell URLs are limited to the GitHub bootstrap
+  paths in the matched-window rerun and Batch 5A notebooks. No unattributed
+  block identified by this audit required removal. This repository audit does
+  not, by itself, prove the authorship history of every code fragment.
 
 ## Audited notebooks
 
+- `experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb`
 - `experiments/answerer_comparison/rq2_matched/RQ2_Matched_Window_Rerun.ipynb`
 - `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb`
 - `experiments/retriever_ablation/performance_benchmark/Performance_Benchmark.ipynb`

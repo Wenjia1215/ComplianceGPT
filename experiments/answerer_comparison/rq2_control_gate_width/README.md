@@ -1,5 +1,7 @@
 # RQ2 Control Gate Width Sensitivity
 
+[Open the Batch 5A notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb)
+
 This study implements the advisor-requested fixed-width sweep over the top 1, 2, 3, and 5 ranked controls. It changes one factor only: the number of ranked controls admitted to the shared evidence window. Retrieval traces, accepted query rewrites, document filtering, the primary-first rule, the 24-record cap, selector prompt, pinned selector model, ODP policy, and verifier remain fixed.
 
 The new result identity is `rq2_control_gate_width_v1`. It never edits or replaces the frozen RQ2 v3 result family.
@@ -46,3 +48,5 @@ python experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_w
 The runner pins `Qwen/Qwen2.5-7B-Instruct` at revision `a09a35458c702b33eeacc393d103063234e8bc28`, matching RQ2 v3. It refuses changes to the registered widths, frozen archive, source hashes, model identity, prepared contexts, or experiment-code fingerprint after model checkpoints exist. Re-running the same command resumes at the next unfinished question.
 
 The completed directory contains the fixed-width contexts, row-level selector contracts, manifests, `summary.json`, `SUMMARY.md`, and a ZIP archive. The original adaptive outputs are read directly from the immutable RQ2 v3 archive and are never regenerated or modified.
+
+For Colab, open `Batch_5A_Control_Gate_Width_Sweep.ipynb`, select an A100 GPU when available (T4 or L4 is also supported), and choose **Runtime > Run all**. The notebook checks out the registered runner commit and writes resumable checkpoints to `MyDrive/rq2_control_gate_width_v1`.
