@@ -2,7 +2,12 @@ import copy
 import unittest
 
 from answerer_comparison.matched_window_runner import CONTEXT_SCHEMA, validate_prepared_context
-from compliancegpt.pipeline.evidence_window import build_evidence_window, evidence_window_manifest
+from compliancegpt.pipeline.evidence_window import (
+    assert_same_evidence_window,
+    build_evidence_window,
+    evidence_window_manifest,
+    select_allowed_controls,
+)
 from compliancegpt.pipeline.pipeline import (
     _apply_doc_filter_mode,
     _filter_docs_to_controls,
@@ -14,6 +19,7 @@ from experiments.answerer_comparison.rq2_control_gate_width.run_control_gate_wid
     MODEL_REVISION,
     build_fixed_width_context,
     canonical_sha256,
+    configure_fixed_width_pipeline,
     validate_registered_design,
     validate_registered_runtime,
 )
@@ -112,6 +118,54 @@ class ControlGateWidthTests(unittest.TestCase):
         self.assertEqual(
             [record["control_id"] for record in context["evidence_window"]],
             ["AC-1", "AC-1"],
+        )
+
+    def test_fixed_top_one_runtime_replay_disables_adaptive_widening(self):
+        context = self.build(1)
+
+        class PipelineSettings:
+            gen_control_gate_topn = 1
+            gen_control_gate_lowconf_top2 = 0.08
+            gen_control_gate_lowconf_top3 = 0.04
+            gen_control_gate_lowconf_maxn = 3
+
+        pipeline = PipelineSettings()
+        runtime = configure_fixed_width_pipeline(pipeline, 1)
+        controls, primary_control, allowed_controls, widen_tier = select_allowed_controls(
+            retrieved_docs=context["retrieved_docs"],
+            retrieval_meta=context["retrieval_meta"],
+            normalize_control_id=normalize_control_id,
+            topn=pipeline.gen_control_gate_topn,
+            lowconf_top2=pipeline.gen_control_gate_lowconf_top2,
+            lowconf_top3=pipeline.gen_control_gate_lowconf_top3,
+            lowconf_maxn=pipeline.gen_control_gate_lowconf_maxn,
+        )
+        self.assertEqual(runtime["mode"], "fixed_width_no_adaptive_widening")
+        self.assertFalse(runtime["adaptive_widening"])
+        self.assertEqual(controls, context["control_gate"]["normalized_controls"])
+        self.assertEqual(primary_control, "AC-1")
+        self.assertEqual(allowed_controls, ["AC-1"])
+        self.assertEqual(widen_tier, 0)
+
+        window_config = context["window_config"]
+        _, audit = build_evidence_window(
+            retrieved_docs=context["retrieved_docs"],
+            retrieval_meta=context["retrieval_meta"],
+            allowed_controls=allowed_controls,
+            primary_control=primary_control,
+            doc_filter_mode=window_config["doc_filter_mode"],
+            gen_docs_k=window_config["gen_docs_k"],
+            filter_docs_to_controls=_filter_docs_to_controls,
+            apply_doc_filter_mode=_apply_doc_filter_mode,
+            primary_first_min_margin_ratio=window_config[
+                "primary_first_min_margin_ratio"
+            ],
+        )
+        self.assertEqual(
+            assert_same_evidence_window(
+                audit["evidence_window"], context["evidence_window_manifest"]
+            ),
+            context["evidence_window_manifest"]["sha256"],
         )
 
     def test_fixed_top_five_admits_all_ranked_controls(self):

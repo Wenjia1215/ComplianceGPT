@@ -34,7 +34,7 @@ python experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_w
   --prepare-only
 ```
 
-This verifies the frozen archive hash, reconstructs all 544 fixed-width contexts, hashes every context and evidence window, and writes a gold-aware evidence-window opportunity audit. It does not call the selector and is not the completed sensitivity result.
+This verifies the frozen archive hash, reconstructs all 544 fixed-width contexts, hashes every context and evidence window, replays the exact non-adaptive runtime gate/window path against every locked manifest, and writes a gold-aware evidence-window opportunity audit. It does not call the selector and is not the completed sensitivity result.
 
 ## Full GPU run
 

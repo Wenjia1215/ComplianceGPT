@@ -248,6 +248,126 @@ def validate_registered_runtime(
     return normalized_revisions
 
 
+def configure_fixed_width_pipeline(pipeline: Any, width: int) -> Dict[str, Any]:
+    """Configure the runtime gate to replay one fixed-width context family."""
+
+    requested_width = int(width)
+    if requested_width not in WIDTHS:
+        raise ValueError(
+            f"The registered {RESULT_ID} runtime supports widths {WIDTHS}; "
+            f"got {requested_width}."
+        )
+    pipeline.gen_control_gate_topn = requested_width
+    # select_allowed_controls widens only when margin < threshold. Negative
+    # infinity disables both adaptive branches for every observed margin while
+    # preserving the shared gate implementation used by RQ2 v3.
+    pipeline.gen_control_gate_lowconf_top2 = float("-inf")
+    pipeline.gen_control_gate_lowconf_top3 = float("-inf")
+    pipeline.gen_control_gate_lowconf_maxn = requested_width
+    return {
+        "mode": "fixed_width_no_adaptive_widening",
+        "requested_width": requested_width,
+        "gen_control_gate_topn": requested_width,
+        "adaptive_widening": False,
+    }
+
+
+def validate_fixed_width_runtime_replay(
+    *,
+    grid: Mapping[Tuple[int, str], Sequence[Mapping[str, Any]]],
+    widths: Sequence[int],
+    revisions: Sequence[str],
+    select_allowed_controls: Any,
+    normalize_control_id: Any,
+    build_evidence_window: Any,
+    assert_same_evidence_window: Any,
+    filter_docs_to_controls: Any,
+    apply_doc_filter_mode: Any,
+) -> Dict[str, Any]:
+    """Replay the runtime gate/window path without a model and match every lock."""
+
+    validated: List[Dict[str, str]] = []
+    for width in widths:
+        requested_width = int(width)
+        for revision in revisions:
+            for context in grid[(requested_width, revision)]:
+                query_id = str(context.get("query_id", ""))
+                gate = dict(context.get("control_gate", {}) or {})
+                controls, primary_control, allowed_controls, widen_tier = (
+                    select_allowed_controls(
+                        retrieved_docs=list(context.get("retrieved_docs", []) or []),
+                        retrieval_meta=dict(context.get("retrieval_meta", {}) or {}),
+                        normalize_control_id=normalize_control_id,
+                        topn=requested_width,
+                        lowconf_top2=float("-inf"),
+                        lowconf_top3=float("-inf"),
+                        lowconf_maxn=requested_width,
+                    )
+                )
+                expected_controls = list(gate.get("normalized_controls", []) or [])
+                expected_primary = str(gate.get("primary_control", "") or "")
+                expected_allowed = list(gate.get("allowed_controls", []) or [])
+                if controls != expected_controls:
+                    raise AssertionError(
+                        f"Fixed-gate ranked controls changed for top{requested_width} "
+                        f"{revision} query {query_id}."
+                    )
+                if primary_control != expected_primary:
+                    raise AssertionError(
+                        f"Fixed-gate primary control changed for top{requested_width} "
+                        f"{revision} query {query_id}."
+                    )
+                if allowed_controls != expected_allowed or widen_tier != 0:
+                    raise AssertionError(
+                        f"Adaptive widening leaked into top{requested_width} "
+                        f"{revision} query {query_id}: {allowed_controls}, tier={widen_tier}."
+                    )
+
+                window_config = dict(context.get("window_config", {}) or {})
+                _, audit = build_evidence_window(
+                    retrieved_docs=list(context.get("retrieved_docs", []) or []),
+                    retrieval_meta=dict(context.get("retrieval_meta", {}) or {}),
+                    allowed_controls=allowed_controls,
+                    primary_control=primary_control,
+                    doc_filter_mode=str(
+                        window_config.get("doc_filter_mode", "prefer_smt_keep_params")
+                    ),
+                    gen_docs_k=int(window_config.get("gen_docs_k", 24)),
+                    filter_docs_to_controls=filter_docs_to_controls,
+                    apply_doc_filter_mode=apply_doc_filter_mode,
+                    primary_first_min_margin_ratio=float(
+                        window_config.get("primary_first_min_margin_ratio", 0.06)
+                    ),
+                )
+                shared_hash = assert_same_evidence_window(
+                    dict(audit.get("evidence_window", {}) or {}),
+                    dict(context.get("evidence_window_manifest", {}) or {}),
+                )
+                validated.append(
+                    {
+                        "configuration": f"top{requested_width}_{revision}",
+                        "query_id": query_id,
+                        "evidence_window_sha256": shared_hash,
+                    }
+                )
+
+    expected_count = len(widths) * sum(EXPECTED_ROWS[revision] for revision in revisions)
+    if len(validated) != expected_count:
+        raise AssertionError(
+            f"Expected {expected_count} fixed-width runtime replays, got {len(validated)}."
+        )
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "result_id": RESULT_ID,
+        "scope": "pre-inference replay of the exact runtime gate and evidence-window path",
+        "adaptive_widening": False,
+        "widths": [int(width) for width in widths],
+        "revisions": list(revisions),
+        "validated_contexts": len(validated),
+        "replay_sha256": canonical_sha256(validated),
+    }
+
+
 def verify_inputs(repo_root: Path, archive_path: Path, revisions: Iterable[str]) -> None:
     if not archive_path.is_file():
         raise FileNotFoundError(f"Frozen RQ2 v3 archive is missing: {archive_path}")
@@ -1148,8 +1268,10 @@ def main() -> None:
     )
     from compliancegpt.generator.verifier.verifier import normalize_odp_id
     from compliancegpt.pipeline.evidence_window import (
+        assert_same_evidence_window,
         build_evidence_window,
         evidence_window_manifest,
+        select_allowed_controls,
     )
     from compliancegpt.pipeline.pipeline import (
         ComplianceGPTPipeline,
@@ -1178,6 +1300,18 @@ def main() -> None:
         output_dir=output_dir,
         helpers=helpers,
     )
+    runtime_replay = validate_fixed_width_runtime_replay(
+        grid=context_grid,
+        widths=widths,
+        revisions=revisions,
+        select_allowed_controls=select_allowed_controls,
+        normalize_control_id=normalize_control_id,
+        build_evidence_window=build_evidence_window,
+        assert_same_evidence_window=assert_same_evidence_window,
+        filter_docs_to_controls=_filter_docs_to_controls,
+        apply_doc_filter_mode=_apply_doc_filter_mode,
+    )
+    write_json(output_dir / "manifests" / "runtime_window_replay.json", runtime_replay)
     write_json(output_dir / "manifests" / "source_archive.json", archive_manifest)
     gold_rows = {
         revision: load_gold_rows_simple(
@@ -1238,7 +1372,8 @@ def main() -> None:
         for width in widths:
             key = f"top{width}_{revision}"
             output_csv = output_dir / "contracts" / f"{key}_compliancegpt.csv"
-            run_manifests[key] = run_prepared_contexts(
+            gate_runtime = configure_fixed_width_pipeline(pipeline, width)
+            run_manifest = run_prepared_contexts(
                 pipeline=pipeline,
                 contexts=context_grid[(width, revision)],
                 gold_rows_by_id=gold_rows[revision],
@@ -1247,6 +1382,8 @@ def main() -> None:
                 resume=True,
                 progress_every=1,
             )
+            run_manifest["gate_runtime"] = gate_runtime
+            run_manifests[key] = run_manifest
             write_json(output_dir / "manifests" / "runs.json", run_manifests)
         del pipeline, frozen_retriever
         gc.collect()
