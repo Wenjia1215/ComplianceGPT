@@ -27,3 +27,13 @@ result families and must not be treated as one interchangeable execution.
   [`CONSTANTS_PROVENANCE.md`](CONSTANTS_PROVENANCE.md).
 - A changed mechanism or constant requires a new configuration identity and
   new outputs; frozen results are never overwritten.
+
+## Registered follow-on sensitivity study
+
+`rq2_control_gate_width_v1` is a separate follow-on result identity. It reuses
+the immutable matched-answerer retrieval traces and sweeps fixed top-1, top-2,
+top-3, and top-5 control-gate widths while preserving the 24-record window and
+the pinned selector configuration. Its deterministic prepared-context audit
+does not count as a completed end-to-end result. The released adaptive gate
+remains the unchanged reference rather than being relabeled as one of the
+fixed-width conditions.

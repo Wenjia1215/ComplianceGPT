@@ -41,6 +41,7 @@ and verifier result.
 | Inspect the citation-contract schema | [`src/compliancegpt/generator/citation_contract_80053.md`](src/compliancegpt/generator/citation_contract_80053.md) |
 | Review the S1–S7 retrieval evaluation | [`experiments/retriever_ablation/README.md`](experiments/retriever_ablation/README.md) |
 | Review the matched answerer comparison | [`experiments/answerer_comparison/rq2_matched/README.md`](experiments/answerer_comparison/rq2_matched/README.md) |
+| Prepare or run the control-gate width sweep | [`experiments/answerer_comparison/rq2_control_gate_width/README.md`](experiments/answerer_comparison/rq2_control_gate_width/README.md) |
 | Review the no-selector ablation | [`experiments/answerer_comparison/rq2_no_selector/README.md`](experiments/answerer_comparison/rq2_no_selector/README.md) |
 | Review the ODP-rescue ablation | [`experiments/answerer_comparison/rq2_rescue_ablation/README.md`](experiments/answerer_comparison/rq2_rescue_ablation/README.md) |
 | Review Runtime Verifier mutation testing | [`experiments/answerer_comparison/runtime_verifier_mutation/README.md`](experiments/answerer_comparison/runtime_verifier_mutation/README.md) |
@@ -116,6 +117,10 @@ resolution conformance.
 - The S1–S7 evaluation measures governing-control ranking.
 - The matched answerer evaluation compares complete answer-construction
   methods under the same ordered evidence window and loaded model instance.
+- The registered control-gate sensitivity study holds the frozen retrieval
+  traces and 24-record window policy fixed while sweeping fixed top-1, top-2,
+  top-3, and top-5 gate widths. Its deterministic context audit is not a
+  substitute for the pending end-to-end selector run.
 - The deterministic no-selector ablation retains every statement and guidance
   record in each frozen matched-run evidence window. It measures the coverage,
   answer-length, evidence-precision, and ODP-scope tradeoff without new model

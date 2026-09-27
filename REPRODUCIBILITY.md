@@ -31,6 +31,7 @@ change stored outputs or their metrics.
 |---|---|---|
 | S1–S7 governing-control retrieval | `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb` | `experiments/retriever_ablation/ablation_outputs/` |
 | Matched answer construction | `experiments/answerer_comparison/rq2_matched/run_matched_rq2.py` | `experiments/answerer_comparison/rq2_matched/results_v3/` |
+| Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | generated under a new `rq2_control_gate_width_v1` output directory |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
@@ -118,6 +119,35 @@ The result record identifies:
 See
 [`experiments/answerer_comparison/rq2_matched/results_v3/README.md`](experiments/answerer_comparison/rq2_matched/results_v3/README.md)
 for the validation boundary and reported results.
+
+## Control-gate width sensitivity
+
+The registered follow-on study reuses the immutable RQ2 v3 retrieval traces
+and changes only the fixed control-gate width. The four widths are top 1, 2,
+3, and 5; adaptive widening is disabled for those four experimental settings,
+and the released adaptive v3 result remains an unchanged reference.
+
+Prepare and audit all 544 gold-free contexts without loading a model:
+
+```bash
+python experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py \
+  --output-dir /path/to/rq2_control_gate_width_v1 \
+  --prepare-only
+```
+
+Run the complete selector sweep on a persistent CUDA runtime:
+
+```bash
+python experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py \
+  --output-dir /path/to/rq2_control_gate_width_v1
+```
+
+The full run uses the same pinned Qwen revision and 4-bit setting as RQ2 v3,
+checkpoints every question, and resumes only when all source, code, context,
+and model identities match. The preparation audit measures evidence-window
+opportunity only; it is not an end-to-end selector result. ODP sensitivity,
+specificity, and status precision computed against the author labels remain
+provisional until the blinded independent annotation is returned.
 
 ## No-selector ablation
 
