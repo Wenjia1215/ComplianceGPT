@@ -1,0 +1,71 @@
+{
+  "changed_factor": "fixed control-gate width only",
+  "determinism": {
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "seed": 42,
+    "torch_deterministic_algorithms": true
+  },
+  "experiment_code_files": {
+    "experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py": "0aa4d5d39a43c517913454a702708c076c37f2a52d3eb42e49c1d34ed83ed9c0",
+    "src/answerer_comparison/matched_window_runner.py": "02abc97b8f53b388cf2385120ffdfebdcaa2ac3d787b0ae6c2711d92aff3fe13",
+    "src/compliancegpt/generator/citation_contract_80053.md": "785036b896fef2778901cce4899d369cca7d3f258aa7a335962cad8e6290a98a",
+    "src/compliancegpt/generator/generator.py": "772cda0930f636ce8b9da24778410d2c61a11cea81d3d51f835982963e15c625",
+    "src/compliancegpt/generator/verifier/verifier.py": "facb2d0229f9f97d52278ea3f3c8dde7f7e0a0666cb4c7d7cd973b972cb622ef",
+    "src/compliancegpt/pipeline/evidence_window.py": "bc78c31225299796e793c77ef408bfdb9657fe879d4e0c0a981e87f9921dddf0",
+    "src/compliancegpt/pipeline/pipeline.py": "040cfaf42cf4961b1865a5a39f283645f898669c1eb24e99dc55962fe0e29eca"
+  },
+  "experiment_code_sha256": "72f9fd2bd8d9a6970e50a626ede6513ee488f23ba6f519761148baac12dadfa6",
+  "frozen_factors": [
+    "retrieval traces",
+    "query variants",
+    "document filtering",
+    "primary-first threshold",
+    "24-record selector window",
+    "selector prompt",
+    "selector model and revision",
+    "ASK ODP policy",
+    "offline verifier"
+  ],
+  "gate_mode": "fixed_width_no_adaptive_widening",
+  "gold_policy": "gold excluded from prepared contexts; used only for offline scoring",
+  "load_in_4bit": true,
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "prepared_context_hashes": {
+    "top1_rev4": "ef01f184a3196556ca05eb17055f0ec5b57869de2fccd2a04cc3d4959214891c",
+    "top1_rev5": "172c6d0053b7f600d8996a6e2adcd1ae1d6b183bb0d15e9028dc86dcd0fe054f",
+    "top2_rev4": "c491c6144edbff84e82ae57afcd07d4db07419e245a431598a83c7b4ea5988f0",
+    "top2_rev5": "30c48500c677cd58fd532c9d7b0c40dacdfe1233346ceb91083b934d033ee88a",
+    "top3_rev4": "b5c73c6e1d5114b94f60e6738e9f438379dcb30a5b1b8d34d9006479b1923e4a",
+    "top3_rev5": "eab1415adeb3f6d594cbba545f974eb6d2ad25c7733a6137292acf810c3f9403",
+    "top5_rev4": "a93c74e39e2ee1a80ef389df4e1fd69f1b65f14edcc2571562cd0436a83f6e19",
+    "top5_rev5": "7e547bdfe6b155f5900d1221e9440184df7c536369c2862185ceb8baaa67f0bd"
+  },
+  "repo_commit": "372632f81ed4ceeb18021690d03ad0874d988092",
+  "repo_commits_observed": [
+    "2bbaa09b9cbf58467dffa648d07b5011774e36a4",
+    "372632f81ed4ceeb18021690d03ad0874d988092"
+  ],
+  "result_id": "rq2_control_gate_width_v1",
+  "revisions": [
+    "rev5",
+    "rev4"
+  ],
+  "runtime_started_on": "Linux-6.6.122+-x86_64-with-glibc2.39",
+  "schema_version": "compliancegpt-rq2-control-gate-width-v1",
+  "selector_window_cap": 24,
+  "source_archive_sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "source_member_hashes": {
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+  },
+  "widths": [
+    1,
+    2,
+    3,
+    5
+  ]
+}

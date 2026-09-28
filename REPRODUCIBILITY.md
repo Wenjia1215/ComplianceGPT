@@ -31,7 +31,7 @@ change stored outputs or their metrics.
 |---|---|---|
 | S1–S7 governing-control retrieval | `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb` | `experiments/retriever_ablation/ablation_outputs/` |
 | Matched answer construction | `experiments/answerer_comparison/rq2_matched/run_matched_rq2.py` | `experiments/answerer_comparison/rq2_matched/results_v3/` |
-| Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | generated under a new `rq2_control_gate_width_v1` output directory |
+| Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | `experiments/answerer_comparison/rq2_control_gate_width/results_v1/` |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
@@ -145,7 +145,20 @@ python experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_w
 The full run uses the same pinned Qwen revision and 4-bit setting as RQ2 v3,
 checkpoints every question, and resumes only when all source, code, context,
 and model identities match. The preparation audit measures evidence-window
-opportunity only; it is not an end-to-end selector result. ODP sensitivity,
+opportunity only; it is not an end-to-end selector result.
+
+The completed A100 result, including all 544 fixed-width contexts and 544
+row-level selector contracts, is recorded under
+[`experiments/answerer_comparison/rq2_control_gate_width/results_v1/`](experiments/answerer_comparison/rq2_control_gate_width/results_v1/).
+The canonical result archive SHA-256 is:
+
+```text
+543c2e40879422a5a1462bb6fc56fda2ad76f9b060efbc780ebe2a51bc48a07d
+```
+
+Fixed top 2 matched the adaptive reference's strict-pass count on both
+revisions. The stored within-revision exact McNemar comparisons found no
+significant strict-pass difference at the 0.05 level. ODP sensitivity,
 specificity, and status precision computed against the author labels remain
 provisional until the blinded independent annotation is returned.
 

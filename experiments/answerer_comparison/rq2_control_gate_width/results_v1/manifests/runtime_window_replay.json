@@ -1,0 +1,18 @@
+{
+  "adaptive_widening": false,
+  "replay_sha256": "5c9dbbe40caa7213394518cea0cbb58701d2be9ee9aa05ff21e16d9579599159",
+  "result_id": "rq2_control_gate_width_v1",
+  "revisions": [
+    "rev5",
+    "rev4"
+  ],
+  "schema_version": "compliancegpt-rq2-control-gate-width-v1",
+  "scope": "pre-inference replay of the exact runtime gate and evidence-window path",
+  "validated_contexts": 544,
+  "widths": [
+    1,
+    2,
+    3,
+    5
+  ]
+}

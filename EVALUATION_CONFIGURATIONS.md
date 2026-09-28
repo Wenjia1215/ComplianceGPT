@@ -33,7 +33,9 @@ result families and must not be treated as one interchangeable execution.
 `rq2_control_gate_width_v1` is a separate follow-on result identity. It reuses
 the immutable matched-answerer retrieval traces and sweeps fixed top-1, top-2,
 top-3, and top-5 control-gate widths while preserving the 24-record window and
-the pinned selector configuration. Its deterministic prepared-context audit
-does not count as a completed end-to-end result. The released adaptive gate
-remains the unchanged reference rather than being relabeled as one of the
-fixed-width conditions.
+the pinned selector configuration. Its completed end-to-end result is archived
+under `experiments/answerer_comparison/rq2_control_gate_width/results_v1/`;
+the deterministic prepared-context audit remains a distinct opportunity
+analysis rather than an end-to-end result. The released adaptive gate remains
+the unchanged reference rather than being relabeled as one of the fixed-width
+conditions.

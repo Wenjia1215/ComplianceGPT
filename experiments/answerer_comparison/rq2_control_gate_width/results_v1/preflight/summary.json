@@ -1,0 +1,249 @@
+{
+  "configurations": {
+    "rev4_adaptive_v3": {
+      "effective_window_width": {
+        "max": 3.0,
+        "mean": 1.3055555555555556,
+        "median": 1.0,
+        "min": 1.0,
+        "p95": 3.0
+      },
+      "full_gold_clause_coverage_count": 35,
+      "full_gold_clause_coverage_rate": 0.9722222222222222,
+      "gold_odp_marker_coverage_count": 19,
+      "gold_odp_marker_coverage_n": 19,
+      "gold_odp_marker_coverage_rate": 1.0,
+      "mean_gold_clause_precision": 0.21491190530793214,
+      "mean_gold_clause_recall": 0.9861111111111112,
+      "n": 36,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 14.166666666666666,
+        "median": 14.0,
+        "min": 5.0,
+        "p95": 24.0
+      }
+    },
+    "rev4_top1": {
+      "effective_window_width": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p95": 1.0
+      },
+      "full_gold_clause_coverage_count": 33,
+      "full_gold_clause_coverage_rate": 0.9166666666666666,
+      "gold_odp_marker_coverage_count": 19,
+      "gold_odp_marker_coverage_n": 19,
+      "gold_odp_marker_coverage_rate": 1.0,
+      "mean_gold_clause_precision": 0.23291100466345563,
+      "mean_gold_clause_recall": 0.9305555555555556,
+      "n": 36,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 12.13888888888889,
+        "median": 10.0,
+        "min": 2.0,
+        "p95": 24.0
+      }
+    },
+    "rev4_top2": {
+      "effective_window_width": {
+        "max": 2.0,
+        "mean": 1.5833333333333333,
+        "median": 2.0,
+        "min": 1.0,
+        "p95": 2.0
+      },
+      "full_gold_clause_coverage_count": 35,
+      "full_gold_clause_coverage_rate": 0.9722222222222222,
+      "gold_odp_marker_coverage_count": 19,
+      "gold_odp_marker_coverage_n": 19,
+      "gold_odp_marker_coverage_rate": 1.0,
+      "mean_gold_clause_precision": 0.1776212111093432,
+      "mean_gold_clause_recall": 0.9861111111111112,
+      "n": 36,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 15.194444444444445,
+        "median": 14.0,
+        "min": 7.0,
+        "p95": 24.0
+      }
+    },
+    "rev4_top3": {
+      "effective_window_width": {
+        "max": 3.0,
+        "mean": 2.1944444444444446,
+        "median": 2.0,
+        "min": 1.0,
+        "p95": 3.0
+      },
+      "full_gold_clause_coverage_count": 35,
+      "full_gold_clause_coverage_rate": 0.9722222222222222,
+      "gold_odp_marker_coverage_count": 19,
+      "gold_odp_marker_coverage_n": 19,
+      "gold_odp_marker_coverage_rate": 1.0,
+      "mean_gold_clause_precision": 0.13920585610598288,
+      "mean_gold_clause_recall": 0.9861111111111112,
+      "n": 36,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 19.0,
+        "median": 19.0,
+        "min": 8.0,
+        "p95": 24.0
+      }
+    },
+    "rev4_top5": {
+      "effective_window_width": {
+        "max": 5.0,
+        "mean": 3.1944444444444446,
+        "median": 3.0,
+        "min": 1.0,
+        "p95": 5.0
+      },
+      "full_gold_clause_coverage_count": 35,
+      "full_gold_clause_coverage_rate": 0.9722222222222222,
+      "gold_odp_marker_coverage_count": 19,
+      "gold_odp_marker_coverage_n": 19,
+      "gold_odp_marker_coverage_rate": 1.0,
+      "mean_gold_clause_precision": 0.11293843030898265,
+      "mean_gold_clause_recall": 0.9861111111111112,
+      "n": 36,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 21.86111111111111,
+        "median": 24.0,
+        "min": 10.0,
+        "p95": 24.0
+      }
+    },
+    "rev5_adaptive_v3": {
+      "effective_window_width": {
+        "max": 3.0,
+        "mean": 1.51,
+        "median": 1.0,
+        "min": 1.0,
+        "p95": 3.0
+      },
+      "full_gold_clause_coverage_count": 93,
+      "full_gold_clause_coverage_rate": 0.93,
+      "gold_odp_marker_coverage_count": 62,
+      "gold_odp_marker_coverage_n": 63,
+      "gold_odp_marker_coverage_rate": 0.9841269841269841,
+      "mean_gold_clause_precision": 0.306118421921104,
+      "mean_gold_clause_recall": 0.9532575757575757,
+      "n": 100,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 12.1,
+        "median": 12.0,
+        "min": 2.0,
+        "p95": 24.0
+      }
+    },
+    "rev5_top1": {
+      "effective_window_width": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0,
+        "p95": 1.0
+      },
+      "full_gold_clause_coverage_count": 87,
+      "full_gold_clause_coverage_rate": 0.87,
+      "gold_odp_marker_coverage_count": 58,
+      "gold_odp_marker_coverage_n": 63,
+      "gold_odp_marker_coverage_rate": 0.9206349206349206,
+      "mean_gold_clause_precision": 0.34596290882320296,
+      "mean_gold_clause_recall": 0.8932575757575758,
+      "n": 100,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 9.27,
+        "median": 8.0,
+        "min": 2.0,
+        "p95": 21.0
+      }
+    },
+    "rev5_top2": {
+      "effective_window_width": {
+        "max": 2.0,
+        "mean": 1.74,
+        "median": 2.0,
+        "min": 1.0,
+        "p95": 2.0
+      },
+      "full_gold_clause_coverage_count": 94,
+      "full_gold_clause_coverage_rate": 0.94,
+      "gold_odp_marker_coverage_count": 62,
+      "gold_odp_marker_coverage_n": 63,
+      "gold_odp_marker_coverage_rate": 0.9841269841269841,
+      "mean_gold_clause_precision": 0.24533760014943554,
+      "mean_gold_clause_recall": 0.9632575757575758,
+      "n": 100,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 13.75,
+        "median": 12.0,
+        "min": 4.0,
+        "p95": 24.0
+      }
+    },
+    "rev5_top3": {
+      "effective_window_width": {
+        "max": 3.0,
+        "mean": 2.43,
+        "median": 3.0,
+        "min": 1.0,
+        "p95": 3.0
+      },
+      "full_gold_clause_coverage_count": 94,
+      "full_gold_clause_coverage_rate": 0.94,
+      "gold_odp_marker_coverage_count": 62,
+      "gold_odp_marker_coverage_n": 63,
+      "gold_odp_marker_coverage_rate": 0.9841269841269841,
+      "mean_gold_clause_precision": 0.20058496976132256,
+      "mean_gold_clause_recall": 0.9632575757575758,
+      "n": 100,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 16.31,
+        "median": 16.0,
+        "min": 6.0,
+        "p95": 24.0
+      }
+    },
+    "rev5_top5": {
+      "effective_window_width": {
+        "max": 5.0,
+        "mean": 3.81,
+        "median": 4.0,
+        "min": 2.0,
+        "p95": 5.0
+      },
+      "full_gold_clause_coverage_count": 94,
+      "full_gold_clause_coverage_rate": 0.94,
+      "gold_odp_marker_coverage_count": 62,
+      "gold_odp_marker_coverage_n": 63,
+      "gold_odp_marker_coverage_rate": 0.9841269841269841,
+      "mean_gold_clause_precision": 0.15270684171611282,
+      "mean_gold_clause_recall": 0.9632575757575758,
+      "n": 100,
+      "window_record_count": {
+        "max": 24.0,
+        "mean": 20.86,
+        "median": 23.0,
+        "min": 10.0,
+        "p95": 24.0
+      }
+    }
+  },
+  "diagnostics_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/preflight/window_diagnostics.csv",
+  "diagnostics_csv_sha256": "50f1f3f85c66d1bb106f9103d329c49eeaee69837a4c8c1196f4cf9ae75ccb2a",
+  "result_id": "rq2_control_gate_width_v1",
+  "schema_version": "compliancegpt-rq2-control-gate-width-v1",
+  "scope": "gold-aware evidence-window opportunity audit; no selector inference"
+}

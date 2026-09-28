@@ -1,0 +1,298 @@
+{
+  "top1_rev4": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 1,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 1
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top1_rev4_compliancegpt.csv",
+    "output_csv_sha256": "4195d152310f97d9c11e527244957d2e782a2a49c214d566178ae2c9a4fbe728",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top1"
+  },
+  "top1_rev5": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 1,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 1
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top1_rev5_compliancegpt.csv",
+    "output_csv_sha256": "bbf24cf65a468a471495e43e641ba5ad108b541c27398a7cf48dc56dd3632d7a",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top1"
+  },
+  "top2_rev4": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 2,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 2
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top2_rev4_compliancegpt.csv",
+    "output_csv_sha256": "4d6126fc3821e8d799ef16c839501f7ec6c68700b5a608cec6dfea99f4d1ca5d",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top2"
+  },
+  "top2_rev5": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 2,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 2
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top2_rev5_compliancegpt.csv",
+    "output_csv_sha256": "b2e58b66fd8dae7767d50687f5524519558c74fad2f7c5af7cefc9611f840f94",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top2"
+  },
+  "top3_rev4": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 3,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 3
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top3_rev4_compliancegpt.csv",
+    "output_csv_sha256": "39f719288f172ccc84ff244c49a843fb4b2141cbd6f68f01aeb4e9cedac46589",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top3"
+  },
+  "top3_rev5": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 3,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 3
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top3_rev5_compliancegpt.csv",
+    "output_csv_sha256": "0827fccde8bc5c9d1da2882da918d77ac2b7362e2967dad3ca178327c6684e3f",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top3"
+  },
+  "top5_rev4": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 5,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 5
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top5_rev4_compliancegpt.csv",
+    "output_csv_sha256": "24d7db6b1b373f7072d0c0e9b3bcdbd26368a532bb7afe190206a88f7f471e99",
+    "resumed_rows": 0,
+    "row_count": 36,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top5"
+  },
+  "top5_rev5": {
+    "gate_runtime": {
+      "adaptive_widening": false,
+      "gen_control_gate_topn": 5,
+      "mode": "fixed_width_no_adaptive_widening",
+      "requested_width": 5
+    },
+    "output_csv": "/content/drive/MyDrive/rq2_control_gate_width_v1/contracts/top5_rev5_compliancegpt.csv",
+    "output_csv_sha256": "a938ec06e12682ef0b0c9d0834ac71923e3f3eaf474a95e8b5a7aa03e1e846c8",
+    "resumed_rows": 0,
+    "row_count": 100,
+    "runtime": {
+      "cuda_available": true,
+      "cuda_version": "12.8",
+      "device_name": "NVIDIA A100-SXM4-40GB",
+      "model_id": "Qwen/Qwen2.5-7B-Instruct",
+      "model_requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "packages": {
+        "accelerate": "1.12.0",
+        "bitsandbytes": "0.48.2",
+        "huggingface-hub": "0.36.0",
+        "numpy": "2.0.2",
+        "pandas": "2.3.3",
+        "pyyaml": "6.0.3",
+        "tqdm": "4.67.1",
+        "transformers": "4.57.3"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+      "python": "3.13.15",
+      "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+      "torch": "2.11.0+cu128",
+      "transformers": "4.57.3"
+    },
+    "schema_version": "compliancegpt-rq2-matched-run",
+    "system": "compliancegpt_rq2_control_gate_width_v1_top5"
+  }
+}

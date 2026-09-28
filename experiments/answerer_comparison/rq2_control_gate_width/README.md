@@ -6,6 +6,8 @@ This study implements the advisor-requested fixed-width sweep over the top 1, 2,
 
 The new result identity is `rq2_control_gate_width_v1`. It never edits or replaces the frozen RQ2 v3 result family.
 
+The completed, validated result is recorded under [`results_v1/`](results_v1/). Its canonical archive SHA-256 is `543c2e40879422a5a1462bb6fc56fda2ad76f9b060efbc780ebe2a51bc48a07d`.
+
 The released adaptive gate is included as an unchanged reference. The four experimental settings use fixed widths with adaptive widening disabled. This distinction matters because the released path begins at top 1 but widens to top 2 or top 3 on low-margin queries.
 
 The sweep preserves the released gate's exact unit of counting. Ranked enhancements are normalized to their base control before document filtering, and repeated normalized controls are not silently deduplicated. The output therefore records both requested rank width and effective unique base-control width. This exposes, rather than repairs, any width lost when multiple ranked enhancements map to the same base control.
@@ -50,3 +52,9 @@ The runner pins `Qwen/Qwen2.5-7B-Instruct` at revision `a09a35458c702b33eeacc393
 The completed directory contains the fixed-width contexts, row-level selector contracts, manifests, `summary.json`, `SUMMARY.md`, and a ZIP archive. The original adaptive outputs are read directly from the immutable RQ2 v3 archive and are never regenerated or modified.
 
 For Colab, open `Batch_5A_Control_Gate_Width_Sweep.ipynb`, select an A100 GPU when available (T4 or L4 is also supported), and choose **Runtime > Run all**. The notebook checks out the registered runner commit and writes resumable checkpoints to `MyDrive/rq2_control_gate_width_v1`.
+
+## Recorded finding
+
+Fixed top 2 matched the released adaptive gate's strict-pass count in both revisions: 65/100 on Rev. 5 and 29/36 on Rev. 4. Top 3 produced the same strict-pass and ODP-specificity results with lower clause precision. Top 5 reached 67/100 on Rev. 5 but fell to 28/36 on Rev. 4 and reduced Rev. 5 author-label ODP specificity from 17/37 to 12/37. Fixed top 1 fell to 62/100 and 26/36 without a specificity gain over the adaptive reference.
+
+No stored within-revision strict-pass comparison was statistically significant; all exact two-sided McNemar values were at least 0.25. The evidence therefore supports retaining the released adaptive gate. If a single fixed width is required, top 2 is the parsimonious operating point. ODP operating characteristics remain provisional pending blinded independent annotation.
