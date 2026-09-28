@@ -2,13 +2,21 @@
 
 This directory records the completed `rq2_control_gate_width_v1` result family. The run used the registered fixed widths 1, 2, 3, and 5 with adaptive widening disabled, while retaining the released adaptive v3 outputs as an unchanged reference.
 
-The canonical archive is `rq2_control_gate_width_v1.zip`:
+The canonical archive is represented in Git by the lossless parts `rq2_control_gate_width_v1.zip.part-00` through `rq2_control_gate_width_v1.zip.part-10`. Reassemble and verify it from this directory with:
+
+```bash
+cat rq2_control_gate_width_v1.zip.part-* > rq2_control_gate_width_v1.zip
+sha256sum -c ARCHIVE_SHA256SUMS
+unzip -t rq2_control_gate_width_v1.zip
+```
+
+The reassembled `rq2_control_gate_width_v1.zip` has this identity:
 
 ```text
 SHA-256: 543c2e40879422a5a1462bb6fc56fda2ad76f9b060efbc780ebe2a51bc48a07d
 ```
 
-The archive contains the 544 prepared fixed-width contexts, 544 corresponding selector contracts, the preflight audit, run manifests, configuration, and completed summaries. The manually exported upload used to recover the Drive directory had SHA-256 `59edf6cc852e66de35a57bc0609bbe4c552afa915d8b75b84d10f5028b1fda74`; its wrapper directory was removed when the canonical archive was created.
+The archive contains the 544 prepared fixed-width contexts, 544 corresponding selector contracts, the preflight audit, run manifests, configuration, and completed summaries. Splitting changes only the transport representation; concatenating the parts reproduces the canonical ZIP byte for byte. The manually exported upload used to recover the Drive directory had SHA-256 `59edf6cc852e66de35a57bc0609bbe4c552afa915d8b75b84d10f5028b1fda74`; its wrapper directory was removed when the canonical archive was created.
 
 ## Validation record
 
