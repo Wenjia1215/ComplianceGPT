@@ -15,6 +15,7 @@ import json
 import os
 import platform
 import shutil
+import subprocess
 import sys
 import tempfile
 from datetime import datetime, timezone
@@ -126,6 +127,39 @@ def copy_bf16_reference(repo_root: Path, output_dir: Path) -> Path:
     destination = output_dir / "references" / "rev4_generative_baseline_bf16.csv"
     registered.write_bytes(destination, source.read_bytes())
     return destination
+
+
+def ensure_frozen_source_commit(repo_root: Path) -> bool:
+    """Fetch the registered source commit when running from a shallow clone."""
+
+    probe = subprocess.run(
+        ["git", "cat-file", "-e", f"{FROZEN_SOURCE_COMMIT}^{{commit}}"],
+        cwd=repo_root,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    if probe.returncode == 0:
+        return False
+    subprocess.run(
+        [
+            "git",
+            "fetch",
+            "--filter=blob:none",
+            "origin",
+            FROZEN_SOURCE_COMMIT,
+        ],
+        cwd=repo_root,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "cat-file", "-e", f"{FROZEN_SOURCE_COMMIT}^{{commit}}"],
+        cwd=repo_root,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        check=True,
+    )
+    return True
 
 
 def load_or_create_run_config(
@@ -251,6 +285,8 @@ def prepare_experiment(
     repo_root: Path, output_dir: Path, archive_path: Path
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, str]]]:
     output_dir.mkdir(parents=True, exist_ok=True)
+    if ensure_frozen_source_commit(repo_root):
+        print(f"Fetched registered frozen source commit: {FROZEN_SOURCE_COMMIT}")
     verified = registered.verify_inputs(repo_root, archive_path)
     contexts, source_manifest = registered.extract_registered_archive(
         archive_path=archive_path,
