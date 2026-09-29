@@ -289,6 +289,7 @@ def validate_or_write_api_runtime(output_dir: Path) -> Dict[str, Any]:
         "result_id": RESULT_ID,
         "model_id": MODEL_ID,
         "python": platform.python_version(),
+        "python_major_minor": ".".join(platform.python_version_tuple()[:2]),
         "openai_python": version("openai"),
         "generation_settings": dict(GENERATION_SETTINGS),
         "api_key_source": "OPENAI_API_KEY environment variable; value never recorded",
@@ -296,7 +297,12 @@ def validate_or_write_api_runtime(output_dir: Path) -> Dict[str, Any]:
     path = output_dir / "manifests" / "api_runtime.json"
     if path.exists() and has_api_activity(output_dir):
         stored = json.loads(path.read_text(encoding="utf-8"))
-        for key in ("model_id", "python", "openai_python", "generation_settings"):
+        for key in (
+            "model_id",
+            "python_major_minor",
+            "openai_python",
+            "generation_settings",
+        ):
             if stored.get(key) != runtime.get(key):
                 raise RuntimeError(
                     f"API runtime changed for {key!r} after API activity. "
