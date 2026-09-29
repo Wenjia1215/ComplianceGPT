@@ -132,8 +132,8 @@ resolution conformance.
   `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`; BF16 left
   strict pass unchanged at 8/36 versus the frozen 4-bit baseline.
 - The registered Batch 5C study sends the same 36 questions, ordered evidence
-  windows, and free-form prompt to the `gpt-6-astra` Responses API with no
-  tools or schema-constrained decoding. It checkpoints raw API responses,
+  windows, and free-form prompt to the stable `gemini-3.5-flash` Gemini API
+  model with no tools or schema-constrained decoding. It checkpoints raw API responses,
   response IDs, server-reported model strings, and token usage, then applies
   the unchanged offline verifier. This stronger-system baseline is registered
   under `experiments/answerer_comparison/rq2_frontier_baseline/`.

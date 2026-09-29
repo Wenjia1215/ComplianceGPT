@@ -3,7 +3,7 @@
 
 The registered study preserves the exact RQ2 v3 questions, ordered evidence
 windows, free-text JSON prompt, parser/retry logic, ASK policy, and verifier.
-It replaces only the free-form Qwen answer call with the OpenAI Responses API.
+It replaces only the free-form Qwen answer call with the Gemini API.
 """
 
 from __future__ import annotations
@@ -37,8 +37,8 @@ from experiments.answerer_comparison.rq2_bf16_baseline import (  # noqa: E402
 RESULT_ID = "rq2_frontier_baseline_v1"
 SCHEMA_VERSION = "compliancegpt-rq2-frontier-baseline-v1"
 SYSTEM_NAME = "generative_frontier_api"
-MODEL_ID = "gpt-6-astra"
-MODEL_REQUESTED_REVISION = "api-alias:gpt-6-astra"
+MODEL_ID = "gemini-3.5-flash"
+MODEL_REQUESTED_REVISION = "stable-api-model:gemini-3.5-flash"
 MODEL_RESOLVED_REVISION_MARKER = "recorded-per-response"
 TOKENIZER_REVISION_MARKER = "server-managed"
 EXPECTED_ROWS = 36
@@ -52,10 +52,10 @@ BF16_REFERENCE = (
 )
 BF16_REFERENCE_SHA256 = "1b84eb673145bdae15d8e52c22678f2cf780d5f09f6e8603e6578ec586c2fc60"
 GENERATION_SETTINGS = {
-    "reasoning_effort": "low",
+    "thinking_level": "LOW",
+    "temperature": 1.0,
     "max_output_tokens": 2048,
     "max_parse_retries": 2,
-    "store": False,
     "tools_enabled": False,
     "structured_output_enforced": False,
     "sdk_max_retries": 5,
@@ -175,8 +175,10 @@ def load_or_create_run_config(
         "result_id": RESULT_ID,
         "framework_version": "rev4",
         "n_questions": EXPECTED_ROWS,
+        "provider": "google-gemini-developer-api",
+        "api_method": "generateContent",
         "model_id": MODEL_ID,
-        "model_reference_type": "mutable API alias; server-reported model recorded per response",
+        "model_reference_type": "stable Gemini API model; server model version recorded per response",
         "frozen_source_commit": FROZEN_SOURCE_COMMIT,
         "frozen_source_hashes": dict(verified["frozen_source_hashes"]),
         "source_archive_sha256": str(source_manifest["archive_sha256"]),
@@ -190,10 +192,14 @@ def load_or_create_run_config(
         "generation_settings": dict(GENERATION_SETTINGS),
         "experiment_code_files": code_files,
         "experiment_code_sha256": registered.canonical_sha256(code_files),
-        "changed_factor": "free-form answer model/runtime: Qwen2.5-7B -> OpenAI frontier API",
+        "changed_factor": "free-form answer model/runtime: Qwen2.5-7B -> Gemini frontier API",
         "retrieval_policy": "frozen RQ2 v3 Rev. 4 contexts; no live retrieval",
         "gold_policy": "gold excluded from API-visible contexts and used only by offline verifier",
-        "api_data_policy": "store=false; no tools; API key read from environment and never recorded",
+        "api_data_policy": (
+            "no tools; API key read from environment and never recorded; Google states that "
+            "free-tier content may be used to improve its products"
+        ),
+        "api_data_policy_reference": "https://ai.google.dev/gemini-api/docs/pricing",
         "frozen_factors": [
             "36 Rev. 4 questions and ordered evidence windows",
             "free-form generative baseline system and user prompts",
@@ -323,20 +329,24 @@ def validate_or_write_api_runtime(output_dir: Path) -> Dict[str, Any]:
     runtime = {
         "schema_version": SCHEMA_VERSION,
         "result_id": RESULT_ID,
+        "provider": "google-gemini-developer-api",
+        "api_method": "generateContent",
         "model_id": MODEL_ID,
         "python": platform.python_version(),
         "python_major_minor": ".".join(platform.python_version_tuple()[:2]),
-        "openai_python": version("openai"),
+        "google_genai_python": version("google-genai"),
         "generation_settings": dict(GENERATION_SETTINGS),
-        "api_key_source": "OPENAI_API_KEY environment variable; value never recorded",
+        "api_key_source": "GEMINI_API_KEY environment variable; value never recorded",
     }
     path = output_dir / "manifests" / "api_runtime.json"
     if path.exists() and has_api_activity(output_dir):
         stored = json.loads(path.read_text(encoding="utf-8"))
         for key in (
+            "provider",
+            "api_method",
             "model_id",
             "python_major_minor",
-            "openai_python",
+            "google_genai_python",
             "generation_settings",
         ):
             if stored.get(key) != runtime.get(key):
@@ -356,10 +366,10 @@ def validate_generation_contract(system_prompt: str, answerer: Any) -> Dict[str,
             f"Frozen generative prompt changed: expected {EXPECTED_PROMPT_SHA256}, got {prompt_hash}"
         )
     observed = {
-        "reasoning_effort": str(answerer.reasoning_effort),
+        "thinking_level": str(answerer.thinking_level),
+        "temperature": float(answerer.temperature),
         "max_output_tokens": int(answerer.max_output_tokens),
         "max_parse_retries": int(answerer.max_parse_retries),
-        "store": bool(answerer.store),
         "tools_enabled": False,
         "structured_output_enforced": False,
         "sdk_max_retries": GENERATION_SETTINGS["sdk_max_retries"],
@@ -376,7 +386,8 @@ def validate_generation_contract(system_prompt: str, answerer: Any) -> Dict[str,
         "generation_settings": observed,
         "same_prompt_boundary": (
             "System prompt, context serialization, user prompt, JSON parser, fail-closed "
-            "normalization, and retry prompt are inherited from the frozen Qwen baseline."
+            "normalization, and retry prompt are inherited from the frozen Qwen baseline. "
+            "Gemini thought signatures are preserved as required for retry turns."
         ),
     }
 
@@ -423,8 +434,9 @@ def validate_matched_rows(
         "evidence_window_mismatches": 0,
         "frontier_model_id": MODEL_ID,
         "model_snapshot_boundary": (
-            "The API request uses a mutable model alias. Every response id and server-reported "
-            "model string is retained; the runner rejects a model-string change within one run."
+            "The API request uses a named stable Gemini model. Every response id and "
+            "server-reported model version is retained; the runner rejects a version change "
+            "within one run."
         ),
     }
 
@@ -453,7 +465,9 @@ def audit_api_provenance(output_dir: Path, read_api_call_log: Any, summarize_usa
             if response_id in referenced_ids:
                 raise AssertionError(f"API response is referenced by multiple result rows: {response_id}")
             if dict(call) != by_id[response_id]:
-                raise AssertionError(f"API response metadata differs from the append-only log: {response_id}")
+                raise AssertionError(
+                    f"API response metadata differs from the cumulative log: {response_id}"
+                )
             referenced_ids.add(response_id)
             response_models.add(str(call.get("response_model", "") or ""))
         final_output = str(calls[-1].get("output_text", "") or "")
@@ -480,8 +494,8 @@ def audit_api_provenance(output_dir: Path, read_api_call_log: Any, summarize_usa
         "orphaned_call_count": len(orphaned),
         "orphaned_response_ids": orphaned,
         "interpretation": (
-            "Orphaned calls, if any, are billed responses produced before an interrupted row "
-            "checkpoint; they are retained for cost and provenance auditing but excluded from results."
+            "Orphaned calls, if any, are API responses produced before an interrupted row "
+            "checkpoint; they are retained for quota and provenance auditing but excluded from results."
         ),
     }
     registered.write_json(output_dir / "manifests" / "api_responses.json", manifest)
@@ -608,7 +622,7 @@ def summarize_completed_run(
         "result_id": RESULT_ID,
         "framework_version": "rev4",
         "n_questions": EXPECTED_ROWS,
-        "changed_factor": "free-form answer model/runtime: Qwen2.5-7B -> OpenAI frontier API",
+        "changed_factor": "free-form answer model/runtime: Qwen2.5-7B -> Gemini frontier API",
         "matched_input_validation": validation,
         "api_provenance": dict(api_manifest),
         "configurations": configurations,
@@ -624,9 +638,9 @@ def summarize_completed_run(
         "interpretation_boundary": (
             "This is a stronger-system baseline, not an isolation of weight precision or architecture. "
             "Questions, model-visible evidence, prompt/parser, ODP policy, and verifier are fixed, but "
-            "the API model and serving runtime differ. The requested model is a mutable alias; response "
-            "IDs, server-reported model strings, raw outputs, and token usage are retained. API sampling "
-            "may not reproduce byte-identical outputs."
+            "the API model and serving runtime differ. The requested model is a named stable Gemini "
+            "model; response IDs, server-reported model versions, raw outputs, and token usage "
+            "are retained. API sampling may not reproduce byte-identical outputs."
         ),
         "file_hashes": {name: registered.sha256_file(path) for name, path in paths.items()},
     }
@@ -672,10 +686,10 @@ def main() -> None:
         print("No API key was read and no API call was made.")
         return
 
-    api_key = str(os.environ.get("OPENAI_API_KEY", "") or "").strip()
+    api_key = str(os.environ.get("GEMINI_API_KEY", "") or "").strip()
     if not api_key:
         raise RuntimeError(
-            "OPENAI_API_KEY is not set. In Colab, add it to Secrets, enable notebook access, "
+            "GEMINI_API_KEY is not set. In Colab, add it to Secrets, enable notebook access, "
             "and rerun. The notebook never prints or writes the key."
         )
     validate_or_write_api_runtime(output_dir)
@@ -684,16 +698,27 @@ def main() -> None:
     if str(current_src) not in sys.path:
         sys.path.insert(0, str(current_src))
     from answerer_comparison.frontier_api_answerer import (
-        make_openai_responses_answerer_class,
+        make_gemini_generate_content_answerer_class,
         read_api_call_log,
         summarize_usage,
     )
-    from openai import OpenAI
+    from google import genai
+    from google.genai import types
 
-    client = OpenAI(
+    client = genai.Client(
+        vertexai=False,
         api_key=api_key,
-        max_retries=int(GENERATION_SETTINGS["sdk_max_retries"]),
-        timeout=float(GENERATION_SETTINGS["sdk_timeout_seconds"]),
+        http_options=types.HttpOptions(
+            timeout=int(float(GENERATION_SETTINGS["sdk_timeout_seconds"]) * 1000),
+            retry_options=types.HttpRetryOptions(
+                attempts=int(GENERATION_SETTINGS["sdk_max_retries"]),
+                initial_delay=1.0,
+                max_delay=60.0,
+                exp_base=2.0,
+                jitter=1.0,
+                http_status_codes=[408, 429, 500, 502, 503, 504],
+            ),
+        ),
     )
 
     with tempfile.TemporaryDirectory(prefix="compliancegpt-rq2-frontier-") as temporary:
@@ -732,7 +757,9 @@ def main() -> None:
 
         matched.CONTEXT_SCHEMA = registered.EXPECTED_CONTEXT_SCHEMA
         system_prompt = str(build_system_prompt())
-        answerer_class = make_openai_responses_answerer_class(BaselineGenerativeAnswerer)
+        answerer_class = make_gemini_generate_content_answerer_class(
+            BaselineGenerativeAnswerer
+        )
         answerer = answerer_class(
             client=client,
             model_id=MODEL_ID,
@@ -742,10 +769,10 @@ def main() -> None:
                 for context in contexts
             },
             call_log_path=api_log_path(output_dir),
-            reasoning_effort=str(GENERATION_SETTINGS["reasoning_effort"]),
+            thinking_level=str(GENERATION_SETTINGS["thinking_level"]),
+            temperature=float(GENERATION_SETTINGS["temperature"]),
             max_output_tokens=int(GENERATION_SETTINGS["max_output_tokens"]),
             max_parse_retries=int(GENERATION_SETTINGS["max_parse_retries"]),
-            store=bool(GENERATION_SETTINGS["store"]),
         )
         generation_contract = validate_generation_contract(system_prompt, answerer)
         registered.write_json(
@@ -798,7 +825,7 @@ def main() -> None:
             resume=True,
             progress_every=1,
         )
-        run_manifest["api_model_alias"] = MODEL_ID
+        run_manifest["api_model_id"] = MODEL_ID
         run_manifest["local_model_loaded"] = False
         registered.write_json(output_dir / "manifests" / "run.json", run_manifest)
         api_manifest = audit_api_provenance(output_dir, read_api_call_log, summarize_usage)

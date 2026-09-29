@@ -6,19 +6,19 @@ from types import SimpleNamespace
 
 from answerer_comparison.frontier_api_answerer import (
     LOG_SCHEMA_VERSION,
-    make_openai_responses_answerer_class,
+    make_gemini_generate_content_answerer_class,
     read_api_call_log,
     summarize_usage,
 )
 from generative_answerer.generator import BaselineGenerativeAnswerer, build_system_prompt
 
 
-class FakeResponses:
+class FakeModels:
     def __init__(self, responses):
         self.responses = list(responses)
         self.requests = []
 
-    def create(self, **kwargs):
+    def generate_content(self, **kwargs):
         self.requests.append(kwargs)
         if not self.responses:
             raise AssertionError("No fake response remains.")
@@ -27,35 +27,50 @@ class FakeResponses:
 
 class FakeClient:
     def __init__(self, responses):
-        self.responses = FakeResponses(responses)
+        self.models = FakeModels(responses)
 
 
-def fake_response(response_id, output_text, model="gpt-6-astra"):
+def fake_response(response_id, output_text, model="gemini-3.5-flash"):
+    candidate = SimpleNamespace(
+        finish_reason="STOP",
+        finish_message="",
+        safety_ratings=[],
+        citation_metadata=None,
+        content={
+            "role": "model",
+            "parts": [{"text": output_text, "thought_signature": f"sig-{response_id}"}],
+        },
+    )
     return SimpleNamespace(
-        id=response_id,
-        model=model,
-        output_text=output_text,
-        created_at=123456,
-        status="completed",
-        usage={"input_tokens": 100, "output_tokens": 20, "total_tokens": 120},
-        incomplete_details=None,
-        error=None,
+        response_id=response_id,
+        model_version=model,
+        text=output_text,
+        create_time="2026-09-29T12:00:00Z",
+        usage_metadata={
+            "prompt_token_count": 100,
+            "candidates_token_count": 20,
+            "thoughts_token_count": 5,
+            "total_token_count": 125,
+        },
+        prompt_feedback=None,
+        model_status=None,
+        candidates=[candidate],
     )
 
 
 class FrontierAPIAnswererTest(unittest.TestCase):
     def build_answerer(self, directory, responses, **overrides):
-        cls = make_openai_responses_answerer_class(BaselineGenerativeAnswerer)
+        cls = make_gemini_generate_content_answerer_class(BaselineGenerativeAnswerer)
         kwargs = {
             "client": FakeClient(responses),
-            "model_id": "gpt-6-astra",
+            "model_id": "gemini-3.5-flash",
             "system_prompt": build_system_prompt(),
             "query_id_by_question": {"What is required?": "1", "Second?": "2"},
             "call_log_path": Path(directory) / "responses.jsonl",
-            "reasoning_effort": "low",
+            "thinking_level": "LOW",
+            "temperature": 1.0,
             "max_output_tokens": 2048,
             "max_parse_retries": 2,
-            "store": False,
         }
         kwargs.update(overrides)
         return cls(**kwargs)
@@ -78,19 +93,21 @@ class FrontierAPIAnswererTest(unittest.TestCase):
             self.assertEqual(result["status"], "OK")
             self.assertEqual(result["cited_source_ids"], ["ac-1_smt"])
             self.assertEqual(result["api_provenance"]["query_id"], "1")
-            self.assertEqual(result["api_provenance"]["response_model"], "gpt-6-astra")
-            request = answerer.client.responses.requests[0]
-            self.assertEqual(request["model"], "gpt-6-astra")
-            self.assertEqual(request["reasoning"], {"effort": "low"})
-            self.assertEqual(request["max_output_tokens"], 2048)
-            self.assertFalse(request["store"])
-            self.assertEqual(request["input"][0]["content"], build_system_prompt())
+            self.assertEqual(result["api_provenance"]["response_model"], "gemini-3.5-flash")
+            request = answerer.client.models.requests[0]
+            self.assertEqual(request["model"], "gemini-3.5-flash")
+            self.assertEqual(request["config"]["thinking_config"], {"thinking_level": "LOW"})
+            self.assertEqual(request["config"]["temperature"], 1.0)
+            self.assertEqual(request["config"]["max_output_tokens"], 2048)
+            self.assertEqual(request["config"]["system_instruction"], build_system_prompt())
+            self.assertEqual(request["contents"][0]["role"], "user")
             rows = read_api_call_log(Path(directory) / "responses.jsonl")
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]["schema_version"], LOG_SCHEMA_VERSION)
+            self.assertEqual(rows[0]["provider"], "google-gemini")
             self.assertEqual(rows[0]["response_id"], "resp_1")
 
-    def test_parse_retry_is_logged_and_returned_in_provenance(self):
+    def test_parse_retry_is_logged_and_preserves_gemini_roles(self):
         valid = json.dumps(
             {
                 "status": "NO_EVIDENCE",
@@ -107,7 +124,12 @@ class FrontierAPIAnswererTest(unittest.TestCase):
             result = answerer.generate("What is required?", [{"id": "ac-1_smt", "text": "x"}])
             self.assertEqual(result["status"], "NO_EVIDENCE")
             self.assertEqual(len(result["api_provenance"]["api_calls"]), 2)
-            self.assertEqual(len(answerer.client.responses.requests[1]["input"]), 4)
+            retry_contents = answerer.client.models.requests[1]["contents"]
+            self.assertEqual(len(retry_contents), 3)
+            self.assertEqual([row["role"] for row in retry_contents], ["user", "model", "user"])
+            self.assertEqual(
+                retry_contents[1]["parts"][0]["thought_signature"], "sig-resp_bad"
+            )
             self.assertEqual(
                 [row["response_id"] for row in read_api_call_log(Path(directory) / "responses.jsonl")],
                 ["resp_bad", "resp_good"],
@@ -126,8 +148,8 @@ class FrontierAPIAnswererTest(unittest.TestCase):
             answerer = self.build_answerer(
                 directory,
                 [
-                    fake_response("resp_1", payload, "gpt-6-astra-2026-09-01"),
-                    fake_response("resp_2", payload, "gpt-6-astra-2026-09-15"),
+                    fake_response("resp_1", payload, "gemini-3.5-flash-001"),
+                    fake_response("resp_2", payload, "gemini-3.5-flash-002"),
                 ],
             )
             answerer.generate("What is required?", [{"id": "ac-1_smt", "text": "x"}])
@@ -149,26 +171,34 @@ class FrontierAPIAnswererTest(unittest.TestCase):
             first = self.build_answerer(directory, [fake_response("resp_1", payload)])
             first.generate("What is required?", [{"id": "ac-1_smt", "text": "x"}])
             resumed = self.build_answerer(directory, [])
-            self.assertEqual(resumed.resolved_model, "gpt-6-astra")
+            self.assertEqual(resumed.resolved_model, "gemini-3.5-flash")
             with self.assertRaisesRegex(RuntimeError, "max_output_tokens"):
                 self.build_answerer(directory, [], max_output_tokens=4096)
 
-    def test_store_true_is_forbidden(self):
+    def test_invalid_thinking_level_is_forbidden(self):
         with tempfile.TemporaryDirectory() as directory:
-            with self.assertRaisesRegex(ValueError, "store=False"):
-                self.build_answerer(directory, [], store=True)
+            with self.assertRaisesRegex(ValueError, "thinking level"):
+                self.build_answerer(directory, [], thinking_level="unbounded")
 
     def test_usage_summary_tolerates_missing_fields(self):
         summary = summarize_usage(
             [
-                {"usage": {"input_tokens": 10, "output_tokens": 2, "total_tokens": 12}},
-                {"usage": {"input_tokens": 5}},
+                {
+                    "usage": {
+                        "prompt_token_count": 10,
+                        "candidates_token_count": 2,
+                        "total_token_count": 12,
+                    }
+                },
+                {"usage": {"prompt_token_count": 5}},
                 {"usage": None},
             ]
         )
         self.assertEqual(summary["api_calls"], 3)
-        self.assertEqual(summary["totals"], {"input_tokens": 15, "output_tokens": 2, "total_tokens": 12})
-        self.assertEqual(summary["calls_with_field"]["input_tokens"], 2)
+        self.assertEqual(summary["totals"]["prompt_token_count"], 15)
+        self.assertEqual(summary["totals"]["candidates_token_count"], 2)
+        self.assertEqual(summary["totals"]["total_token_count"], 12)
+        self.assertEqual(summary["calls_with_field"]["prompt_token_count"], 2)
 
 
 if __name__ == "__main__":

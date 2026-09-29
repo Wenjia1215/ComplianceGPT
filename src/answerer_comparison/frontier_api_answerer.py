@@ -1,10 +1,11 @@
-"""Auditable OpenAI Responses API adapter for the frozen RQ2 answerer.
+"""Auditable Gemini generateContent adapter for the frozen RQ2 answerer.
 
 The adapter is deliberately a mixin rather than a second implementation of
-the generative baseline.  ``make_openai_responses_answerer_class`` combines it
-with the frozen ``BaselineGenerativeAnswerer`` class at run time, so prompt
-construction, JSON parsing, fail-closed normalization, and parse retries remain
-the exact registered implementation.  Only the model call is replaced.
+the generative baseline. ``make_gemini_generate_content_answerer_class``
+combines it with the frozen ``BaselineGenerativeAnswerer`` class at run time,
+so prompt construction, JSON parsing, fail-closed normalization, and parse
+retries remain the exact registered implementation. Only the model call is
+replaced.
 """
 
 from __future__ import annotations
@@ -17,11 +18,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, MutableMapping, Sequence, Type
 
 
-LOG_SCHEMA_VERSION = "compliancegpt-frontier-api-call-v1"
+LOG_SCHEMA_VERSION = "compliancegpt-gemini-api-call-v1"
 
 
 def canonical_sha256(value: Any) -> str:
-    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    payload = json.dumps(
+        _jsonable(value), ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    )
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -40,7 +43,7 @@ def _jsonable(value: Any) -> Any:
 
 
 def read_api_call_log(path: Path) -> List[Dict[str, Any]]:
-    """Read and structurally validate an append-only API response log."""
+    """Read and structurally validate the cumulative API response log."""
 
     if not path.exists():
         return []
@@ -68,7 +71,69 @@ def read_api_call_log(path: Path) -> List[Dict[str, Any]]:
     return rows
 
 
-class OpenAIResponsesAnswererMixin:
+def _gemini_contents(
+    messages: Sequence[Mapping[str, str]],
+    system_prompt: str,
+    model_contents: Sequence[Any],
+    model_texts: Sequence[str],
+) -> List[Any]:
+    """Translate the frozen chat turns without changing their text."""
+
+    if not messages or str(messages[0].get("role", "")) != "system":
+        raise ValueError("The frozen answerer request must start with one system message.")
+    if str(messages[0].get("content", "")) != system_prompt:
+        raise ValueError("The API request system prompt differs from the registered prompt.")
+    contents: List[Any] = []
+    model_index = 0
+    for message in messages[1:]:
+        role = str(message.get("role", ""))
+        if role == "assistant":
+            if model_index >= len(model_contents):
+                raise ValueError("Gemini retry history is missing a prior model response.")
+            message_text = str(message.get("content", ""))
+            if message_text != model_texts[model_index]:
+                raise ValueError("Gemini retry history changed a prior model response.")
+            contents.append(model_contents[model_index])
+            model_index += 1
+            continue
+        elif role == "user":
+            gemini_role = "user"
+        else:
+            raise ValueError(f"Unsupported frozen-answerer role for Gemini: {role!r}")
+        contents.append(
+            {
+                "role": gemini_role,
+                "parts": [{"text": str(message.get("content", ""))}],
+            }
+        )
+    final_role = ""
+    if contents:
+        if isinstance(contents[-1], Mapping):
+            final_role = str(contents[-1].get("role", "") or "")
+        else:
+            final_role = str(getattr(contents[-1], "role", "") or "")
+    if final_role != "user":
+        raise ValueError("The frozen answerer request must end with a user turn.")
+    if model_index != len(model_contents):
+        raise ValueError("Gemini retry history contains an unreferenced model response.")
+    return contents
+
+
+def _candidate_audit(response: Any) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    for candidate in list(getattr(response, "candidates", None) or []):
+        rows.append(
+            {
+                "finish_reason": str(getattr(candidate, "finish_reason", "") or ""),
+                "finish_message": str(getattr(candidate, "finish_message", "") or ""),
+                "safety_ratings": _jsonable(getattr(candidate, "safety_ratings", None)),
+                "citation_metadata": _jsonable(getattr(candidate, "citation_metadata", None)),
+            }
+        )
+    return rows
+
+
+class GeminiGenerateContentAnswererMixin:
     """Replace only ``_call_model`` while inheriting the frozen answerer logic."""
 
     def __init__(
@@ -79,21 +144,21 @@ class OpenAIResponsesAnswererMixin:
         system_prompt: str,
         query_id_by_question: Mapping[str, str],
         call_log_path: Path,
-        reasoning_effort: str = "low",
+        thinking_level: str = "LOW",
+        temperature: float = 1.0,
         max_output_tokens: int = 2048,
         max_parse_retries: int = 2,
-        store: bool = False,
     ) -> None:
-        # Do not call the local-model parent's constructor.  It creates a
+        # Do not call the local-model parent's constructor. It creates a
         # Transformers GenerationConfig and requires a tokenizer/model that do
         # not participate in this API experiment.
         self.client = client
         self.model_id = str(model_id)
         self.system_prompt = str(system_prompt)
-        self.reasoning_effort = str(reasoning_effort)
+        self.thinking_level = str(thinking_level).upper()
+        self.temperature = float(temperature)
         self.max_output_tokens = int(max_output_tokens)
         self.max_parse_retries = int(max_parse_retries)
-        self.store = bool(store)
         self.call_log_path = Path(call_log_path)
         self.query_id_by_question = {
             str(question): str(query_id)
@@ -102,17 +167,21 @@ class OpenAIResponsesAnswererMixin:
         if len(self.query_id_by_question) != len(query_id_by_question):
             raise ValueError("Question-to-query-id map contains duplicate questions.")
         if not self.model_id:
-            raise ValueError("A Responses API model id is required.")
+            raise ValueError("A Gemini API model id is required.")
+        if self.thinking_level not in {"MINIMAL", "LOW", "MEDIUM", "HIGH"}:
+            raise ValueError(f"Unsupported Gemini thinking level: {self.thinking_level!r}")
+        if not 0.0 <= self.temperature <= 2.0:
+            raise ValueError("temperature must be between 0 and 2.")
         if self.max_output_tokens < 1:
             raise ValueError("max_output_tokens must be positive.")
         if self.max_parse_retries < 0:
             raise ValueError("max_parse_retries cannot be negative.")
-        if self.store:
-            raise ValueError("This registered experiment requires store=False.")
 
         self._active_query_id = ""
         self._active_question_sha256 = ""
         self._active_calls: List[Dict[str, Any]] = []
+        self._active_model_contents: List[Any] = []
+        self._active_model_texts: List[str] = []
         self._resolved_model = ""
         self._validate_existing_log()
 
@@ -125,10 +194,12 @@ class OpenAIResponsesAnswererMixin:
         models = set()
         for row in rows:
             expected = {
+                "provider": "google-gemini",
+                "api_method": "generateContent",
                 "request_model": self.model_id,
-                "reasoning_effort": self.reasoning_effort,
+                "thinking_level": self.thinking_level,
+                "temperature": self.temperature,
                 "max_output_tokens": self.max_output_tokens,
-                "store": self.store,
             }
             for key, value in expected.items():
                 if row.get(key) != value:
@@ -160,6 +231,8 @@ class OpenAIResponsesAnswererMixin:
         self._active_query_id = self.query_id_by_question[question]
         self._active_question_sha256 = hashlib.sha256(question.encode("utf-8")).hexdigest()
         self._active_calls = []
+        self._active_model_contents = []
+        self._active_model_texts = []
         started_at = datetime.now(timezone.utc).isoformat()
         started = time.monotonic()
         try:
@@ -167,16 +240,19 @@ class OpenAIResponsesAnswererMixin:
         finally:
             elapsed_seconds = time.monotonic() - started
         output["api_provenance"] = {
+            "provider": "google-gemini",
+            "api_method": "generateContent",
             "request_model": self.model_id,
             "response_model": self._resolved_model,
             "query_id": self._active_query_id,
             "question_sha256": self._active_question_sha256,
-            "reasoning_effort": self.reasoning_effort,
+            "thinking_level": self.thinking_level,
+            "temperature": self.temperature,
             "max_output_tokens": self.max_output_tokens,
             "max_parse_retries": self.max_parse_retries,
-            "store": self.store,
             "tools_enabled": False,
             "structured_output_enforced": False,
+            "thought_signatures_preserved_for_retries": True,
             "started_at_utc": started_at,
             "elapsed_seconds": elapsed_seconds,
             "api_calls": list(self._active_calls),
@@ -185,28 +261,54 @@ class OpenAIResponsesAnswererMixin:
 
     def _call_model(self, messages: List[Dict[str, str]]) -> str:
         request_hash = canonical_sha256(messages)
+        contents = _gemini_contents(
+            messages,
+            self.system_prompt,
+            self._active_model_contents,
+            self._active_model_texts,
+        )
+        config = {
+            "system_instruction": self.system_prompt,
+            "thinking_config": {"thinking_level": self.thinking_level},
+            "temperature": self.temperature,
+            "max_output_tokens": self.max_output_tokens,
+        }
         call_started = time.monotonic()
-        response = self.client.responses.create(
+        response = self.client.models.generate_content(
             model=self.model_id,
-            input=messages,
-            reasoning={"effort": self.reasoning_effort},
-            max_output_tokens=self.max_output_tokens,
-            store=self.store,
+            contents=contents,
+            config=config,
         )
         latency_seconds = time.monotonic() - call_started
-        output_text = str(getattr(response, "output_text", "") or "").strip()
-        response_id = str(getattr(response, "id", "") or "").strip()
-        response_model = str(getattr(response, "model", "") or "").strip()
+        output_text = str(getattr(response, "text", "") or "").strip()
+        response_id = str(getattr(response, "response_id", "") or "").strip()
+        response_model = str(getattr(response, "model_version", "") or "").strip()
         if not response_id:
-            raise RuntimeError("Responses API result did not include a response id.")
+            raise RuntimeError("Gemini API result did not include a response id.")
         if not response_model:
-            raise RuntimeError("Responses API result did not include a server-reported model.")
+            raise RuntimeError("Gemini API result did not include a server-reported model version.")
         previous_model = self._resolved_model
         if not self._resolved_model:
             self._resolved_model = response_model
 
+        candidates = _candidate_audit(response)
+        response_candidates = list(getattr(response, "candidates", None) or [])
+        response_content = (
+            getattr(response_candidates[0], "content", None)
+            if response_candidates
+            else None
+        )
+        if response_content is None:
+            response_content = {
+                "role": "model",
+                "parts": [{"text": output_text}],
+            }
+        self._active_model_contents.append(response_content)
+        self._active_model_texts.append(output_text)
         row: Dict[str, Any] = {
             "schema_version": LOG_SCHEMA_VERSION,
+            "provider": "google-gemini",
+            "api_method": "generateContent",
             "logged_at_utc": datetime.now(timezone.utc).isoformat(),
             "query_id": self._active_query_id,
             "question_sha256": self._active_question_sha256,
@@ -214,18 +316,20 @@ class OpenAIResponsesAnswererMixin:
             "request_model": self.model_id,
             "response_model": response_model,
             "response_id": response_id,
-            "response_created_at": _jsonable(getattr(response, "created_at", None)),
-            "response_status": str(getattr(response, "status", "") or ""),
+            "response_created_at": _jsonable(getattr(response, "create_time", None)),
+            "response_status": "completed" if candidates else "no_candidates",
             "request_messages_sha256": request_hash,
-            "reasoning_effort": self.reasoning_effort,
+            "gemini_contents_sha256": canonical_sha256(contents),
+            "thinking_level": self.thinking_level,
+            "temperature": self.temperature,
             "max_output_tokens": self.max_output_tokens,
-            "store": self.store,
             "tools_enabled": False,
             "structured_output_enforced": False,
             "latency_seconds": latency_seconds,
-            "usage": _jsonable(getattr(response, "usage", None)),
-            "incomplete_details": _jsonable(getattr(response, "incomplete_details", None)),
-            "error": _jsonable(getattr(response, "error", None)),
+            "usage": _jsonable(getattr(response, "usage_metadata", None)),
+            "prompt_feedback": _jsonable(getattr(response, "prompt_feedback", None)),
+            "model_status": _jsonable(getattr(response, "model_status", None)),
+            "candidates": candidates,
             "output_text": output_text,
             "output_text_sha256": hashlib.sha256(output_text.encode("utf-8")).hexdigest(),
             "output_characters": len(output_text),
@@ -235,30 +339,37 @@ class OpenAIResponsesAnswererMixin:
         if previous_model and response_model != previous_model:
             raise RuntimeError(
                 "Server-reported model changed within the registered run: "
-                f"{previous_model!r} -> {response_model!r}. The billed response was logged; "
+                f"{previous_model!r} -> {response_model!r}. The response was logged; "
                 "use a new output directory."
             )
         return output_text
 
 
-def make_openai_responses_answerer_class(
+def make_gemini_generate_content_answerer_class(
     baseline_answerer_class: Type[Any],
-) -> Type[OpenAIResponsesAnswererMixin]:
+) -> Type[GeminiGenerateContentAnswererMixin]:
     """Bind the API call adapter to the exact frozen baseline implementation."""
 
     if not hasattr(baseline_answerer_class, "generate"):
         raise TypeError("The baseline answerer class must provide generate().")
     return type(
-        "OpenAIResponsesGenerativeAnswerer",
-        (OpenAIResponsesAnswererMixin, baseline_answerer_class),
+        "GeminiGenerateContentGenerativeAnswerer",
+        (GeminiGenerateContentAnswererMixin, baseline_answerer_class),
         {"__module__": __name__},
     )
 
 
 def summarize_usage(rows: Sequence[Mapping[str, Any]]) -> Dict[str, Any]:
-    """Aggregate token fields without assuming every API version exposes details."""
+    """Aggregate Gemini token fields without assuming every field is present."""
 
-    fields = ("input_tokens", "output_tokens", "total_tokens")
+    fields = (
+        "prompt_token_count",
+        "candidates_token_count",
+        "thoughts_token_count",
+        "total_token_count",
+        "cached_content_token_count",
+        "tool_use_prompt_token_count",
+    )
     totals: MutableMapping[str, int] = {field: 0 for field in fields}
     observed: MutableMapping[str, int] = {field: 0 for field in fields}
     for row in rows:

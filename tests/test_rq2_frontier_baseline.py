@@ -8,10 +8,10 @@ from experiments.answerer_comparison.rq2_frontier_baseline import run_frontier_b
 
 class FrontierBaselineRunnerTest(unittest.TestCase):
     def test_registered_generation_settings_are_conservative_and_auditable(self):
-        self.assertEqual(runner.MODEL_ID, "gpt-6-astra")
-        self.assertEqual(runner.GENERATION_SETTINGS["reasoning_effort"], "low")
+        self.assertEqual(runner.MODEL_ID, "gemini-3.5-flash")
+        self.assertEqual(runner.GENERATION_SETTINGS["thinking_level"], "LOW")
+        self.assertEqual(runner.GENERATION_SETTINGS["temperature"], 1.0)
         self.assertEqual(runner.GENERATION_SETTINGS["max_parse_retries"], 2)
-        self.assertFalse(runner.GENERATION_SETTINGS["store"])
         self.assertFalse(runner.GENERATION_SETTINGS["tools_enabled"])
         self.assertFalse(runner.GENERATION_SETTINGS["structured_output_enforced"])
 
