@@ -21,6 +21,7 @@ from experiments.answerer_comparison.rq2_bf16_baseline.run_bf16_baseline import 
     parse_contexts,
     read_csv_rows,
     require_bf16_gpu,
+    resolve_tokenizer_revision,
     sha256_file,
     validate_context,
     validate_matched_rows,
@@ -132,6 +133,28 @@ class Bf16BaselineTests(unittest.TestCase):
 
         with self.assertRaisesRegex(RuntimeError, "T4 is not valid"):
             require_bf16_gpu(FakeTorch())
+
+    def test_missing_tokenizer_commit_metadata_uses_immutable_request(self):
+        class TokenizerWithoutCommitMetadata:
+            init_kwargs = {}
+
+        evidence = resolve_tokenizer_revision(
+            TokenizerWithoutCommitMetadata(), MODEL_REVISION
+        )
+        self.assertEqual(evidence["resolved_revision"], MODEL_REVISION)
+        self.assertEqual(evidence["metadata_commit_hash"], "")
+        self.assertEqual(
+            evidence["verification_source"], "immutable_from_pretrained_request"
+        )
+
+    def test_conflicting_tokenizer_commit_metadata_is_rejected(self):
+        class TokenizerWithWrongCommitMetadata:
+            init_kwargs = {"_commit_hash": "wrong-revision"}
+
+        with self.assertRaisesRegex(RuntimeError, "Tokenizer revision metadata differs"):
+            resolve_tokenizer_revision(
+                TokenizerWithWrongCommitMetadata(), MODEL_REVISION
+            )
 
 
 if __name__ == "__main__":

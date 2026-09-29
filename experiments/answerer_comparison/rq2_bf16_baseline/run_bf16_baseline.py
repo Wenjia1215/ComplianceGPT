@@ -525,7 +525,10 @@ def extract_frozen_source(repo_root: Path, destination: Path) -> Path:
             member_path = Path(member.name)
             if member_path.is_absolute() or ".." in member_path.parts:
                 raise RuntimeError(f"Unsafe path in frozen source archive: {member.name}")
-        tar.extractall(destination)
+        if sys.version_info >= (3, 12):
+            tar.extractall(destination, filter="data")
+        else:  # pragma: no cover - retained for Python 3.11 compatibility.
+            tar.extractall(destination)
     source_root = destination / "src"
     if not source_root.is_dir():
         raise RuntimeError("Frozen source extraction did not produce src/.")
@@ -637,6 +640,40 @@ def package_versions() -> Dict[str, str]:
     return versions
 
 
+def resolve_tokenizer_revision(tokenizer: Any, requested_revision: str) -> Dict[str, str]:
+    """Validate tokenizer revision metadata, with an explicit immutable-request fallback.
+
+    Some Transformers tokenizer classes do not preserve ``_commit_hash`` in
+    ``init_kwargs`` even when ``from_pretrained`` was called with an immutable
+    commit SHA. A present metadata hash remains a hard check. When the field is
+    absent, the exact requested SHA is the resolution evidence and is recorded
+    as such rather than being mistaken for a mismatch.
+    """
+
+    requested = str(requested_revision or "").strip()
+    if not requested:
+        raise ValueError("An immutable tokenizer revision is required.")
+    init_kwargs = dict(getattr(tokenizer, "init_kwargs", {}) or {})
+    candidates = [
+        str(init_kwargs.get("_commit_hash", "") or "").strip(),
+        str(getattr(tokenizer, "_commit_hash", "") or "").strip(),
+    ]
+    observed = sorted({value for value in candidates if value})
+    if any(value != requested for value in observed):
+        raise RuntimeError(
+            "Tokenizer revision metadata differs from the registered immutable revision: "
+            f"requested={requested!r}, observed={observed!r}"
+        )
+    return {
+        "requested_revision": requested,
+        "resolved_revision": observed[0] if observed else requested,
+        "metadata_commit_hash": observed[0] if observed else "",
+        "verification_source": (
+            "tokenizer_metadata" if observed else "immutable_from_pretrained_request"
+        ),
+    }
+
+
 def load_bf16_model() -> Tuple[Any, Any, Dict[str, Any]]:
     import torch
     from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -658,13 +695,12 @@ def load_bf16_model() -> Tuple[Any, Any, Dict[str, Any]]:
     model_revision = str(
         getattr(getattr(model, "config", None), "_commit_hash", "") or ""
     ).strip()
-    tokenizer_revision = str(
-        (getattr(tokenizer, "init_kwargs", {}) or {}).get("_commit_hash", "") or ""
-    ).strip()
-    if model_revision != MODEL_REVISION or tokenizer_revision != MODEL_REVISION:
+    tokenizer_revision_evidence = resolve_tokenizer_revision(tokenizer, MODEL_REVISION)
+    tokenizer_revision = tokenizer_revision_evidence["resolved_revision"]
+    if model_revision != MODEL_REVISION:
         raise RuntimeError(
-            "Resolved model/tokenizer revisions differ from the registered immutable revision: "
-            f"model={model_revision!r}, tokenizer={tokenizer_revision!r}"
+            "Resolved model revision differs from the registered immutable revision: "
+            f"model={model_revision!r}, expected={MODEL_REVISION!r}"
         )
     precision = {
         "schema_version": SCHEMA_VERSION,
@@ -672,6 +708,7 @@ def load_bf16_model() -> Tuple[Any, Any, Dict[str, Any]]:
         "model_id": MODEL_ID,
         "model_resolved_revision": model_revision,
         "tokenizer_resolved_revision": tokenizer_revision,
+        "tokenizer_revision_evidence": tokenizer_revision_evidence,
         "gpu": gpu,
         "packages": package_versions(),
         **validate_bf16_model(model, torch),
@@ -718,6 +755,7 @@ def validate_or_write_precision_manifest(
             "model_id",
             "model_resolved_revision",
             "tokenizer_resolved_revision",
+            "tokenizer_revision_evidence",
             "packages",
             "floating_parameter_tensor_dtypes",
             "floating_parameter_counts_by_dtype",
