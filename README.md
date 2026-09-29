@@ -126,8 +126,8 @@ resolution conformance.
 - The registered Batch 5B study reruns the 36-row Rev. 4 free-form baseline in
   true BF16 while preserving its frozen Qwen revision, prompt, decoding,
   evidence windows, ODP policy, and verifier. It is a separate quantization-
-  sensitivity result and does not replace RQ2 v3. Its completed A100 summary
-  and audit record are archived under
+  sensitivity result and does not replace RQ2 v3. Its complete supplied A100
+  evidence package and audit record are archived under
   `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`; BF16 left
   strict pass unchanged at 8/36 versus the frozen 4-bit baseline.
 - The deterministic no-selector ablation retains every statement and guidance

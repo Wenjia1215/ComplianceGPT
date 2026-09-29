@@ -1,34 +1,34 @@
 # Batch 5B validated result
 
-This directory records the compact validation record for the completed
-`rq2_bf16_baseline_v1` run. The run used
+This directory records the complete supplied evidence package for the
+completed `rq2_bf16_baseline_v1` run. The run used
 an NVIDIA A100-SXM4-40GB and loaded every floating model parameter as
 `torch.bfloat16`; the runtime manifest reports no 4-bit or 8-bit quantizer.
 All 36 registered Revision 4 contexts completed.
 
-The supplied Google Drive folder export was audited before this compact record
-was prepared. `manifests/outputs.json` covers 15 payload files; every stored
-SHA-256 was independently rechecked, and its canonical file-map hash is:
+The materialized files are the exact payload recovered from the supplied
+Google Drive folder export. `manifests/outputs.json` covers 15 payload files;
+every stored SHA-256 was independently rechecked, and its canonical file-map
+hash is:
 
 ```text
 e265388b72d758b0d05e2bf55899f9b45622b51f497bdf17d8465d3ded97ce3b
 ```
 
-The exact supplied Drive export had SHA-256:
+The exact supplied Drive export is retained as
+`rq2_bf16_baseline_v1_drive_export.zip`, with SHA-256:
 
 ```text
 4039e67453d46b12ad214a3759d16e5a4c9f1028353dd6e253fca06f3b57a561
 ```
 
-The raw row-level contexts, CSVs, and Drive export are not included in this
-public compact record. The supplied archive is a folder-export envelope whose
-entries begin with
+This is a folder-export envelope whose entries begin with
 `rq2_bf16_baseline_v1/`. It is byte-distinct from the sibling archive created
 inside Colab. The executed notebook records that runner-created archive as
 `/content/drive/MyDrive/rq2_bf16_baseline_v1.zip` with SHA-256
 `8717b3ce3c691bc47d61ee62ec88fe3038ca170636e0f868e7720ff7a754eed2`;
-that exact sibling ZIP was not the uploaded file. The audited payload identity
-is established by the verified per-file output manifest.
+that exact sibling ZIP was not the uploaded file. The payload identity is
+established by the verified per-file output manifest.
 
 See [`AUDIT.md`](AUDIT.md) for the independent recomputation and
 [`SUMMARY.md`](SUMMARY.md) for the runner-generated summary.

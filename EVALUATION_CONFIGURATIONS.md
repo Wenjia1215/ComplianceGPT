@@ -48,7 +48,7 @@ precision (`4-bit` to `torch.bfloat16`). The frozen 4-bit baseline and
 ComplianceGPT contracts remain unchanged paired references. This study tests
 quantization sensitivity within one model; it is not a frontier-model
 baseline and must not be merged into the original RQ2 v3 result family. Its
-completed A100 summary and audit record are archived under
+complete supplied A100 evidence package and audit record are archived under
 `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`. BF16 left the
 baseline's strict-pass count unchanged at 8/36, so the result does not support
 4-bit quantization as the explanation for the 29/36 ComplianceGPT result.

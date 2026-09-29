@@ -197,10 +197,9 @@ Open
 [`Batch_5B_Rev4_BF16_Baseline.ipynb`](experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb)
 for the Drive-first Colab workflow.
 
-The completed A100 summary, manifests, and independent audit are archived under
+The complete supplied A100 evidence package and independent audit are archived under
 [`experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`](experiments/answerer_comparison/rq2_bf16_baseline/results_v1/).
-The raw row-level files and ZIP are not part of this compact public record. The
-exact supplied Google Drive export was audited at SHA-256:
+The exact supplied Google Drive export has SHA-256:
 
 ```text
 4039e67453d46b12ad214a3759d16e5a4c9f1028353dd6e253fca06f3b57a561
