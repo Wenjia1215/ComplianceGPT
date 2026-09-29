@@ -29,6 +29,18 @@ The current Gemini pricing table lists a free tier for `gemini-3.5-flash`, but q
 
 Google's current pricing table states that free-tier content may be used to improve its products, while paid-tier content is not. This run sends only the frozen model-visible experiment question and NIST evidence window; gold labels and the API key are never sent as prompt content. Review the current [Gemini pricing and data-use table](https://ai.google.dev/gemini-api/docs/pricing) before running.
 
+## Offline tests
+
+The notebook discovers the two Batch 5C test files directly and displays their combined stdout and stderr before raising an error. This avoids an installed package named `tests` hiding the repository's tests. The pinned checkout also includes `tests/__init__.py` and ignores generated Python caches so a second **Run all** is not blocked by cache files.
+
+From the repository root:
+
+```bash
+PYTHONPATH=src python -m unittest discover -s tests -p 'test_*frontier*.py' -v
+```
+
+All nine tests use fake API responses; they do not call Gemini.
+
 ## Deterministic preparation without an API key
 
 From the repository root:
