@@ -1,0 +1,63 @@
+{
+  "changed_factor": "generative baseline weight precision only (4-bit -> bfloat16)",
+  "experiment_code_files": {
+    "experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py": "2bc259c02ed3c740506f552e626e35a57e01d912b879d150ddebaab7bc8cf858",
+    "experiments/answerer_comparison/rq2_matched/requirements-colab.txt": "3fe92db98982377cf61ea6b6c067878c44a362790fbbf48d26fe5b4b47b20127"
+  },
+  "experiment_code_sha256": "482233b2f9ac3195bf99b60d6b0761eed898f5e3832a623e7c70f0afae701f6b",
+  "framework_version": "rev4",
+  "frozen_factors": [
+    "Qwen2.5-7B-Instruct model identity and immutable revision",
+    "free-form generative baseline system and user prompts",
+    "deterministic decoding and parse-retry settings",
+    "36 Rev. 4 questions and ordered evidence windows",
+    "ASK ODP policy and offline verifier"
+  ],
+  "frozen_source_commit": "be862bcadfa61b474d795303e01ce9394909fdcc",
+  "frozen_source_hashes": {
+    "src/answerer_comparison/matched_window_runner.py": "0dbc6c33bcf993a113e5cd9f63e10399b9f245f026e634c808ca6b32ea2a23df",
+    "src/compliancegpt/generator/citation_contract_80053.md": "7859aef90da277b63385265b552594f76a03d91848cb9967bd79d5bf3bc24d54",
+    "src/compliancegpt/generator/generator.py": "80bd0ac08d1dafb299ad6badb9a080f0a3f7ce4a266e9b9583f736e8f4b49c6c",
+    "src/compliancegpt/generator/verifier/verifier.py": "6f5a16a47b94e0c17d756f0de58ecf6663bc7e7dd006b9ba10445c1e0210d6af",
+    "src/compliancegpt/pipeline/evidence_window.py": "0e098761074a7ce949adf0d0cf2d89e3e2bb34517b5089793564df66ac816b3d",
+    "src/compliancegpt/pipeline/pipeline.py": "2f5cbaa24e3746d5815e76b2d3553491b3ccfc917ab0b4e22e1886c42d75d181",
+    "src/compliancegpt/retriever/retriever_s7.py": "98abe0c6ef21d4328de5e3a3cf83e6a7750f1c7da2c3ae17dd283be1dd2e988c",
+    "src/generative_answerer/generator.py": "dd31b57f4f6a9db343c023e01b5dd2953bc8aa869af4c3f113dbab5f874ef827",
+    "src/generative_answerer/pipeline.py": "10034299b3aea6b608b87625ccc04a69d5ee37870f0d62bb6cc30a043f525be1"
+  },
+  "generation_settings": {
+    "do_sample": false,
+    "max_new_tokens": 640,
+    "max_parse_retries": 2,
+    "num_beams": 1,
+    "repetition_penalty": 1.05
+  },
+  "gold_policy": "gold excluded from model-visible contexts and used only by verifier",
+  "input_hashes": {
+    "ccs": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "gold": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "odp_registry": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c"
+  },
+  "load_in_4bit": false,
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "n_questions": 36,
+  "precision": "bfloat16",
+  "prompt_sha256": "91ba0d840befd5517fbec7595f640333bcb8df8e63301e80552dad841744fdef",
+  "repo_commit": "c83d0cd4297513979d746639a1684a1fea03a7f1",
+  "repo_commits_observed": [
+    "10a72bc4698be8316eb15c6102a9b65d69df63be",
+    "c83d0cd4297513979d746639a1684a1fea03a7f1"
+  ],
+  "result_id": "rq2_bf16_baseline_v1",
+  "retrieval_policy": "frozen RQ2 v3 Rev. 4 contexts; no live retrieval",
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
+  "source_archive_sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "source_member_hashes": {
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "contracts/rev4_generative_baseline.csv": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5",
+    "summaries/rev4_paired_summary.json": "a871fb8ab6d604c8a2ab4c09af2875f29b74d786931c942b1898e16fef3d70c5"
+  }
+}

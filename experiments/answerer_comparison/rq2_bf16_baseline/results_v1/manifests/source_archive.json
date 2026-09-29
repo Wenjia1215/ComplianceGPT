@@ -1,0 +1,34 @@
+{
+  "archive": "/content/ComplianceGPT/experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+  "archive_sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "context_rows": 36,
+  "distinct_window_hashes": 36,
+  "members": {
+    "contexts/rev4_prepared_contexts.jsonl": {
+      "bytes": 2078140,
+      "extracted_to": "/content/drive/MyDrive/rq2_bf16_baseline_v1/contexts/rev4_prepared_contexts.jsonl",
+      "sha256": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6"
+    },
+    "contracts/rev4_compliancegpt.csv": {
+      "bytes": 734680,
+      "extracted_to": "/content/drive/MyDrive/rq2_bf16_baseline_v1/references/rev4_compliancegpt_4bit.csv",
+      "sha256": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9"
+    },
+    "contracts/rev4_generative_baseline.csv": {
+      "bytes": 617270,
+      "extracted_to": "/content/drive/MyDrive/rq2_bf16_baseline_v1/references/rev4_generative_baseline_4bit.csv",
+      "sha256": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5"
+    },
+    "run_config.json": {
+      "bytes": 2302,
+      "extracted_to": "/content/drive/MyDrive/rq2_bf16_baseline_v1/references/rq2_v3_run_config.json",
+      "sha256": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5"
+    },
+    "summaries/rev4_paired_summary.json": {
+      "bytes": 1816,
+      "extracted_to": "/content/drive/MyDrive/rq2_bf16_baseline_v1/references/rev4_frozen_paired_summary.json",
+      "sha256": "a871fb8ab6d604c8a2ab4c09af2875f29b74d786931c942b1898e16fef3d70c5"
+    }
+  },
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1"
+}

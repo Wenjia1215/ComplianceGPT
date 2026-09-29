@@ -1,0 +1,10 @@
+{
+  "generation_settings": {
+    "do_sample": false,
+    "max_new_tokens": 640,
+    "max_parse_retries": 2,
+    "num_beams": 1,
+    "repetition_penalty": 1.05
+  },
+  "prompt_sha256": "91ba0d840befd5517fbec7595f640333bcb8df8e63301e80552dad841744fdef"
+}

@@ -6,6 +6,12 @@ This registered follow-on study addresses the RQ2 quantization-asymmetry concern
 
 The result identity is `rq2_bf16_baseline_v1`. It never edits or replaces the frozen RQ2 v3 result family. The frozen 4-bit generative baseline and frozen 4-bit ComplianceGPT output are copied from the validated v3 archive and used only as unchanged paired references.
 
+The completed, independently checked result is recorded under
+[`results_v1/`](results_v1/). The supplied Google Drive export has SHA-256
+`4039e67453d46b12ad214a3759d16e5a4c9f1028353dd6e253fca06f3b57a561`;
+all 15 registered payload hashes and the output-manifest identity were
+revalidated. The notebook now retains the successful A100 execution output.
+
 ## Registered boundary
 
 - Framework: NIST SP 800-53 Revision 4 only.
@@ -55,3 +61,17 @@ The completed directory contains:
 The summary reports strict verifier pass, full gold-clause coverage, clause recall and precision, answer and citation burden, runtime contract validity, and author-label ODP operating characteristics. It provides paired exact McNemar comparisons for BF16 versus the frozen 4-bit baseline and for BF16 baseline versus frozen 4-bit ComplianceGPT.
 
 This experiment estimates quantization sensitivity within one 7B model on 36 fixed Rev. 4 rows. It is not a frontier-model baseline, a retraining result, or evidence about other models. ODP sensitivity, specificity, and precision against the author labels remain provisional until the blinded independent annotation is returned.
+
+## Recorded finding
+
+True BF16 left strict pass unchanged at 8/36 versus 8/36 for the frozen 4-bit
+baseline. Two rows improved and two regressed (`p = 1.0`, paired exact
+two-sided McNemar). BF16 modestly increased full clause coverage from 18/36 to
+20/36 and runtime contract pass from 13/36 to 14/36, but both precision modes
+had 0/19 author-label ODP sensitivity.
+
+Frozen 4-bit ComplianceGPT passed 29/36. Against BF16 it had 21 exclusive
+passes, while BF16 had none (`p = 9.5367432e-07`). The principal RQ2 gap is
+therefore not explained by the baseline's original 4-bit quantization. See
+[`results_v1/AUDIT.md`](results_v1/AUDIT.md) for integrity checks and the
+independent reconstruction.

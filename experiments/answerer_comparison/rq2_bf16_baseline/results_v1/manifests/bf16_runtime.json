@@ -1,0 +1,55 @@
+{
+  "determinism": {
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "seed": 42,
+    "torch_deterministic_algorithms": true
+  },
+  "floating_parameter_counts_by_dtype": {
+    "torch.bfloat16": 7615616512
+  },
+  "floating_parameter_tensor_dtypes": {
+    "torch.bfloat16": 339
+  },
+  "gpu": {
+    "compute_capability": [
+      8,
+      0
+    ],
+    "cuda_version": "12.8",
+    "device_name": "NVIDIA A100-SXM4-40GB",
+    "native_bf16_supported": true,
+    "torch_version": "2.11.0+cu128",
+    "total_memory_bytes": 42405855232
+  },
+  "hf_device_map": {
+    "": "0"
+  },
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_memory_footprint_bytes": 15231233280,
+  "model_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "packages": {
+    "accelerate": "1.12.0",
+    "huggingface-hub": "0.36.0",
+    "numpy": "2.0.2",
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128",
+    "transformers": "4.57.3"
+  },
+  "precision": "bfloat16",
+  "quantization_flags": {
+    "has_hf_quantizer": false,
+    "has_quantization_config": false,
+    "is_loaded_in_4bit": false,
+    "is_loaded_in_8bit": false,
+    "is_quantized": false
+  },
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
+  "tokenizer_resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "tokenizer_revision_evidence": {
+    "metadata_commit_hash": "",
+    "requested_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "resolved_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "verification_source": "immutable_from_pretrained_request"
+  }
+}

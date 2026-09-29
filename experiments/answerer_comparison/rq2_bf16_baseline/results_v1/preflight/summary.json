@@ -1,0 +1,15 @@
+{
+  "context_jsonl_sha256": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+  "context_rows": 36,
+  "distinct_context_hashes": 36,
+  "distinct_window_hashes": 36,
+  "framework_version": "rev4",
+  "result_id": "rq2_bf16_baseline_v1",
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
+  "scope": "gold-free frozen-context integrity audit; no model inference",
+  "window_record_count": {
+    "max": 24,
+    "mean": 14.166666666666666,
+    "min": 5
+  }
+}

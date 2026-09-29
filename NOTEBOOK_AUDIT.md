@@ -31,7 +31,12 @@ MicroAblation notebook in this release.
 - The Batch 5B BF16 notebook mounts Google Drive in its first code cell, clones
   the public repository at its registered runner commit, and requires no
   GitHub or Hugging Face credential. It fetches the recorded RQ2 v3 source
-  commit so the runner can verify and reconstruct that exact source tree.
+  commit so the runner can verify and reconstruct that exact source tree. The
+  checked-in notebook now preserves the successful A100 execution: 36/36 rows,
+  BF16-only parameter validation, the generated summary, and archive hash. Its
+  cell sources are identical to the previously audited clean notebook, it has
+  no error output or traceback, and a repeated credential-pattern scan found
+  no secret value.
 - Colab-specific `/content/drive` paths and `drive.mount` calls remain because
   they are part of the recorded Colab workflows. They are environmental
   dependencies, not portable local paths.

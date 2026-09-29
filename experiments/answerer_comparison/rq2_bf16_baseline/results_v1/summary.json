@@ -1,0 +1,269 @@
+{
+  "changed_factor": "generative baseline weight precision only (4-bit -> bfloat16)",
+  "configurations": {
+    "compliancegpt_4bit": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 2.0833333333333335,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.25
+      },
+      "answer_word_count": {
+        "max": 526.0,
+        "mean": 167.16666666666666,
+        "median": 131.0,
+        "min": 20.0,
+        "p95": 423.25
+      },
+      "full_gold_clause_coverage": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      },
+      "mean_gold_clause_precision": 0.50489417989418,
+      "mean_gold_clause_recall": 0.8858024691358025,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP operating characteristics use author labels and remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 12,
+          "n": 19,
+          "rate": 0.631578947368421
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 8.0,
+        "mean": 4.027777777777778,
+        "median": 4.0,
+        "min": 2.0,
+        "p95": 7.25
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      }
+    },
+    "generative_baseline_4bit": {
+      "additional_clause_count": {
+        "max": 11.0,
+        "mean": 1.8611111111111112,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 6.25
+      },
+      "answer_word_count": {
+        "max": 128.0,
+        "mean": 36.80555555555556,
+        "median": 29.0,
+        "min": 4.0,
+        "p95": 84.25
+      },
+      "full_gold_clause_coverage": {
+        "count": 18,
+        "n": 36,
+        "rate": 0.5
+      },
+      "mean_gold_clause_precision": 0.48799603174603173,
+      "mean_gold_clause_recall": 0.5964506172839505,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP operating characteristics use author labels and remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 6,
+          "n": 19,
+          "rate": 0.3157894736842105
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 0,
+          "n": 19,
+          "rate": 0.0
+        },
+        "specificity": {
+          "count": 17,
+          "n": 17,
+          "rate": 1.0
+        },
+        "status_precision": {
+          "count": 0,
+          "n_predicted_params_required": 0,
+          "rate": null
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 13,
+        "n": 36,
+        "rate": 0.3611111111111111
+      },
+      "selected_clause_count": {
+        "max": 11.0,
+        "mean": 3.3333333333333335,
+        "median": 2.0,
+        "min": 1.0,
+        "p95": 8.0
+      },
+      "status_counts": {
+        "OK": 36
+      },
+      "strict_pass": {
+        "count": 8,
+        "n": 36,
+        "rate": 0.2222222222222222
+      }
+    },
+    "generative_baseline_bf16": {
+      "additional_clause_count": {
+        "max": 8.0,
+        "mean": 1.5833333333333333,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 7.0
+      },
+      "answer_word_count": {
+        "max": 129.0,
+        "mean": 41.27777777777778,
+        "median": 34.5,
+        "min": 9.0,
+        "p95": 97.5
+      },
+      "full_gold_clause_coverage": {
+        "count": 20,
+        "n": 36,
+        "rate": 0.5555555555555556
+      },
+      "mean_gold_clause_precision": 0.5753858024691358,
+      "mean_gold_clause_recall": 0.6635802469135803,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP operating characteristics use author labels and remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 3,
+          "n": 19,
+          "rate": 0.15789473684210525
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 0,
+          "n": 19,
+          "rate": 0.0
+        },
+        "specificity": {
+          "count": 17,
+          "n": 17,
+          "rate": 1.0
+        },
+        "status_precision": {
+          "count": 0,
+          "n_predicted_params_required": 0,
+          "rate": null
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 14,
+        "n": 36,
+        "rate": 0.3888888888888889
+      },
+      "selected_clause_count": {
+        "max": 9.0,
+        "mean": 2.888888888888889,
+        "median": 2.0,
+        "min": 1.0,
+        "p95": 8.0
+      },
+      "status_counts": {
+        "OK": 36
+      },
+      "strict_pass": {
+        "count": 8,
+        "n": 36,
+        "rate": 0.2222222222222222
+      }
+    }
+  },
+  "file_hashes": {
+    "compliancegpt_4bit": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "generative_baseline_4bit": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "generative_baseline_bf16": "1b84eb673145bdae15d8e52c22678f2cf780d5f09f6e8603e6578ec586c2fc60"
+  },
+  "framework_version": "rev4",
+  "interpretation_boundary": "This study isolates model-weight precision within the same Qwen2.5-7B free-form baseline. It is neither a frontier-model comparison nor a retraining study. A BF16 change estimates quantization sensitivity on these 36 fixed Rev. 4 rows.",
+  "matched_input_validation": {
+    "context_mismatches": 0,
+    "evidence_window_mismatches": 0,
+    "model_id": "Qwen/Qwen2.5-7B-Instruct",
+    "model_identity_mismatches": 0,
+    "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "paired_rows": 36
+  },
+  "n_questions": 36,
+  "paired_strict_pass": {
+    "bf16_baseline_vs_4bit_compliancegpt": {
+      "both_pass": 8,
+      "exact_mcnemar_two_sided_p": 9.5367431640625e-07,
+      "left": "generative_baseline_bf16",
+      "left_only": 0,
+      "neither_pass": 7,
+      "paired_rows": 36,
+      "right": "compliancegpt_4bit",
+      "right_only": 21
+    },
+    "bf16_vs_4bit_baseline": {
+      "both_pass": 6,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left": "generative_baseline_bf16",
+      "left_only": 2,
+      "neither_pass": 26,
+      "paired_rows": 36,
+      "right": "generative_baseline_4bit",
+      "right_only": 2
+    }
+  },
+  "result_id": "rq2_bf16_baseline_v1",
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
+  "strict_pass_definition": "The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
+}

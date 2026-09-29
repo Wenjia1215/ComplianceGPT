@@ -32,7 +32,7 @@ change stored outputs or their metrics.
 | S1–S7 governing-control retrieval | `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb` | `experiments/retriever_ablation/ablation_outputs/` |
 | Matched answer construction | `experiments/answerer_comparison/rq2_matched/run_matched_rq2.py` | `experiments/answerer_comparison/rq2_matched/results_v3/` |
 | Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | `experiments/answerer_comparison/rq2_control_gate_width/results_v1/` |
-| Rev. 4 BF16 generative baseline | `experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py` | generated as `rq2_bf16_baseline_v1` |
+| Rev. 4 BF16 generative baseline | `experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py` | `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/` |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
@@ -196,6 +196,21 @@ within-model quantization-sensitivity study, not a frontier-model comparison.
 Open
 [`Batch_5B_Rev4_BF16_Baseline.ipynb`](experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb)
 for the Drive-first Colab workflow.
+
+The completed A100 summary, manifests, and independent audit are archived under
+[`experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`](experiments/answerer_comparison/rq2_bf16_baseline/results_v1/).
+The raw row-level files and ZIP are not part of this compact public record. The
+exact supplied Google Drive export was audited at SHA-256:
+
+```text
+4039e67453d46b12ad214a3759d16e5a4c9f1028353dd6e253fca06f3b57a561
+```
+
+The executed notebook records 36/36 completed rows, a BF16-only parameter
+inventory, and no attached quantizer. BF16 and the frozen 4-bit baseline each
+passed 8/36 strict contracts; their two-versus-two discordance gives an exact
+two-sided McNemar value of `1.0`. Frozen 4-bit ComplianceGPT passed 29/36 and
+had 21 exclusive passes against BF16 (`p = 9.5367432e-07`).
 
 ## No-selector ablation
 
