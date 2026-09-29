@@ -1,8 +1,8 @@
 # Notebook Audit
 
-Audit date: 2026-09-27
+Audit date: 2026-09-29
 
-This audit covers every `*.ipynb` file in the repository (12 notebooks). The
+This audit covers every `*.ipynb` file in the repository (13 notebooks). The
 secondary micro-ablation is implemented by
 `experiments/micro_ablations/run_micro_ablations.py`; there is no separate
 MicroAblation notebook in this release.
@@ -28,6 +28,10 @@ MicroAblation notebook in this release.
   the notebook.
 - The Batch 5A control-gate notebook clones the public repository at its
   registered runner commit and requires no GitHub or Hugging Face credential.
+- The Batch 5B BF16 notebook mounts Google Drive in its first code cell, clones
+  the public repository at its registered runner commit, and requires no
+  GitHub or Hugging Face credential. It fetches the recorded RQ2 v3 source
+  commit so the runner can verify and reconstruct that exact source tree.
 - Colab-specific `/content/drive` paths and `drive.mount` calls remain because
   they are part of the recorded Colab workflows. They are environmental
   dependencies, not portable local paths.
@@ -42,6 +46,7 @@ MicroAblation notebook in this release.
 ## Audited notebooks
 
 - `experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb`
+- `experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb`
 - `experiments/answerer_comparison/rq2_matched/RQ2_Matched_Window_Rerun.ipynb`
 - `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb`
 - `experiments/retriever_ablation/performance_benchmark/Performance_Benchmark.ipynb`

@@ -32,6 +32,7 @@ change stored outputs or their metrics.
 | S1–S7 governing-control retrieval | `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb` | `experiments/retriever_ablation/ablation_outputs/` |
 | Matched answer construction | `experiments/answerer_comparison/rq2_matched/run_matched_rq2.py` | `experiments/answerer_comparison/rq2_matched/results_v3/` |
 | Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | `experiments/answerer_comparison/rq2_control_gate_width/results_v1/` |
+| Rev. 4 BF16 generative baseline | `experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py` | generated as `rq2_bf16_baseline_v1` |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
@@ -161,6 +162,40 @@ revisions. The stored within-revision exact McNemar comparisons found no
 significant strict-pass difference at the 0.05 level. ODP sensitivity,
 specificity, and status precision computed against the author labels remain
 provisional until the blinded independent annotation is returned.
+
+## Rev. 4 BF16 generative baseline
+
+Batch 5B isolates the quantization setting for the free-form RQ2 baseline. It
+reuses the 36 immutable Rev. 4 contexts from RQ2 v3 and the exact source tree
+recorded at commit `be862bcadfa61b474d795303e01ce9394909fdcc`. The only
+experimental change is loading the same pinned Qwen2.5-7B revision in
+`torch.bfloat16` instead of 4-bit.
+
+Verify the registered inputs without a GPU:
+
+```bash
+python experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py \
+  --output-dir /path/to/rq2_bf16_baseline_v1 \
+  --prepare-only
+```
+
+Run the 36-row experiment on an A100 (preferred) or another CUDA GPU with
+native BF16 and sufficient memory:
+
+```bash
+python -m pip install -r experiments/answerer_comparison/rq2_matched/requirements-colab.txt
+python experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py \
+  --output-dir /path/to/rq2_bf16_baseline_v1
+```
+
+T4 is intentionally rejected because it lacks native BF16 support. The runner
+verifies all floating parameter dtypes and the absence of a quantizer,
+checkpoints each question, and compares the completed BF16 output with the
+unchanged frozen 4-bit baseline and ComplianceGPT references. This is a
+within-model quantization-sensitivity study, not a frontier-model comparison.
+Open
+[`Batch_5B_Rev4_BF16_Baseline.ipynb`](experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb)
+for the Drive-first Colab workflow.
 
 ## No-selector ablation
 

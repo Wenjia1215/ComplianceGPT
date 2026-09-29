@@ -42,6 +42,7 @@ and verifier result.
 | Review the S1–S7 retrieval evaluation | [`experiments/retriever_ablation/README.md`](experiments/retriever_ablation/README.md) |
 | Review the matched answerer comparison | [`experiments/answerer_comparison/rq2_matched/README.md`](experiments/answerer_comparison/rq2_matched/README.md) |
 | Review or reproduce the control-gate width sweep | [`experiments/answerer_comparison/rq2_control_gate_width/README.md`](experiments/answerer_comparison/rq2_control_gate_width/README.md) |
+| Run the Rev. 4 BF16 generative baseline | [`experiments/answerer_comparison/rq2_bf16_baseline/README.md`](experiments/answerer_comparison/rq2_bf16_baseline/README.md) |
 | Review the no-selector ablation | [`experiments/answerer_comparison/rq2_no_selector/README.md`](experiments/answerer_comparison/rq2_no_selector/README.md) |
 | Review the ODP-rescue ablation | [`experiments/answerer_comparison/rq2_rescue_ablation/README.md`](experiments/answerer_comparison/rq2_rescue_ablation/README.md) |
 | Review Runtime Verifier mutation testing | [`experiments/answerer_comparison/runtime_verifier_mutation/README.md`](experiments/answerer_comparison/runtime_verifier_mutation/README.md) |
@@ -122,6 +123,10 @@ resolution conformance.
   top-3, and top-5 gate widths. The completed A100 run, row-level contracts,
   deterministic context audit, and validation manifests are archived under
   `experiments/answerer_comparison/rq2_control_gate_width/results_v1/`.
+- The registered Batch 5B study reruns the 36-row Rev. 4 free-form baseline in
+  true BF16 while preserving its frozen Qwen revision, prompt, decoding,
+  evidence windows, ODP policy, and verifier. It is a separate quantization-
+  sensitivity result and does not replace RQ2 v3.
 - The deterministic no-selector ablation retains every statement and guidance
   record in each frozen matched-run evidence window. It measures the coverage,
   answer-length, evidence-precision, and ODP-scope tradeoff without new model

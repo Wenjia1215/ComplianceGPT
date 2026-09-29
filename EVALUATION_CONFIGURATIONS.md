@@ -39,3 +39,12 @@ the deterministic prepared-context audit remains a distinct opportunity
 analysis rather than an end-to-end result. The released adaptive gate remains
 the unchanged reference rather than being relabeled as one of the fixed-width
 conditions.
+
+`rq2_bf16_baseline_v1` is a second separate follow-on identity. It uses only
+the 36 immutable Rev. 4 RQ2 v3 contexts and reruns the free-form generative
+baseline with the same Qwen2.5-7B model revision, prompts, deterministic
+decoding, ODP policy, and verifier. Its sole changed factor is model-weight
+precision (`4-bit` to `torch.bfloat16`). The frozen 4-bit baseline and
+ComplianceGPT contracts remain unchanged paired references. This study tests
+quantization sensitivity within one model; it is not a frontier-model
+baseline and must not be merged into the original RQ2 v3 result family.
