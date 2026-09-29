@@ -1,5 +1,7 @@
 # Batch 5C — Rev. 4 Frontier API Baseline
 
+[Open the clean Batch 5C notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_frontier_baseline/Batch_5C_Rev4_Frontier_API_Baseline.ipynb)
+
 This registered follow-on study addresses the stronger-baseline requirement for RQ2. It runs the same free-form answer prompt against the same 36 frozen Revision 4 questions and ordered evidence windows, but replaces the Qwen2.5-7B answer call with the OpenAI Responses API model alias `gpt-6-astra`.
 
 The result identity is `rq2_frontier_baseline_v1`. It is a new result family and never edits or replaces RQ2 v3 or Batch 5B.
@@ -49,7 +51,7 @@ python experiments/answerer_comparison/rq2_frontier_baseline/run_frontier_baseli
   --output-dir /content/drive/MyDrive/rq2_frontier_baseline_v1
 ```
 
-For Colab, use the notebook linked at the top of this README after it is published. Its first code cell mounts Drive, and a later cell reads `OPENAI_API_KEY` from Colab Secrets without displaying it.
+For Colab, use the notebook linked at the top of this README. Its first code cell mounts Drive, and a later cell reads `OPENAI_API_KEY` from Colab Secrets without displaying it.
 
 The runner checkpoints one contract at a time. Re-running the command validates completed rows and skips them. The append-only API response log is checkpointed before the result CSV, so billed responses remain visible even if the runtime disconnects between an API response and a row checkpoint. Such orphaned calls are reported and excluded from scientific results.
 
