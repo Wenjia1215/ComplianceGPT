@@ -33,6 +33,7 @@ change stored outputs or their metrics.
 | Matched answer construction | `experiments/answerer_comparison/rq2_matched/run_matched_rq2.py` | `experiments/answerer_comparison/rq2_matched/results_v3/` |
 | Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | `experiments/answerer_comparison/rq2_control_gate_width/results_v1/` |
 | Rev. 4 BF16 generative baseline | `experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py` | `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/` |
+| Rev. 4 frontier API baseline | `experiments/answerer_comparison/rq2_frontier_baseline/run_frontier_baseline.py` | `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/` |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
@@ -210,6 +211,30 @@ inventory, and no attached quantizer. BF16 and the frozen 4-bit baseline each
 passed 8/36 strict contracts; their two-versus-two discordance gives an exact
 two-sided McNemar value of `1.0`. Frozen 4-bit ComplianceGPT passed 29/36 and
 had 21 exclusive passes against BF16 (`p = 9.5367432e-07`).
+
+## Rev. 4 frontier API baseline
+
+Batch 5C runs the same 36 immutable Revision 4 questions, ordered contexts,
+free-form prompt, parser, ODP policy, and offline verifier against the stable
+Gemini API model `gemini-3.5-flash`. The model and serving runtime change, so
+this is a stronger-system comparison rather than a one-factor precision study.
+
+The completed Paid Tier 1 result is archived under
+[`experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`](experiments/answerer_comparison/rq2_frontier_baseline/results_v1/).
+It contains 36 unique completed API responses, no parse retries, and no
+orphaned calls. Gemini passed 24/36 strict contracts, compared with 8/36 for
+each Qwen baseline and 29/36 for frozen ComplianceGPT. The exact paired
+McNemar values were `0.00040245` against either Qwen baseline and `0.2265625`
+against ComplianceGPT.
+
+The byte-exact runner archive has SHA-256
+`039ce427f717b83da6f54a87a67bb0438f6c15e44b49d29838d39bc523c20767`.
+The public corrected archive changes only paid-tier provenance in
+`run_config.json` and the dependent output-manifest hashes; its SHA-256 is
+`351af9780f0ed7e6714ed3eb81799e8793985ea8b14351f32da9e43ebefa0dfb`.
+
+The consolidated Batch 5A–5C comparison is
+[`experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md).
 
 ## No-selector ablation
 

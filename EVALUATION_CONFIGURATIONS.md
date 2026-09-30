@@ -52,3 +52,15 @@ complete supplied A100 evidence package and audit record are archived under
 `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`. BF16 left the
 baseline's strict-pass count unchanged at 8/36, so the result does not support
 4-bit quantization as the explanation for the 29/36 ComplianceGPT result.
+
+`rq2_frontier_baseline_v1` is a third separate follow-on identity. It uses the
+same 36 immutable Revision 4 questions, ordered evidence contexts, free-form
+prompt, parser, ODP policy, and verifier, but changes the answer model and
+serving runtime from Qwen2.5-7B to the stable Gemini API model
+`gemini-3.5-flash`. This is a stronger-system comparison, not an isolation of
+weight precision or architecture. The complete Paid Tier 1 evidence package
+and audit record are archived under
+`experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`.
+
+The three follow-on studies are consolidated without merging their identities
+in [`RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md).
