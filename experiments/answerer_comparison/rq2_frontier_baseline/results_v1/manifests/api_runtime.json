@@ -1,0 +1,24 @@
+{
+  "api_call_log_sha256": "eae04644c5fc4f0600368bc1e480f0912cd4fc84188681eb762d4fd79a6a1275",
+  "api_key_source": "GEMINI_API_KEY environment variable; value never recorded",
+  "api_method": "generateContent",
+  "completed_at_utc": "2026-09-30T00:54:34.203520+00:00",
+  "generation_settings": {
+    "max_output_tokens": 2048,
+    "max_parse_retries": 2,
+    "sdk_max_retries": 5,
+    "sdk_timeout_seconds": 180.0,
+    "structured_output_enforced": false,
+    "temperature": 1.0,
+    "thinking_level": "LOW",
+    "tools_enabled": false
+  },
+  "google_genai_python": "2.25.0",
+  "model_id": "gemini-3.5-flash",
+  "provider": "google-gemini-developer-api",
+  "python": "3.13.15",
+  "python_major_minor": "3.13",
+  "result_id": "rq2_frontier_baseline_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-v1",
+  "server_reported_model": "gemini-3.5-flash"
+}

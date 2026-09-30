@@ -1,0 +1,16 @@
+{
+  "generation_settings": {
+    "max_output_tokens": 2048,
+    "max_parse_retries": 2,
+    "sdk_max_retries": 5,
+    "sdk_timeout_seconds": 180.0,
+    "structured_output_enforced": false,
+    "temperature": 1.0,
+    "thinking_level": "LOW",
+    "tools_enabled": false
+  },
+  "prompt_and_parser_source_commit": "be862bcadfa61b474d795303e01ce9394909fdcc",
+  "prompt_sha256": "91ba0d840befd5517fbec7595f640333bcb8df8e63301e80552dad841744fdef",
+  "same_prompt_boundary": "System prompt, context serialization, user prompt, JSON parser, fail-closed normalization, and retry prompt are inherited from the frozen Qwen baseline. Gemini thought signatures are preserved as required for retry turns.",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-v1"
+}

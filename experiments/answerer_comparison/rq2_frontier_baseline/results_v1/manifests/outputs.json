@@ -1,0 +1,25 @@
+{
+  "files": {
+    "PREPARED_CONTEXTS.md": "87f05a56623628689795e071db6e00b02a0cc70b91dae9501b23067da2695cc1",
+    "SUMMARY.md": "bd47ff5ad23b21b71978bf78a4ae90e69c8672f5b75e4d48c7eee85a87e0dc9b",
+    "api/responses.jsonl": "eae04644c5fc4f0600368bc1e480f0912cd4fc84188681eb762d4fd79a6a1275",
+    "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "contracts/rev4_generative_frontier_api.csv": "14f5c33146a06ada055057e221bfc226282d11e2930281603a7b6c6e491876b7",
+    "manifests/api_responses.json": "65e13952b81812770b5028fff4b7926d00d265b65fea50b42890b499ded7c4b6",
+    "manifests/api_runtime.json": "132b218545b480a9912a861ef1633a5f49fd04867821d7b557b56fc2bfa61f06",
+    "manifests/generation_contract.json": "0f6df107b474ebbc0f9f797a7f5825b30473adf08c6f693823a41dd4e2bdd640",
+    "manifests/run.json": "1010338712928f47f0572c628a13039bd0db451c012cb0e25889a8bc084bb256",
+    "manifests/source_archive.json": "7c87b38813f42da796ad199e442c1d16e169bda1c009a51c0f1b2f7eea77d544",
+    "preflight/summary.json": "339f04699b3224a22ac345bb3b84a9a00ebfd93332543d4138a5b9fa681c9947",
+    "references/rev4_compliancegpt_4bit.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "references/rev4_frozen_paired_summary.json": "a871fb8ab6d604c8a2ab4c09af2875f29b74d786931c942b1898e16fef3d70c5",
+    "references/rev4_generative_baseline_4bit.csv": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "references/rev4_generative_baseline_bf16.csv": "1b84eb673145bdae15d8e52c22678f2cf780d5f09f6e8603e6578ec586c2fc60",
+    "references/rq2_v3_run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5",
+    "run_config.json": "7462871a5f5838f9c77c03da3edefdd026d0323a258f949a476415e8439ba203",
+    "summary.json": "97943089d1cce2ee35ad65ba3da814e2e7e4cebc1d5cf44cae48447508dc1efc"
+  },
+  "files_sha256": "9d3a5abff585bde671faf75be1118d7d336adff531c06f2f1dacf3fbf5fb4e73",
+  "result_id": "rq2_frontier_baseline_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-v1"
+}

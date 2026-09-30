@@ -1,0 +1,24 @@
+{
+  "api_model_id": "gemini-3.5-flash",
+  "local_model_loaded": false,
+  "output_csv": "/content/drive/MyDrive/rq2_frontier_baseline_v1/contracts/rev4_generative_frontier_api.csv",
+  "output_csv_sha256": "14f5c33146a06ada055057e221bfc226282d11e2930281603a7b6c6e491876b7",
+  "resumed_rows": 0,
+  "row_count": 36,
+  "runtime": {
+    "cuda_available": false,
+    "cuda_version": "",
+    "device_name": "cpu",
+    "model_id": "gemini-3.5-flash",
+    "model_requested_revision": "stable-api-model:gemini-3.5-flash",
+    "model_resolved_revision": "recorded-per-response",
+    "package_metadata_error": "PackageNotFoundError('bitsandbytes')",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "tokenizer_resolved_revision": "server-managed",
+    "torch": "2.11.0+cpu",
+    "transformers": "5.17.0"
+  },
+  "schema_version": "compliancegpt-rq2-matched-run-v2",
+  "system": "generative_frontier_api"
+}

@@ -1,10 +1,24 @@
 # Batch 5C — Rev. 4 Frontier API Baseline
 
-[Open the clean Batch 5C notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_frontier_baseline/Batch_5C_Rev4_Frontier_API_Baseline.ipynb)
+[View the completed Batch 5C notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_frontier_baseline/Batch_5C_Rev4_Frontier_API_Baseline.ipynb)
 
 This registered follow-on study addresses the stronger-baseline requirement for RQ2. It runs the same free-form answer prompt against the same 36 frozen Revision 4 questions and ordered evidence windows, but replaces the Qwen2.5-7B answer call with the stable Gemini API model `gemini-3.5-flash`. Google describes this model as providing sustained frontier-level intelligence, and its current pricing table includes a free tier.
 
 The result identity is `rq2_frontier_baseline_v1`. It is a new result family and never edits or replaces RQ2 v3 or Batch 5B.
+
+## Completed result
+
+The archived run completed all 36 frozen rows with 36 unique API responses,
+no parse retries, and no orphaned calls. The tracked notebook now retains the
+successful execution output. The materialized evidence package is available
+under [`results_v1/`](results_v1/README.md), with an independent integrity and
+metric record in [`results_v1/AUDIT.md`](results_v1/AUDIT.md).
+
+The successful run used Gemini API Paid Tier 1. Because the API response does
+not report billing tier, this fact is recorded as operator-reported provenance.
+The byte-exact runner archive remains available beside a corrected public
+archive whose only scientific-package change is the billing/data-policy
+metadata in `run_config.json` and its dependent output-manifest hashes.
 
 ## Registered boundary
 
@@ -28,6 +42,10 @@ Create a fresh key in [Google AI Studio](https://aistudio.google.com/apikey) and
 The current Gemini pricing table lists a free tier for `gemini-3.5-flash`, but quotas and availability can change. The 36 first-attempt prompts contain roughly 227,000 characters in total (about 57,000 tokens by a simple characters-per-token estimate). Actual prompt, candidate, thinking, and total token counts are taken from each API response and aggregated in the final manifest. Parse retries increase quota use. If the Colab runner receives a transient per-minute HTTP 429 with a server retry delay, the notebook waits at least 65 seconds and restarts the resumable runner automatically. Completed rows are validated and skipped. A 429 without a per-minute marker, or any other error, still stops immediately for inspection.
 
 Google's current pricing table states that free-tier content may be used to improve its products, while paid-tier content is not. This run sends only the frozen model-visible experiment question and NIST evidence window; gold labels and the API key are never sent as prompt content. Review the current [Gemini pricing and data-use table](https://ai.google.dev/gemini-api/docs/pricing) before running.
+
+The completed result in this repository used Paid Tier 1; the free-tier notes
+above remain relevant only for future reruns configured against a free-tier
+project.
 
 ## Offline tests
 

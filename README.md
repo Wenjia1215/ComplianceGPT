@@ -43,7 +43,7 @@ and verifier result.
 | Review the matched answerer comparison | [`experiments/answerer_comparison/rq2_matched/README.md`](experiments/answerer_comparison/rq2_matched/README.md) |
 | Review or reproduce the control-gate width sweep | [`experiments/answerer_comparison/rq2_control_gate_width/README.md`](experiments/answerer_comparison/rq2_control_gate_width/README.md) |
 | Run the Rev. 4 BF16 generative baseline | [`experiments/answerer_comparison/rq2_bf16_baseline/README.md`](experiments/answerer_comparison/rq2_bf16_baseline/README.md) |
-| Run the Rev. 4 frontier API baseline | [`experiments/answerer_comparison/rq2_frontier_baseline/README.md`](experiments/answerer_comparison/rq2_frontier_baseline/README.md) |
+| Review the Rev. 4 frontier API baseline | [`experiments/answerer_comparison/rq2_frontier_baseline/README.md`](experiments/answerer_comparison/rq2_frontier_baseline/README.md) |
 | Review the no-selector ablation | [`experiments/answerer_comparison/rq2_no_selector/README.md`](experiments/answerer_comparison/rq2_no_selector/README.md) |
 | Review the ODP-rescue ablation | [`experiments/answerer_comparison/rq2_rescue_ablation/README.md`](experiments/answerer_comparison/rq2_rescue_ablation/README.md) |
 | Review Runtime Verifier mutation testing | [`experiments/answerer_comparison/runtime_verifier_mutation/README.md`](experiments/answerer_comparison/runtime_verifier_mutation/README.md) |
@@ -133,10 +133,12 @@ resolution conformance.
   strict pass unchanged at 8/36 versus the frozen 4-bit baseline.
 - The registered Batch 5C study sends the same 36 questions, ordered evidence
   windows, and free-form prompt to the stable `gemini-3.5-flash` Gemini API
-  model with no tools or schema-constrained decoding. It checkpoints raw API responses,
-  response IDs, server-reported model strings, and token usage, then applies
-  the unchanged offline verifier. This stronger-system baseline is registered
-  under `experiments/answerer_comparison/rq2_frontier_baseline/`.
+  model with no tools or schema-constrained decoding. The completed Paid Tier 1
+  run retained all 36 raw API responses, response IDs, server-reported model
+  strings, and token usage, then applied the unchanged offline verifier. Its
+  complete evidence package and audit record are archived under
+  `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`; Gemini
+  passed 24/36 strict contracts versus 8/36 for either Qwen baseline.
 - The deterministic no-selector ablation retains every statement and guidance
   record in each frozen matched-run evidence window. It measures the coverage,
   answer-length, evidence-precision, and ODP-scope tradeoff without new model
