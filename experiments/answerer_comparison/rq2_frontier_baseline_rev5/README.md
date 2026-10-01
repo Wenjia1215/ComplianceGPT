@@ -61,9 +61,11 @@ prepared-context audit and does not read `GEMINI_API_KEY`.
 
 ## Full API run
 
-Use the linked Colab notebook with a CPU runtime. Store `GEMINI_API_KEY` in
-Colab Secrets and enable notebook access. The key is read only into process
-memory and is never printed or archived.
+Use the linked Colab notebook with an A100 GPU runtime. The notebook metadata
+requests an A100 by default; confirm **Runtime → Change runtime type → A100
+GPU** before starting. Store `GEMINI_API_KEY` in Colab Secrets and enable
+notebook access. The key is read only into process memory and is never printed
+or archived.
 
 The notebook pins source commit
 `b7e10b0993147378ade09853265ac8af1214a729`, runs the offline tests and
