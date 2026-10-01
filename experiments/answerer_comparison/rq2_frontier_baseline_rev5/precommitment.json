@@ -1,0 +1,90 @@
+{
+  "analysis": {
+    "alpha": 0.05,
+    "confidence_intervals": "two-sided 95% Wilson intervals for binomial rates",
+    "primary": {
+      "comparison": "Gemini 3.5 Flash versus frozen ComplianceGPT on the same 100 rows",
+      "endpoint": "offline strict pass",
+      "report": [
+        "marginal counts and rates",
+        "both discordant counts",
+        "two-sided exact p-value"
+      ],
+      "test": "two-sided exact McNemar"
+    },
+    "secondary": [
+      "full expected-clause coverage",
+      "coverage-complete failures and realization loss",
+      "runtime structural contract pass",
+      "mean gold-clause precision and recall",
+      "mean selected-clause count",
+      "mean answer word count",
+      "ODP status sensitivity, specificity, and precision reported together",
+      "exact ODP-set agreement",
+      "two-sided Fisher exact test for realization loss"
+    ]
+  },
+  "api": {
+    "billing_tier": "Paid Tier 1",
+    "generation_settings": {
+      "max_output_tokens": 2048,
+      "max_parse_retries": 2,
+      "sdk_max_retries": 5,
+      "sdk_timeout_seconds": 180.0,
+      "structured_output_enforced": false,
+      "temperature": 1.0,
+      "thinking_level": "LOW",
+      "tools_enabled": false
+    },
+    "method": "generateContent",
+    "model_id": "gemini-3.5-flash",
+    "provider": "google-gemini-developer-api"
+  },
+  "base_repository_commit": "014f32128ee83447f77817a0fcb15a1dba212a30",
+  "commitment": "Report the complete 100-row result regardless of whether it supports, weakens, eliminates, or reverses the current comparison; make no post-output exclusions, relabeling, substitution, or selective reporting.",
+  "completion_rule": "100 validated checkpointed result rows",
+  "frozen_inputs": {
+    "archive": {
+      "path": "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+      "sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328"
+    },
+    "ccs": {
+      "path": "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl",
+      "sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08"
+    },
+    "compliancegpt_contracts": {
+      "archive_member": "contracts/rev5_compliancegpt.csv",
+      "sha256": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+    },
+    "contexts": {
+      "archive_member": "contexts/rev5_prepared_contexts.jsonl",
+      "sha256": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473"
+    },
+    "gold": {
+      "path": "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv",
+      "sha256": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+    },
+    "odp_registry": {
+      "path": "data/ODP/rev5/odp_registry_rev5.json",
+      "sha256": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+    },
+    "qwen_contracts": {
+      "archive_member": "contracts/rev5_generative_baseline.csv",
+      "sha256": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63"
+    }
+  },
+  "framework_version": "rev5",
+  "gold_policy": "Gold is excluded from API-visible inputs and used only by the offline verifier.",
+  "n_questions": 100,
+  "no_api_outputs_observed_at_registration": true,
+  "prompt_sha256": "91ba0d840befd5517fbec7595f640333bcb8df8e63301e80552dad841744fdef",
+  "registered_at_eastern": "2026-10-01T15:36:19-04:00",
+  "registered_at_utc": "2026-10-01T19:36:19Z",
+  "result_id": "rq2_frontier_baseline_rev5_v1",
+  "schema_version": "compliancegpt-rq2-frontier-rev5-precommitment-v1",
+  "stopping_rule": "No outcome-based early stopping; run all 100 rows.",
+  "systems": [
+    "generative_frontier_api",
+    "frozen_compliancegpt_4bit"
+  ]
+}
