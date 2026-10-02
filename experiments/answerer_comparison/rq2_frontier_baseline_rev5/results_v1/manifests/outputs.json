@@ -1,0 +1,24 @@
+{
+  "files": {
+    "PREPARED_CONTEXTS.md": "af2e3f1dba0f1c5d2e13198e621171339c52b09928c558c2575ccf52116724a2",
+    "SUMMARY.md": "6d1048a7294caf158011af13309b628139b28ab0b361543ab861fbc4060cbf38",
+    "api/responses.jsonl": "542cea5d834b39e2189ff2b763041f62e2abc35d9d41ee72e0be71bd6ae63c4f",
+    "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "contracts/rev5_generative_frontier_api.csv": "8380b370d061dc772e25b353b353b06023540c6c5f6613839c4f36bedccae06e",
+    "manifests/api_responses.json": "0c71c34f671628421e2835e366ae21acb1a445fc2847871c38e8709c735f5086",
+    "manifests/api_runtime.json": "a269dc04c43599d57fa075bfd4685e2adc314c137fcbe9e561cff7418d91f0e9",
+    "manifests/generation_contract.json": "f88af8f90ded6b0d48f33d2a233cb19e3676b0ae7cb34def008bc1f6c01ec8ca",
+    "manifests/run.json": "4ed42deda04c64d4c6397f7e713fbcbc919c1759ba2dc57cc881c5bb32b67aea",
+    "manifests/source_archive.json": "d8e61dac63844b1f36216fb78eefc3c4086a2c29d22f6493403d1ca7dc298f2a",
+    "preflight/summary.json": "ee66044695c5b5fb6be7a43cbab7fb9384975555e16c2da4f41ad81726f86f11",
+    "references/rev5_compliancegpt_4bit.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+    "references/rev5_frozen_paired_summary.json": "46abebc838233b104ed75609a597b204101e4fffc4cc0b6ef2a772b5047fabeb",
+    "references/rev5_generative_baseline_4bit.csv": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63",
+    "references/rq2_v3_run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5",
+    "run_config.json": "8f07c4ef0abb869a7209bfb8306bb01d1dc951ce977afba0f83ac24fb7524d24",
+    "summary.json": "3c4c813bd73835f39e24432c42bf8c2e003e680ee284ce99e5466741634f5024"
+  },
+  "files_sha256": "6c113d3dcf32dbb84e8cfaa0608ed8d50b83ac376719ba8f73abaf028578cc47",
+  "result_id": "rq2_frontier_baseline_rev5_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1"
+}

@@ -77,7 +77,31 @@ reconnect and use **Runtime → Run all**; validated rows are skipped. A transie
 per-minute 429 waits and resumes. Authentication errors, daily-quota failures,
 model-version changes, and other non-per-minute failures stop for inspection.
 
-The completed package will contain:
+## Completed result
+
+The pre-committed run completed all 100 rows with one API call per row, no
+parse retries, no orphaned calls, and the server-reported model
+`gemini-3.5-flash` on every response. The result package is archived under
+[`results_v1/`](results_v1/), and the linked notebook is the executed Colab
+record with all nine code-cell execution counts and outputs retained.
+
+| System | Strict pass | Full clause coverage | Runtime contract pass | Realization loss |
+|---|---:|---:|---:|---:|
+| ComplianceGPT | 65/100 | 65/100 | 100/100 | 0/65 |
+| Gemini 3.5 Flash | 66/100 | 67/100 | 99/100 | 1/67 |
+| Qwen2.5-7B 4-bit | 25/100 | 53/100 | 42/100 | 28/53 |
+
+ComplianceGPT and Gemini were not statistically distinguishable on paired
+strict pass: 54 both passed, 11 ComplianceGPT-only passed, 12 Gemini-only
+passed, and 23 neither passed (`p = 1.0`, exact two-sided McNemar). The
+registered Fisher exact comparison of realization loss was also `p = 1.0`.
+The result therefore supports no accuracy-direction claim. Its mechanistic
+distinction is that ComplianceGPT's zero realization loss is predicted by
+deterministic construction and independently checkable at runtime, whereas
+Gemini's 1/67 is excellent empirical behavior under the evaluated model and
+prompt.
+
+The complete package contains:
 
 - `contracts/rev5_generative_frontier_api.csv`;
 - `api/responses.jsonl` with response IDs, raw outputs, server model, latency,
@@ -89,3 +113,8 @@ The completed package will contain:
 
 ODP operating characteristics use the current author labels and are reported
 with that limitation; they are not described as independently adjudicated.
+
+See [`results_v1/AUDIT.md`](results_v1/AUDIT.md) for the post-run integrity and
+metric recomputation, and
+[`../RQ2_BATCH_5_COMPARISON.md`](../RQ2_BATCH_5_COMPARISON.md) for the unified
+Batch 5A–5D interpretation.

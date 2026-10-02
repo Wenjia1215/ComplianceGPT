@@ -1,0 +1,692 @@
+{
+  "api_provenance": {
+    "all_logged_usage": {
+      "api_calls": 100,
+      "calls_with_field": {
+        "cached_content_token_count": 0,
+        "candidates_token_count": 100,
+        "prompt_token_count": 100,
+        "thoughts_token_count": 98,
+        "tool_use_prompt_token_count": 0,
+        "total_token_count": 100
+      },
+      "totals": {
+        "cached_content_token_count": 0,
+        "candidates_token_count": 16813,
+        "prompt_token_count": 132723,
+        "thoughts_token_count": 39832,
+        "tool_use_prompt_token_count": 0,
+        "total_token_count": 189368
+      }
+    },
+    "call_log": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/api/responses.jsonl",
+    "call_log_sha256": "542cea5d834b39e2189ff2b763041f62e2abc35d9d41ee72e0be71bd6ae63c4f",
+    "calls_by_query": {
+      "1": 1,
+      "10": 1,
+      "100": 1,
+      "11": 1,
+      "12": 1,
+      "13": 1,
+      "14": 1,
+      "15": 1,
+      "16": 1,
+      "17": 1,
+      "18": 1,
+      "19": 1,
+      "2": 1,
+      "20": 1,
+      "21": 1,
+      "22": 1,
+      "23": 1,
+      "24": 1,
+      "25": 1,
+      "26": 1,
+      "27": 1,
+      "28": 1,
+      "29": 1,
+      "3": 1,
+      "30": 1,
+      "31": 1,
+      "32": 1,
+      "33": 1,
+      "34": 1,
+      "35": 1,
+      "36": 1,
+      "37": 1,
+      "38": 1,
+      "39": 1,
+      "4": 1,
+      "40": 1,
+      "41": 1,
+      "42": 1,
+      "43": 1,
+      "44": 1,
+      "45": 1,
+      "46": 1,
+      "47": 1,
+      "48": 1,
+      "49": 1,
+      "5": 1,
+      "50": 1,
+      "51": 1,
+      "52": 1,
+      "53": 1,
+      "54": 1,
+      "55": 1,
+      "56": 1,
+      "57": 1,
+      "58": 1,
+      "59": 1,
+      "6": 1,
+      "60": 1,
+      "61": 1,
+      "62": 1,
+      "63": 1,
+      "64": 1,
+      "65": 1,
+      "66": 1,
+      "67": 1,
+      "68": 1,
+      "69": 1,
+      "7": 1,
+      "70": 1,
+      "71": 1,
+      "72": 1,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1,
+      "8": 1,
+      "80": 1,
+      "81": 1,
+      "82": 1,
+      "83": 1,
+      "84": 1,
+      "85": 1,
+      "86": 1,
+      "87": 1,
+      "88": 1,
+      "89": 1,
+      "9": 1,
+      "90": 1,
+      "91": 1,
+      "92": 1,
+      "93": 1,
+      "94": 1,
+      "95": 1,
+      "96": 1,
+      "97": 1,
+      "98": 1,
+      "99": 1
+    },
+    "completed_result_rows": 100,
+    "interpretation": "Orphaned calls, if any, are API responses produced before an interrupted row checkpoint; they are retained for quota and provenance auditing but excluded from results.",
+    "orphaned_call_count": 0,
+    "orphaned_response_ids": [],
+    "parse_retry_rows": 0,
+    "response_model": "gemini-3.5-flash",
+    "result_associated_usage": {
+      "api_calls": 100,
+      "calls_with_field": {
+        "cached_content_token_count": 0,
+        "candidates_token_count": 100,
+        "prompt_token_count": 100,
+        "thoughts_token_count": 98,
+        "tool_use_prompt_token_count": 0,
+        "total_token_count": 100
+      },
+      "totals": {
+        "cached_content_token_count": 0,
+        "candidates_token_count": 16813,
+        "prompt_token_count": 132723,
+        "thoughts_token_count": 39832,
+        "tool_use_prompt_token_count": 0,
+        "total_token_count": 189368
+      }
+    },
+    "result_id": "rq2_frontier_baseline_rev5_v1",
+    "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1"
+  },
+  "changed_factor": "free-form answer model/runtime: Qwen2.5-7B -> Gemini frontier API",
+  "configurations": {
+    "compliancegpt_4bit": {
+      "additional_clause_count": {
+        "max": 12.0,
+        "mean": 1.75,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.0
+      },
+      "answer_word_count": {
+        "max": 642.0,
+        "mean": 220.67,
+        "median": 207.0,
+        "min": 18.0,
+        "p95": 451.3499999999999
+      },
+      "full_gold_clause_coverage": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5525444329688796,
+          "method": "Wilson score",
+          "upper": 0.7363575175690247
+        }
+      },
+      "mean_gold_clause_precision": 0.5840790043290043,
+      "mean_gold_clause_recall": 0.8349545454545455,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These operating characteristics use the current author labels and are not independently adjudicated.",
+        "exact_odp_set_all_rows": {
+          "count": 72,
+          "n": 100,
+          "rate": 0.72,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.6251197129007884,
+            "method": "Wilson score",
+            "upper": 0.7986031478881379
+          }
+        },
+        "exact_odp_set_positive_rows": {
+          "count": 55,
+          "n": 63,
+          "rate": 0.873015873015873,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.7689296552173035,
+            "method": "Wilson score",
+            "upper": 0.9342267514386327
+          }
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 63,
+          "n": 63,
+          "rate": 1.0,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.9425288004111484,
+            "method": "Wilson score",
+            "upper": 1.0
+          }
+        },
+        "specificity": {
+          "count": 17,
+          "n": 37,
+          "rate": 0.4594594594594595,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.3103856980437303,
+            "method": "Wilson score",
+            "upper": 0.6161595310782052
+          }
+        },
+        "status_precision": {
+          "count": 63,
+          "n": 83,
+          "rate": 0.7590361445783133,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.6569026394404471,
+            "method": "Wilson score",
+            "upper": 0.8382525615884098
+          }
+        }
+      },
+      "realization_loss": {
+        "count": 0,
+        "coverage_complete": 65,
+        "definition": "coverage-complete rows that fail at least one remaining strict predicate divided by coverage-complete rows",
+        "lost_query_ids": [],
+        "n": 65,
+        "rate": 0.0,
+        "strict_pass_within_coverage": 65,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.0,
+          "method": "Wilson score",
+          "upper": 0.05580153132285689
+        }
+      },
+      "right_governing_control": {
+        "count": 97,
+        "n": 100,
+        "rate": 0.97,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.9154806357094724,
+          "method": "Wilson score",
+          "upper": 0.9897454759759611
+        }
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.9630065017930143,
+          "method": "Wilson score",
+          "upper": 1.0
+        }
+      },
+      "selected_clause_count": {
+        "max": 12.0,
+        "mean": 4.37,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 8.049999999999997
+      },
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      },
+      "strict_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5525444329688796,
+          "method": "Wilson score",
+          "upper": 0.7363575175690247
+        }
+      }
+    },
+    "generative_baseline_4bit": {
+      "additional_clause_count": {
+        "max": 10.0,
+        "mean": 1.88,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 7.049999999999997
+      },
+      "answer_word_count": {
+        "max": 122.0,
+        "mean": 45.44,
+        "median": 44.0,
+        "min": 0.0,
+        "p95": 86.24999999999999
+      },
+      "full_gold_clause_coverage": {
+        "count": 53,
+        "n": 100,
+        "rate": 0.53,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.4328885697009936,
+          "method": "Wilson score",
+          "upper": 0.6248918204065872
+        }
+      },
+      "mean_gold_clause_precision": 0.5302624597624598,
+      "mean_gold_clause_recall": 0.6902445887445887,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These operating characteristics use the current author labels and are not independently adjudicated.",
+        "exact_odp_set_all_rows": {
+          "count": 56,
+          "n": 100,
+          "rate": 0.56,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.4622810465167699,
+            "method": "Wilson score",
+            "upper": 0.6532797336983921
+          }
+        },
+        "exact_odp_set_positive_rows": {
+          "count": 21,
+          "n": 63,
+          "rate": 0.3333333333333333,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.2294961446460398,
+            "method": "Wilson score",
+            "upper": 0.4563275885502441
+          }
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 0,
+          "n": 63,
+          "rate": 0.0,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 3.469446951953614e-18,
+            "method": "Wilson score",
+            "upper": 0.05747119958885172
+          }
+        },
+        "specificity": {
+          "count": 37,
+          "n": 37,
+          "rate": 1.0,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.9059421741627975,
+            "method": "Wilson score",
+            "upper": 1.0
+          }
+        },
+        "status_precision": {
+          "count": 0,
+          "n": 0,
+          "rate": null,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": null,
+            "method": "Wilson score",
+            "upper": null
+          }
+        }
+      },
+      "realization_loss": {
+        "count": 28,
+        "coverage_complete": 53,
+        "definition": "coverage-complete rows that fail at least one remaining strict predicate divided by coverage-complete rows",
+        "lost_query_ids": [
+          "4",
+          "8",
+          "11",
+          "14",
+          "15",
+          "17",
+          "18",
+          "20",
+          "21",
+          "27",
+          "32",
+          "33",
+          "36",
+          "40",
+          "44",
+          "49",
+          "50",
+          "51",
+          "52",
+          "66",
+          "69",
+          "71",
+          "86",
+          "88",
+          "90",
+          "94",
+          "97",
+          "100"
+        ],
+        "n": 53,
+        "rate": 0.5283018867924528,
+        "strict_pass_within_coverage": 25,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.3966008127870629,
+          "method": "Wilson score",
+          "upper": 0.6561775652180384
+        }
+      },
+      "right_governing_control": {
+        "count": 93,
+        "n": 100,
+        "rate": 0.93,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.8625048526092651,
+          "method": "Wilson score",
+          "upper": 0.9656807389327273
+        }
+      },
+      "runtime_contract_pass": {
+        "count": 42,
+        "n": 100,
+        "rate": 0.42,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.3279838267435473,
+          "method": "Wilson score",
+          "upper": 0.5179351329695703
+        }
+      },
+      "selected_clause_count": {
+        "max": 14.0,
+        "mean": 4.21,
+        "median": 4.0,
+        "min": 0.0,
+        "p95": 10.0
+      },
+      "status_counts": {
+        "NO_EVIDENCE": 2,
+        "OK": 98
+      },
+      "strict_pass": {
+        "count": 25,
+        "n": 100,
+        "rate": 0.25,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.17545211362287672,
+          "method": "Wilson score",
+          "upper": 0.34304463548061603
+        }
+      }
+    },
+    "generative_frontier_api": {
+      "additional_clause_count": {
+        "max": 7.0,
+        "mean": 0.93,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 3.0
+      },
+      "answer_word_count": {
+        "max": 159.0,
+        "mean": 60.17,
+        "median": 57.0,
+        "min": 0.0,
+        "p95": 111.44999999999997
+      },
+      "full_gold_clause_coverage": {
+        "count": 67,
+        "n": 100,
+        "rate": 0.67,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5730534379509052,
+          "method": "Wilson score",
+          "upper": 0.7543687726587197
+        }
+      },
+      "mean_gold_clause_precision": 0.6963214285714285,
+      "mean_gold_clause_recall": 0.7747590187590189,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These operating characteristics use the current author labels and are not independently adjudicated.",
+        "exact_odp_set_all_rows": {
+          "count": 77,
+          "n": 100,
+          "rate": 0.77,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.6784561697712622,
+            "method": "Wilson score",
+            "upper": 0.8415673411969654
+          }
+        },
+        "exact_odp_set_positive_rows": {
+          "count": 46,
+          "n": 63,
+          "rate": 0.7301587301587301,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.6097009078044822,
+            "method": "Wilson score",
+            "upper": 0.82416155587684
+          }
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 56,
+          "n": 63,
+          "rate": 0.8888888888888888,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.7879534424991748,
+            "method": "Wilson score",
+            "upper": 0.9451245133761628
+          }
+        },
+        "specificity": {
+          "count": 31,
+          "n": 37,
+          "rate": 0.8378378378378378,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.6886351629906503,
+            "method": "Wilson score",
+            "upper": 0.9234879276598885
+          }
+        },
+        "status_precision": {
+          "count": 56,
+          "n": 62,
+          "rate": 0.9032258064516129,
+          "wilson_95_ci": {
+            "level": 0.95,
+            "lower": 0.8045118138769257,
+            "method": "Wilson score",
+            "upper": 0.9548881279768061
+          }
+        }
+      },
+      "realization_loss": {
+        "count": 1,
+        "coverage_complete": 67,
+        "definition": "coverage-complete rows that fail at least one remaining strict predicate divided by coverage-complete rows",
+        "lost_query_ids": [
+          "28"
+        ],
+        "n": 67,
+        "rate": 0.014925373134328358,
+        "strict_pass_within_coverage": 66,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.0026395717340788882,
+          "method": "Wilson score",
+          "upper": 0.07981862319778105
+        }
+      },
+      "right_governing_control": {
+        "count": 97,
+        "n": 100,
+        "rate": 0.97,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.9154806357094724,
+          "method": "Wilson score",
+          "upper": 0.9897454759759611
+        }
+      },
+      "runtime_contract_pass": {
+        "count": 99,
+        "n": 100,
+        "rate": 0.99,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.9455138038212946,
+          "method": "Wilson score",
+          "upper": 0.9982325679358593
+        }
+      },
+      "selected_clause_count": {
+        "max": 10.0,
+        "mean": 3.23,
+        "median": 3.0,
+        "min": 0.0,
+        "p95": 8.0
+      },
+      "status_counts": {
+        "NO_EVIDENCE": 1,
+        "OK": 37,
+        "PARAMS_REQUIRED": 62
+      },
+      "strict_pass": {
+        "count": 66,
+        "n": 100,
+        "rate": 0.66,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5627772885472462,
+          "method": "Wilson score",
+          "upper": 0.7453847920265184
+        }
+      }
+    }
+  },
+  "file_hashes": {
+    "compliancegpt_4bit": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+    "generative_baseline_4bit": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63",
+    "generative_frontier_api": "8380b370d061dc772e25b353b353b06023540c6c5f6613839c4f36bedccae06e"
+  },
+  "framework_version": "rev5",
+  "interpretation_boundary": "This is a stronger-system baseline, not an isolation of weight precision or architecture. Questions, model-visible evidence, prompt/parser, ODP policy, and verifier are fixed, but the API model and serving runtime differ. The strict-pass comparison measures agreement with the implemented author-labeled rules; it does not establish legal sufficiency or auditor approval. The mechanistic claim concerns realization loss and runtime-verifiable guarantees, not universal accuracy superiority.",
+  "matched_input_validation": {
+    "context_mismatches": 0,
+    "evidence_window_mismatches": 0,
+    "frontier_model_id": "gemini-3.5-flash",
+    "model_snapshot_boundary": "The API request uses a named stable Gemini model. Every response id and server-reported model version is retained; the runner rejects a version change within one run.",
+    "paired_rows": 100
+  },
+  "n_questions": 100,
+  "paired_strict_pass": {
+    "compliancegpt_vs_frontier": {
+      "both_pass": 54,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left": "compliancegpt_4bit",
+      "left_only": 11,
+      "neither_pass": 23,
+      "paired_rows": 100,
+      "right": "generative_frontier_api",
+      "right_only": 12
+    },
+    "frontier_vs_qwen_4bit": {
+      "both_pass": 24,
+      "exact_mcnemar_two_sided_p": 1.000444171950221e-11,
+      "left": "generative_frontier_api",
+      "left_only": 42,
+      "neither_pass": 33,
+      "paired_rows": 100,
+      "right": "generative_baseline_4bit",
+      "right_only": 1
+    }
+  },
+  "precommitment_sha256": "b0cc78debb25c1025f05622348925383b7a19503751680e1a6a0b3ddefa34504",
+  "realization_loss_comparison": {
+    "fisher_exact_two_sided_p": 1.0,
+    "left": "compliancegpt_4bit",
+    "right": "generative_frontier_api",
+    "table_rows_are_systems_columns_are_lost_then_retained": [
+      [
+        0,
+        65
+      ],
+      [
+        1,
+        66
+      ]
+    ]
+  },
+  "result_id": "rq2_frontier_baseline_rev5_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1",
+  "strict_pass_definition": "The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
+}

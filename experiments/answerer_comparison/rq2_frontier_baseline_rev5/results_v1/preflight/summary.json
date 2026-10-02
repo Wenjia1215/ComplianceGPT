@@ -1,0 +1,16 @@
+{
+  "api_calls_performed": 0,
+  "context_jsonl_sha256": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+  "context_rows": 100,
+  "distinct_context_hashes": 100,
+  "distinct_window_hashes": 100,
+  "framework_version": "rev5",
+  "result_id": "rq2_frontier_baseline_rev5_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1",
+  "scope": "gold-free frozen-context integrity audit; no API call",
+  "window_record_count": {
+    "max": 24,
+    "mean": 12.1,
+    "min": 2
+  }
+}

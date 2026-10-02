@@ -1,0 +1,24 @@
+{
+  "api_model_id": "gemini-3.5-flash",
+  "local_model_loaded": false,
+  "output_csv": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/contracts/rev5_generative_frontier_api.csv",
+  "output_csv_sha256": "8380b370d061dc772e25b353b353b06023540c6c5f6613839c4f36bedccae06e",
+  "resumed_rows": 0,
+  "row_count": 100,
+  "runtime": {
+    "cuda_available": true,
+    "cuda_version": "13.0",
+    "device_name": "NVIDIA A100-SXM4-40GB",
+    "model_id": "gemini-3.5-flash",
+    "model_requested_revision": "stable-api-model:gemini-3.5-flash",
+    "model_resolved_revision": "recorded-per-response",
+    "package_metadata_error": "PackageNotFoundError('bitsandbytes')",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "python": "3.13.15",
+    "tokenizer_resolved_revision": "server-managed",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.17.0"
+  },
+  "schema_version": "compliancegpt-rq2-matched-run-v2",
+  "system": "generative_frontier_api"
+}

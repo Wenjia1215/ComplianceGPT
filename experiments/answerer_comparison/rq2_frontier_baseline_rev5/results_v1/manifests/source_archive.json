@@ -1,0 +1,35 @@
+{
+  "archive": "/content/ComplianceGPT_batch5d/experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+  "archive_sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+  "context_rows": 100,
+  "distinct_window_hashes": 100,
+  "members": {
+    "contexts/rev5_prepared_contexts.jsonl": {
+      "bytes": 5904539,
+      "extracted_to": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/contexts/rev5_prepared_contexts.jsonl",
+      "sha256": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473"
+    },
+    "contracts/rev5_compliancegpt.csv": {
+      "bytes": 2174345,
+      "extracted_to": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/references/rev5_compliancegpt_4bit.csv",
+      "sha256": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9"
+    },
+    "contracts/rev5_generative_baseline.csv": {
+      "bytes": 1771539,
+      "extracted_to": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/references/rev5_generative_baseline_4bit.csv",
+      "sha256": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63"
+    },
+    "run_config.json": {
+      "bytes": 2302,
+      "extracted_to": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/references/rq2_v3_run_config.json",
+      "sha256": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5"
+    },
+    "summaries/rev5_paired_summary.json": {
+      "bytes": 1835,
+      "extracted_to": "/content/drive/MyDrive/rq2_frontier_baseline_rev5_v1/references/rev5_frozen_paired_summary.json",
+      "sha256": "46abebc838233b104ed75609a597b204101e4fffc4cc0b6ef2a772b5047fabeb"
+    }
+  },
+  "result_id": "rq2_frontier_baseline_rev5_v1",
+  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1"
+}

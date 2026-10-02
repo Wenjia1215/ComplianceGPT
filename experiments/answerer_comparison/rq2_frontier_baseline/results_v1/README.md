@@ -53,10 +53,12 @@ See [`AUDIT.md`](AUDIT.md) for the independent integrity and result checks and
 
 Gemini substantially strengthened the free-form baseline relative to both Qwen
 baselines (`p = 0.00040245056` for each paired strict-pass comparison).
-ComplianceGPT retained the highest observed strict-pass rate. Its paired
-difference from Gemini favored ComplianceGPT, with eight ComplianceGPT-only
-passes and three Gemini-only passes, but was not statistically significant on
-36 rows (`p = 0.2265625`).
+ComplianceGPT and Gemini had eight and three exclusive passes, respectively,
+but are not statistically distinguishable on strict pass on these 36 rows
+(`p = 0.2265625`). The count difference is not interpreted as evidence of a
+direction.
 
-*ODP values use author labels and remain provisional until blinded independent
-annotation is returned.*
+*ODP values use current author labels and have not been independently
+adjudicated. The immutable runner-generated summary retains its original
+pre-scope wording; the controlling interpretation is the limitation stated
+here and in the unified Batch 5A–5D comparison.*

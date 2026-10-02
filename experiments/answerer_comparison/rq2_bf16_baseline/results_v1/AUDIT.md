@@ -72,5 +72,7 @@ answer-construction and contract/ODP behavior, not merely model-weight
 precision.
 
 This 36-row fixed-context study estimates quantization sensitivity for one
-model and one prompt. It is not a frontier-model comparison, and the ODP
-operating characteristics remain provisional pending blinded annotation.
+model and one prompt. It is not a frontier-model comparison. The ODP operating
+characteristics use current author labels and have not been independently
+adjudicated; full annotation is future validation rather than a pending
+condition on this recorded result.

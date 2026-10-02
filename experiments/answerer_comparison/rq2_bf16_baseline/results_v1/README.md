@@ -48,5 +48,6 @@ BF16 had zero left-only passes and 21 right-only passes (`p = 9.5367432e-07`).
 The result therefore does not support 4-bit quantization as the explanation
 for the main RQ2 gap.
 
-*ODP values use author labels and remain provisional until blinded independent
-annotation is returned.*
+*ODP values use current author labels and have not been independently
+adjudicated. The immutable runner-generated summary retains its original
+pre-scope wording.*

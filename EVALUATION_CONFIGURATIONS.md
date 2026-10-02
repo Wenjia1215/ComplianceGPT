@@ -38,7 +38,8 @@ under `experiments/answerer_comparison/rq2_control_gate_width/results_v1/`;
 the deterministic prepared-context audit remains a distinct opportunity
 analysis rather than an end-to-end result. The released adaptive gate remains
 the unchanged reference rather than being relabeled as one of the fixed-width
-conditions.
+conditions, while fixed top 2 is the simpler evidence-supported operating
+point because it matched the adaptive strict-pass count on both revisions.
 
 `rq2_bf16_baseline_v1` is a second separate follow-on identity. It uses only
 the 36 immutable Rev. 4 RQ2 v3 contexts and reruns the free-form generative
@@ -62,5 +63,12 @@ weight precision or architecture. The complete Paid Tier 1 evidence package
 and audit record are archived under
 `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`.
 
-The three follow-on studies are consolidated without merging their identities
+`rq2_frontier_baseline_rev5_v1` is a fourth separate follow-on identity. It
+pre-commits the same frontier protocol on all 100 Revision 5 rows and retains
+the complete executed notebook and API evidence under
+`experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/`.
+ComplianceGPT and Gemini are statistically indistinguishable on paired strict
+pass in this larger study (65/100 versus 66/100; `p = 1.0`).
+
+The four follow-on studies are consolidated without merging their identities
 in [`RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md).

@@ -41,10 +41,11 @@ and verifier result.
 | Inspect the citation-contract schema | [`src/compliancegpt/generator/citation_contract_80053.md`](src/compliancegpt/generator/citation_contract_80053.md) |
 | Review the S1–S7 retrieval evaluation | [`experiments/retriever_ablation/README.md`](experiments/retriever_ablation/README.md) |
 | Review the matched answerer comparison | [`experiments/answerer_comparison/rq2_matched/README.md`](experiments/answerer_comparison/rq2_matched/README.md) |
-| Review the unified Batch 5A–5C RQ2 findings | [`experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md) |
+| Review the unified Batch 5A–5D RQ2 findings | [`experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md) |
 | Review or reproduce the control-gate width sweep | [`experiments/answerer_comparison/rq2_control_gate_width/README.md`](experiments/answerer_comparison/rq2_control_gate_width/README.md) |
 | Run the Rev. 4 BF16 generative baseline | [`experiments/answerer_comparison/rq2_bf16_baseline/README.md`](experiments/answerer_comparison/rq2_bf16_baseline/README.md) |
 | Review the Rev. 4 frontier API baseline | [`experiments/answerer_comparison/rq2_frontier_baseline/README.md`](experiments/answerer_comparison/rq2_frontier_baseline/README.md) |
+| Review the Rev. 5 frontier API baseline | [`experiments/answerer_comparison/rq2_frontier_baseline_rev5/README.md`](experiments/answerer_comparison/rq2_frontier_baseline_rev5/README.md) |
 | Review the no-selector ablation | [`experiments/answerer_comparison/rq2_no_selector/README.md`](experiments/answerer_comparison/rq2_no_selector/README.md) |
 | Review the ODP-rescue ablation | [`experiments/answerer_comparison/rq2_rescue_ablation/README.md`](experiments/answerer_comparison/rq2_rescue_ablation/README.md) |
 | Review Runtime Verifier mutation testing | [`experiments/answerer_comparison/runtime_verifier_mutation/README.md`](experiments/answerer_comparison/runtime_verifier_mutation/README.md) |
@@ -140,9 +141,16 @@ resolution conformance.
   complete evidence package and audit record are archived under
   `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`; Gemini
   passed 24/36 strict contracts versus 8/36 for either Qwen baseline.
-- The unified Batch 5A–5C comparison keeps the three changed-factor boundaries
-  separate while placing their shared Revision 4 endpoints, paired tests, ODP
-  tradeoffs, and evidence hashes in one dissertation-ready record:
+- The pre-committed Batch 5D study extends the same Gemini protocol to all 100
+  Revision 5 rows. Its executed notebook, raw API log, contracts, manifests,
+  summary, archive, and independent audit are retained under
+  `experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/`.
+  ComplianceGPT and Gemini passed 65/100 and 66/100 strict contracts with
+  11-versus-12 discordance (`p = 1.0`), so neither revision supports an
+  accuracy-direction claim.
+- The unified Batch 5A–5D comparison keeps all changed-factor boundaries
+  separate while placing the matched endpoints, paired tests, realization
+  loss, ODP tradeoffs, and evidence hashes in one dissertation-ready record:
   `experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`.
 - The deterministic no-selector ablation retains every statement and guidance
   record in each frozen matched-run evidence window. It measures the coverage,

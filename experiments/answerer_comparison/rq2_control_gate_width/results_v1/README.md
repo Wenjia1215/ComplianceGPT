@@ -44,10 +44,18 @@ All checks passed. The run used an NVIDIA A100-SXM4-40GB, `Qwen/Qwen2.5-7B-Instr
 
 Strict pass and full expected-clause coverage were numerically identical in every condition because every generated row passed the runtime contract. No stored within-revision strict-pass comparison was statistically significant; all exact two-sided McNemar values were at least 0.25.
 
-The released adaptive gate remains the most defensible default. Fixed top 2 matched its strict-pass count in both revisions and is the parsimonious fixed-width operating point. Top 3 added no strict-pass or ODP-specificity benefit over top 2. Top 5 gained two Rev. 5 strict passes but lost one Rev. 4 pass and reduced Rev. 5 ODP specificity from 17/37 to 12/37. Fixed top 1 lost coverage without improving specificity over the adaptive reference.
+Fixed top 2 matched the adaptive gate's strict-pass count in both revisions and
+is the simpler evidence-supported operating point. The experiment therefore
+shows no benefit from the adaptive gate over constant top 2. Top 3 added no
+strict-pass or ODP-specificity benefit over top 2. Top 5 gained two Rev. 5
+strict passes but lost one Rev. 4 pass and reduced Rev. 5 ODP specificity from
+17/37 to 12/37. Fixed top 1 lost coverage without improving specificity over
+the adaptive reference.
 
 Rank width follows the released implementation: ranked enhancements are normalized to their base control before evidence filtering, so repeated candidates can yield fewer unique admitted base controls than the requested width. The prepared-context audit records that effective width explicitly.
 
-*ODP operating characteristics use the author labels and remain provisional until blinded independent annotation is returned.*
+*ODP operating characteristics use current author labels and have not been
+independently adjudicated. The immutable runner-generated summary retains its
+original pre-scope wording.*
 
 See `SUMMARY.md` for the complete per-revision table, `PREPARED_CONTEXTS.md` for the evidence-window opportunity audit, and `summary.json` for machine-readable distributions and paired tests.

@@ -24,7 +24,9 @@ For each revision and gate width, the completed run reports:
 - `PARAMS_REQUIRED` sensitivity, status precision, specificity, and exact ODP-list agreement against the author labels; and
 - paired exact McNemar tests for strict-pass differences.
 
-The ODP operating characteristics against the author labels are provisional. They must not be described as independently adjudicated specificity until the blinded practitioner annotation is returned.
+The ODP operating characteristics use current author labels and have not been
+independently adjudicated. The full annotation study is future validation, not
+a pending condition on this recorded result.
 
 ## Deterministic preparation without a GPU
 
@@ -51,10 +53,17 @@ The runner pins `Qwen/Qwen2.5-7B-Instruct` at revision `a09a35458c702b33eeacc393
 
 The completed directory contains the fixed-width contexts, row-level selector contracts, manifests, `summary.json`, `SUMMARY.md`, and a ZIP archive. The original adaptive outputs are read directly from the immutable RQ2 v3 archive and are never regenerated or modified.
 
-For Colab, open `Batch_5A_Control_Gate_Width_Sweep.ipynb`, select an A100 GPU when available (T4 or L4 is also supported), and choose **Runtime > Run all**. The notebook checks out the registered runner commit and writes resumable checkpoints to `MyDrive/rq2_control_gate_width_v1`.
+For Colab, open `Batch_5A_Control_Gate_Width_Sweep.ipynb`, confirm the default
+A100 GPU runtime, and choose **Runtime > Run all**. The notebook checks out the
+registered runner commit and writes resumable checkpoints to
+`MyDrive/rq2_control_gate_width_v1`.
 
 ## Recorded finding
 
 Fixed top 2 matched the released adaptive gate's strict-pass count in both revisions: 65/100 on Rev. 5 and 29/36 on Rev. 4. Top 3 produced the same strict-pass and ODP-specificity results with lower clause precision. Top 5 reached 67/100 on Rev. 5 but fell to 28/36 on Rev. 4 and reduced Rev. 5 author-label ODP specificity from 17/37 to 12/37. Fixed top 1 fell to 62/100 and 26/36 without a specificity gain over the adaptive reference.
 
-No stored within-revision strict-pass comparison was statistically significant; all exact two-sided McNemar values were at least 0.25. The evidence therefore supports retaining the released adaptive gate. If a single fixed width is required, top 2 is the parsimonious operating point. ODP operating characteristics remain provisional pending blinded independent annotation.
+No stored within-revision strict-pass comparison was statistically significant;
+all exact two-sided McNemar values were at least 0.25. The tested data show no
+benefit from the adaptive gate over a constant top-2 gate, making fixed top 2
+the simpler evidence-supported operating point. ODP operating characteristics
+use current author labels and have not been independently adjudicated.

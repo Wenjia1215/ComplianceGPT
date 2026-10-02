@@ -161,8 +161,9 @@ The canonical result archive SHA-256 is:
 Fixed top 2 matched the adaptive reference's strict-pass count on both
 revisions. The stored within-revision exact McNemar comparisons found no
 significant strict-pass difference at the 0.05 level. ODP sensitivity,
-specificity, and status precision computed against the author labels remain
-provisional until the blinded independent annotation is returned.
+specificity, and status precision use current author labels and have not been
+independently adjudicated. The full independent annotation study is scoped as
+future validation rather than a pending condition on these recorded results.
 
 ## Rev. 4 BF16 generative baseline
 
@@ -233,7 +234,29 @@ The public corrected archive changes only paid-tier provenance in
 `run_config.json` and the dependent output-manifest hashes; its SHA-256 is
 `351af9780f0ed7e6714ed3eb81799e8793985ea8b14351f32da9e43ebefa0dfb`.
 
-The consolidated Batch 5A–5C comparison is
+## Rev. 5 frontier API baseline
+
+The pre-committed Batch 5D study applies the same stable
+`gemini-3.5-flash` protocol to all 100 frozen Revision 5 contexts. The complete
+result, executed A100 notebook, raw API log, contracts, manifests, archive, and
+independent audit are retained under
+[`experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/`](experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/).
+
+The run completed with 100 unique API responses, one call per row, no parse
+retries, and no orphaned calls. ComplianceGPT and Gemini passed 65/100 and
+66/100 strict contracts. Their paired discordance was 11 versus 12 with exact
+two-sided McNemar `p = 1.0`; no accuracy direction is claimed. Coverage-complete
+realization loss was 0/65 for ComplianceGPT and 1/67 for Gemini, with Fisher
+exact `p = 1.0`. The observed zero for ComplianceGPT confirms the deterministic
+construction on this benchmark; it is not presented as an estimated zero-risk
+rate.
+
+The byte-exact result archive SHA-256 is
+`9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef`,
+and the executed notebook SHA-256 is
+`2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc`.
+
+The consolidated Batch 5A–5D comparison is
 [`experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md).
 
 ## No-selector ablation

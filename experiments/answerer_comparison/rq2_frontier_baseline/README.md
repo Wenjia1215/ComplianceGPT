@@ -31,7 +31,8 @@ metadata in `run_config.json` and its dependent output-manifest hashes.
 - API settings: thinking level `LOW`, temperature `1.0` (the Gemini 3 recommended default), maximum output tokens `2048`, no tools, and no API-enforced structured-output schema. Parse retries return the prior response's thought signature exactly as required by the Gemini 3 multi-turn contract; signatures are not exposed as model output.
 - Retrieval: none. The runner consumes immutable ordered contexts from the validated RQ2 v3 archive.
 - Gold policy: gold labels never enter an API request; they are used only by the unchanged offline verifier.
-- Hardware: CPU is sufficient because model inference is remote. A Colab GPU provides no benefit and wastes compute units.
+- Notebook runtime: A100 GPU by default, consistent with the project's Colab
+  execution policy; model generation itself is served remotely.
 
 The API run is a stronger-system comparison, not a one-factor precision experiment. Questions, evidence, prompt/parser, ODP policy, and verifier are fixed; the model and serving runtime change. API sampling may not reproduce byte-identical text on a later run.
 
@@ -83,7 +84,10 @@ python experiments/answerer_comparison/rq2_frontier_baseline/run_frontier_baseli
   --output-dir /content/drive/MyDrive/rq2_frontier_baseline_v1
 ```
 
-For Colab, use the notebook linked at the top of this README. Its first code cell mounts Drive, and a later cell reads `GEMINI_API_KEY` from Colab Secrets without displaying it. A CPU runtime is sufficient; selecting a GPU does not accelerate this API run.
+For Colab, use the notebook linked at the top of this README. Its metadata
+requests an A100 GPU by default. Confirm **Runtime → Change runtime type → A100
+GPU** before starting. The first code cell mounts Drive, and a later cell reads
+`GEMINI_API_KEY` from Colab Secrets without displaying it.
 
 The runner checkpoints one contract at a time. Re-running the command validates completed rows and skips them. The cumulative API response log is atomically checkpointed before the result CSV, so returned responses remain visible even if the runtime disconnects between an API response and a row checkpoint. Such orphaned calls are reported and excluded from scientific results.
 
@@ -96,4 +100,8 @@ The completed directory contains:
 - `summary.json` and `SUMMARY.md` — descriptive metrics and paired exact McNemar tests; and
 - a sibling `rq2_frontier_baseline_v1.zip` archive.
 
-The summary compares the frontier API baseline with the validated Qwen BF16 baseline, the frozen Qwen 4-bit baseline, and frozen 4-bit ComplianceGPT. ODP operating characteristics against author labels remain provisional until blinded independent annotation is returned.
+The summary compares the frontier API baseline with the validated Qwen BF16
+baseline, the frozen Qwen 4-bit baseline, and frozen 4-bit ComplianceGPT. ODP
+operating characteristics use current author labels and have not been
+independently adjudicated. Independent annotation is future validation rather
+than a pending condition on this recorded result.

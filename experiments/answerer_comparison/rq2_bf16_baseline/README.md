@@ -60,7 +60,10 @@ The completed directory contains:
 
 The summary reports strict verifier pass, full gold-clause coverage, clause recall and precision, answer and citation burden, runtime contract validity, and author-label ODP operating characteristics. It provides paired exact McNemar comparisons for BF16 versus the frozen 4-bit baseline and for BF16 baseline versus frozen 4-bit ComplianceGPT.
 
-This experiment estimates quantization sensitivity within one 7B model on 36 fixed Rev. 4 rows. It is not a frontier-model baseline, a retraining result, or evidence about other models. ODP sensitivity, specificity, and precision against the author labels remain provisional until the blinded independent annotation is returned.
+This experiment estimates quantization sensitivity within one 7B model on 36
+fixed Rev. 4 rows. It is not a frontier-model baseline, a retraining result, or
+evidence about other models. ODP sensitivity, specificity, and precision use
+current author labels and have not been independently adjudicated.
 
 ## Recorded finding
 
