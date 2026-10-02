@@ -1,0 +1,67 @@
+{
+  "protocol_id": "compliancegpt-intra-annotator-retest-v1",
+  "protocol_date": "2026-10-02",
+  "status": "pre-label commitment",
+  "purpose": "Estimate intra-annotator test-retest stability; not independent adjudication or inter-annotator validation.",
+  "population": {
+    "total": 136,
+    "revision_4": 36,
+    "revision_5": 100
+  },
+  "sample": {
+    "total": 30,
+    "revision_4": 8,
+    "revision_5": 22,
+    "allocation": "Proportional to the two revision strata, using nearest whole-row allocation."
+  },
+  "manual_design_decisions": [
+    "Use a 30-row intra-annotator test-retest sample.",
+    "Stratify only by NIST revision and allocate 8 Revision 4 rows and 22 Revision 5 rows.",
+    "Re-label governing control, expected clause IDs, and required ODP IDs after a washout period."
+  ],
+  "automated_operations": [
+    "Compute every within-revision selection rank.",
+    "Select the first 8 Revision 4 rows and first 22 Revision 5 rows by rank.",
+    "Compute an independent display-order rank and reorder all 30 selected rows.",
+    "Assign IR-001 through IR-030.",
+    "Remove original IDs and all original labels from the blinded output.",
+    "Validate counts, uniqueness, source hashes, and output commitments."
+  ],
+  "selection_algorithm": {
+    "version": "sha256-stratified-ranking-v1",
+    "within_revision_rank": "SHA256(seed || '|select|' || revision || '|' || original_row_id)",
+    "display_order_rank": "SHA256(seed || '|order|' || revision || '|' || original_row_id)",
+    "tie_breaking": "Lexicographic hexadecimal digest order; SHA-256 collisions are treated as a protocol failure.",
+    "selection_fields": [
+      "revision",
+      "original_row_id"
+    ],
+    "excluded_from_selection": [
+      "question text",
+      "governing control",
+      "expected clause IDs",
+      "required ODPs",
+      "answer text",
+      "system outputs",
+      "strict-pass results",
+      "ErrorBank categories"
+    ]
+  },
+  "source_sha256": {
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+  },
+  "commitments": {
+    "private_seed_utf8_sha256": "d71c68d039030ca94c6b1a0209105b7c4d4976978b128e98d6210c812c1390ae",
+    "canonical_blinded_sample_payload_sha256": "a6582b20ea6605395627dd0229981be6841ef76e55af022526ce773f71a686c0",
+    "blank_xlsx_packet_sha256": "72970b8f2dfc9b253f45f36783d9c7e1d8c0bb2e7ab523ed8434752ed2c9e95f"
+  },
+  "canonical_sample_payload": "For each displayed row in order: blind_id + TAB + revision + TAB + question + LF, encoded as UTF-8.",
+  "withheld_until_reveal": [
+    "private seed",
+    "blind-ID to original-ID mapping",
+    "original gold labels for sampled rows",
+    "agreement outputs"
+  ],
+  "reveal_condition": "The completed second-label workbook must first be frozen and recorded by SHA-256."
+}

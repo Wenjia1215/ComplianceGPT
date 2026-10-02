@@ -1,0 +1,5 @@
+private/
+revealed/
+completed/
+*.completed.xlsx
+private_seed.txt

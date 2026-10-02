@@ -15,6 +15,12 @@ encountered in the S1–S7 ablation work. The author made the final decisions an
 retains responsibility for the benchmark, labels, code, manuscript, and
 released artifacts.
 
+Codex also assisted in implementing and testing the deterministic sampler and
+spreadsheet packaging for the intra-annotator test-retest protocol. The author
+specified the sample size, revision-stratified allocation, blinding fields,
+washout procedure, and reporting plan; reviewed the selection logic; and
+verified the frozen inputs, counts, exclusions, and cryptographic commitments.
+
 ## Experimental model use
 
 `Qwen/Qwen2.5-7B-Instruct` is an experimental component, not merely a writing

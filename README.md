@@ -52,6 +52,7 @@ and verifier result.
 | Review per-identifier runtime provenance | [`experiments/answerer_comparison/rq2_identifier_provenance/README.md`](experiments/answerer_comparison/rq2_identifier_provenance/README.md) |
 | Review the secondary retrieval diagnostics | [`experiments/micro_ablations/README.md`](experiments/micro_ablations/README.md) |
 | Review runtime contract validation | [`experiments/runtime_validation/README.md`](experiments/runtime_validation/README.md) |
+| Review the intra-annotator test-retest protocol | [`experiments/annotation_reliability/intra_annotator_retest/README.md`](experiments/annotation_reliability/intra_annotator_retest/README.md) |
 | Inspect ErrorBank annotation | [`data/error_bank/Labeling_Rationale.md`](data/error_bank/Labeling_Rationale.md) |
 | Identify exact NIST/OSCAL source releases | [`data/DATA_VERSIONS.md`](data/DATA_VERSIONS.md) |
 | Verify canonical evaluation inputs | [`EVALUATION_INPUT_CHECKSUMS.md`](EVALUATION_INPUT_CHECKSUMS.md) |
@@ -79,6 +80,7 @@ ComplianceGPT/
 │   ├── generative_answerer/       # Free-form comparison answerer
 │   └── data_tools/                # Data validation utilities
 ├── experiments/
+│   ├── annotation_reliability/       # Blinded test-retest protocol and commitments
 │   ├── retriever_ablation/        # S1–S7 evaluation and outputs
 │   ├── answerer_comparison/       # Matched evaluation and selector/rescue ablations
 │   ├── micro_ablations/           # Secondary gold-informed diagnostics
@@ -170,6 +172,10 @@ resolution conformance.
   retrieval, model inference, or gold-guided attribution.
 - The micro-ablation study is a secondary, gold-informed diagnostic and is not
   a deployable retrieval method.
+- The pre-label intra-annotator test-retest protocol freezes a 30-row,
+  revision-stratified, label-blind sampling algorithm and cryptographic
+  commitments while withholding the private seed and row mapping until the
+  second labels are complete and hashed.
 - Runtime validation checks source resolution, span containment, and visible
   unresolved-state consistency; it does not establish global evidence
   completeness.
