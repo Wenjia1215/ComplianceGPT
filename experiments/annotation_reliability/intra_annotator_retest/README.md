@@ -34,10 +34,15 @@ source hashes, and commitments are in [`protocol_v1.json`](protocol_v1.json).
 
 ## Washout basis
 
-The original benchmark labels were created in 2025 and were not consulted by
+The original benchmark construction and annotation took place from October
+2025 through February 18, 2026. The original labels were not consulted by
 the annotator while preparing the blinded packet. That elapsed interval is the
 washout period; generating the packet does not restart it or require an
 additional waiting period.
+
+The fuller date range is recorded in the dated
+[chronology clarification](PROTOCOL_CLARIFICATION_2026-10-02.md). The registered
+protocol and all frozen experiment records remain unchanged.
 
 ## Private preparation command
 
