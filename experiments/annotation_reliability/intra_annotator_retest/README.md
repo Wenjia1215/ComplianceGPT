@@ -32,6 +32,13 @@ Question text, gold labels, ODP status, system outputs, strict-pass results,
 and ErrorBank categories do not enter either ranking function. Exact formulas,
 source hashes, and commitments are in [`protocol_v1.json`](protocol_v1.json).
 
+## Washout basis
+
+The original benchmark labels were created in 2025 and were not consulted by
+the annotator while preparing the blinded packet. That elapsed interval is the
+washout period; generating the packet does not restart it or require an
+additional waiting period.
+
 ## Private preparation command
 
 The script uses only the Python standard library. Store the private seed
@@ -73,7 +80,8 @@ content-sensitive commitments, and the two frozen source-file hashes.
 
 ## Reveal sequence
 
-1. Complete all 30 second-label rows after the washout period.
+1. Complete all 30 second-label rows without consulting the original labels,
+   row mapping, or system outputs.
 2. Freeze the completed workbook and record its SHA-256 before comparison.
 3. Reveal the seed and blind-ID mapping and reproduce the committed sample.
 4. Compare the second labels with the original labels.

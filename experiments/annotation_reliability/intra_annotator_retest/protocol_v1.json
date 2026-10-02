@@ -19,6 +19,11 @@
     "Stratify only by NIST revision and allocate 8 Revision 4 rows and 22 Revision 5 rows.",
     "Re-label governing control, expected clause IDs, and required ODP IDs after a washout period."
   ],
+  "washout": {
+    "basis": "The original benchmark labels were created in 2025 and were not consulted by the annotator during blinded packet preparation.",
+    "interpretation": "The elapsed interval since the original labeling is the washout; packet generation does not restart it.",
+    "additional_wait_after_packet_generation": false
+  },
   "automated_operations": [
     "Compute every within-revision selection rank.",
     "Select the first 8 Revision 4 rows and first 22 Revision 5 rows by rank.",
