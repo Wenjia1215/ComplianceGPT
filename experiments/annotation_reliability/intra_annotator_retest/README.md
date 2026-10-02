@@ -87,5 +87,84 @@ content-sensitive commitments, and the two frozen source-file hashes.
 4. Compare the second labels with the original labels.
 5. Report control exact agreement and Cohen's kappa; clause-set and ODP-set
    exact agreement and Jaccard similarity; and a row-level disagreement audit.
-6. Commit the reveal material, scoring code, frozen outputs, and dissertation
-   update in a separate post-label commit.
+6. Commit the reveal material, scoring code, and frozen outputs in a separate
+   post-label commit. Incorporate the results into the manuscript separately.
+
+## Post-label reveal
+
+All 30 second-label rows were completed before the original labels, mapping,
+or agreement results were revealed. The completed workbook was frozen at
+`2026-10-02T12:08:35-04:00` with SHA-256
+`7815a13223f356a69ae67ce4f989d2eb01c79c598510cd1c3bf3dd9598f61ca2`.
+The `Relabeling completed` cell in the workbook was left blank; the external
+freeze timestamp records completion without changing the frozen file.
+
+This was a blinded repeat by the original annotator. The original labels and
+system outputs were not available during re-labeling, but this was not an
+independent-assessor exercise. The result therefore measures test-retest label
+stability, not external correctness.
+
+The [`reveal/`](reveal/) directory contains:
+
+- the frozen completed workbook and a machine-readable CSV export;
+- the originally blinded CSV, revealed seed, blind-ID mapping, and sampling
+  run manifest;
+- the scoring summary, complete row-level comparison, Markdown report, and
+  formatted result workbook; and
+- `reveal_manifest.json`, which records the freeze, commitments, source
+  hashes, and SHA-256 of every revealed artifact.
+
+The warning inside `private_blind_id_mapping.json` is intentionally preserved
+byte-for-byte from its pre-reveal generation. The mapping is now public only
+because the completed workbook was frozen first.
+
+## Agreement results
+
+| Metric | Result |
+| --- | ---: |
+| Governing-control exact agreement | 29/30 (96.7%) |
+| Governing-control Cohen's kappa | 0.965 |
+| Clause-set exact agreement | 16/30 (53.3%) |
+| Clause-set mean Jaccard | 0.796 |
+| ODP-set exact agreement | 26/30 (86.7%) |
+| ODP-set mean Jaccard | 0.887 |
+| All three components exact | 16/30 (53.3%) |
+
+Fourteen rows had at least one disagreement. A row-level audit found that five
+of the clause-set disagreements involved parent-versus-child citation
+granularity. The complete differences are reported in
+[`reveal/AGREEMENT_REPORT.md`](reveal/AGREEMENT_REPORT.md) and
+[`reveal/agreement_results.csv`](reveal/agreement_results.csv).
+
+## Reproduce the reveal
+
+Run the sampler again with the now-public seed, then run the scorer against the
+frozen second labels:
+
+```bash
+retest_out="$(mktemp -d)"
+
+python experiments/annotation_reliability/intra_annotator_retest/prepare_blinded_sample.py \
+  --rev4-csv data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv \
+  --rev5-csv data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv \
+  --seed-file experiments/annotation_reliability/intra_annotator_retest/reveal/revealed_seed.txt \
+  --output-dir "$retest_out/sample" \
+  --expected-sample-commitment a6582b20ea6605395627dd0229981be6841ef76e55af022526ce773f71a686c0
+
+python experiments/annotation_reliability/intra_annotator_retest/score_retest.py \
+  --completed-csv experiments/annotation_reliability/intra_annotator_retest/reveal/completed_second_labels.csv \
+  --completed-xlsx experiments/annotation_reliability/intra_annotator_retest/reveal/ComplianceGPT_Intra_Annotator_Retest_30_Rows_Completed.xlsx \
+  --expected-completed-xlsx-sha256 7815a13223f356a69ae67ce4f989d2eb01c79c598510cd1c3bf3dd9598f61ca2 \
+  --mapping-json "$retest_out/sample/private_blind_id_mapping.json" \
+  --rev4-csv data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv \
+  --rev5-csv data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv \
+  --frozen-at 2026-10-02T12:08:35-04:00 \
+  --output-dir "$retest_out/scored"
+```
+
+Run the offline tests with:
+
+```bash
+python experiments/annotation_reliability/intra_annotator_retest/test_prepare_blinded_sample.py
+python experiments/annotation_reliability/intra_annotator_retest/test_score_retest.py
+```

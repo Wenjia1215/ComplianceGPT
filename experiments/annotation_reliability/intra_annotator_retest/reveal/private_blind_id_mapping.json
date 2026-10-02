@@ -1,0 +1,246 @@
+{
+  "mapping": [
+    {
+      "blind_id": "IR-001",
+      "display_rank_sha256": "0ea037eeeeb5abc51b710a5f3857aeb20f7627ec6c49bcdf5b7823db9cb8ffc6",
+      "nist_revision": "Revision 5",
+      "original_id": "36",
+      "question_sha256": "9d015447ecbc69e7bc966b8f4ec64662ee62ee55962dccddc226981fad51f2ea",
+      "selection_rank_sha256": "216a90528f3b8dcc28d1c7ae6c8b2eec66971b07a0eef8383df1a1354bb866e8"
+    },
+    {
+      "blind_id": "IR-002",
+      "display_rank_sha256": "24c4b0ce496f4031718d1493d7e2d6157042f79d0202f0371b299fed36d629e4",
+      "nist_revision": "Revision 5",
+      "original_id": "64",
+      "question_sha256": "77b5dcddc880fe1af7178987eec513aa3331957e47fd2f234bf336faf7b5cb36",
+      "selection_rank_sha256": "13fa8348ec832f2b41e8c0404eb447fb79720cde6c3adb808d6da54e64961293"
+    },
+    {
+      "blind_id": "IR-003",
+      "display_rank_sha256": "341249dd56eb03a6b8fd2d972b13e22b95f0b926e0d71aec997fa1614cb6c316",
+      "nist_revision": "Revision 4",
+      "original_id": "8",
+      "question_sha256": "8f221ab389a0ed96a3632239e9d3f1ac0096fa04ae8eadaf62fd3a6fa369c88f",
+      "selection_rank_sha256": "1b915fb399f7359830f835942d0ef9f1c20f6eac950e6da536ed4a5da579fdac"
+    },
+    {
+      "blind_id": "IR-004",
+      "display_rank_sha256": "353c5c2b7882094191887e4a19983ae39806a70b68683e79b1d2a32689d7ccb9",
+      "nist_revision": "Revision 5",
+      "original_id": "12",
+      "question_sha256": "df88b01eef9feee8c2710e6055eb89728eb6e203b6bd773914572cbc3e006f1a",
+      "selection_rank_sha256": "1b1e790a402ee7ab918156ce13ee1625b65bd67fed15edf3423e8b9c5c9adc27"
+    },
+    {
+      "blind_id": "IR-005",
+      "display_rank_sha256": "49b7483024b26a3fd6988a709bc2e6bc3bfbde7fb9d9035a30309979e77fbf3b",
+      "nist_revision": "Revision 5",
+      "original_id": "89",
+      "question_sha256": "661eaae54c416fa5e778d729c6733b3114d2a6c7fe2d551fe85298d6c0948671",
+      "selection_rank_sha256": "197fadb1f5fc4b9428d0b805885674c5f3a7f2ca884c54f6313ddb9815200e08"
+    },
+    {
+      "blind_id": "IR-006",
+      "display_rank_sha256": "4e772e8c96bfadcef898bc1ea6f1c300726b01a473f71911972b9e71b6370555",
+      "nist_revision": "Revision 5",
+      "original_id": "80",
+      "question_sha256": "01909b5019e053f7b1d1c099dfba1750d4157c30acd3a0a9ab8ab2bea01674bc",
+      "selection_rank_sha256": "21ddcc2844b28becaa871323600f5cc06bca6dc27746dde41a1d3e1f31ed4333"
+    },
+    {
+      "blind_id": "IR-007",
+      "display_rank_sha256": "5fa92e72555f604ac7da5627169ecf33ca6fdc506e36d001ed5cb8a14d063ca6",
+      "nist_revision": "Revision 5",
+      "original_id": "67",
+      "question_sha256": "52969dde1c64359532fcd00f9f5c41e3c35588f480e04357202a3f0f33c2f5ed",
+      "selection_rank_sha256": "2071ada16a78e27540ea6d18a1c022c4223bbc8925465f7cef416188ec8f50e9"
+    },
+    {
+      "blind_id": "IR-008",
+      "display_rank_sha256": "653a2677e81e91f3ec5af469d060e8b48ff9ca11872e5425a1c5f611d0503112",
+      "nist_revision": "Revision 5",
+      "original_id": "96",
+      "question_sha256": "244c968d8debfec0ae7ca5a8e9154db40b7b00d984abc29540709ffc274edcbd",
+      "selection_rank_sha256": "225418048e7aa86d7406971e5640a80e6a0da63b74988cc3eee25502a550136f"
+    },
+    {
+      "blind_id": "IR-009",
+      "display_rank_sha256": "67238f3875d8b9c77d47fbd7dbde9e88feb6199c79b757a42f24b56a28300ccc",
+      "nist_revision": "Revision 5",
+      "original_id": "28",
+      "question_sha256": "dd2128068b039396972c2295f6f589f477a289b722092b830f90eda4f019ce3c",
+      "selection_rank_sha256": "03fd230a90d1024c5058372e3aaa8c59780eb3fda676ce3ab4a048d93cfed076"
+    },
+    {
+      "blind_id": "IR-010",
+      "display_rank_sha256": "68f8f8c678ab7a3c314d5020fd44db23b92bc0468e7626c5f05b442f85f8fc16",
+      "nist_revision": "Revision 4",
+      "original_id": "28",
+      "question_sha256": "27be85a168f887d8a9c5e1ad67079b5d5b98e5dc52a35e353137cb40dea89dd4",
+      "selection_rank_sha256": "3ca81bbf6198ad6fe9c18ee7c11257677f0b8a94bc81e693e21c22bf16eb90d4"
+    },
+    {
+      "blind_id": "IR-011",
+      "display_rank_sha256": "79695ff0ee78bf2d324ebb19650cdb3326a4e8d27a3a529f099c8cbbb566777f",
+      "nist_revision": "Revision 4",
+      "original_id": "19",
+      "question_sha256": "2dab44f091d6584879fb6842c0e372aa6395b3149ef31869cb48f3faf8e69e3b",
+      "selection_rank_sha256": "094ef5565e4b2ed1c32ace0aa6b99f62935586f3baf93e084f334be6c8459f2b"
+    },
+    {
+      "blind_id": "IR-012",
+      "display_rank_sha256": "879fbf6486eb179c26938799523f3eb78ffdb907bfcf09fcee7f054856dba790",
+      "nist_revision": "Revision 5",
+      "original_id": "1",
+      "question_sha256": "ab592273e1d956fb70d11f1883b229e1eac66110a844150575d75be43a0eee7c",
+      "selection_rank_sha256": "2d2fd0fdf5f71af77dba69e7bfc144479ed30c7065f9d2a636162356615c19c7"
+    },
+    {
+      "blind_id": "IR-013",
+      "display_rank_sha256": "8828db011fb99b4c7d97bc4121fe989ac233ad3f3a6332790f089c6d569fc9ea",
+      "nist_revision": "Revision 5",
+      "original_id": "47",
+      "question_sha256": "bb9c01ddfefc454401ca86ba83562a55484da71b140d8b3f81d685e583a43b56",
+      "selection_rank_sha256": "26b4464b47cc6386c580c0f73d845434449d9850abf833c107df45dbdf0cb1a5"
+    },
+    {
+      "blind_id": "IR-014",
+      "display_rank_sha256": "88c680ac45165709a81df3522c424ef70a52b74c4a84ef8ec6852e82b01d2c8f",
+      "nist_revision": "Revision 5",
+      "original_id": "39",
+      "question_sha256": "0283118d1188bff8fe12a6b80b17c13150b004d1c478fe022c8e6e2e317c7c47",
+      "selection_rank_sha256": "0ed112dd5c9e0d960ad0d9e54104c840821920549366842352c2074650d2da44"
+    },
+    {
+      "blind_id": "IR-015",
+      "display_rank_sha256": "967cabffc7a77128de981bbad067e8c530ca2fcc1dee5bbcd60b3761cca77a82",
+      "nist_revision": "Revision 5",
+      "original_id": "71",
+      "question_sha256": "14973ef44da69122dbffe65cdb9a2257914c3740f7658688ffcda7596b10b468",
+      "selection_rank_sha256": "11c5e03ad6f7cc73d36e1fa9e75dab41478dab201bc0208915a46788635d2c4c"
+    },
+    {
+      "blind_id": "IR-016",
+      "display_rank_sha256": "9b3397a358c557f825c8f36a2265ea36f664a05679ba6e0642fa2532da282f8d",
+      "nist_revision": "Revision 5",
+      "original_id": "63",
+      "question_sha256": "36c56f8c3dd6594cd2d2d50e5ed297882962b23c552720e919a8324080cec0d3",
+      "selection_rank_sha256": "2b9f51b93f464daf997407c05f2acc217acef503a277396ee7e22d6e5c5baacf"
+    },
+    {
+      "blind_id": "IR-017",
+      "display_rank_sha256": "9de26a113e80091bd218e925e0a1c319003056986c2bc2766bb6fa28420e8b36",
+      "nist_revision": "Revision 4",
+      "original_id": "3",
+      "question_sha256": "69f0ce9d6bf34e79804e4425f1567661a81bb22d8f2772048daf444d592ff156",
+      "selection_rank_sha256": "2aa4138ca0e77d1f563bf7985aaab904b3a6b352818ec39be690ed328f8082cb"
+    },
+    {
+      "blind_id": "IR-018",
+      "display_rank_sha256": "b6790cb1b09d999a8fa416427eca82645db1e7ec6700f778dd0b048e528fcaf2",
+      "nist_revision": "Revision 5",
+      "original_id": "41",
+      "question_sha256": "916a5965247281d93044e8f552772e1f4525b50284c1aecbbdc019f4d0e7d3df",
+      "selection_rank_sha256": "28b60757c2f7495cb52338ce71401f00e28ed04cefc2ba54633298c24b1c3075"
+    },
+    {
+      "blind_id": "IR-019",
+      "display_rank_sha256": "bc853fdf137a0fed45256871eeaccfda5291fd384cd2a0e6144fc409d02c72bc",
+      "nist_revision": "Revision 5",
+      "original_id": "76",
+      "question_sha256": "3972046ee32af7a17e82591cb0dd6e79c52214640fb1a9e12e6ad29e96e89299",
+      "selection_rank_sha256": "2a31cf3e8364f61c44e2a6b58c460f5bbe117d120f2a39e342ffa8d361da554b"
+    },
+    {
+      "blind_id": "IR-020",
+      "display_rank_sha256": "bd088a218b18f11c8da7f9f788f864e175d8f8c9bb788d9b948fb8a88ae8e4a6",
+      "nist_revision": "Revision 4",
+      "original_id": "13",
+      "question_sha256": "6eb9cb7d15968041cab0167fe4977b93e31b5491ebe3049a9a1a8bbdd038cefd",
+      "selection_rank_sha256": "2904f3ecb1a0aec41e01f604010ab2c1a175f6eaf52188ef0d2531aacc6f920f"
+    },
+    {
+      "blind_id": "IR-021",
+      "display_rank_sha256": "ccabf9adf37d04f812f30991c0728519266689d06269bab1c712ec6cbb132ad4",
+      "nist_revision": "Revision 5",
+      "original_id": "73",
+      "question_sha256": "db42753a90cd2075997bea1b4c6a64e69bab1d44dce8fbcc895772482a8f7fcc",
+      "selection_rank_sha256": "17093f099dc9eb445819a9f2d671ab5bd9277aceece7edbbee7ec45016635b8f"
+    },
+    {
+      "blind_id": "IR-022",
+      "display_rank_sha256": "d01a2a29635c11f057625a43b89c4e058b57b3fef82d5916dbeb904ca194d2d1",
+      "nist_revision": "Revision 5",
+      "original_id": "58",
+      "question_sha256": "0f069fe12334f296adb9ac19b47578edea5d0b30630e32e91634c43987e49c83",
+      "selection_rank_sha256": "29f11c948edb82abb81bc1136c5c9c32252e32c38cca18e5ce358032ce17f286"
+    },
+    {
+      "blind_id": "IR-023",
+      "display_rank_sha256": "d28ab6c84bfc7fc67a9c1c85de71464bec13ab2af5ae51731175b46d93f1c78a",
+      "nist_revision": "Revision 5",
+      "original_id": "42",
+      "question_sha256": "b89dc29fec9d054278fd6d2b2b3d431ecdf738c8212b12099d243bfc66ac0109",
+      "selection_rank_sha256": "2fe47a25c2fe4609554703e1c15f5c85904bf4600aab73134a0e58e5b1df3e61"
+    },
+    {
+      "blind_id": "IR-024",
+      "display_rank_sha256": "d8156d1b47e20fd9c6a07db9e822d3a2f820e1fa9e140c21b7d72ced5e4b5c80",
+      "nist_revision": "Revision 5",
+      "original_id": "56",
+      "question_sha256": "8eacae23e05c888be7e48b22c64c5f917298104d9f087ebcc6672e4bd7784539",
+      "selection_rank_sha256": "28a739041950703e607b66bec2e825cc80930ccb40053f83c626356f0a977c7c"
+    },
+    {
+      "blind_id": "IR-025",
+      "display_rank_sha256": "da6eedf38580a7217f214c5cb1e73cdff78697146155e3ecee79bbc1172f7ae5",
+      "nist_revision": "Revision 4",
+      "original_id": "20",
+      "question_sha256": "d00d9a496960f49b8323bd9769fb85d1c7732027c00598df7713aee39e10dede",
+      "selection_rank_sha256": "01d45d1de04ca993118eb3bbdd9ecdc49132de62cbb23b364a2d172685fe0b4a"
+    },
+    {
+      "blind_id": "IR-026",
+      "display_rank_sha256": "dbb68ba42758bccaac88e9efcb1eb105d2d4b91176bfbc15edd7bcf31b5fa856",
+      "nist_revision": "Revision 5",
+      "original_id": "61",
+      "question_sha256": "f2b43e17c9c187fe212f2469285ee3fc4777f25ce9da8368e686eae8513d933c",
+      "selection_rank_sha256": "2f0318f8f56bb85d5f5a4a541a691cfc7470b98b239940189d3a78e1ed6ee529"
+    },
+    {
+      "blind_id": "IR-027",
+      "display_rank_sha256": "dc1129e4b26612592f1b100f1f2f88a793c6c3e48ecab89ff914a0e605c7ec3a",
+      "nist_revision": "Revision 5",
+      "original_id": "2",
+      "question_sha256": "21b3e0e1e12699da183c41d6c973571650d4429ab1e90ab092c757126b19c538",
+      "selection_rank_sha256": "16ce565f6b18b4c5e46f9729105133f30e0f8f07a64ea2deb935f53b21cc8592"
+    },
+    {
+      "blind_id": "IR-028",
+      "display_rank_sha256": "df6a0733915c948ea023d84a0739d1da2037d20e4b0404d4a5d6a38bbf4c618f",
+      "nist_revision": "Revision 5",
+      "original_id": "84",
+      "question_sha256": "46c4e96b3789089d8f95bedb5c903e1458c3bb62517fbde52138305abf54784f",
+      "selection_rank_sha256": "0c2784282c9362fd28ec8d4fc0a86e05590a5add404e71159a121ceac38eb957"
+    },
+    {
+      "blind_id": "IR-029",
+      "display_rank_sha256": "fafed4001b0b2a7d0a5538a7166798409175a25a653c0e1965a417b481c9e66a",
+      "nist_revision": "Revision 4",
+      "original_id": "14",
+      "question_sha256": "658c961f6382d29039a80721d50fd909603b03ca99603d382c271a4bebd76d19",
+      "selection_rank_sha256": "0e16dfce7f84cafac44d85015fa0da909721182542b805dd017ed7de340533a5"
+    },
+    {
+      "blind_id": "IR-030",
+      "display_rank_sha256": "ff0c4797e2f048298704306c92d388e52064aa0f8c16e8c873c6c81a9d94cb34",
+      "nist_revision": "Revision 4",
+      "original_id": "18",
+      "question_sha256": "2494a3ca79889ad159746bd5fa6c10f6a1a10416439c385362587440b8850eba",
+      "selection_rank_sha256": "199624acd185e9973bd7362d81abea56d5485db9f054f8f4f30b69b2aa5f6719"
+    }
+  ],
+  "protocol_id": "compliancegpt-intra-annotator-retest-v1",
+  "warning": "WITHHOLD UNTIL THE COMPLETED SECOND-LABEL FILE IS HASHED"
+}

@@ -1,0 +1,65 @@
+{
+  "completed_xlsx_sha256": "7815a13223f356a69ae67ce4f989d2eb01c79c598510cd1c3bf3dd9598f61ca2",
+  "frozen_at": "2026-10-02T12:08:35-04:00",
+  "hashes": {
+    "completed_csv_sha256": "304ecd9dca2591544f922158ecfafc1b32dc21630c6216a113a34b541aeeb67e",
+    "mapping_sha256": "2f8c0915a6791e55b4bcff58c5db6f17c29da54dfc81bcd82780ef79bc04db0e",
+    "rev4_gold_sha256": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "rev5_gold_sha256": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "sample_commitment_sha256": "a6582b20ea6605395627dd0229981be6841ef76e55af022526ce773f71a686c0"
+  },
+  "protocol_id": "compliancegpt-intra-annotator-retest-v1",
+  "scoring_conventions": {
+    "clause_and_odp": "Set comparison after trimming whitespace and lowercasing IDs",
+    "control": "Canonicalized control ID exact agreement",
+    "empty_set_jaccard": 1.0,
+    "jaccard_aggregation": "Unweighted mean across rows"
+  },
+  "summary": {
+    "overall": {
+      "all_components_exact_count": 16,
+      "all_components_exact_rate": 0.5333333333333333,
+      "clause_mean_jaccard": 0.795515873015873,
+      "clause_set_exact_count": 16,
+      "clause_set_exact_rate": 0.5333333333333333,
+      "control_cohens_kappa": 0.9653979238754326,
+      "control_exact_count": 29,
+      "control_exact_rate": 0.9666666666666667,
+      "n": 30,
+      "odp_mean_jaccard": 0.8866666666666667,
+      "odp_set_exact_count": 26,
+      "odp_set_exact_rate": 0.8666666666666667,
+      "rows_with_any_disagreement": 14
+    },
+    "revision_4": {
+      "all_components_exact_count": 4,
+      "all_components_exact_rate": 0.5,
+      "clause_mean_jaccard": 0.703125,
+      "clause_set_exact_count": 4,
+      "clause_set_exact_rate": 0.5,
+      "control_cohens_kappa": 1.0,
+      "control_exact_count": 8,
+      "control_exact_rate": 1.0,
+      "n": 8,
+      "odp_mean_jaccard": 0.875,
+      "odp_set_exact_count": 7,
+      "odp_set_exact_rate": 0.875,
+      "rows_with_any_disagreement": 4
+    },
+    "revision_5": {
+      "all_components_exact_count": 12,
+      "all_components_exact_rate": 0.5454545454545454,
+      "clause_mean_jaccard": 0.8291125541125541,
+      "clause_set_exact_count": 12,
+      "clause_set_exact_rate": 0.5454545454545454,
+      "control_cohens_kappa": 0.9524838012958964,
+      "control_exact_count": 21,
+      "control_exact_rate": 0.9545454545454546,
+      "n": 22,
+      "odp_mean_jaccard": 0.8909090909090909,
+      "odp_set_exact_count": 19,
+      "odp_set_exact_rate": 0.8636363636363636,
+      "rows_with_any_disagreement": 10
+    }
+  }
+}

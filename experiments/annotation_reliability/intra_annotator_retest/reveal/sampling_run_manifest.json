@@ -1,0 +1,22 @@
+{
+  "algorithm_version": "sha256-stratified-ranking-v1",
+  "blinded_csv_sha256": "7737dcf7a37a281136ca58cc964348dc6df12a128f343ec9e17a38c9cb824209",
+  "population": {
+    "revision_4": 36,
+    "revision_5": 100,
+    "total": 136
+  },
+  "private_mapping_sha256": "2f8c0915a6791e55b4bcff58c5db6f17c29da54dfc81bcd82780ef79bc04db0e",
+  "protocol_id": "compliancegpt-intra-annotator-retest-v1",
+  "sample": {
+    "revision_4": 8,
+    "revision_5": 22,
+    "total": 30
+  },
+  "sample_commitment_sha256": "a6582b20ea6605395627dd0229981be6841ef76e55af022526ce773f71a686c0",
+  "seed_sha256": "d71c68d039030ca94c6b1a0209105b7c4d4976978b128e98d6210c812c1390ae",
+  "source_sha256": {
+    "Revision 4": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "Revision 5": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+  }
+}

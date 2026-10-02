@@ -1,0 +1,103 @@
+Blind ID,NIST revision,Question,Governing control,Expected clause IDs,Required ODP IDs,Notes,Status
+IR-001,Revision 5,"When should incident response training be provided, and how often should its content be reviewed and updated?",IR-2,"ir-2_smt.a.1
+ir-2_smt.a.2
+ir-2_smt.a.3
+ir-2_smt.b","ir-02_odp.01
+ir-02_odp.02
+ir-02_odp.03
+ir-02_odp.04","Clauses a.1-a.3 cover initial, change-triggered, and recurring training; b covers content updates. The four placeholders specify timing and update-triggering events.",Complete
+IR-002,Revision 5,"What considerations must be incorporated into the enterprise architecture to address security, privacy, and risk?",PM-7,pm-7_smt,NONE,"The statement directly requires enterprise architecture to consider security, privacy, and resulting risks to organizations, individuals, and the Nation. No placeholder is present.",Complete
+IR-003,Revision 4,What elements must be included in the continuous monitoring strategy and program?,CA-7,"ca-7_smt.a
+ca-7_smt.b
+ca-7_smt.c
+ca-7_smt.d
+ca-7_smt.e
+ca-7_smt.f
+ca-7_smt.g","ca-7_prm_1
+ca-7_prm_2
+ca-7_prm_3
+ca-7_prm_4
+ca-7_prm_5","Clauses a-g enumerate the monitoring program's required elements. Their five placeholders cover metrics, monitoring and assessment frequencies, reporting recipients, and reporting frequency.",Complete
+IR-004,Revision 5,What information must each audit record contain to support after-the-fact investigation of security incidents?,AU-3,"au-3_smt.a
+au-3_smt.b
+au-3_smt.c
+au-3_smt.d
+au-3_smt.e
+au-3_smt.f",NONE,"Clauses a-f specify the event type, time, location, source, outcome, and associated identities required in audit records. No placeholder is present.",Complete
+IR-005,Revision 5,"How should cryptographic mechanisms be selected and implemented to comply with applicable laws, policies, and standards?",SC-13,"sc-13_smt.a
+sc-13_smt.b
+sc-13_gdn","sc-13_odp.01
+sc-13_odp.02",Clauses a-b cover cryptographic uses and types; guidance addresses applicable standards and legal requirements. Both statement placeholders are required.,Complete
+IR-006,Revision 5,"What is the purpose of performing a criticality analysis, and when should it be conducted?",RA-9,"ra-9_smt
+ra-9_gdn","ra-09_odp.01
+ra-09_odp.02",The statement identifies critical components and functions and contains scope and timing placeholders. Guidance explains protection priorities and analysis during design or architecture changes.,Complete
+IR-007,Revision 5,When and how must individuals be screened before authorizing or maintaining access to organizational systems?,PS-3,"ps-3_smt.a
+ps-3_smt.b
+ps-3_gdn",ps-3_prm_1,Clauses a-b require screening before access and subsequent rescreening. Guidance explains screening methods and risk-based criteria; b supplies the rescreening placeholder.,Complete
+IR-008,Revision 5,"What elements must be included in a supply-chain risk management plan, and how often should it be reviewed and protected from unauthorized disclosure?",SR-2,"sr-2_smt.a
+sr-2_smt.b
+sr-2_smt.c
+sr-2_gdn","sr-02_odp.01
+sr-02_odp.02","Clauses a-c cover plan scope, review, and protection; guidance supplies detailed plan elements. The two placeholders define covered systems or services and review frequency.",Complete
+IR-009,Revision 5,"How frequently must contingency plans be tested, and what should be done after reviewing the test results?",CP-4,"cp-4_smt.a
+cp-4_smt.b
+cp-4_smt.c","cp-04_odp.01
+cp-4_prm_2",Clause a specifies testing frequency and test types; b-c require review of results and corrective action when needed. Both placeholders in a are retained.,Complete
+IR-010,Revision 4,What does PS-3 require before authorizing access to the information system?,PS-3,ps-3_smt.a,NONE,Clause a directly requires screening before access authorization. Rescreening in b addresses a later stage and is outside this question; the selected clause has no placeholder.,Complete
+IR-011,Revision 4,What does MP-4 require for protecting information system media?,MP-4,"mp-4_smt.a
+mp-4_smt.b","mp-4_prm_1
+mp-4_prm_2",Clauses a-b require secure physical storage and protection until destruction or sanitization. The two placeholders identify media and controlled storage areas.,Complete
+IR-012,Revision 5,When must account managers and the designated personnel be notified about user account changes?,AC-2,"ac-2_smt.h
+ac-2_smt.h.1
+ac-2_smt.h.2
+ac-2_smt.h.3","ac-02_odp.05
+ac-02_odp.06
+ac-02_odp.07
+ac-02_odp.08",Clause h identifies notification recipients; h.1-h.3 specify the three triggering conditions and deadlines. Including the parent preserves its recipient placeholder alongside the three timing placeholders.,Complete
+IR-013,Revision 5,"What requirements apply to marking system media with handling or distribution limitations, and when may media be exempt from marking?",MP-3,"mp-3_smt.a
+mp-3_smt.b","mp-03_odp.01
+mp-03_odp.02","Clause a covers distribution limits, handling caveats, and security markings. Clause b defines marking exemptions through media and controlled-area placeholders.",Complete
+IR-014,Revision 5,What information should organizations maintain and analyze when documenting and reviewing security incidents?,IR-5,ir-5_gdn,NONE,"Guidance directly identifies incident records, status, forensic information, and analysis of details, trends, and handling. It contains no placeholder.",Complete
+IR-015,Revision 5,"How should organizations determine, document, and restrict the purposes and lawful basis for processing personally identifiable information?",PT-3,"pt-3_smt.a
+pt-3_smt.c
+pt-2_smt.a
+pt-2_smt.b","pt-03_odp.01
+pt-03_odp.02
+pt-02_odp.01
+pt-02_odp.02
+pt-02_odp.03","PT-3 governs documented purposes and purpose-compatible processing. PT-2(a,b) cover the separate lawful-authority requirement. No single control fully covers both parts; all five placeholders are retained.",Complete
+IR-016,Revision 5,How are measures of performance used to evaluate the effectiveness of security and privacy programs?,PM-6,pm-6_gdn,NONE,Guidance explains outcome-based performance metrics for program effectiveness or efficiency and their alignment with risk tolerance. It contains no placeholder.,Complete
+IR-017,Revision 4,What security awareness training must the organization provide and when?,AT-2,at-2_smt,at-2_prm_1,"The full statement preserves the basic-awareness training requirement and its audience, together with initial, change-triggered, and recurring timing. The recurrence placeholder is required.",Complete
+IR-018,Revision 5,What are the key considerations for a controlled system maintenance program?,MA-2,ma-2_gdn,NONE,"Interpreted 'key considerations' as guidance on maintenance scope, record contents, and replacement-component risks. The selected guidance contains no placeholder.",Complete
+IR-019,Revision 5,"What steps are required to categorize a system and its information, and who must approve the decision?",RA-2,"ra-2_smt.a
+ra-2_smt.b
+ra-2_smt.c",NONE,"Clauses a-c cover categorization, documentation with rationale, and approval by the authorizing official or designated representative. No placeholder is present.",Complete
+IR-020,Revision 4,What identification and authentication requirement does IA-2 specify for organizational users?,IA-2,ia-2_smt,NONE,The statement directly requires unique identification and authentication of organizational users or processes acting on their behalf. No placeholder is present.,Complete
+IR-021,Revision 5,"How should organizations obtain and manage individual consent for processing PII, and what factors should be considered when determining the appropriate consent mechanism?",PT-4,"pt-4_smt
+pt-4_gdn",pt-04_odp,"The statement requires a consent mechanism before collection. Guidance covers informed choice, mechanism selection, revocation, and usability; the statement's mechanism placeholder is required.",Complete
+IR-022,Revision 5,"What is the purpose of a Concept of Operations, and how often should it be reviewed and updated?",PL-7,"pl-7_smt.a
+pl-7_smt.b",pl-07_odp,Clause a states the CONOPS purpose: intended system operation from security and privacy perspectives. Clause b supplies the review and update frequency placeholder.,Complete
+IR-023,Revision 5,"How should organizations approve, control, and periodically review the use of system maintenance tools?",MA-3,"ma-3_smt.a
+ma-3_smt.b",ma-03_odp,"Clause a requires approval, control, and monitoring of maintenance tools; b requires review of approved tools. The single placeholder specifies review frequency.",Complete
+IR-024,Revision 5,What is the guidance of control PL-2?,PL-2,pl-2_gdn,NONE,"The question explicitly requests PL-2 guidance, so only pl-2_gdn is selected. Its discussion of plan scope, detail, integration, and updates contains no placeholder.",Complete
+IR-025,Revision 4,What does MP-6 require for sanitizing media prior to disposal or release?,MP-6,"mp-6_smt.a
+mp-6_smt.b","mp-6_prm_1
+mp-6_prm_2","Clause a specifies media, sanitization methods, and disposal or release conditions; b requires strength appropriate to information sensitivity. Both placeholders in a are retained.",Complete
+IR-026,Revision 5,"Who serves as the senior agency information security officer, and what is their role within federal agencies?",PM-2,"pm-2_smt
+pm-2_gdn",NONE,Guidance identifies the official and alternative titles; the statement defines responsibility for the organization-wide information security program. Neither contains a placeholder.,Complete
+IR-027,Revision 5,What must an organization enforce regarding logical access to its information and systems?,AC-3,ac-3_smt,NONE,The statement directly requires enforcement of approved logical-access authorizations under applicable access-control policies. No placeholder is present.,Complete
+IR-028,Revision 5,"What should be required from system developers regarding configuration management, approved changes, and flaw tracking?",SA-10,"sa-10_smt.a
+sa-10_smt.b
+sa-10_smt.c
+sa-10_smt.d
+sa-10_smt.e","sa-10_odp.01
+sa-10_odp.02
+sa-10_odp.03","Clauses a-e cover developer configuration management, change integrity, approved changes, impact documentation, and flaw tracking. The three placeholders define stages, controlled items, and report recipients.",Complete
+IR-029,Revision 4,"What processes are in place to securely create, distribute, protect, and revoke authenticators such as passwords, tokens, or certificates?",IA-5,"ia-5_smt.a
+ia-5_smt.b
+ia-5_smt.c
+ia-5_smt.d
+ia-5_smt.e
+ia-5_smt.h
+ia-5_smt.i",NONE,"Selected clauses cover identity checks, initial content and strength, distribution and revocation, default changes, and safeguards. Refresh timing is not asked; these clauses contain no placeholder.",Complete
+IR-030,Revision 4,Who must approve removing the system or components off-site for maintenance?,MA-2,ma-2_smt.c,ma-2_prm_1,Clause c directly identifies who must explicitly approve off-site removal for maintenance or repair. Its placeholder specifies the approving personnel or roles.,Complete

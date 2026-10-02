@@ -1,0 +1,34 @@
+{
+  "protocol_id": "compliancegpt-intra-annotator-retest-v1",
+  "reveal_generated_at": "2026-10-02T13:21:15-04:00",
+  "freeze_record": {
+    "completed_workbook_frozen_at": "2026-10-02T12:08:35-04:00",
+    "completed_workbook_sha256": "7815a13223f356a69ae67ce4f989d2eb01c79c598510cd1c3bf3dd9598f61ca2",
+    "protocol_completion_cell": "blank",
+    "protocol_completion_note": "Completion was recorded by the external frozen-at timestamp without modifying the frozen workbook."
+  },
+  "revealed_seed": {
+    "value": "ComplianceGPT intra-annotator test-retest v1 2026-10-02",
+    "utf8_value_sha256": "d71c68d039030ca94c6b1a0209105b7c4d4976978b128e98d6210c812c1390ae"
+  },
+  "commitments": {
+    "canonical_blinded_sample_payload_sha256": "a6582b20ea6605395627dd0229981be6841ef76e55af022526ce773f71a686c0",
+    "blank_xlsx_packet_sha256": "72970b8f2dfc9b253f45f36783d9c7e1d8c0bb2e7ab523ed8434752ed2c9e95f"
+  },
+  "source_sha256": {
+    "revision_4_gold_csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "revision_5_gold_csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+  },
+  "file_sha256": {
+    "AGREEMENT_REPORT.md": "5d8e55e6f80ca2608ed2b56b2cd10c1c552c1430523a9d1984a41a0ad6695e39",
+    "ComplianceGPT_Intra_Annotator_Retest_30_Rows_Completed.xlsx": "7815a13223f356a69ae67ce4f989d2eb01c79c598510cd1c3bf3dd9598f61ca2",
+    "ComplianceGPT_Intra_Annotator_Retest_Agreement_Results.xlsx": "2b7ea04db77c252cc3b8afd1609e49a92af52e38a21afbd39ed4f80d46ad29d5",
+    "agreement_results.csv": "77b8e43ed8d8acaace5e6abfbe44b91fec77a151ac60e1ab93f410c3b6855e5a",
+    "agreement_summary.json": "543edfe65eaea21a9ae0931577077e8378c63f2362b2166b764624c994e97c3a",
+    "blinded_relabeling_packet.csv": "7737dcf7a37a281136ca58cc964348dc6df12a128f343ec9e17a38c9cb824209",
+    "completed_second_labels.csv": "304ecd9dca2591544f922158ecfafc1b32dc21630c6216a113a34b541aeeb67e",
+    "private_blind_id_mapping.json": "2f8c0915a6791e55b4bcff58c5db6f17c29da54dfc81bcd82780ef79bc04db0e",
+    "revealed_seed.txt": "ddd291a25516e964121e02d441061ddff339ff11f76b004ccbf5ca4748e30345",
+    "sampling_run_manifest.json": "b6eb87e549526b1faab57b4c5e84717168f57b6639af83f024ae29f1b9b735c2"
+  }
+}
