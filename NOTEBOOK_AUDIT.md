@@ -1,57 +1,68 @@
 # Notebook Audit
 
-Audit date: 2026-09-29
+Audit updated: 2026-10-03
+Scope: every tracked `*.ipynb` file in the repository (15 notebooks), with a
+manual source review of the four primary surfaces named in the dissertation
+feedback.
 
-This audit covers every `*.ipynb` file in the repository (13 notebooks). The
-secondary micro-ablation is implemented by
-`experiments/micro_ablations/run_micro_ablations.py`; there is no separate
-MicroAblation notebook in this release.
+## Advisor-named primary surfaces
+
+| Requested surface | Repository status | Review result |
+|---|---|---|
+| `AblationStudy_S1_7.ipynb` | Present | Source cells reviewed; no external code block, copied-code marker, license header, or unattributed source URL identified. |
+| `Single_Run_Demo.ipynb` | Present | Source cells reviewed; the notebook calls repository modules and contains no third-party code block requiring attribution. |
+| `MicroAblation_S4b_S7a.ipynb` | No separate notebook in this release | The corresponding implementation is `experiments/micro_ablations/run_micro_ablations.py`; that runner was reviewed and imports the canonical repository retrieval implementation. |
+| `QUR_Generator_UT.ipynb` | Present | Source cells reviewed; no external code block, copied-code marker, license header, or unattributed source URL identified. |
+
+The absence of a separate micro-ablation notebook is recorded explicitly so
+that the repository does not imply that a missing file was audited.
 
 ## Checks performed
 
-- parsed every notebook as valid notebook JSON and recorded its format,
-  metadata keys, and cell count;
-- searched notebook source and stored outputs for common credential patterns,
-  including API keys, bearer tokens, Hugging Face tokens, passwords, and
-  secrets;
-- reviewed source-cell external URLs and Colab/GitHub authentication paths;
-- checked for transient serialized Jupyter widget state;
+- parsed all 15 notebooks as valid notebook JSON and recorded notebook format,
+  cell counts, metadata keys, stored outputs, and error outputs;
+- manually reviewed the source cells of the advisor-named entry points and the
+  scripted micro-ablation replacement;
+- searched all notebook source and stored outputs for common credential
+  patterns, including GitHub, Hugging Face, OpenAI, Google, AWS, bearer-token,
+  and private-key forms;
+- reviewed source-cell URLs, Colab/Drive dependencies, and GitHub
+  authentication paths;
+- removed transient Colab/Jupyter UI serialization while preserving scientific
+  content;
 - retained stored outputs because several notebooks are historical execution
   evidence for the reported experiments.
 
 ## Findings and actions
 
-- No embedded credential value was detected. Two stored Hugging Face messages
-  explicitly report that `HF_TOKEN` was absent; they do not contain a token.
-- The matched-window rerun notebook instructs users to store a read-only GitHub
-  token in Colab Secrets and never paste it into code. No token is stored in
-  the notebook.
-- The Batch 5A control-gate notebook clones the public repository at its
-  registered runner commit and requires no GitHub or Hugging Face credential.
-- The Batch 5B BF16 notebook mounts Google Drive in its first code cell, clones
-  the public repository at its registered runner commit, and requires no
-  GitHub or Hugging Face credential. It fetches the recorded RQ2 v3 source
-  commit so the runner can verify and reconstruct that exact source tree. The
-  checked-in notebook now preserves the successful A100 execution: 36/36 rows,
-  BF16-only parameter validation, the generated summary, and archive hash. Its
-  cell sources are identical to the previously audited clean notebook, it has
-  no error output or traceback, and a repeated credential-pattern scan found
-  no secret value.
+- All 15 notebooks parse successfully; none contains a stored error output.
+- No embedded credential value was detected. Stored messages that say a token
+  is absent are status text, not credentials.
+- No source block requiring third-party attribution was identified. This is a
+  repository-content review, not independent proof of the authorship history of
+  every line.
+- The newer Batch 5C Revision 4 and Batch 5D Revision 5 frontier-baseline
+  notebooks are now included in the audit. Their API-key instructions use
+  Colab Secrets, and no key is stored in either notebook.
+- Removed top-level `metadata.colab` and per-cell `metadata.colab`, duplicate
+  `metadata.id`, and `metadata.outputId` fields from every notebook. Standard
+  cell IDs, source cells, stored outputs, and execution counts were preserved.
+  A semantic before/after hash check confirmed that sources, outputs, and
+  execution counts were unchanged for all 15 notebooks.
 - Colab-specific `/content/drive` paths and `drive.mount` calls remain because
-  they are part of the recorded Colab workflows. They are environmental
-  dependencies, not portable local paths.
-- Transient top-level `widgets` state was removed from 10 notebooks. This
-  removes UI serialization without changing cells, source code, execution
-  counts, or stored outputs.
-- The remaining notebook source-cell URLs are limited to the GitHub bootstrap
-  paths in the matched-window rerun and Batch 5A notebooks. No unattributed
-  block identified by this audit required removal. This repository audit does
-  not, by itself, prove the authorship history of every code fragment.
+  they are executable workflow dependencies rather than serialized UI
+  metadata.
+- The root `.gitignore` now excludes local environments, secret files,
+  notebook checkpoints, Python/test caches, coverage/build products, editor
+  state, and transient logs. It intentionally does not ignore experiment
+  archives, CSV/JSON results, notebooks, or other frozen research artifacts.
 
 ## Audited notebooks
 
-- `experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb`
 - `experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb`
+- `experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb`
+- `experiments/answerer_comparison/rq2_frontier_baseline/Batch_5C_Rev4_Frontier_API_Baseline.ipynb`
+- `experiments/answerer_comparison/rq2_frontier_baseline_rev5/Batch_5D_Rev5_Frontier_API_Baseline.ipynb`
 - `experiments/answerer_comparison/rq2_matched/RQ2_Matched_Window_Rerun.ipynb`
 - `experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb`
 - `experiments/retriever_ablation/performance_benchmark/Performance_Benchmark.ipynb`
