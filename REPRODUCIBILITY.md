@@ -421,8 +421,26 @@ frozen runtime version could return `OK` in that unevaluated branch. The
 reported matched runs used `ASK`; therefore this correction does not change
 the dissertation results. The regression is covered by
 `tests/test_odp_policy.py` and identified in source as
-`2026-09-24-preserve-status-v1`. It has not been evaluated in an end-to-end
-`PRESERVE` run.
+policy artifact v1.1, `2026-10-03-preserve-status-v1.1`.
+
+The pre-committed `rq2_preserve_replay_v1` study executes the corrected path on
+all eight gold rows labeled `PRESERVE` (six Revision 5 and two Revision 4). It
+reuses the exact matched-window v3 prepared contexts and selector outputs, then
+runs evidence filling, `PRESERVE` policy, contract construction, the Runtime
+Verifier, and the offline verifier. It performs no live retrieval and no new
+model inference. All 8/8 rows retain visible literal placeholders, return
+`PARAMS_REQUIRED`, expose a nonempty required-parameter list, have an empty
+`ask_list`, preserve the frozen selector and evidence-window identities, and
+pass runtime contract validation. The offline strict scorer passes 5/8 rows:
+5/6 on Revision 5 and 0/2 on Revision 4. The three strict failures retain the
+registered selector outputs and reflect missing gold clauses; two also omit
+gold ODP identifiers outside the retained spans. They are evidence-selection
+or coverage failures, not regressions in the corrected state transition.
+
+The protocol, row-level audit, contracts, hashes, and frozen result are under
+`experiments/answerer_comparison/rq2_preserve_replay/`. The result archive is
+`results_v1/rq2_preserve_replay_v1.zip`, SHA-256
+`580a7917678ea00b8529774108ecb293221b77b058ea7a215aea0f0d2d7b6339`.
 
 The frozen `intfloat/e5-small-v2` path used `passage:` for indexed corpus text
 but encoded transformed queries without the model-recommended `query:` prefix.

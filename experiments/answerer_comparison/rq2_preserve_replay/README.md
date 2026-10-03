@@ -29,3 +29,31 @@ PYTHONPATH=src python experiments/answerer_comparison/rq2_preserve_replay/run_pr
 ```
 
 The runner refuses to mix with or overwrite a nonempty result directory.
+
+## Frozen result
+
+Result identity: `rq2_preserve_replay_v1`
+
+| Measure | Result |
+|---|---:|
+| Registered rows completed | 8/8 |
+| Visible-marker rows returning `PARAMS_REQUIRED` | 8/8 |
+| Literal placeholder preservation | 8/8 |
+| Empty `ask_list` under `PRESERVE` | 8/8 |
+| Runtime-valid contracts | 8/8 |
+| Frozen selectors unchanged | 8/8 |
+| Final IDs inside frozen windows | 8/8 |
+| Offline strict-verifier pass | 5/8 |
+
+The registered runtime acceptance result is **PASS**. Offline strict scoring
+passes 5/6 Revision 5 rows and 0/2 Revision 4 rows. The three failures retain
+the frozen selector choices and contain missing gold-clause signals; two also
+contain missing gold-ODP signals. These are coverage limitations, not failures
+of the corrected `PRESERVE` status transition.
+
+Frozen result archive:
+
+```text
+results_v1/rq2_preserve_replay_v1.zip
+SHA-256 580a7917678ea00b8529774108ecb293221b77b058ea7a215aea0f0d2d7b6339
+```

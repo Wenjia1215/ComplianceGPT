@@ -1,0 +1,28 @@
+{
+  "acceptance_checks": {
+    "all_ask_lists_are_empty": true,
+    "all_final_ids_are_in_frozen_windows": true,
+    "all_placeholders_are_literal": true,
+    "all_required_lists_are_nonempty": true,
+    "all_rows_exercise_visible_preserve_markers": true,
+    "all_runtime_contracts_are_valid": true,
+    "all_selectors_are_unchanged": true,
+    "all_visible_marker_rows_are_params_required": true,
+    "no_ok_contract_has_a_visible_marker": true,
+    "row_count_is_8": true
+  },
+  "accepted": true,
+  "counts": {
+    "ask_list_empty": 8,
+    "final_ids_within_frozen_window": 8,
+    "literal_placeholders_preserved": 8,
+    "no_ok_with_visible_marker": 8,
+    "nonempty_required_list": 8,
+    "offline_verifier_pass": 5,
+    "params_required_for_visible_marker": 8,
+    "runtime_contract_valid": 8,
+    "selector_unchanged": 8,
+    "visible_unresolved_marker": 8
+  },
+  "row_count": 8
+}

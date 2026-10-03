@@ -188,8 +188,13 @@ experiment.
 Reported metrics remain tied to the recorded evaluation commits and frozen
 outputs. Current source includes a post-evaluation regression fix that makes
 `PRESERVE` return `PARAMS_REQUIRED` when placeholders remain; the reported
-runs used `ASK`, so they were not regenerated. The frozen E5 path also used
-`passage:` for corpus text but omitted the recommended `query:` prefix. See
+runs used `ASK`, so they were not regenerated. A separately pre-committed
+frozen-selector replay exercises the corrected `PRESERVE` path on all eight
+applicable gold rows; all eight retain literal placeholders, return
+`PARAMS_REQUIRED`, and pass runtime contract validation. See
+[`rq2_preserve_replay`](experiments/answerer_comparison/rq2_preserve_replay/).
+The frozen E5 path also used `passage:` for corpus text but omitted the
+recommended `query:` prefix. See
 [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) and
 [`CONSTANTS_PROVENANCE.md`](CONSTANTS_PROVENANCE.md) before comparing a new
 run with the dissertation tables.
