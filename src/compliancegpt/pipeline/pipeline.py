@@ -1164,6 +1164,7 @@ class ComplianceGPTPipeline:
         model_revision: Optional[str] = None,
         shared_model: Any = None,
         shared_tokenizer: Any = None,
+        generator_instance: Any = None,
         retriever_instance: Any = None,
         use_qur: bool = True,
         doc_filter_mode: str = "all",
@@ -1312,8 +1313,14 @@ class ComplianceGPTPipeline:
             or ""
         ).strip()
 
-        # 3) Generator (ID selector)
-        self.generator = ComplianceGenerator(self.model, self.tokenizer)
+        # 3) Generator (ID selector).  A frozen selector can be injected for a
+        # prepared-context replay; the ordinary runtime still constructs the
+        # model-backed selector exactly as before.
+        self.generator = (
+            generator_instance
+            if generator_instance is not None
+            else ComplianceGenerator(self.model, self.tokenizer)
+        )
 
         # 4) Optional QUR (query rewrite)
         self.qur = None

@@ -20,7 +20,11 @@ _PARAM_ASSIGNMENT_RE = re.compile(
 )
 
 ASSIGNMENT_REQUIRED_SENTINEL = "__ASSIGNMENT_REQUIRED__"
-ODP_POLICY_PATCH_ID = "2026-09-24-preserve-status-v1"
+# The dissertation review requested an explicit version bump after correcting
+# and re-freezing the PRESERVE path.  This is a narrow policy-artifact version,
+# not a claim that the whole repository is a packaged v1.1 release.
+ODP_POLICY_VERSION = "1.1"
+ODP_POLICY_PATCH_ID = "2026-10-03-preserve-status-v1.1"
 
 
 def extract_odp_ids(text: str) -> Tuple[List[str], bool]:
