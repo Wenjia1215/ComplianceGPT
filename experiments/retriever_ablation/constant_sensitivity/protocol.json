@@ -1,0 +1,108 @@
+{
+  "acceptance": [
+    "all_136_cache_captures_reproduce",
+    "all_952_evaluations_complete",
+    "all_source_and_input_hashes_match",
+    "all_gate_comparisons_use_identical_scores",
+    "all_model_snapshots_pinned",
+    "all_seven_conditions_reported"
+  ],
+  "baseline": {
+    "candidate_set_size": 50,
+    "max_rewrites": 3,
+    "rerank_alpha": 0.65,
+    "rerank_apply_min_margin_ratio": 0.15,
+    "rerank_skip_enabled": true,
+    "rerank_skip_min_base_margin_ratio": 0.1,
+    "rerank_skip_require_top1_agreement": false,
+    "rewrite_jaccard_min": 0.15,
+    "rewrite_weight": 0.25,
+    "rrf_k": 60
+  },
+  "bootstrap_samples": 10000,
+  "code_sha256": {
+    "experiments/retriever_ablation/constant_sensitivity/PROTOCOL.md": "313ecf2d99dcd74902d4788cc03bf0e65211266886fbfc86689f62bc1534fd7a",
+    "experiments/retriever_ablation/constant_sensitivity/primary_adapter.py": "1bf997c2b707f7ff1876acb6536f6fdb165aeb6d5a286f097864ff02cf0938cc",
+    "experiments/retriever_ablation/constant_sensitivity/requirements-colab.txt": "220e855d3db32580410f5b560fabc82777c4a0839dc572983860795a08ad0efc",
+    "experiments/retriever_ablation/constant_sensitivity/run_sensitivity.py": "1f2b2191fbe9d8d60a78f9d1be4181244dbd1c0e83ac792a271500fc21cf98c7",
+    "experiments/retriever_ablation/constant_sensitivity/statistics.py": "6ed43c364cc1b4e681fc559aae9367274b79d2092f809ebcb46e24c511684d55",
+    "tests/test_rq1_constant_sensitivity.py": "9321b9393a9f922e691901d90a3248a0805f50ad0c30f55a4fe851d263c04901"
+  },
+  "conditions": {
+    "adoption_minus20": {
+      "rerank_apply_min_margin_ratio": 0.12
+    },
+    "adoption_plus20": {
+      "rerank_apply_min_margin_ratio": 0.18
+    },
+    "alpha_minus20": {
+      "rerank_alpha": 0.52
+    },
+    "alpha_plus20": {
+      "rerank_alpha": 0.78
+    },
+    "baseline": {},
+    "skip_minus20": {
+      "rerank_skip_min_base_margin_ratio": 0.08
+    },
+    "skip_plus20": {
+      "rerank_skip_min_base_margin_ratio": 0.12
+    }
+  },
+  "expected_evaluations": 952,
+  "historical_comparison_is_acceptance_gate": false,
+  "historical_model_revisions_recorded": false,
+  "input_sha256": {
+    "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "data/qur_outputs/qur_rewrites_rev4.csv": "13c7657154dbc5ee307ed8c674c7e6e30558faa3fa3990ec851a8bcb0ce105e7",
+    "data/qur_outputs/qur_rewrites_rev5.csv": "ae20478163cbae94e5ccba5b27d401a707fe0c5bb4dd46e31061aa11191ddd82",
+    "experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev4_results.csv": "3ad554cc5d63925341453368d74481728e0f04ff7ef7adc5f9e706b77f2ec999",
+    "experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev5_results.csv": "bc0f8e51a3afcb90739ba746e0ead8b34aca5616b3a52d4cb6049dc23318219a",
+    "experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb": "99af2a23a17534fe0dfc304e4ce75cec2042ad39ab476c572022fc98f01b8e58"
+  },
+  "models": {
+    "dense": {
+      "model_id": "intfloat/e5-small-v2",
+      "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+    },
+    "reranker": {
+      "model_id": "BAAI/bge-reranker-base",
+      "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+    }
+  },
+  "new_llm_rewrites": false,
+  "primary_definition_sha256": {
+    "BM25Okapi": "9c9ca11f469b73bb12716b594bf3b2a92121d4e8b2ea8b40763004636d2167d0",
+    "ClauseDenseControlAdapter": "5e3cc82c917fc84c56d46dc0b77f7a82dff3925c3d6f1c6820c66f1a0415c43d",
+    "DenseIndex": "1b815695fc16d8f6ddf1223b15eaa453fed72492f7cfbee2b54771b192a51004",
+    "PUNCT_RE": "c643a3bad821ff143a0ee4ed09d51b8c6ee917ef94c49f7e1b06bbc5b889464e",
+    "TOKEN_RE": "4534c1f1b230477c7c2855549edf87c0f0497524b27445123f446630b4320688",
+    "WS_RE": "b2e3c04c793fac00d720c7f03c9a391bf340d096009f202f8fe77a366fd49306",
+    "_CONTROL_ID_DOT_RE": "8c5c507004706aa96a6a3cea87562c7763260346e5e23efd435f70b27b6ef1cc",
+    "_CONTROL_ID_PAREN_RE": "d83cba5a6629115f8dfefa5b584f84a65c3f14bfef7016f13a486bfed556fa33",
+    "build_bm25": "501424ec61dd7f8d076521807fecae052e2ef3a7eeea728221c554371ccee8e7",
+    "build_control_docs_from_clauses": "e470a5b25dff886e6aee36bb94fc06174bce15f48209230296bb1dcb8f5f2007",
+    "build_control_fallback_text_map": "f8f1361e0a89cf1285f7201836c6ae5c64d47e3f7e695f82dc5e26075c070a13",
+    "build_dense_retriever": "86b4fd30d6db890c993807c2495980501544f922649de55eedf7894539f73370",
+    "control_id_aliases": "8d1257eb45b286c31aa11d9e0c81ad3f4f5026a6bb6bf6722ca5b36966361fd8",
+    "find_rank": "2641d90595a2d5b02649bc3bf73043f035db712f0d3c89bcc9c68f5bab73ad26",
+    "get_qur_variants_filtered": "c5679678b40a2ed61837b66cb42bdc5dc3d3d8b7b40f53a64dc3302b48507e6d",
+    "jaccard_overlap": "998c600c3d3f411665afe0b3456fe75e3c3c79ba5aca28c556f59aebd32a1156",
+    "load_clause_records_jsonl": "bd60157ac965fa2aeff6163a865b75ca6d90e5c27517ada580fc400ac3875664",
+    "normalize_control_id": "bee85757b547baed671ae299926e707739a0428fe8b6c7eef58cd3c951fdcc02",
+    "normalize_scores_minmax": "97d5934ad9babc5701c2c8b5a6d60f98a2ed3e8b74315409c2bcd7874c68ce7d",
+    "normalize_text": "5a9f280a7bbab16799bdf8495736871eac8e829663dfc9775aabd1d9e2cd8822",
+    "s7_heavy_retrieve_details": "e3e6f9646d0cb20688daca552f1f8c22637a1d183067fdad72a5eec318285058",
+    "strict_clean": "f3848d9b86f85b8d71511e6a5f5ea9b8ddf6a50b3e9fa9e6b08482d6368bc231",
+    "tokenize": "6d217c40f0aaf971c14e501b276a8cc6f6ec411f154579080019d57105713ece"
+  },
+  "queries": 136,
+  "registered_at_utc": "2026-10-04T23:16:50.145057+00:00",
+  "registered_queries_sha256": "6c77aa1d67cc75611bb8ff8bf7e6604a23b8fa6c70ba1739efa2e0ef84cfe4ae",
+  "registration_parent_commit": "9f0589a2a6faf91eac9ff8f5d00ce614b64ee190",
+  "result_id": "rq1_constant_sensitivity_v1",
+  "seed": 42
+}

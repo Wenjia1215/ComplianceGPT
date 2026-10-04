@@ -1,0 +1,48 @@
+# Primary RQ1 constant sensitivity
+
+**Status: registered runner prepared; formal experiment not yet executed.**
+
+This study varies the primary notebook's blend weight, fixed rerank-adoption
+margin and rerank-skip margin separately by ±20%. Its seven conditions cover
+all 136 questions (952 evaluations), use the existing rewrite files, and preserve
+the original notebook logic. See [PROTOCOL.md](PROTOCOL.md) and `protocol.json`
+for the exact configuration, model/code/input pins, scoring rules and limits.
+
+## Run in Colab
+
+Open `Batch_RQ1_Constant_Sensitivity.ipynb`, select **Runtime → Change runtime
+type → A100 GPU**, then **Run all**. The notebook clones the public registered
+source, installs the pinned dependencies, runs offline checks and performs the
+complete capture and seven-condition replay. No generation API key is needed.
+It mounts Drive to retain completed captures and resume an interrupted session.
+The actual allocated GPU is recorded in the run manifest.
+
+Default output: `MyDrive/ComplianceGPT_runs/rq1_constant_sensitivity_v1`.
+Return the generated `rq1_constant_sensitivity_v1.zip` after completion. It
+contains all score caches, per-query ranks, gate diagnostics, paired statistics,
+historical-baseline comparisons, configuration and checksums. Do not replace
+the original S7 CSVs with these new results.
+
+The saved historical results have no complete raw score cache. A fresh model
+capture is needed, including cross-encoder scores for originally skipped queries.
+After capture, all seven decisions use identical per-query scores. The new
+baseline's differences from the saved historical ranks are reported explicitly;
+no model is tuned to force agreement.
+
+## Checks and reproduction
+
+```bash
+PYTHONPATH=src:. python -m unittest tests.test_rq1_constant_sensitivity -v
+PYTHONPATH=src:. python experiments/retriever_ablation/constant_sensitivity/run_sensitivity.py \
+  --output-dir /content/drive/MyDrive/ComplianceGPT_runs/rq1_constant_sensitivity_v1
+```
+
+Once a complete cache exists, `--replay-cache` regenerates the deterministic
+scoring/report files without fresh model inference. A compatible resume requires
+the same scientific source, package/runtime settings, input hashes and pinned
+model files. The runner rejects changes rather than silently restarting them.
+`--prepare` is for a new registration before execution and refuses existing
+registration files. Preserve this result identity if a new study is needed.
+
+The interpretation remains exploratory: these comparisons do not remove prior
+evaluation-set tuning bias or demonstrate held-out or independent correctness.
