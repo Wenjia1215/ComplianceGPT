@@ -39,3 +39,9 @@ ENV/
 *.log
 *.tmp
 *.bak
+
+# Full profile-study contracts and mutations are preserved inside result ZIPs.
+experiments/answerer_comparison/rq2_profile_fill/results_v1/contracts.jsonl
+experiments/answerer_comparison/rq2_profile_fill/results_v1/mutation_attempts.jsonl
+experiments/answerer_comparison/rq2_profile_fill_v2/results_v2/contracts.jsonl
+experiments/answerer_comparison/rq2_profile_fill_v2/results_v2/mutation_attempts.jsonl

@@ -1,5 +1,8 @@
 # Frozen-input profile-resolution study
 
+**Formal result: FAIL (792/800 accepted).** See [FAILURE_ANALYSIS.md](FAILURE_ANALYSIS.md).
+The separately registered v2 study corrects the replay boundary; v1 is retained.
+
 This directory contains the registered design and execution artifacts for
 `rq2_profile_fill_v1`. See [PROTOCOL.md](PROTOCOL.md) for the fixed conditions,
 acceptance rules, original feedback reference, and interpretation limits.
