@@ -1,0 +1,283 @@
+{
+  "acceptance_checks": {
+    "all_136_ask_regressions": true,
+    "all_8_preserve_regressions": true,
+    "all_case_oracles": true,
+    "all_frozen_inputs_unchanged": true,
+    "all_mutations_detected": true,
+    "all_runtime_contracts": true
+  },
+  "accepted": true,
+  "accepted_cases": 800,
+  "by_condition": {
+    "complete": {
+      "accepted": 100,
+      "binding_occurrences": 197,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 37
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "OK": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 100
+      }
+    },
+    "empty": {
+      "accepted": 100,
+      "binding_occurrences": 0,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    },
+    "literal_backslashes": {
+      "accepted": 100,
+      "binding_occurrences": 197,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 37
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "OK": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 100
+      }
+    },
+    "partial": {
+      "accepted": 100,
+      "binding_occurrences": 114,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    },
+    "placeholder_values": {
+      "accepted": 100,
+      "binding_occurrences": 0,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    },
+    "unknown_keys": {
+      "accepted": 100,
+      "binding_occurrences": 0,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    },
+    "unversioned": {
+      "accepted": 100,
+      "binding_occurrences": 0,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    },
+    "wrong_revision": {
+      "accepted": 100,
+      "binding_occurrences": 0,
+      "by_author_stratum": {
+        "author_negative": {
+          "accepted": 37,
+          "cases": 37,
+          "status_counts": {
+            "OK": 17,
+            "PARAMS_REQUIRED": 20
+          }
+        },
+        "odp_positive": {
+          "accepted": 63,
+          "cases": 63,
+          "status_counts": {
+            "PARAMS_REQUIRED": 63
+          }
+        }
+      },
+      "cases": 100,
+      "oracle_matches": 100,
+      "runtime_valid": 100,
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      }
+    }
+  },
+  "cases": 800,
+  "legacy_regressions": {
+    "ASK": 136,
+    "PRESERVE": 8,
+    "accepted": 144
+  },
+  "mutations": {
+    "binding_removed": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "canonical_span": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "external_profile_replaced": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "forged_value_and_record": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "profile_hash": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "record_and_policy_removed": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "record_revision": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "unknown_binding": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "unknown_source": {
+      "attempts": 63,
+      "detected": 63
+    },
+    "unsupported_prose": {
+      "attempts": 63,
+      "detected": 63
+    }
+  },
+  "result_id": "rq2_profile_fill_v2"
+}

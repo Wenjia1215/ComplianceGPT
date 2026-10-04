@@ -1,5 +1,18 @@
 # Profile-resolution study v2
 
+**Formal result: PASS.** All 800 registered cases passed, including resolution
+of all visible keyed placeholders in 63/63 ODP-positive rows under complete
+profiles. All 630 registered mutations were
+detected, and all 144 ASK/PRESERVE regression comparisons passed. See
+[results_v2/SUMMARY.md](results_v2/SUMMARY.md) for the condition counts and limits.
+The formal execution used public commit
+`2e269c3d93728fae9acca6eff47fb672902436f5`.
+
+See [PARAMETER_SCOPE.md](PARAMETER_SCOPE.md) for the separate post-hoc coverage
+diagnostic: two frozen answers each omit one author-gold parameter, and 20 of
+the 37 author-negative rows contain visible keyed placeholders. These limits
+must accompany interpretation of the condition results.
+
 This study follows the retained failed v1 run. Read [PROTOCOL.md](PROTOCOL.md)
 for the registration, two recorded fallback reconstructions, eight fixed profile
 conditions, mutation operators and interpretation limits. The implementation

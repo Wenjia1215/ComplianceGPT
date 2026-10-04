@@ -1,0 +1,1404 @@
+{
+  "analysis": "post-hoc retained-parameter scope diagnostic",
+  "author_negative_rows": 37,
+  "author_negative_rows_with_visible_parameter_keys": 20,
+  "author_odp_positive_rows": 63,
+  "changes_formal_acceptance": false,
+  "input_sha256": {
+    "archive:contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+    "archive:contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+    "archive:contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "archive:contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+    "archive:run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5",
+    "data/ODP/rev4/odp_registry_rev4.json": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c",
+    "data/ODP/rev5/odp_registry_rev5.json": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328",
+    "experiments/answerer_comparison/rq2_preserve_replay/results_v1/contracts/rev4_contracts.jsonl": "baaff31ec5d192554ab5af43147f2a0695bd73c4db67c454b5909aee70274e6f",
+    "experiments/answerer_comparison/rq2_preserve_replay/results_v1/contracts/rev5_contracts.jsonl": "4c3c63d9ac7f78a21fda7fafa903927c609459b6001387024fab9f95550c17ba"
+  },
+  "new_inference": false,
+  "new_retrieval": false,
+  "positive_rows_with_a_gold_parameter_key_absent": 2,
+  "positive_rows_with_all_gold_parameter_keys_visible": 61,
+  "protocol_sha256": "9a0b022f7c738865674344946cf3ea4a96a3b9241d9a1dbbc95fa91761de2756",
+  "registered_cases_sha256": "04d3a9a2104caf017c2069c9d65a8cf92c2b10fdb307583a9d993c8fee2df4fc",
+  "rows": [
+    {
+      "author_gold_required_keys": [
+        "ac-02_odp.05",
+        "ac-02_odp.06",
+        "ac-02_odp.07",
+        "ac-02_odp.08"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "1",
+      "visible_keys": [
+        "ac-02_odp.05",
+        "ac-02_odp.06",
+        "ac-02_odp.07",
+        "ac-02_odp.08"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "2",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "3",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ac-07_odp.01",
+        "ac-07_odp.02",
+        "ac-07_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "4",
+      "visible_keys": [
+        "ac-07_odp.01",
+        "ac-07_odp.02",
+        "ac-07_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ac-11_odp.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "5",
+      "visible_keys": [
+        "ac-11_odp.01"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "6",
+      "visible_keys": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "7",
+      "visible_keys": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "at-04_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "8",
+      "visible_keys": [
+        "at-04_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "9",
+      "visible_keys": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "at-02_odp.05",
+        "at-02_odp.06",
+        "at-02_odp.07",
+        "at-02_prm.01",
+        "at-02_prm.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "10",
+      "visible_keys": [
+        "at-03_odp.03",
+        "at-03_odp.04",
+        "at-03_odp.05",
+        "at-03_prm.01"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "at-03_odp.03",
+        "at-03_odp.04",
+        "at-03_odp.05",
+        "at-03_prm.01"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "au-02_odp.01",
+        "au-02_odp.04",
+        "au-02_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "11",
+      "visible_keys": [
+        "au-02_odp.01",
+        "au-02_odp.04",
+        "au-02_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "12",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "13",
+      "visible_keys": [
+        "au-04_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "au-04_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "au-06_odp.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "14",
+      "visible_keys": [
+        "au-06_odp.01",
+        "au-06_odp.02",
+        "au-06_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "au-06_odp.02",
+        "au-06_odp.03"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "au-08_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "15",
+      "visible_keys": [
+        "au-08_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ca-02_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "16",
+      "visible_keys": [
+        "ca-02_odp.01",
+        "ca-02_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "ca-02_odp.01"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "ca-03_odp.01",
+        "ca-03_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "17",
+      "visible_keys": [
+        "ca-03_odp.01",
+        "ca-03_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ca-05_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "18",
+      "visible_keys": [
+        "ca-05_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ca-06_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "19",
+      "visible_keys": [
+        "ca-06_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ca-07_odp.01",
+        "ca-07_odp.02",
+        "ca-07_odp.03",
+        "ca-07_prm.04",
+        "ca-07_prm.05"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "20",
+      "visible_keys": [
+        "ca-07_odp.01",
+        "ca-07_odp.02",
+        "ca-07_odp.03",
+        "ca-07_prm.04",
+        "ca-07_prm.05"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cm-02_odp.01",
+        "cm-02_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "21",
+      "visible_keys": [
+        "cm-02_odp.01",
+        "cm-02_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cm-03_odp.01",
+        "cm-03_odp.02",
+        "cm-03_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "22",
+      "visible_keys": [
+        "cm-03_odp.01",
+        "cm-03_odp.02",
+        "cm-03_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "23",
+      "visible_keys": [
+        "cm-03_odp.01",
+        "cm-03_odp.02",
+        "cm-03_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "cm-03_odp.01",
+        "cm-03_odp.02",
+        "cm-03_odp.03"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "cm-06_odp.01",
+        "cm-06_odp.02",
+        "cm-06_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "24",
+      "visible_keys": [
+        "cm-06_odp.01",
+        "cm-06_odp.02",
+        "cm-06_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cm-08_odp.01",
+        "cm-08_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "25",
+      "visible_keys": [
+        "cm-08_odp.01",
+        "cm-08_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cp-02_odp.05",
+        "cp-02_prm.01",
+        "cp-02_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "26",
+      "visible_keys": [
+        "cp-02_odp.05",
+        "cp-02_prm.01",
+        "cp-02_prm.02",
+        "cp-02_prm.04"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "cp-02_prm.04"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "cp-03_odp.01",
+        "cp-03_odp.02",
+        "cp-03_odp.03",
+        "cp-03_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "27",
+      "visible_keys": [
+        "cp-03_odp.01",
+        "cp-03_odp.02",
+        "cp-03_odp.03",
+        "cp-03_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cp-04_odp.01",
+        "cp-04_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "28",
+      "visible_keys": [
+        "cp-04_odp.01",
+        "cp-04_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cp-07_odp.01",
+        "cp-07_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "29",
+      "visible_keys": [
+        "cp-07_odp.01",
+        "cp-07_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "cp-09_odp.01",
+        "cp-09_odp.02",
+        "cp-09_odp.03",
+        "cp-09_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "30",
+      "visible_keys": [
+        "cp-09_odp.01",
+        "cp-09_odp.02",
+        "cp-09_odp.03",
+        "cp-09_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "31",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ia-04_odp.01",
+        "ia-04_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "32",
+      "visible_keys": [
+        "ia-04_odp.01",
+        "ia-04_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ia-05_odp.01",
+        "ia-05_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "33",
+      "visible_keys": [
+        "ia-05_odp.01",
+        "ia-05_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "34",
+      "visible_keys": [
+        "ia-05_odp.01",
+        "ia-05_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "ia-05_odp.01",
+        "ia-05_odp.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "35",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ir-02_odp.01",
+        "ir-02_odp.02",
+        "ir-02_odp.03",
+        "ir-02_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "36",
+      "visible_keys": [
+        "ir-02_odp.01",
+        "ir-02_odp.02",
+        "ir-02_odp.03",
+        "ir-02_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ir-03_odp.01",
+        "ir-03_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "37",
+      "visible_keys": [
+        "ir-03_odp.01",
+        "ir-03_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "38",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "39",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ir-06_odp.01",
+        "ir-06_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "40",
+      "visible_keys": [
+        "ir-06_odp.01",
+        "ir-06_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "41",
+      "visible_keys": [
+        "ma-02_odp.01",
+        "ma-02_odp.02",
+        "ma-02_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "ma-02_odp.01",
+        "ma-02_odp.02",
+        "ma-02_odp.03"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "ma-03_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "42",
+      "visible_keys": [
+        "ma-03_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "43",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "44",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "45",
+      "visible_keys": [
+        "ma-06_odp.01",
+        "ma-06_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "ma-06_odp.01",
+        "ma-06_odp.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "46",
+      "visible_keys": [
+        "mp-02_prm.01",
+        "mp-02_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "mp-02_prm.01",
+        "mp-02_prm.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "mp-03_odp.01",
+        "mp-03_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "47",
+      "visible_keys": [
+        "mp-03_odp.01",
+        "mp-03_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "mp-04_prm.01",
+        "mp-04_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "48",
+      "visible_keys": [
+        "mp-04_prm.01",
+        "mp-04_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "mp-05_odp.01",
+        "mp-05_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "49",
+      "visible_keys": [
+        "mp-05_odp.01",
+        "mp-05_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "mp-06_prm.01",
+        "mp-06_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "50",
+      "visible_keys": [
+        "mp-06_prm.01",
+        "mp-06_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "pe-02_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "51",
+      "visible_keys": [
+        "pe-02_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "52",
+      "visible_keys": [
+        "pe-03_odp.01",
+        "pe-03_odp.02",
+        "pe-03_odp.04",
+        "pe-03_odp.05"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pe-03_odp.01",
+        "pe-03_odp.02",
+        "pe-03_odp.04",
+        "pe-03_odp.05"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "53",
+      "visible_keys": [
+        "sc-08_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "sc-08_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "54",
+      "visible_keys": [
+        "pe-05_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pe-05_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "pe-06_odp.01",
+        "pe-06_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "55",
+      "visible_keys": [
+        "pe-06_odp.01",
+        "pe-06_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "56",
+      "visible_keys": [
+        "pl-02_odp.01",
+        "pl-02_odp.02",
+        "pl-02_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pl-02_odp.01",
+        "pl-02_odp.02",
+        "pl-02_odp.03"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "57",
+      "visible_keys": [
+        "pl-04_odp.01",
+        "pl-04_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pl-04_odp.01",
+        "pl-04_odp.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "pl-07_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "58",
+      "visible_keys": [
+        "pl-07_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "pl-08_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "59",
+      "visible_keys": [
+        "pl-08_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "60",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "61",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "62",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "63",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "64",
+      "visible_keys": [
+        "sa-03_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "sa-03_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "pm-09_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "65",
+      "visible_keys": [
+        "pm-09_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ps-02_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "66",
+      "visible_keys": [
+        "ps-02_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ps-03_prm.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "67",
+      "visible_keys": [
+        "ps-03_prm.01"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ps-04_odp.01",
+        "ps-04_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "68",
+      "visible_keys": [
+        "ps-04_odp.01",
+        "ps-04_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ps-05_odp.01",
+        "ps-05_odp.02",
+        "ps-05_odp.03",
+        "ps-05_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "69",
+      "visible_keys": [
+        "ps-05_odp.01",
+        "ps-05_odp.02",
+        "ps-05_odp.03",
+        "ps-05_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ps-06_odp.01",
+        "ps-06_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "70",
+      "visible_keys": [
+        "ps-06_odp.01",
+        "ps-06_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "pt-02_odp.01",
+        "pt-02_odp.02",
+        "pt-02_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "71",
+      "visible_keys": [
+        "pt-02_odp.01",
+        "pt-02_odp.02",
+        "pt-02_odp.03",
+        "pt-03_odp.01",
+        "pt-03_odp.02",
+        "pt-03_odp.03",
+        "pt-03_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pt-03_odp.01",
+        "pt-03_odp.02",
+        "pt-03_odp.03",
+        "pt-03_odp.04"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "pt-03_odp.01",
+        "pt-03_odp.02",
+        "pt-03_odp.03",
+        "pt-03_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "72",
+      "visible_keys": [
+        "pt-03_odp.01",
+        "pt-03_odp.02",
+        "pt-03_odp.03",
+        "pt-03_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "73",
+      "visible_keys": [
+        "pt-04_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pt-04_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "pt-05_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "74",
+      "visible_keys": [
+        "pt-05_odp.01",
+        "pt-05_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "pt-05_odp.01"
+      ]
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "75",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "76",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ra-03_odp.01",
+        "ra-03_odp.02",
+        "ra-03_odp.03",
+        "ra-03_odp.04",
+        "ra-03_odp.05"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [
+        "ra-03_odp.02"
+      ],
+      "query_id": "77",
+      "visible_keys": [
+        "ra-03_odp.01",
+        "ra-03_odp.03",
+        "ra-03_odp.04",
+        "ra-03_odp.05"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ra-05_odp.03",
+        "ra-05_odp.04",
+        "ra-05_prm.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "78",
+      "visible_keys": [
+        "ra-05_odp.03",
+        "ra-05_odp.04",
+        "ra-05_prm.01"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "79",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "ra-09_odp.01",
+        "ra-09_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "80",
+      "visible_keys": [
+        "ra-09_odp.01",
+        "ra-09_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sa-05_odp.01",
+        "sa-05_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "81",
+      "visible_keys": [
+        "sa-05_odp.01",
+        "sa-05_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sa-08_prm.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "82",
+      "visible_keys": [
+        "sa-08_prm.01"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sa-09_odp.01",
+        "sa-09_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "83",
+      "visible_keys": [
+        "ps-07_odp.01",
+        "ps-07_odp.02",
+        "sa-09_odp.01",
+        "sa-09_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "ps-07_odp.01",
+        "ps-07_odp.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "sa-10_odp.01",
+        "sa-10_odp.02",
+        "sa-10_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "84",
+      "visible_keys": [
+        "sa-10_odp.01",
+        "sa-10_odp.02",
+        "sa-10_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sa-11_odp.01",
+        "sa-11_odp.02",
+        "sa-11_odp.03"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "85",
+      "visible_keys": [
+        "sa-11_odp.01",
+        "sa-11_odp.02",
+        "sa-11_odp.03"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sc-07_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "86",
+      "visible_keys": [
+        "sc-07_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "87",
+      "visible_keys": [
+        "sc-08_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "sc-08_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "sc-12_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "88",
+      "visible_keys": [
+        "sc-12_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "89",
+      "visible_keys": [],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "90",
+      "visible_keys": [
+        "sc-28_odp.01",
+        "sc-28_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "sc-28_odp.01",
+        "sc-28_odp.02"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "si-02_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "91",
+      "visible_keys": [
+        "si-02_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "si-03_odp.01",
+        "si-03_odp.02",
+        "si-03_odp.03",
+        "si-03_odp.04",
+        "si-03_odp.06"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "92",
+      "visible_keys": [
+        "si-03_odp.01",
+        "si-03_odp.02",
+        "si-03_odp.03",
+        "si-03_odp.04",
+        "si-03_odp.06"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "si-04_odp.01",
+        "si-04_odp.02",
+        "si-04_odp.03",
+        "si-04_odp.04",
+        "si-04_odp.05"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [
+        "si-04_odp.02"
+      ],
+      "query_id": "93",
+      "visible_keys": [
+        "si-04_odp.01",
+        "si-04_odp.03",
+        "si-04_odp.04",
+        "si-04_odp.05"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "si-07_prm.01",
+        "si-07_prm.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "94",
+      "visible_keys": [
+        "si-07_prm.01",
+        "si-07_prm.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "95",
+      "visible_keys": [
+        "si-10_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "si-10_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "sr-02_odp.01",
+        "sr-02_odp.02"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "96",
+      "visible_keys": [
+        "sr-02_odp.01",
+        "sr-02_odp.02"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sr-03_odp.01",
+        "sr-03_odp.02",
+        "sr-03_odp.03",
+        "sr-03_odp.04"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "97",
+      "visible_keys": [
+        "sr-03_odp.01",
+        "sr-03_odp.02",
+        "sr-03_odp.03",
+        "sr-03_odp.04"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [],
+      "author_odp_positive": false,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "98",
+      "visible_keys": [
+        "sr-05_odp"
+      ],
+      "visible_keys_not_listed_in_gold": [
+        "sr-05_odp"
+      ]
+    },
+    {
+      "author_gold_required_keys": [
+        "sr-06_odp"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "99",
+      "visible_keys": [
+        "sr-06_odp"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    },
+    {
+      "author_gold_required_keys": [
+        "sr-11_odp.01"
+      ],
+      "author_odp_positive": true,
+      "gold_keys_absent_from_retained_evidence": [],
+      "query_id": "100",
+      "visible_keys": [
+        "sr-11_odp.01"
+      ],
+      "visible_keys_not_listed_in_gold": []
+    }
+  ],
+  "validates_independent_label_correctness": false
+}
