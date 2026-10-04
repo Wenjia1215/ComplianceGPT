@@ -42,6 +42,7 @@ from compliancegpt.pipeline.odp_policy import (
     normalize_resolution_policy as _normalize_resolution_policy,
     profile_lookup as _profile_lookup,
 )
+from compliancegpt.pipeline.profile_resolution import resolve_profile_answer
 
 PIPELINE_PATCH_ID = "2026-03-12-odp-statement-rescue-v3"
 
@@ -1683,6 +1684,9 @@ class ComplianceGPTPipeline:
                         corpus=self._get_verifier_corpus(),
                         org_profile=self.org_profile,
                         strict_verbatim=bool(self.verify_strict_verbatim),
+                        corpus_version=self.framework_version,
+                        expected_resolution_policy=("FILL_FROM_PROFILE" if
+                            _normalize_resolution_policy(self.resolution_policy) == "FILL_FROM_PROFILE" else None),
                     )
                     contract_obj["validity_check"] = {
                         "is_pass": bool(vp),
@@ -2095,11 +2099,17 @@ class ComplianceGPTPipeline:
         answer_text = "\n\n".join([s["span_text"] for s in filled_spans]).strip()
 
         # 8) Apply ODP policy (ASK/PRESERVE/FILL_FROM_PROFILE), then canonicalize required list
-        answer_text2, odp_required_raw, status_override = _apply_odp_policy_to_answer(
-            answer_text=answer_text,
-            policy=self.resolution_policy,
-            org_profile=self.org_profile,
-        )
+        profile_resolution = None
+        if _normalize_resolution_policy(self.resolution_policy) == "FILL_FROM_PROFILE":
+            answer_text2, odp_required_raw, status_override, profile_resolution = resolve_profile_answer(
+                filled_spans, self.org_profile, self.framework_version,
+            )
+        else:
+            answer_text2, odp_required_raw, status_override = _apply_odp_policy_to_answer(
+                answer_text=answer_text,
+                policy=self.resolution_policy,
+                org_profile=self.org_profile,
+            )
 
         self._ensure_param_inventory_loaded()
         param_ids: Set[str] = getattr(self, "_param_ids", set()) or set()
@@ -2199,6 +2209,9 @@ class ComplianceGPTPipeline:
             },
         }
 
+        if profile_resolution is not None:
+            final_contract["profile_resolution"] = profile_resolution
+            final_contract["resolution_policy"] = "FILL_FROM_PROFILE"
         final_contract = _attach_contract_validity(final_contract)
 
         # 10) Verifier (gold-only)

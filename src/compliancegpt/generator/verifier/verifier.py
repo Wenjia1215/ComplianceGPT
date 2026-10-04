@@ -24,12 +24,16 @@ NOTE: This file is standalone; no sys.path hacks, no fallback imports.
 from __future__ import annotations
 
 import re
+import hashlib
+import json
+import math
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Tuple, Iterable, Set
 
 
 _ASSIGNMENT_REQUIRED_SENTINEL = "__ASSIGNMENT_REQUIRED__"
 VERIFIER_PATCH_ID = "2026-07-12-contract-validity-fix"
+PROFILE_VERIFIER_PATCH_ID = "2026-10-04-profile-resolution-v1"
 
 
 # ==========================================================
@@ -403,7 +407,7 @@ def compute_set_metrics(gen: Iterable[str], gold: Iterable[str]) -> Dict[str, fl
 # 5) Check Implementations
 # ==========================================================
 
-def check_status_consistency(contract: AnswerContract) -> List[str]:
+def check_status_consistency(contract: AnswerContract, *, verified_profile_resolution: bool = False) -> List[str]:
     errors: List[str] = []
     status = (contract.status or "").strip().upper()
 
@@ -415,9 +419,9 @@ def check_status_consistency(contract: AnswerContract) -> List[str]:
         errors.append("StatusERROR")
         return errors
 
-    has_placeholders = has_unresolved_odp_placeholder(contract.answer_text) or any(
+    has_placeholders = has_unresolved_odp_placeholder(contract.answer_text) or (not verified_profile_resolution and any(
         has_unresolved_odp_placeholder(s.span_text) for s in contract.evidence_spans
-    )
+    ))
 
     # Normalize ODP list; treat bad tokens as errors
     odp_list = [normalize_odp_id(x) for x in _split_listish(contract.odp_required_list) if x]
@@ -440,6 +444,96 @@ def check_status_consistency(contract: AnswerContract) -> List[str]:
             errors.append("NoEvidenceButAnswerTextNonEmpty")
 
     return errors
+
+
+def _check_profile_resolution(
+    json_output: Dict[str, Any],
+    org_profile: Optional[Dict[str, Any]],
+    corpus_version: Optional[str],
+) -> Tuple[bool, List[str]]:
+    """Independently reconstruct profile substitutions from external inputs.
+
+    The production resolver is deliberately not imported. A record alone cannot
+    authenticate a value: the caller must supply the profile and corpus revision.
+    Corpus membership/verbatim checks remain the responsibility of the callers.
+    """
+    if "profile_resolution" not in json_output:
+        return False, []
+    if not isinstance(org_profile, dict):
+        return False, ["ProfileResolutionRequiresOrgProfile"]
+    revision = normalize_version(corpus_version)
+    if revision not in {"rev4", "rev5"}:
+        return False, ["ProfileResolutionRequiresCorpusVersion"]
+    errors: List[str] = []
+    try:
+        if json_output.get("resolution_policy") != "FILL_FROM_PROFILE":
+            errors.append("ProfileResolutionPolicyMismatch")
+        if "framework_version" in json_output and normalize_version(json_output["framework_version"]) != revision:
+            errors.append("ProfileContractRevisionMismatch")
+        spans = json_output["evidence_spans"]
+        original = "\n\n".join(str(s["span_text"] or "") for s in spans).strip()
+        raw_keys = sorted({m.group(1).strip() for m in _ODP_CURLY_RE.finditer(original)
+                           if m.group(1).strip()})
+        declared_revision = str(org_profile.get("framework_version", "") or "").strip().lower()
+        applicable = declared_revision == revision
+        profile_payload = json.dumps(org_profile, sort_keys=True, ensure_ascii=False,
+                                     separators=(",", ":"), allow_nan=False)
+        replacements = {}
+        bindings = []
+        for key in raw_keys:
+            path = [key]
+            value = org_profile.get(key)
+            for container in ("odp_values", "odps"):
+                values = org_profile.get(container)
+                if isinstance(values, dict) and key in values:
+                    value, path = values[key], [container, key]
+                    break
+            if not applicable or not isinstance(value, (str, int, float, bool)):
+                continue
+            if isinstance(value, float) and not math.isfinite(value):
+                continue
+            literal = str(value)
+            if not literal.strip() or has_unresolved_odp_placeholder(literal):
+                continue
+            replacements[key] = literal
+            source_ids = sorted({str(s["source_id"] or "") for s in spans
+                                 if any(m.group(1).strip() == key
+                                        for m in _ODP_CURLY_RE.finditer(str(s["span_text"] or "")))})
+            bindings.append({"param_id": key, "value": literal, "profile_path": path,
+                             "source_ids": source_ids})
+        expected_answer = _ODP_CURLY_RE.sub(
+            lambda m: replacements.get(m.group(1).strip(), m.group(0)), original,
+        )
+        remaining = sorted({m.group(1).strip() for m in _ODP_CURLY_RE.finditer(expected_answer)
+                            if m.group(1).strip()})
+        anonymous = bool(_ODP_ASSIGNMENT_RE.search(expected_answer))
+        expected_record = {
+            "schema_version": "compliancegpt-profile-resolution-v1",
+            "patch_id": PROFILE_VERIFIER_PATCH_ID,
+            "policy": "FILL_FROM_PROFILE",
+            "corpus_version": revision,
+            "profile_revision": declared_revision,
+            "profile_applicable": applicable,
+            "profile_sha256": hashlib.sha256(profile_payload.encode("utf-8")).hexdigest(),
+            "bindings": bindings,
+            "unresolved_param_ids": remaining,
+            "anonymous_assignment_required": anonymous,
+        }
+        if json_output.get("profile_resolution") != expected_record:
+            errors.append("ProfileResolutionRecordMismatch")
+        if str(json_output.get("answer_text", "")) != expected_answer:
+            errors.append("ProfileResolvedAnswerMismatch")
+        required = {normalize_odp_id(k) for k in remaining}
+        if anonymous:
+            required.add(_ASSIGNMENT_REQUIRED_SENTINEL)
+        actual = {normalize_odp_id(k) for k in _split_listish(json_output.get("odp_required_list"))}
+        if actual != required:
+            errors.append("ProfileUnresolvedListMismatch")
+        if str(json_output.get("status", "")).strip().upper() != ("PARAMS_REQUIRED" if required else "OK"):
+            errors.append("ProfileResolutionStatusMismatch")
+    except (KeyError, TypeError, ValueError, AttributeError):
+        errors.append("ProfileResolutionMalformed")
+    return not errors, errors
 
 
 def check_citations(contract: AnswerContract, gold: GoldLabel, strict_extras: bool = True) -> Tuple[List[str], Dict[str, float], Dict[str, float]]:
@@ -498,6 +592,7 @@ def check_odp_behavior(
     gold: GoldLabel,
     org_profile: Optional[Dict[str, Any]] = None,
     strict_odp_extras: bool = True,
+    profile_resolved_ids: Optional[Set[str]] = None,
 ) -> List[str]:
     """
     Checks:
@@ -519,9 +614,11 @@ def check_odp_behavior(
 
     extracted: List[str] = []
     extracted.extend(extract_odp_ids_from_text(contract.answer_text))
-    if not extracted:
+    if not extracted and profile_resolved_ids is None:
         for s in contract.evidence_spans:
             extracted.extend(extract_odp_ids_from_text(s.span_text))
+    if profile_resolved_ids is not None and _ODP_ASSIGNMENT_RE.search(contract.answer_text):
+        extracted.append(_ASSIGNMENT_REQUIRED_SENTINEL)
     extracted = sorted(set(extracted))
 
     if extracted and status == "PARAMS_REQUIRED":
@@ -550,18 +647,23 @@ def check_odp_behavior(
                 # Preserve prior behavior: treat as a hard error (not WARN) because we cannot validate fill.
                 errors.append("GoldPolicyFillFromProfileButNoOrgProfileProvided")
             else:
-                odp_values = org_profile.get("odp_values", org_profile) if isinstance(org_profile, dict) else {}
-                present = set(normalize_odp_id(k) for k in odp_values.keys()) if isinstance(odp_values, dict) else set()
+                if profile_resolved_ids is not None:
+                    present = profile_resolved_ids
+                else:
+                    odp_values = org_profile.get("odp_values", org_profile) if isinstance(org_profile, dict) else {}
+                    present = set(normalize_odp_id(k) for k in odp_values.keys()) if isinstance(odp_values, dict) else set()
                 missing = sorted(set(gold_odps) - present)
                 if missing:
                     if status != "PARAMS_REQUIRED":
                         errors.append(f"MissingODPsButStatusNotParamsRequired:{missing}")
                 else:
-                    if status != "OK":
+                    if status != "OK" and not (profile_resolved_ids is not None and extracted):
                         errors.append("AllODPsPresentButStatusNotOK")
 
         if status == "PARAMS_REQUIRED" and gen_odps:
             gold_set = set(gold_odps)
+            if policy == "FILL_FROM_PROFILE" and profile_resolved_ids is not None:
+                gold_set -= profile_resolved_ids
             gen_set = set(gen_odps)
             missing = sorted(gold_set - gen_set)
             extra = sorted(gen_set - gold_set)
@@ -729,8 +831,16 @@ def verify_answer(
     # ---- checks
     errors: List[str] = []
 
-    errors.extend(check_status_consistency(contract))
-    errors.extend(check_odp_behavior(contract, gold_label, org_profile=org_profile, strict_odp_extras=bool(strict_extras)))
+    profile_valid, profile_errors = _check_profile_resolution(json_output, org_profile, corpus_version)
+    errors.extend(profile_errors)
+    if "profile_resolution" in json_output and corpus is None:
+        errors.append("ProfileResolutionRequiresCorpus")
+        profile_valid = False
+    errors.extend(check_status_consistency(contract, verified_profile_resolution=profile_valid))
+    resolved_ids = ({normalize_odp_id(b["param_id"]) for b in json_output["profile_resolution"]["bindings"]}
+                    if profile_valid else None)
+    errors.extend(check_odp_behavior(contract, gold_label, org_profile=org_profile,
+                                     strict_odp_extras=bool(strict_extras), profile_resolved_ids=resolved_ids))
     errors.extend(check_version_correctness(contract, gold_label, strict_version=strict_version, corpus_version=corpus_version))
 
     cit_errors, ctrl_metrics, doc_metrics = check_citations(contract, gold_label, strict_extras=strict_extras)
@@ -834,6 +944,9 @@ def verify_contract_validity(
     corpus: Optional[Dict[str, str]] = None,
     org_profile: Optional[Dict[str, Any]] = None,
     strict_verbatim: bool = True,
+    *,
+    corpus_version: Optional[str] = None,
+    expected_resolution_policy: Optional[str] = None,
 ) -> Tuple[bool, List[str]]:
     """
     Validate the answer contract without using gold labels.
@@ -852,6 +965,9 @@ def verify_contract_validity(
         return False, ["ContractNotDict"]
 
     status = str(json_output.get("status", "") or "").strip().upper()
+    if expected_resolution_policy == "FILL_FROM_PROFILE" and status in {"OK", "PARAMS_REQUIRED"}:
+        if "profile_resolution" not in json_output:
+            errors.append("ProfileResolutionRecordMissing")
     spans = json_output.get("evidence_spans", [])
     if spans is None:
         spans = []
@@ -895,7 +1011,12 @@ def verify_contract_validity(
     # Contract consistency checks (placeholders vs odp list vs status)
     try:
         contract = parse_answer_contract(json_output)
-        errors.extend(check_status_consistency(contract))
+        profile_valid, profile_errors = _check_profile_resolution(json_output, org_profile, corpus_version)
+        errors.extend(profile_errors)
+        if "profile_resolution" in json_output and corpus is None:
+            errors.append("ProfileResolutionRequiresCorpus")
+            profile_valid = False
+        errors.extend(check_status_consistency(contract, verified_profile_resolution=profile_valid))
     except Exception:
         errors.append("ContractParseError")
 
