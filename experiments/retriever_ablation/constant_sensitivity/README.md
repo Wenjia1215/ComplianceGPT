@@ -1,12 +1,17 @@
 # Primary RQ1 constant sensitivity
 
-**Status: registered runner prepared; formal experiment not yet executed.**
+**Status: registration published; formal experiment pending GPU execution.**
 
 This study varies the primary notebook's blend weight, fixed rerank-adoption
 margin and rerank-skip margin separately by ±20%. Its seven conditions cover
 all 136 questions (952 evaluations), use the existing rewrite files, and preserve
 the original notebook logic. See [PROTOCOL.md](PROTOCOL.md) and `protocol.json`
 for the exact configuration, model/code/input pins, scoring rules and limits.
+
+Scientific execution commit: `a066453a317bba365db707b71745e49fee28811a`.
+
+The finalized notebook checks out this immutable commit. It validates all
+scientific source, registered questions and corpus/rewrite hashes before inference.
 
 ## Run in Colab
 
