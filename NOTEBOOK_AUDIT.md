@@ -49,6 +49,19 @@ that the repository does not imply that a missing file was audited.
   cell IDs, source cells, stored outputs, and execution counts were preserved.
   A semantic before/after hash check confirmed that sources, outputs, and
   execution counts were unchanged for all 15 notebooks.
+- The metadata-only sanitation changed the byte hash of the executed Batch 5D
+  notebook. The original execution-record bytes remain addressable at public
+  commit `e00f9cdf77b1ad45a42df0a0bddd338de744266f` with SHA-256
+  `2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc`.
+  The sanitized distribution at public commit
+  `487f207edc578930cd66a53ff524e12d8edfbec3` has SHA-256
+  `d4cafb9d32ddf1e51516bb1b08eb6d1037cc99e05ed5e0ef9894fbb358a751af`.
+  Both versions have the same semantic-projection SHA-256
+  `a84858d01a08076445c9597902e95a15151d7ebd14e50d4ae43321ee53f1bee0`,
+  computed from notebook format, cell type, source, execution count, outputs,
+  and attachments while excluding metadata. Each has 13 cells and 11 stored
+  output blocks. The two byte hashes are therefore retained for different
+  purposes instead of treating one as a replacement for the other.
 - Colab-specific `/content/drive` paths and `drive.mount` calls remain because
   they are executable workflow dependencies rather than serialized UI
   metadata.

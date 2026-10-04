@@ -11,7 +11,9 @@ scientific configuration was edited during repository archiving.
 
 | Artifact | SHA-256 |
 |---|---|
-| Executed `Batch_5D_Rev5_Frontier_API_Baseline.ipynb` | `2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc` |
+| Original executed `Batch_5D_Rev5_Frontier_API_Baseline.ipynb` at public commit `e00f9cdf77b1ad45a42df0a0bddd338de744266f` | `2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc` |
+| Current metadata-sanitized distributed notebook at public commit `487f207edc578930cd66a53ff524e12d8edfbec3` | `d4cafb9d32ddf1e51516bb1b08eb6d1037cc99e05ed5e0ef9894fbb358a751af` |
+| Shared semantic projection of both notebook versions | `a84858d01a08076445c9597902e95a15151d7ebd14e50d4ae43321ee53f1bee0` |
 | Supplied `rq2_frontier_baseline_rev5_v1.zip` | `9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef` |
 | `summary.json` | `3c4c813bd73835f39e24432c42bf8c2e003e680ee284ce99e5466741634f5024` |
 | `SUMMARY.md` | `6d1048a7294caf158011af13309b628139b28ab0b361543ab861fbc4060cbf38` |
@@ -22,6 +24,10 @@ scientific configuration was edited during repository archiving.
 
 - The notebook has 13 cells, including nine code cells executed in order from
   1 through 9, eleven stored output blocks, and no error output.
+- Repository publication later removed only Colab/tool metadata. The original
+  executed bytes and current sanitized bytes are both identified above; source
+  cells, execution counts, outputs, attachments, and notebook format are
+  unchanged.
 - The notebook metadata requests an A100 GPU, and the runtime output identifies
   `NVIDIA A100-SXM4-40GB`.
 - Source commit

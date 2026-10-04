@@ -7,12 +7,22 @@ It was pre-committed before outputs were generated, and the server-reported
 model matched the requested model for every response.
 
 The executed notebook at the parent level and the byte-exact runner archive in
-this directory form the raw execution record. Their SHA-256 values are:
+this directory form the execution record. The current distributed notebook and
+the immutable result archive have these SHA-256 values:
 
 ```text
-2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc  Batch_5D_Rev5_Frontier_API_Baseline.ipynb
+d4cafb9d32ddf1e51516bb1b08eb6d1037cc99e05ed5e0ef9894fbb358a751af  Batch_5D_Rev5_Frontier_API_Baseline.ipynb
 9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef  rq2_frontier_baseline_rev5_v1.zip
 ```
+
+The notebook as executed, before repository-only Colab/tool metadata was
+removed, remains addressable at public commit
+`e00f9cdf77b1ad45a42df0a0bddd338de744266f` with SHA-256
+`2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc`.
+The historical and current notebooks have the same cell sources, execution
+counts, outputs, attachments, and notebook format; their shared semantic-
+projection SHA-256 is
+`a84858d01a08076445c9597902e95a15151d7ebd14e50d4ae43321ee53f1bee0`.
 
 ## Recorded result
 

@@ -208,8 +208,15 @@ and independently checked against row-level contracts and manifests:
 | 5D | [`rq2_frontier_baseline_rev5/results_v1/summary.json`](rq2_frontier_baseline_rev5/results_v1/summary.json) | `3c4c813bd73835f39e24432c42bf8c2e003e680ee284ce99e5466741634f5024` | Byte-exact runner archive `9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef` |
 
 The completed Batch 5D notebook is retained with its execution counts and
-outputs. Its SHA-256 is
+outputs. The original execution-record bytes at public commit
+`e00f9cdf77b1ad45a42df0a0bddd338de744266f` have SHA-256
 `2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc`.
+The current sanitized distribution removes only Colab/tool metadata and has
+SHA-256
+`d4cafb9d32ddf1e51516bb1b08eb6d1037cc99e05ed5e0ef9894fbb358a751af`.
+Both versions have semantic-projection SHA-256
+`a84858d01a08076445c9597902e95a15151d7ebd14e50d4ae43321ee53f1bee0`
+over notebook format, cell source, execution count, outputs, and attachments.
 The Batch 5C metadata correction records operator-confirmed Paid Tier 1
 provenance and changes no response, contract, metric, token count, or other
 scientific output.

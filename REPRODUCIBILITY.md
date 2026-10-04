@@ -252,9 +252,17 @@ construction on this benchmark; it is not presented as an estimated zero-risk
 rate.
 
 The byte-exact result archive SHA-256 is
-`9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef`,
-and the executed notebook SHA-256 is
+`9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef`.
+The original executed-notebook bytes remain addressable at public commit
+`e00f9cdf77b1ad45a42df0a0bddd338de744266f` with SHA-256
 `2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc`.
+Repository-only Colab/tool metadata was later removed without changing cell
+sources, execution counts, outputs, attachments, or notebook format. The
+sanitized distributed notebook at public commit
+`487f207edc578930cd66a53ff524e12d8edfbec3` has SHA-256
+`d4cafb9d32ddf1e51516bb1b08eb6d1037cc99e05ed5e0ef9894fbb358a751af`;
+the semantic projection of both versions has SHA-256
+`a84858d01a08076445c9597902e95a15151d7ebd14e50d4ae43321ee53f1bee0`.
 
 The consolidated Batch 5A–5D comparison is
 [`experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md`](experiments/answerer_comparison/RQ2_BATCH_5_COMPARISON.md).
