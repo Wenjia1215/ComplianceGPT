@@ -1,6 +1,6 @@
 # Returned natural-question run and audit
 
-**GPU generation and automatic scoring are complete. Technical identity/scoring audit passed. The separate author review of all 40 final outputs is pending. Independent expert correctness has not been validated.**
+**GPU generation, automatic scoring, technical identity/scoring audit, and the separate author review of all 40 final outputs are complete. Independent expert correctness has not been validated.**
 
 This is the separate exploratory external-input study of 20 naturally occurring questions. It does not replace the 136-row benchmark or the 30-row intra-annotator retest. All questions, failed outputs, retries, and outside-scope cases are retained.
 
@@ -40,9 +40,9 @@ There are 40 final outputs and 44 raw generation calls: 20 selector calls and 24
 - ComplianceGPT's valid contracts reproduce canonical text, but do not consistently interpret the whole question or explain scope boundaries. The outside-scope cases receive generic catalog text. Runtime validity is not semantic correctness.
 - Actual clarification wording has catalog/type mismatches beyond the two input limitations documented before inference. Examples include roles asked for as durations, event types asked for as organizational units, and privileged-account personnel/roles asked for as a frequency. The frozen registry remains unchanged. [CLARIFICATION_AUDIT.json](CLARIFICATION_AUDIT.json) records each affected returned prompt and canonical definition. These are post-run explanatory observations, not a new registered metric.
 - Frozen group coverage is ID-specific. NQ14 cites the full SI-2 parent statement, which contains the required SI-2a/SI-2d text, but does not cite those separate child IDs. Its group-score failure must not be described as absence of all substantive SI-2 content. The score is retained exactly as registered.
-- Baseline prose sometimes introduces unsupported implementation or authority claims despite valid formatting. NQ12's suggested time norms and broad government-definition claim are not established by its cited clauses. The author must assess these claims in the separate review.
+- Baseline prose sometimes introduces unsupported implementation or authority claims despite valid formatting. NQ12's suggested time norms and broad government-definition claim are not established by its cited clauses. The completed author review identifies six baseline outputs with unsupported implementation or legal claims.
 
-[CONTENT_AUDIT.csv](CONTENT_AUDIT.csv) gives all 40 source-linked observations. They are not completed author ratings. [RETRIEVAL_DIAGNOSTICS.json](RETRIEVAL_DIAGNOSTICS.json) distinguishes upstream, window and final cited-ID omissions, including parent-clause textual overlap.
+[CONTENT_AUDIT.csv](CONTENT_AUDIT.csv) gives all 40 source-linked audit observations. They are distinct from the completed author ratings in [author_review_v1](author_review_v1/README.md). [RETRIEVAL_DIAGNOSTICS.json](RETRIEVAL_DIAGNOSTICS.json) distinguishes upstream, window and final cited-ID omissions, including parent-clause textual overlap. The clarification audit includes an explicit NQ03 wording erratum based on the author's review.
 
 ## Files and verification
 
@@ -63,8 +63,8 @@ PYTHONPATH=src:. USE_TORCH=1 USE_TF=0 USE_FLAX=0 python experiments/external_val
   --report /path/to/technical_audit.json
 ```
 
-## Remaining author review and dissertation integration
+## Completed author review and dissertation integration
 
-Record `scope_appropriate`, `responsive_to_entire_question`, `unsupported_implementation_or_legal_claim`, reviewer name and relevant notes for each of the 40 question/system pairs. Preserve uncertainties. A positive unsupported-claim judgment flags a problem. These ratings concern the whole question and actual clarification wording; a format pass or verbatim source span cannot substitute for them. Formal completion remains pending until this review is documented.
+The author recorded `scope_appropriate`, `responsive_to_entire_question`, `unsupported_implementation_or_legal_claim`, reviewer name and explanatory notes for every question/system pair. ComplianceGPT has 5/20 scope-appropriate judgments, 1/20 fully responsive judgments and 0/20 unsupported-claim flags; the baseline has 9/20, 5/20 and 6/20, respectively. Three baseline scope judgments remain uncertain, with eight judged no. These dimensions are reported separately, with all 20 outputs in each denominator. The review is single-author and unblinded, with the audit observations available. A positive unsupported-claim judgment flags a problem; absence of such a claim does not make an empty or incomplete answer correct. [author_review_v1](author_review_v1/README.md) archives the exact workbook, normalized CSV, completion summary and checksums. The original automatic summary and blank review template remain unchanged as historical run records.
 
 In the dissertation, explain the purposive one-forum collection and author source/label verification, keep these 20 rows separate, report the adverse outcomes as well as the useful mechanism behavior, and state the small denominators and lack of independent correctness validation. Do not pool or substitute these strict outcomes for historical headline metrics. Independent expert assessment of labels and whole-question responses remains future work.

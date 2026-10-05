@@ -6,18 +6,18 @@
   },
   {
     "file": "CLARIFICATION_AUDIT.json",
-    "bytes": 7110,
-    "sha256": "88bcb21de3c9f048d0515262f5de3697acbe5f5e7366745c7392ce7d39d072c8"
+    "bytes": 7553,
+    "sha256": "a4ffbc5b7badf871407521bbc7bf48de33151f3d39c0b44e5396525dcab56f29"
   },
   {
     "file": "CONTENT_AUDIT.csv",
-    "bytes": 18719,
-    "sha256": "96f672fc03b741e104c5a3dabec6980dbfe07c648553d861c2075a4f0626efed"
+    "bytes": 19348,
+    "sha256": "6182734b41cbba5fc8ba43c507f2e06f0b1492188e78ee2ccde242c29b323159"
   },
   {
     "file": "README.md",
-    "bytes": 9003,
-    "sha256": "0a2cc3e2e9524263143e74b21bc595e9165899f3dfa4ae303ac28a8d75ac159e"
+    "bytes": 9685,
+    "sha256": "cf4bc04f57699120dcd20e7d536a9bd9d2594485518df2eeacc1173af498ba59"
   },
   {
     "file": "RETRIEVAL_DIAGNOSTICS.json",
@@ -28,6 +28,31 @@
     "file": "TECHNICAL_AUDIT.json",
     "bytes": 2014,
     "sha256": "88c0baa78e070ef89c86a385d125a07dfb9031aaf224bb73aeacceef3b2b22b6"
+  },
+  {
+    "file": "author_review_v1/ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang.xlsx",
+    "bytes": 17832,
+    "sha256": "ca5dd27b24d97f5a5a9ee2a096f5949d7b49503dbcc051186edbc4f16291f8e1"
+  },
+  {
+    "file": "author_review_v1/IMPORT_GUARD_CHECKS.json",
+    "bytes": 752,
+    "sha256": "cebe9eb66425c4bde5b8b451172c0a35a652cadb23402661f4722bff201ee55a"
+  },
+  {
+    "file": "author_review_v1/README.md",
+    "bytes": 3008,
+    "sha256": "a2dc50a94ae2841a3e7ed110ea46b3296c9bf2acd21bfe304bc69d9bf61f15ca"
+  },
+  {
+    "file": "author_review_v1/author_post_run_review.csv",
+    "bytes": 13378,
+    "sha256": "8e36f6fda009f6a49ce3ccb4e9da83644b5938c0eb9b835ce9e5749114b15fec"
+  },
+  {
+    "file": "author_review_v1/summary.json",
+    "bytes": 4008,
+    "sha256": "5d3e49d733bb7654f4f21c28ac4d8e833895f83ac9fb6a12765312179f00965d"
   },
   {
     "file": "natural_questions_v2_results.zip",

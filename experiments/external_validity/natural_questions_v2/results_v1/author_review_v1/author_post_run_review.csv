@@ -1,0 +1,41 @@
+query_id,system,scope_appropriate,responsive_to_entire_question,unsupported_implementation_or_legal_claim,reviewer,notes
+NQ01,compliancegpt,no,no,no,Wenjia Wang,虽复制了 SI-2(2)，却未解释自动核查状态与自动安装的区别，也未说明条款不能直接确认该 MUSA 脚本和月度安排是否合格。三项 ODP 追问对这一解释并非必需，si-2.2_prm_1 的问法还漏掉了“频率”含义；未发现额外的实施或法律断言。
+NQ01,generative_baseline,no,no,yes,Wenjia Wang,先断言现有脚本满足要求，又要求持续监控和无人工介入的自动安装，将 SI-2(2) 的状态核查问题转成 SI-2(5) 自动更新。所引证据不能确认现有实现合规，也不支持把持续自动安装作为本题要求。
+NQ02,compliancegpt,no,no,no,Wenjia Wang,正确复制了执行域和地址空间说明，但没有回答应提供什么 Windows/AWS 证据，也未说明实际配置、控制继承及审计接受度需要另行举证。没有直接宣称部署合格，故 E=no；缺少上述边界说明与主要问题回应，故 C、D=no。
+NQ02,generative_baseline,no,yes,yes,Wenjia Wang,文字解释了隔离机制，并提出文档、截图、配置和日志，覆盖了“技术含义”和“提供何种证据”两个请求。可是 SC-39 的通用文字不能证实 Windows 2019 的具体实现，亦未支持进程列表截图能证明隔离或这些材料足以证明所述部署，故 C=no、E=yes。
+NQ03,compliancegpt,no,no,no,Wenjia Wang,只重述 CP-7 的实施义务，未解释 LOW 基线是否选用该控制、i-Assure 模板适用性或应如何确认；也未交代这些问题需要基线和裁剪依据，两个 ODP 追问不能解决适用性问题。未发现实施或法律断言；审计备注称 cp-7_prm_1 要求时长，但显示的追问未明确写出时长，只能确认其未清楚说明应填“系统操作”。
+NQ03,generative_baseline,no,no,yes,Wenjia Wang,将是否必须建立备用站点归结为组织自行认定必要性，并借用模板中的 LOW 情境推断可能不必实施，提供的条款并未建立这些适用性结论。没有说明应查哪个适用基线或裁剪依据来确认模板结论，漏掉了原帖最后的主要追问。
+NQ04,compliancegpt,yes,yes,no,Wenjia Wang,AC-2 引用明确列出 service accounts，并给出账户类型选择要求，足以回应本题“到哪里找要求”的指引请求；没有作系统合规或审计接受度断言。账户类型和复核频率两项 ODP 追问是多余的，不应成为获得该指引的前提。
+NQ04,generative_baseline,no,no,no,Wenjia Wang,最终回答为空，未提供 AC-2 的服务账户指引或任何范围说明；相关条款已在可用材料中，不能把这次失败视为有依据的拒答。没有实际断言，故 E=no；ERROR 本身不作为实施或法律错误。
+NQ05,compliancegpt,no,no,no,Wenjia Wang,仅重复用户已经引用的 SI-11 两项义务，没有评估“用了 COTS 就可以依赖供应商”的推论，也未说明责任分配需要配置、验证及合同依据。人员/角色 ODP 并非解释责任所必需，追问还混入“gdn guidance”；未新增实施或法律断言。
+NQ05,generative_baseline,no,yes,yes,Wenjia Wang,直接评价了用户提出的 COTS、定制和开发三种责任情形，因而覆盖了所问内容。可是“未定制即可依赖供应商实现”的肯定结论不能由 SI-11 推出，回答未保留组织验证和实际责任分配的证据限制。
+NQ06,compliancegpt,no,no,no,Wenjia Wang,“选择控制基线”既不是可筛选的 Excel 模板，也没有提供资源或说明条款库不能提供该文件和基线成员表。未编造模板或合规结论，故 E=no，但未恰当地处理请求的范围边界。
+NQ06,generative_baseline,yes,no,no,Wenjia Wang,所给条款证据不能提供请求的可筛选模板，因此 NO_EVIDENCE 弃答避免了编造文件，范围上可接受。最终正文为空，没有向用户解释限制或给出资源方向，故 D=no；没有断言，E=no。
+NQ07,compliancegpt,no,no,no,Wenjia Wang,回答讨论 AC-3(4) 自主访问控制，未解释云服务授权边界、“系统”的范围或外部服务责任，也未说明实际边界需要额外依据。所追问的自主访问策略与本题无关；这是错配和不完整回应，未发现独立的实施或法律断言。
+NQ07,generative_baseline,yes,no,no,Wenjia Wang,核对后确认本次提供给模型的上下文缺少 PL-2/SA-9 边界与外部服务证据，拒绝凭无关条款给出边界结论是合理的。空白正文仍没有解释证据限制、责任划分或所需信息，故 D=no；未作断言，E=no。
+NQ08,compliancegpt,no,no,no,Wenjia Wang,只提供 PL-11 的基线裁剪说明，没有比较 NIST 800-53 与 FedRAMP，也未回答 Moderate 控制是否足以满足项目要求或说明需查 FedRAMP 的外部依据。没有明确断言 Moderate 即可获授权，故 E=no，但范围处理和整题回应均不足。
+NQ08,generative_baseline,yes,no,no,Wenjia Wang,所给证据不足以判断 FedRAMP 项目要求与授权充分性，NO_EVIDENCE 避免了无依据的项目结论。最终空答未解释两者区别及证据限制，故 D=no；没有断言，E=no。
+NQ09,compliancegpt,no,no,no,Wenjia Wang,有 AU-2 事件选择内容，但缺少 AU-3/AU-12 的记录内容和生成组件，未说明条款不能直接给出 Kiwi 配置或全项合规结论，也漏问 au-12_odp.01。追问将事件类型问成组织单位、告警人员问成时长、事件及记录条件问成时长，无法补齐真正所需信息；这些输入错误本身不记作 E 类断言。
+NQ09,generative_baseline,uncertain,no,no,Wenjia Wang,正文为空，既未解释日志要求，也未询问事件类型、记录条件及生成组件，D=no；没有断言，E=no。C 保留 uncertain：上下文确实缺少 AU-3/AU-12 且不足以确认实际配置，但已有 AU-2 可作部分解释，空答未说明是合理限制结论还是过度拒答。
+NQ10,compliancegpt,yes,no,no,Wenjia Wang,回答限定于基线选择原则，并指出国家安全系统可查 CNSSI 1253，没有声称通用 NIST 基线即可确定该 SCIF 的项目要求，故 C=yes、E=no。仍未解释具体 DISA/DAAPM 适用依据或回应“是否要求持续执行”，整题未完成。
+NQ10,generative_baseline,yes,no,no,Wenjia Wang,缺少所述 SCIF、DISA/DAAPM 的适用项目依据时，拒绝给出具体控制选择或持续执行结论是合理的。空答没有说明需要哪些机构、基线或授权信息，也没有回应两个问题，故 D=no；没有断言，E=no。
+NQ11,compliancegpt,yes,no,no,Wenjia Wang,引用仍限于 SI-3，没有新增部署或法律结论，但未展开选择项，也未说明“一个或多个响应动作＋另行告警”的两组义务和自定义动作的条件性。五项 ODP 追问不需要用于解释语法，且 si-03_odp.03 应选择端点/网络出入口，却被问成时长。
+NQ11,generative_baseline,no,no,no,Wenjia Wang,最终回答为空，没有解释两组义务；题中已经给出完整选择结构，且 SI-3c.2 可用，未提供任何有依据的范围性拒答。没有实际断言，故 E=no，不能把运行时解析错误直接当作实施或法律错误。
+NQ12,compliancegpt,no,no,no,Wenjia Wang,只解释 AC-12 的用户会话终止，漏掉 SC-10 的网络连接及其时限参数，也没有回应 364 天是否合理和是否有政府定义。虽询问 ac-12_odp，但未说明具体限值及法律判断需要外部依据；没有编造时限，故 E=no。
+NQ12,generative_baseline,no,yes,yes,Wenjia Wang,文字分别回应了 364 天是否适当和是否存在政府定义，所以 D=yes；这不表示其结论有证据支持。所引条款没有支持“15 分钟至 1 小时”的惯例/最佳实践或“没有政府定义”的广泛断言，也未核实组织及项目约束，故 C=no、E=yes。
+NQ13,compliancegpt,no,no,no,Wenjia Wang,PL-10 的基线介绍没有提供 PCI DSS 与 800-53 Rev5 的权威映射、版本或查找方向，也未说明跨框架映射不在当前条款证据中。未捏造具体映射，故 E=no，但不能把这段通用文字当作对原题的完整回应。
+NQ13,generative_baseline,yes,no,no,Wenjia Wang,当前材料不含权威跨框架映射，NO_EVIDENCE 避免编造 crosswalk，范围上可接受。正文为空，未解释这一限制或提示需确认 PCI DSS 版本和外部映射来源，故 D=no；没有断言，E=no。
+NQ14,compliancegpt,no,no,no,Wenjia Wang,SI-2 父条款实际包含识别/纠正缺陷和配置管理跟踪义务，不能因缺少子条款 ID 就判作内容全缺；但长篇摘录未针对非 CVE、非操作系统缺陷解释适用性，也未处理具体供应商缺陷及自动跟踪工具的证据边界。另问修复期限、扫描频率和共享人员等四项值，仍未完成两个主要问题，未见新增实施或法律断言。
+NQ14,generative_baseline,no,yes,yes,Wenjia Wang,解释了 SI-2 的缺陷范围不限于 CVE，并分别提出控制和跟踪工具方向，覆盖了原题两个主要请求。可是引用没有证明自动补丁管理或 CA-7 工具能追踪该类非 CVE、非操作系统的供应商缺陷，且 SI-2(4) 的工具能力没有得到所列引文支持，故 C=no、E=yes。
+NQ15,compliancegpt,yes,no,no,Wenjia Wang,给出的基线与后续裁剪原则有条款依据，并以任务、信息类型和风险作为选择因素，没有臆造“所有 Web 服务器适用某些控制族”的规则。仍未给出按系统类别分配控制的方法或模板，也未明确指出如何弥补该部分资料缺口，故 D=no。
+NQ15,generative_baseline,yes,no,no,Wenjia Wang,条款库没有请求的系统类别分配模板，NO_EVIDENCE 避免了无依据的 Web 服务器控制清单，范围上可接受。空答没有解释限制、给出方法方向或必要系统信息，故 D=no；没有断言，E=no。
+NQ16,compliancegpt,no,no,no,Wenjia Wang,没有说明 AU-4 应填保留要求而非 TB/TB每日，遗漏 AU-4/AU-11 区别、裁剪理由记录位置及示例值资料的范围限制，反而大量转向 AU-5。四项 ODP 对这些概念解释并非必需，au-05_odp.01 的人员/角色被问成时长；未发现另外的实施或法律断言。
+NQ16,generative_baseline,uncertain,no,no,Wenjia Wang,空答遗漏参数含义、AU-4/AU-11 比较、理由记录位置和示例来源，D=no；没有断言，E=no。C 保留 uncertain：本次上下文缺少 AU-11/PL-2，但已有 AU-4 可解释一部分，回答没有说明为何全部弃答，无法确定其是否恰当处理这一部分可回答的边界。
+NQ17,compliancegpt,no,no,no,Wenjia Wang,原题问自评流程、访谈取证和记录结果，回答却是 AC-2(7) 特权账户，未给出 CA-2 计划/报告流程或说明 800-53A 的方法边界。无关追问还把“基于角色或属性的访问方案”问成职位/角色；未发现独立的实施或法律断言。
+NQ17,generative_baseline,yes,no,no,Wenjia Wang,交叉核对确认 CA-2 虽在上游检索中出现，却未进入本次回答上下文，拒绝由无关材料推导自评流程是合理的。空答仍没有向用户解释缺失证据、评价访谈方案或说明如何记录发现，故 D=no；没有断言，E=no。
+NQ18,compliancegpt,no,no,no,Wenjia Wang,原题询问 AC-10 并发会话、实际例子和 ERP 可行性，回答却要求按 AC-6(5) 限制特权账户，没有解释原题或其环境限制。追问要求 daily/weekly/monthly 频率，但 ac-06.05_odp 定义为人员或角色；该错配本身不算实施或法律断言。
+NQ18,generative_baseline,yes,no,no,Wenjia Wang,本次回答上下文未包含已经检索到的 AC-10，NO_EVIDENCE 避免用无关特权账户条款编造并发会话结论，范围上可接受。最终空答没有解释控制、给出例子或讨论 ERP 可行性所需信息，故 D=no；没有断言，E=no。
+NQ19,compliancegpt,no,no,no,Wenjia Wang,只给出 AC-2 的零散片段，未解释政策、程序和 SSP 的职责，也未评价仅复述控制是否足够或说明 FedRAMP 接受度需另行依据。离职/调岗及用途变化通知时限与本题概念问题无关，追问不能补足遗漏；没有直接保证政策能通过审核，故 E=no。
+NQ19,generative_baseline,uncertain,no,no,Wenjia Wang,空答未回应两种政策写法、文档之间的关系及是否需要内部规定，D=no；没有断言，E=no。C 保留 uncertain：关键 AC-1/PL-2 未进入上下文，但已有 AC-2 可支持账户类型的部分解释，完全弃答又没有范围说明，其适当性不能确认。
+NQ20,compliancegpt,yes,no,no,Wenjia Wang,仅引用 AC-2(5) 及其现有指导，没有自行宣称锁屏满足注销要求；但照搬了有歧义的 AC-11 交叉引用，未解释 lock/logout 区别或是否必须每天下班注销。实际注销触发条件的 ODP 不是回答这一区别的前提，多余追问未补齐解释。
+NQ20,generative_baseline,yes,yes,no,Wenjia Wang,明确说明在组织定义的预期不活动条件下应执行注销，不能仅以锁屏替代，回应了原题的核心二选一，也没有把“每天下班”说成统一要求。未完整引用 AC-11 或解释交叉引用歧义属于证据完整性不足，运行时失败也另计，不据此否定这段文字的核心解释。

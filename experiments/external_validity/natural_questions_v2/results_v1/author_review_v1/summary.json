@@ -1,0 +1,104 @@
+{
+  "result_id": "natural_questions_v2",
+  "record_id": "author_post_run_review_v1",
+  "author_post_run_review_complete": true,
+  "technical_run_complete": true,
+  "independent_correctness_validated": false,
+  "design": "Single-author, unblinded post-run descriptive review; companion audit observations were available.",
+  "reviewer_names": [
+    "Wenjia Wang"
+  ],
+  "denominator_per_system": 20,
+  "validation": {
+    "expected_review_rows": 40,
+    "validated_review_rows": 40,
+    "validated_frozen_questions": 20,
+    "runtime_statuses_preserved": true,
+    "pairing_and_order_preserved": true,
+    "judgments_checked_directly": true,
+    "cached_completion_formulas_used": false
+  },
+  "systems": {
+    "compliancegpt": {
+      "scope_appropriate": {
+        "yes": 5,
+        "no": 15,
+        "uncertain": 0
+      },
+      "responsive_to_entire_question": {
+        "yes": 1,
+        "no": 19,
+        "uncertain": 0
+      },
+      "unsupported_implementation_or_legal_claim": {
+        "yes": 0,
+        "no": 20,
+        "uncertain": 0
+      }
+    },
+    "generative_baseline": {
+      "scope_appropriate": {
+        "yes": 9,
+        "no": 8,
+        "uncertain": 3
+      },
+      "responsive_to_entire_question": {
+        "yes": 5,
+        "no": 15,
+        "uncertain": 0
+      },
+      "unsupported_implementation_or_legal_claim": {
+        "yes": 6,
+        "no": 14,
+        "uncertain": 0
+      }
+    }
+  },
+  "uncertain_judgments": [
+    {
+      "query_id": "NQ09",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "正文为空，既未解释日志要求，也未询问事件类型、记录条件及生成组件，D=no；没有断言，E=no。C 保留 uncertain：上下文确实缺少 AU-3/AU-12 且不足以确认实际配置，但已有 AU-2 可作部分解释，空答未说明是合理限制结论还是过度拒答。"
+    },
+    {
+      "query_id": "NQ16",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "空答遗漏参数含义、AU-4/AU-11 比较、理由记录位置和示例来源，D=no；没有断言，E=no。C 保留 uncertain：本次上下文缺少 AU-11/PL-2，但已有 AU-4 可解释一部分，回答没有说明为何全部弃答，无法确定其是否恰当处理这一部分可回答的边界。"
+    },
+    {
+      "query_id": "NQ19",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "空答未回应两种政策写法、文档之间的关系及是否需要内部规定，D=no；没有断言，E=no。C 保留 uncertain：关键 AC-1/PL-2 未进入上下文，但已有 AC-2 可支持账户类型的部分解释，完全弃答又没有范围说明，其适当性不能确认。"
+    }
+  ],
+  "interpretation": [
+    "All yes/no/uncertain values are retained without imputation.",
+    "Responsiveness and unsupported-claim judgments are distinct; neither is an independent correctness endpoint.",
+    "No inferential comparison, composite correctness score, or new gold label is introduced.",
+    "Original automatic scoring files, blank review template, contracts and run archive are unchanged."
+  ],
+  "inputs": {
+    "workbook": {
+      "file": "ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang.xlsx",
+      "sha256": "ca5dd27b24d97f5a5a9ee2a096f5949d7b49503dbcc051186edbc4f16291f8e1"
+    },
+    "registered_questions.jsonl": {
+      "sha256": "9deb1f4c202100942fe605bd6b59b2020729f4cbe600d342680dddbbedbc3556"
+    },
+    "registered_labels.jsonl": {
+      "sha256": "ad1c54c4ccfcd5a4b04f94313e5487b4ed2c6e8b81455365f6cbf1a041ebc27f"
+    },
+    "protocol.json": {
+      "sha256": "c13239c8ee7a09b0c6c32144ef700af663aab4d40cdf318ab646b37c36bcdd08"
+    },
+    "results_v1/per_question_outcomes.jsonl": {
+      "sha256": "ca703dec64da84b2b599587e55d9ce5d7b8fc81bf764d2d9f59a04740477425b"
+    },
+    "results_v1/summary.json": {
+      "sha256": "3be2971be0a28b95b73f92c1cf5bad3d3d522c152228f607179ee4b63e09c4ea"
+    }
+  }
+}

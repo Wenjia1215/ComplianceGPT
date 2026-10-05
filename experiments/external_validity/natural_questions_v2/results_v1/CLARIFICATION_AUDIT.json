@@ -29,7 +29,7 @@
         "cp-7_smt.a"
       ],
       "canonical_definition": "cp-7_prm_1 organization-defined information system operations",
-      "audit_issue": "The prompt requests a duration; the canonical definition is information-system operations."
+      "audit_issue": "The stored data_type is duration, but the canonical definition is information-system operations. The displayed ask_prompt is unclear; it does not explicitly request a duration."
     },
     {
       "query_id": "NQ09",
@@ -137,5 +137,10 @@
       "canonical_definition": "ac-06.05_odp personnel or roles Guidelines: personnel or roles to which privileged accounts on the system are to be restricted is/are defined;",
       "audit_issue": "The prompt requests a frequency; the canonical definition is personnel or roles."
     }
-  ]
+  ],
+  "audit_erratum": {
+    "basis": "Author post-run review of NQ03",
+    "supersedes": "The prompt requests a duration; the canonical definition is information-system operations.",
+    "correction": "Distinguish the stored duration type from what the visible prompt actually says. Original returned contract bytes and registered metrics are unchanged."
+  }
 }

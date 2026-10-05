@@ -16,10 +16,12 @@ branch:     main
 commit:     da0ea7d5e964a67b193e1e59ba4d933760f3ba79
 ```
 
-The public remote was checked on 2026-09-24. The preserved branch
-`history/pre-public-cleanup-2026-07-29` existed at commit
-`1f15049360132271684da01c48506c17cc0861ce`. That branch is historical
-provenance, not the recommended execution target.
+The preserved public branch `history/pre-public-cleanup-2026-07-29` resolves to
+`1f15049c70b29fb29d2785765dcf45dc1123ceff`, verified directly against its public
+Git reference during the completed-review publication. This corrects the earlier
+unavailable commit pointer. That branch is historical provenance, not the
+recommended execution target. Historical local execution identities and public
+publication identities are distinguished in experiment-specific records.
 
 Current source may contain clearly identified documentation and regression
 patches made after the frozen evaluation. Such patches do not retroactively
@@ -38,6 +40,10 @@ change stored outputs or their metrics.
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
 | Per-identifier runtime provenance | `experiments/answerer_comparison/rq2_identifier_provenance/run_identifier_provenance.py` | `experiments/answerer_comparison/rq2_identifier_provenance/results_v1/` |
+| Synthetic profile resolution | `experiments/answerer_comparison/rq2_profile_fill_v2/run_profile_fill.py` | `experiments/answerer_comparison/rq2_profile_fill_v2/results_v2/` |
+| Primary RQ1 constant sensitivity | `experiments/retriever_ablation/constant_sensitivity/run_sensitivity.py` | `experiments/retriever_ablation/constant_sensitivity/results/rq1_constant_sensitivity_v1/` |
+| Natural-question complete answer paths | `experiments/external_validity/natural_questions_v2/run_natural_questions.py` | `experiments/external_validity/natural_questions_v2/results_v1/` |
+| Completed natural-question author review | `experiments/external_validity/natural_questions_v2/import_author_review.py` | `experiments/external_validity/natural_questions_v2/results_v1/author_review_v1/` |
 | Secondary rewrite diagnostics | `experiments/micro_ablations/run_micro_ablations.py` | `experiments/micro_ablations/` |
 | Runtime contract validation | `experiments/runtime_validation/revalidate_contracts.py` | `experiments/runtime_validation/outputs/` |
 | Single-query demonstration | `src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb` | generated during execution |
@@ -482,3 +488,35 @@ system is recorded separately in run manifests and experiment documentation.
   annotations, not legal correctness.
 - Passing the implemented verifier or offline scorer does not establish
   semantic correctness, legal sufficiency, or auditor approval.
+
+## Supplementary study and manuscript-audit boundaries
+
+The profile replay, primary-retriever sensitivity and natural-question study
+are separate registered result families. Their protocols, execution identities
+and original failures are retained in their respective directories. None
+replaces the original benchmark labels or historical headline tables.
+
+The natural-question GPU run and automatic scoring were completed before the
+author supplied the separate 40-row qualitative review. The original automatic
+summary and blank review template remain unchanged; completion is recorded in
+`results_v1/author_review_v1/summary.json`. This is unblinded author review with
+three scope uncertainties, not independent expert correctness validation. The
+exact submitted workbook and judgment notes are retained. The published executed
+notebook still includes its original execution output.
+
+To audit a current extracted Overleaf source package against these public
+artifacts, use a full checkout of the publication branch and Python's standard
+library:
+
+```bash
+python tools/audit_manuscript_consistency.py /path/to/extracted_overleaf \
+  --json-out /tmp/manuscript_audit.json \
+  --markdown-out /tmp/manuscript_audit.md
+```
+
+The tool checks supplementary tables when the source contains their identity
+section, in addition to the original benchmark and artifact checks. It verifies
+public PRESERVE commit trees and recorded execution-source hashes. The earlier
+local execution commit is historical metadata and is not a required public Git
+object. Compilation and visual inspection remain separate checks; artifact
+consistency cannot establish annotation or professional correctness.

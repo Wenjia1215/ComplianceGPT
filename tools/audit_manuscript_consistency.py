@@ -328,11 +328,12 @@ def audit_explicit_hashes(
                 )
             else:
                 verified += 1
+    expected_hashes = 29 if "\\label{app:new_study_identity}" in sources.get("appendix.tex", "") else 22
     audit.add(
         "artifact identity",
         "explicit Appendix path/hash pairs",
-        verified == 22 and not failures,
-        {"verified": 22, "failures": []},
+        verified == expected_hashes and not failures,
+        {"verified": expected_hashes, "failures": []},
         {"verified": verified, "failures": failures},
         "Appendix path/hash table",
     )
@@ -1104,29 +1105,153 @@ def audit_notebook_and_git_identity(
             "publication identity",
         )
 
-    local_tree = git_output(repo, "rev-parse", f"{LOCAL_PRESERVE_PRECOMMIT}^{{tree}}")
     public_tree = git_output(
         repo, "rev-parse", f"{PUBLIC_PRESERVE_PRECOMMIT}^{{tree}}"
     )
     final_tree = git_output(repo, "rev-parse", f"{PUBLIC_PRESERVE_RESULT}^{{tree}}")
+    # The local execution commit is historical metadata, not a public Git
+    # dependency. A fresh public checkout must be sufficient for this audit.
+    preserve_config = json.loads(
+        (repo / "experiments/answerer_comparison/rq2_preserve_replay/results_v1/run_config.json")
+        .read_text(encoding="utf-8")
+    )
+    recorded_hashes = preserve_config["code_sha256"]
+    public_hashes = {
+        relative: sha256_bytes(subprocess.check_output(
+            ["git", "show", f"{PUBLIC_PRESERVE_PRECOMMIT}:{relative}"], cwd=repo
+        ))
+        for relative in recorded_hashes
+    }
     git_observed = {
-        "local_precommit_tree": local_tree,
+        "recorded_local_execution_commit": preserve_config["execution_repo_commit"],
         "public_precommit_tree": public_tree,
         "public_final_tree": final_tree,
+        "execution_source_hashes": public_hashes,
     }
     git_expected = {
-        "local_precommit_tree": "f62d667917fe84855506752dbfb55649b0956c96",
+        "recorded_local_execution_commit": LOCAL_PRESERVE_PRECOMMIT,
         "public_precommit_tree": "f62d667917fe84855506752dbfb55649b0956c96",
         "public_final_tree": "e58ba15d5ab9e7c98c6e500a696018d10eefb35b",
+        "execution_source_hashes": recorded_hashes,
     }
     audit.add(
         "publication identity",
-        "PRESERVE local/public commit tree mapping",
+        "PRESERVE public commits and recorded execution source hashes",
         git_observed == git_expected,
         git_expected,
         git_observed,
-        "Git object database",
+        "Public Git objects and immutable PRESERVE run_config.json",
     )
+
+
+def audit_supplementary_studies(audit: Audit, repo: Path, sources: dict[str, str]) -> None:
+    """Check the separately reported studies when present in the manuscript."""
+    if "\\label{app:new_study_identity}" not in sources.get("appendix.tex", ""):
+        return  # The previously published source package has no new studies.
+    chap6 = sources.get("chap6.tex", "")
+    category = "supplementary studies"
+    natural = repo / "experiments/external_validity/natural_questions_v2"
+    review_dir = natural / "results_v1/author_review_v1"
+    automatic = read_json(natural / "results_v1/summary.json")
+    review = read_json(review_dir / "summary.json")
+    review_rows = read_csv(review_dir / "author_post_run_review.csv")
+    expected_pairs = [(row["query_id"], system)
+                      for row in (json.loads(line) for line in
+                                  (natural / "registered_questions.jsonl").read_text().splitlines())
+                      for system in ("compliancegpt", "generative_baseline")]
+    audit.add(category, "completed author review has every registered pair",
+              [(row["query_id"], row["system"]) for row in review_rows] == expected_pairs,
+              expected_pairs, [(row["query_id"], row["system"]) for row in review_rows],
+              "registered_questions.jsonl and completed author CSV")
+    observed_counts = {
+        system: {field: {value: sum(row[field] == value for row in review_rows if row["system"] == system)
+                        for value in ("yes", "no", "uncertain")}
+                 for field in ("scope_appropriate", "responsive_to_entire_question",
+                               "unsupported_implementation_or_legal_claim")}
+        for system in ("compliancegpt", "generative_baseline")
+    }
+    audit.add(category, "author CSV counts agree with completion summary",
+              observed_counts == review["systems"], review["systems"], observed_counts,
+              "completed author CSV and separate summary")
+    completion = {"author_post_run_review_complete": review["author_post_run_review_complete"],
+                  "independent_correctness_validated": review["independent_correctness_validated"],
+                  "uncertain_judgments": len(review["uncertain_judgments"])}
+    expected_completion = {"author_post_run_review_complete": True,
+                           "independent_correctness_validated": False, "uncertain_judgments": 3}
+    audit.add(category, "review completion preserves independent-validation boundary",
+              completion == expected_completion, expected_completion, completion,
+              "author_review_v1/summary.json")
+    input_hashes = {name: sha256_file(natural / name) for name in review["inputs"] if name != "workbook"}
+    input_hashes["workbook"] = sha256_file(review_dir / review["inputs"]["workbook"]["file"])
+    expected_inputs = {name: value["sha256"] for name, value in review["inputs"].items()}
+    audit.add(category, "completed review input hashes", input_hashes == expected_inputs,
+              expected_inputs, input_hashes, "author_review_v1/summary.json inputs")
+    for label, field in (
+        ("Runtime contract valid", "runtime_contract_valid"),
+        ("All reference clause-ID groups covered", "clause_id_group_coverage"),
+        ("Complete canonical-text group coverage", "complete_clause_text_group_coverage"),
+        ("Strict contract on fully answerable questions", "strict_full_catalog_contract"),
+        ("ODP sensitivity against author reference", "odp_author_reference_sensitivity"),
+        ("ODP specificity against author reference", "odp_author_reference_specificity"),
+    ):
+        cells = [f"{automatic['systems'][system][field]['numerator']}/{automatic['systems'][system][field]['denominator']}"
+                 for system in ("compliancegpt", "generative_baseline")]
+        add_anchor(audit, "chap6.tex", chap6, f"natural-question {field}",
+                   " & ".join([label, *cells]) + r" \\", category)
+    for label, field in (("Total answer words", "total_answer_words"),
+                         ("Total evidence spans", "total_evidence_spans"),
+                         ("Total listed ODP keys", "total_listed_odps")):
+        cells = [f"{automatic['systems'][system][field]:,}" for system in ("compliancegpt", "generative_baseline")]
+        add_anchor(audit, "chap6.tex", chap6, f"natural-question {field}",
+                   " & ".join([label, *cells]) + r" \\", category)
+    for label, field in (("Scope appropriate", "scope_appropriate"),
+                         ("Entire question addressed", "responsive_to_entire_question"),
+                         ("Unsupported implementation/legal claim", "unsupported_implementation_or_legal_claim")):
+        cells = [" / ".join(str(observed_counts[system][field][value]) for value in ("yes", "no", "uncertain"))
+                 for system in ("compliancegpt", "generative_baseline")]
+        add_anchor(audit, "chap6.tex", chap6, f"natural-question author {field}",
+                   " & ".join([label, *cells]) + r" \\", category)
+    profile = read_json(repo / "experiments/answerer_comparison/rq2_profile_fill_v2/results_v2/summary.json")
+    for key, label in (("empty", "Empty"), ("complete", "Complete"), ("partial", "Partial"),
+                       ("unknown_keys", "Unknown keys"), ("wrong_revision", "Wrong revision"),
+                       ("unversioned", "Unversioned"), ("placeholder_values", "Placeholder values"),
+                       ("literal_backslashes", "Literal backslashes")):
+        condition = profile["by_condition"][key]
+        counts = condition["status_counts"]
+        anchor = (f"{label} & {condition['accepted']}/{condition['cases']} & "
+                  f"{counts.get('OK', 0)} & {counts.get('PARAMS_REQUIRED', 0)} & {condition['binding_occurrences']}" + r" \\")
+        add_anchor(audit, "chap6.tex", chap6, f"profile condition {key}", anchor, category)
+    profile_counts = {"cases": profile["cases"], "accepted": profile["accepted_cases"],
+                      "legacy_accepted": profile["legacy_regressions"]["accepted"],
+                      "mutation_attempts": sum(row["attempts"] for row in profile["mutations"].values()),
+                      "mutation_detected": sum(row["detected"] for row in profile["mutations"].values())}
+    expected_profile = {"cases": 800, "accepted": 800, "legacy_accepted": 144,
+                        "mutation_attempts": 630, "mutation_detected": 630}
+    audit.add(category, "profile registered matrix, regressions and named mutations",
+              profile_counts == expected_profile, expected_profile, profile_counts,
+              "rq2_profile_fill_v2/results_v2/summary.json")
+    sensitivity = read_json(repo / "experiments/retriever_ablation/constant_sensitivity/results/rq1_constant_sensitivity_v1/summary.json")
+    for key, label in (("baseline", "Fresh baseline"), ("alpha_minus20", r"$\alpha=0.52$"),
+                       ("alpha_plus20", r"$\alpha=0.78$"), ("adoption_minus20", "Adoption 0.12"),
+                       ("adoption_plus20", "Adoption 0.18"), ("skip_minus20", "Skip 0.08"),
+                       ("skip_plus20", "Skip 0.12")):
+        rev4 = sensitivity["strata"]["rev4"]["conditions"][key]
+        rev5 = sensitivity["strata"]["rev5"]["conditions"][key]
+        left, right = rev4["metrics"], rev5["metrics"]
+        anchor = (f"{label} & {left['success_at_1']['hits']}/{left['success_at_1']['n']} & "
+                  f"{right['success_at_1']['hits']}/{right['success_at_1']['n']} & "
+                  f"{right['success_at_10']['hits']}/{right['success_at_10']['n']} & "
+                  f"{right['mrr_at_10']['mean']:.4f} & {rev4['logical_reranker_calls']} / {rev5['logical_reranker_calls']}" + r" \\")
+        add_anchor(audit, "chap6.tex", chap6, f"sensitivity condition {key}", anchor, category)
+    add_anchor(audit, "epilogue.tex", sources.get("epilogue.tex", ""),
+               "test-retest limitation states consistency versus independent correctness",
+               "This test--retest study bounds the author's labeling consistency, not the independent correctness of the labels.", category)
+    add_anchor(audit, "epilogue.tex", sources.get("epilogue.tex", ""),
+               "independent expert study is first future priority",
+               "The first priority is an independent expert study, planned as the first study after the defense.", category)
+    add_anchor(audit, "appendix.tex", sources.get("appendix.tex", ""),
+               "current publicly verified preserved-history identity",
+               "1f15049c70b29fb29d2785765dcf45dc1123ceff", category)
 
 
 def audit_stale_claims(audit: Audit, sources: dict[str, str]) -> None:
@@ -1263,6 +1388,7 @@ def main() -> int:
         audit, repo, sources.get("chap6.tex", ""), appendix
     )
     audit_notebook_and_git_identity(audit, repo, appendix)
+    audit_supplementary_studies(audit, repo, sources)
     audit_stale_claims(audit, sources)
 
     report = audit.report()
