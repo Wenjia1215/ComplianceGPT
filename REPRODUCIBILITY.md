@@ -23,6 +23,14 @@ unavailable commit pointer. That branch is historical provenance, not the
 recommended execution target. Historical local execution identities and public
 publication identities are distinguished in experiment-specific records.
 
+The public baseline is a curated publication snapshot. Its merge incorporates
+the reorganized dissertation artifacts while removing notebooks and generated
+outputs that are not part of the supported reproduction paths. The deletion
+volume is not an empirical result or evidence that the deleted files were
+unnecessary to earlier exploratory work. Consult the preserved historical
+branch when auditing that development history, and use the evaluation map
+below to reproduce the reported result families.
+
 Current source may contain clearly identified documentation and regression
 patches made after the frozen evaluation. Such patches do not retroactively
 change stored outputs or their metrics.

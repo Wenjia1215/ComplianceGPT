@@ -4,6 +4,11 @@ This file pins the upstream NIST source artifacts used to build the released
 Canonical Clause Stores (CCS). File identity is defined by the tagged upstream
 release, upstream commit, embedded metadata, and local SHA-256 digest.
 
+The original catalog download date was not retained. The upstream release date
+and embedded last-modified fields below identify versions, not the author's
+download date. A later file-identity check cannot reconstruct that acquisition
+timestamp; no historical download date is inferred from these fields.
+
 ## OSCAL source release
 
 - Upstream repository: <https://github.com/usnistgov/oscal-content>

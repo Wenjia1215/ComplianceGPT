@@ -275,9 +275,11 @@ def audit_tex_structure(
         ),
         "uncited": sorted(set(defined) - set(cited)),
     }
+    additional_keys = {"w3cprovo2013", "holzenberger2020sara", "peng2024uaeval4rag"}
+    expected_citation_count = 133 + len(additional_keys.intersection(defined))
     citation_ok = (
-        citation_result["cited_unique"] == 133
-        and citation_result["defined_unique"] == 133
+        citation_result["cited_unique"] == expected_citation_count
+        and citation_result["defined_unique"] == expected_citation_count
         and not citation_result["missing"]
         and not citation_result["duplicate_definitions"]
         and not citation_result["uncited"]
@@ -287,8 +289,8 @@ def audit_tex_structure(
         "retained bibliography is one-to-one with citations",
         citation_ok,
         {
-            "cited_unique": 133,
-            "defined_unique": 133,
+            "cited_unique": expected_citation_count,
+            "defined_unique": expected_citation_count,
             "missing": [],
             "duplicate_definitions": [],
             "uncited": [],
@@ -515,11 +517,11 @@ def audit_dataset_and_corpus_claims(
         ("CCS ODP row", "ODP records & 0 & 1,450 \\"),
         (
             "Rev. 4 registry row",
-            "Rev.~4 ODP registry & 853 & 853 &",
+            "Rev.~4 parameter registry & 853 & 853 &",
         ),
         (
             "Rev. 5 registry row",
-            "Rev.~5 ODP registry & 3,010 & 1,592 &",
+            "Rev.~5 parameter registry & 3,010 & 1,592 &",
         ),
     ):
         add_anchor(audit, "chap4.tex", chap4, label, fragment)
@@ -1248,7 +1250,7 @@ def audit_supplementary_studies(audit: Audit, repo: Path, sources: dict[str, str
                "This test--retest study bounds the author's labeling consistency, not the independent correctness of the labels.", category)
     add_anchor(audit, "epilogue.tex", sources.get("epilogue.tex", ""),
                "independent expert study is first future priority",
-               "The first priority is an independent expert study, planned as the first study after the defense.", category)
+               "The first priority is an independent expert study, planned as the first study and paper after the defense.", category)
     add_anchor(audit, "appendix.tex", sources.get("appendix.tex", ""),
                "current publicly verified preserved-history identity",
                "1f15049c70b29fb29d2785765dcf45dc1123ceff", category)
