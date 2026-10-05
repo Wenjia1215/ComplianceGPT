@@ -1,6 +1,6 @@
 # Primary RQ1 constant sensitivity
 
-**Status: registration published; formal experiment pending GPU execution.**
+**Status: formal GPU run completed; all 952 evaluations verified by exact replay and separate statistical checks.**
 
 This study varies the primary notebook's blend weight, fixed rerank-adoption
 margin and rerank-skip margin separately by ±20%. Its seven conditions cover
@@ -61,3 +61,18 @@ registration files. Preserve this result identity if a new study is needed.
 
 The interpretation remains exploratory: these comparisons do not remove prior
 evaluation-set tuning bias or demonstrate held-out or independent correctness.
+
+## Verified result
+
+The complete verified result is in [results/rq1_constant_sensitivity_v1](results/rq1_constant_sensitivity_v1).
+Read [AUDIT.md](results/rq1_constant_sensitivity_v1/AUDIT.md) for the interpretation,
+verification evidence, gate tradeoffs, historical drift, limits and reproduction
+command. The original result ZIP is retained as two binary parts; the audit
+command verifies their hashes and reconstructs the exact original archive.
+
+Revision 5 Success@1 ranges from 88/100 to 90/100 and Success@10 from 99/100 to
+100/100. At alpha 0.52, query 23's governing control moves from rank 10 to rank 11.
+The fresh baseline differs from two saved historical gold ranks. These findings
+are reported explicitly; historical headlines are preserved. Local sensitivity
+does not establish parameter invariance, remove benchmark tuning bias or replace
+independent expert validation.

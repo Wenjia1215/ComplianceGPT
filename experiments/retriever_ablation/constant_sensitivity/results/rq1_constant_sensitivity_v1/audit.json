@@ -1,0 +1,176 @@
+{
+  "accepted": true,
+  "archive_bytes": 12883357,
+  "archive_members": 145,
+  "archive_sha256": "0106042b93d2fb15b754dfd70a983db85cfd1cf716f6cb68f22ac95b421be680",
+  "audit_recorded_at_utc": "2026-10-05T01:23:09.986559+00:00",
+  "audit_runtime": {
+    "numpy": "2.0.2",
+    "python": "3.12.14",
+    "scipy": "1.18.1"
+  },
+  "byte_identical_replayed_files": [
+    "per_query_results.jsonl",
+    "historical_baseline_comparison.jsonl",
+    "summary.json",
+    "SUMMARY.md",
+    "SHA256SUMS"
+  ],
+  "capture_runtime": {
+    "compute_dtype": "float32",
+    "cuda_version": "12.4",
+    "dependencies": {
+      "faiss-cpu": "1.10.0",
+      "huggingface-hub": "0.30.2",
+      "numpy": "2.0.2",
+      "pandas": "2.2.3",
+      "safetensors": "0.5.3",
+      "sentence-transformers": "4.1.0",
+      "torch": "2.6.0",
+      "transformers": "4.51.3"
+    },
+    "deterministic_algorithms": true,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "model_file_sha256": {
+      "dense": {
+        "1_Pooling/config.json": "987f7a67a38fa564c849bb5d277c52ab9088a84368fc0be31a354125aebb12a0",
+        "config.json": "5dfb0363cd0243be179c03bcaafd1542d0fbb95e8cbcf575fff3e229342adc2f",
+        "model.safetensors": "45bfa60070649aae2244fbc9d508537779b93b6f353c17b0f95ceccb1c5116c1",
+        "modules.json": "c6e29747481e8b5dd2b58401966aeac910de39092f90cda9a704b1545f902b04",
+        "sentence_bert_config.json": "948201d8329907aae938fa62f9ceeed53f5694dacc2b87b9f3b78b37ee986529",
+        "special_tokens_map.json": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+        "tokenizer.json": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+        "tokenizer_config.json": "ae83fa6ca0333117ff12606020af925d648667ef70d92ff7f27d781ba0ca4544",
+        "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+      },
+      "reranker": {
+        "config.json": "289adf7ada1eb6b4afa7589a48a032d45a076cf2e46dcdb3b4cabc33be14f708",
+        "model.safetensors": "ced967c45fd1902eb92716c9ceeca7c95a936770ea9db611f5a841b926e33fbd",
+        "sentencepiece.bpe.model": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+        "special_tokens_map.json": "d5469a60db23249c7f8945013d78df30b44b6bf686c6bb4740f4223f77b1b535",
+        "tokenizer.json": "9eb652ac4e40cc093272bbbe0f55d521cf67570060227109b5cdc20945a4489e",
+        "tokenizer_config.json": "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b"
+      }
+    },
+    "model_revisions": {
+      "dense": {
+        "model_id": "intfloat/e5-small-v2",
+        "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+      },
+      "reranker": {
+        "model_id": "BAAI/bge-reranker-base",
+        "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+      }
+    },
+    "python": "3.13.15",
+    "tf32": false
+  },
+  "checks_passed_by_category": {
+    "archive_crc": 1,
+    "archive_part_hashes": 2,
+    "archive_part_identity": 1,
+    "byte_identical_replayed_outputs": 5,
+    "cache_manifest_hashes": 136,
+    "complete_cache_population": 1,
+    "complete_cross_encoder_capture": 136,
+    "complete_payload_hash_coverage": 1,
+    "complete_unique_condition_matrix": 1,
+    "complete_variant_captures": 136,
+    "condition_cache_identity": 952,
+    "condition_threshold_identity": 2856,
+    "cross_encoder_pair_hashes": 136,
+    "cross_encoder_score_shape": 136,
+    "dense_best_clause_provenance": 86838,
+    "dense_control_identity_and_finite_scores": 538,
+    "dense_control_uniqueness": 538,
+    "dense_score_order": 538,
+    "dense_text_from_frozen_corpus": 26900,
+    "dense_variant_and_width": 538,
+    "frozen_rewrite_policy": 1,
+    "immutable_scientific_commit": 1,
+    "independent_mcnemar_counts_and_p": 54,
+    "independent_metric_means": 105,
+    "independent_pair_identities": 18,
+    "independent_paired_bootstrap_intervals": 36,
+    "independent_paired_deltas": 90,
+    "independent_per_query_metrics": 952,
+    "independent_wilson_intervals": 63,
+    "lexical_query_tokens": 538,
+    "lexical_ranks_from_frozen_corpus": 538,
+    "lexical_scores_from_frozen_corpus": 538,
+    "no_extra_or_missing_caches": 1,
+    "payload_sha256": 144,
+    "per_cache_provenance": 136,
+    "pinned_dependency_versions": 8,
+    "rank_from_control_order": 952,
+    "reassembled_original_archive_hash": 1,
+    "recorded_gpu_execution": 1,
+    "reference_label_identity": 952,
+    "registered_compute_settings": 1,
+    "registered_model_revisions": 1,
+    "registered_population": 1,
+    "registered_protocol_hash": 1,
+    "registered_source_and_input_hashes": 3,
+    "registration_precedes_recorded_execution": 1,
+    "reported_acceptance_agrees_with_audit": 1,
+    "safe_archive_part_paths": 2,
+    "safe_archive_paths": 1,
+    "stratum_condition_size": 21,
+    "unique_archive_members": 1,
+    "unique_payload_hash_records": 144,
+    "unique_ranked_controls": 952,
+    "upstream_immutable_model_revision": 2,
+    "upstream_lfs_file_sha256": 4,
+    "upstream_model_content_sha256": 11,
+    "upstream_model_file_presence": 15
+  },
+  "cross_encoder_pairs_retained": 6800,
+  "dense_canonical_texts_verified": 26900,
+  "evaluations_replayed": 952,
+  "failed_attempt_records_retained": [
+    "failures/20261005T001132075807Z.json",
+    "failures/20261005T002047394630Z.json"
+  ],
+  "historical_baseline": {
+    "gate_flags_unchanged": 135,
+    "gold_rank_unchanged": 134,
+    "queries": 136,
+    "top10_unchanged": 65
+  },
+  "historical_gold_rank_differences": [
+    {
+      "gate_flags_unchanged": false,
+      "gold_rank_unchanged": false,
+      "historical_rank": 1,
+      "new_rank": 2,
+      "query_id": "28",
+      "revision": "rev4",
+      "top10_unchanged": false
+    },
+    {
+      "gate_flags_unchanged": true,
+      "gold_rank_unchanged": false,
+      "historical_rank": 2,
+      "new_rank": 3,
+      "query_id": "12",
+      "revision": "rev5",
+      "top10_unchanged": false
+    }
+  ],
+  "independent_statistics_tolerance": 1e-13,
+  "lexical_score_vectors_recomputed": 538,
+  "limits": [
+    "Cached neural scores were verified for provenance and replay, not reinferred in this audit.",
+    "Same-author benchmark labels are not independently adjudicated correctness.",
+    "Sensitivity covers three selected retrieval constants, not every configuration constant.",
+    "Local sensitivity does not remove benchmark tuning bias or establish held-out validity.",
+    "The fresh baseline does not replace the saved historical RQ1 results.",
+    "Logical skip counts are not measured runtime or cost savings."
+  ],
+  "model_files_verified": 15,
+  "payload_hashes_verified": 144,
+  "protocol_sha256": "f094327ea5a63f2f25043c1c6f4f0f84bb5bc0f57326bcb374fa4a4c14a6123b",
+  "registered_questions": 136,
+  "scientific_commit": "a066453a317bba365db707b71745e49fee28811a",
+  "total_checks_passed": 126681
+}

@@ -1,0 +1,77 @@
+{
+  "code_sha256": {
+    "experiments/retriever_ablation/constant_sensitivity/PROTOCOL.md": "313ecf2d99dcd74902d4788cc03bf0e65211266886fbfc86689f62bc1534fd7a",
+    "experiments/retriever_ablation/constant_sensitivity/primary_adapter.py": "1bf997c2b707f7ff1876acb6536f6fdb165aeb6d5a286f097864ff02cf0938cc",
+    "experiments/retriever_ablation/constant_sensitivity/requirements-colab.txt": "220e855d3db32580410f5b560fabc82777c4a0839dc572983860795a08ad0efc",
+    "experiments/retriever_ablation/constant_sensitivity/run_sensitivity.py": "1f2b2191fbe9d8d60a78f9d1be4181244dbd1c0e83ac792a271500fc21cf98c7",
+    "experiments/retriever_ablation/constant_sensitivity/statistics.py": "6ed43c364cc1b4e681fc559aae9367274b79d2092f809ebcb46e24c511684d55",
+    "tests/test_rq1_constant_sensitivity.py": "9321b9393a9f922e691901d90a3248a0805f50ad0c30f55a4fe851d263c04901"
+  },
+  "execution_repo_commit": "a066453a317bba365db707b71745e49fee28811a",
+  "inference_strategy": "one ungated complete candidate probe per question; identical scores reused for seven logical conditions",
+  "input_sha256": {
+    "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "data/qur_outputs/qur_rewrites_rev4.csv": "13c7657154dbc5ee307ed8c674c7e6e30558faa3fa3990ec851a8bcb0ce105e7",
+    "data/qur_outputs/qur_rewrites_rev5.csv": "ae20478163cbae94e5ccba5b27d401a707fe0c5bb4dd46e31061aa11191ddd82",
+    "experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev4_results.csv": "3ad554cc5d63925341453368d74481728e0f04ff7ef7adc5f9e706b77f2ec999",
+    "experiments/retriever_ablation/ablation_outputs/system_7_compliance_gpt/S7_compliance_gpt_rev5_results.csv": "bc0f8e51a3afcb90739ba746e0ead8b34aca5616b3a52d4cb6049dc23318219a",
+    "experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb": "99af2a23a17534fe0dfc304e4ce75cec2042ad39ab476c572022fc98f01b8e58"
+  },
+  "new_llm_rewrites": false,
+  "protocol_sha256": "f094327ea5a63f2f25043c1c6f4f0f84bb5bc0f57326bcb374fa4a4c14a6123b",
+  "registered_queries_sha256": "6c77aa1d67cc75611bb8ff8bf7e6604a23b8fa6c70ba1739efa2e0ef84cfe4ae",
+  "result_id": "rq1_constant_sensitivity_v1",
+  "runtime": {
+    "compute_dtype": "float32",
+    "cuda_version": "12.4",
+    "dependencies": {
+      "faiss-cpu": "1.10.0",
+      "huggingface-hub": "0.30.2",
+      "numpy": "2.0.2",
+      "pandas": "2.2.3",
+      "safetensors": "0.5.3",
+      "sentence-transformers": "4.1.0",
+      "torch": "2.6.0",
+      "transformers": "4.51.3"
+    },
+    "deterministic_algorithms": true,
+    "gpu_name": "NVIDIA A100-SXM4-40GB",
+    "model_file_sha256": {
+      "dense": {
+        "1_Pooling/config.json": "987f7a67a38fa564c849bb5d277c52ab9088a84368fc0be31a354125aebb12a0",
+        "config.json": "5dfb0363cd0243be179c03bcaafd1542d0fbb95e8cbcf575fff3e229342adc2f",
+        "model.safetensors": "45bfa60070649aae2244fbc9d508537779b93b6f353c17b0f95ceccb1c5116c1",
+        "modules.json": "c6e29747481e8b5dd2b58401966aeac910de39092f90cda9a704b1545f902b04",
+        "sentence_bert_config.json": "948201d8329907aae938fa62f9ceeed53f5694dacc2b87b9f3b78b37ee986529",
+        "special_tokens_map.json": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+        "tokenizer.json": "d241a60d5e8f04cc1b2b3e9ef7a4921b27bf526d9f6050ab90f9267a1f9e5c66",
+        "tokenizer_config.json": "ae83fa6ca0333117ff12606020af925d648667ef70d92ff7f27d781ba0ca4544",
+        "vocab.txt": "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3"
+      },
+      "reranker": {
+        "config.json": "289adf7ada1eb6b4afa7589a48a032d45a076cf2e46dcdb3b4cabc33be14f708",
+        "model.safetensors": "ced967c45fd1902eb92716c9ceeca7c95a936770ea9db611f5a841b926e33fbd",
+        "sentencepiece.bpe.model": "cfc8146abe2a0488e9e2a0c56de7952f7c11ab059eca145a0a727afce0db2865",
+        "special_tokens_map.json": "d5469a60db23249c7f8945013d78df30b44b6bf686c6bb4740f4223f77b1b535",
+        "tokenizer.json": "9eb652ac4e40cc093272bbbe0f55d521cf67570060227109b5cdc20945a4489e",
+        "tokenizer_config.json": "a1d6bc8734a6f635dc158508bef000f8e2e5a759c7d92f984b2c86e5ff53425b"
+      }
+    },
+    "model_revisions": {
+      "dense": {
+        "model_id": "intfloat/e5-small-v2",
+        "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+      },
+      "reranker": {
+        "model_id": "BAAI/bge-reranker-base",
+        "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+      }
+    },
+    "python": "3.13.15",
+    "tf32": false
+  },
+  "started_at_utc": "2026-10-05T00:11:31.688639+00:00"
+}

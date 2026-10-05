@@ -1,0 +1,19 @@
+{
+  "archive_bytes": 12883357,
+  "archive_name": "rq1_constant_sensitivity_v1.zip",
+  "archive_sha256": "0106042b93d2fb15b754dfd70a983db85cfd1cf716f6cb68f22ac95b421be680",
+  "parts": [
+    {
+      "bytes": 6488064,
+      "git_blob_sha": "29ebae9336a1db0965ebcb10b8cf7739d19928ce",
+      "name": "rq1_constant_sensitivity_v1.zip.part01",
+      "sha256": "4c0cce9b7347c6e7b370bc63d41e6ce2454fb917ce4cfd1fd6c300455107eadc"
+    },
+    {
+      "bytes": 6395293,
+      "git_blob_sha": "029ce77249753ed95f209fcdb318fcbc62fb5fd8",
+      "name": "rq1_constant_sensitivity_v1.zip.part02",
+      "sha256": "933e33ee8f4ead9cf33ebafe29069ad1c9b2635734fb5f0a8ba3dab4dcc6efb3"
+    }
+  ]
+}
