@@ -1,0 +1,141 @@
+{
+  "interpretation": "Qualitative source/type mismatches in actual returned prompts. This is not a newly registered performance metric. Canonical definitions are from the frozen catalog.",
+  "instances": [
+    {
+      "query_id": "NQ01",
+      "revision": "rev4",
+      "param_id": "si-2.2_prm_1",
+      "friendly_label": "organization employs automated mechanisms to determine the state of information",
+      "raw_marker": "{{ insert: param, si-2.2_prm_1 }}",
+      "ask_prompt": "What value does your organization use for: organization employs automated mechanisms to determine the state of information?",
+      "data_type": "free-text",
+      "cardinality": "single",
+      "source_ids": [
+        "si-2.2_smt"
+      ],
+      "canonical_definition": "si-2.2_prm_1 organization-defined frequency",
+      "audit_issue": "The label/prompt omits the frequency meaning; the free-text field alone does not communicate that meaning."
+    },
+    {
+      "query_id": "NQ03",
+      "revision": "rev4",
+      "param_id": "cp-7_prm_1",
+      "friendly_label": "transfer and resumption of for essential missions business functions within",
+      "raw_marker": "{{ insert: param, cp-7_prm_1 }}",
+      "ask_prompt": "What value does your organization use for: transfer and resumption of for essential missions business functions within?",
+      "data_type": "duration",
+      "cardinality": "single",
+      "source_ids": [
+        "cp-7_smt.a"
+      ],
+      "canonical_definition": "cp-7_prm_1 organization-defined information system operations",
+      "audit_issue": "The prompt requests a duration; the canonical definition is information-system operations."
+    },
+    {
+      "query_id": "NQ09",
+      "revision": "rev5",
+      "param_id": "au-02_odp.01",
+      "friendly_label": "of logging in support of the audit function",
+      "raw_marker": "{{ insert: param, au-02_odp.01 }}",
+      "ask_prompt": "What value does your organization use for: of logging in support of the audit function? (answer with a comma-separated list of org units)",
+      "data_type": "org list",
+      "cardinality": "single",
+      "source_ids": [
+        "au-2_smt.a"
+      ],
+      "canonical_definition": "au-02_odp.01 event types Guidelines: the event types that the system is capable of logging in support of the audit function are defined;",
+      "audit_issue": "The prompt requests organizational units; the canonical definition is event types."
+    },
+    {
+      "query_id": "NQ09",
+      "revision": "rev5",
+      "param_id": "au-05_odp.01",
+      "friendly_label": "Alert within insert param odp",
+      "raw_marker": "{{ insert: param, au-05_odp.01 }}",
+      "ask_prompt": "What value does your organization use for: Alert within insert param odp? (answer with a duration, e.g., 30/60/90 days)",
+      "data_type": "duration",
+      "cardinality": "single",
+      "source_ids": [
+        "au-5_smt.a"
+      ],
+      "canonical_definition": "au-05_odp.01 personnel or roles Guidelines: personnel or roles receiving audit logging process failure alerts are defined;",
+      "audit_issue": "The prompt requests a duration; the canonical definition is personnel or roles."
+    },
+    {
+      "query_id": "NQ09",
+      "revision": "rev5",
+      "param_id": "au-2_prm_2",
+      "friendly_label": "following event types for logging within the system",
+      "raw_marker": "{{ insert: param, au-2_prm_2 }}",
+      "ask_prompt": "What value does your organization use for: following event types for logging within the system? (answer with a duration, e.g., 30/60/90 days)",
+      "data_type": "duration",
+      "cardinality": "single",
+      "source_ids": [
+        "au-2_smt.c"
+      ],
+      "canonical_definition": "au-2_prm_2 organization-defined event types (subset of the event types defined in [AU-2a.](#au-2_smt.a)) along with the frequency of (or situation requiring) logging for each identified event type",
+      "audit_issue": "The prompt requests a duration; the canonical definition includes selected event types and frequency/conditions for each."
+    },
+    {
+      "query_id": "NQ11",
+      "revision": "rev5",
+      "param_id": "si-03_odp.03",
+      "friendly_label": "sources at as the files are downloaded opened",
+      "raw_marker": "{{ insert: param, si-03_odp.03 }}",
+      "ask_prompt": "What value does your organization use for: sources at as the files are downloaded opened? (answer with a duration, e.g., 30/60/90 days)",
+      "data_type": "duration",
+      "cardinality": "single",
+      "source_ids": [
+        "si-3_smt.c.1",
+        "si-3_smt"
+      ],
+      "canonical_definition": "si-03_odp.03 SI-03_ODP[03] Choices: endpoint | network entry and exit points",
+      "audit_issue": "The prompt requests a duration; the canonical selection is endpoint or network entry/exit points."
+    },
+    {
+      "query_id": "NQ16",
+      "revision": "rev5",
+      "param_id": "au-05_odp.01",
+      "friendly_label": "Alert within insert param odp",
+      "raw_marker": "{{ insert: param, au-05_odp.01 }}",
+      "ask_prompt": "What value does your organization use for: Alert within insert param odp? (answer with a duration, e.g., 30/60/90 days)",
+      "data_type": "duration",
+      "cardinality": "single",
+      "source_ids": [
+        "au-5_smt.a"
+      ],
+      "canonical_definition": "au-05_odp.01 personnel or roles Guidelines: personnel or roles receiving audit logging process failure alerts are defined;",
+      "audit_issue": "The prompt requests a duration; the canonical definition is personnel or roles."
+    },
+    {
+      "query_id": "NQ17",
+      "revision": "rev5",
+      "param_id": "ac-02.07_odp",
+      "friendly_label": "and administer privileged user accounts in accordance with",
+      "raw_marker": "{{ insert: param, ac-02.07_odp }}",
+      "ask_prompt": "What value does your organization use for: and administer privileged user accounts in accordance with? (answer with a job title or role)",
+      "data_type": "role",
+      "cardinality": "single",
+      "source_ids": [
+        "ac-2.7_smt"
+      ],
+      "canonical_definition": "ac-02.07_odp AC-02(07)_ODP Choices: a role-based access scheme | an attribute-based access scheme",
+      "audit_issue": "The prompt requests a job title/role; the canonical selection is a role-based or attribute-based access scheme."
+    },
+    {
+      "query_id": "NQ18",
+      "revision": "rev5",
+      "param_id": "ac-06.05_odp",
+      "friendly_label": "Restrict privileged accounts on the system to",
+      "raw_marker": "{{ insert: param, ac-06.05_odp }}",
+      "ask_prompt": "What value does your organization use for: Restrict privileged accounts on the system to? (answer with a frequency, e.g., daily/weekly/monthly)",
+      "data_type": "frequency",
+      "cardinality": "single",
+      "source_ids": [
+        "ac-6.5_smt"
+      ],
+      "canonical_definition": "ac-06.05_odp personnel or roles Guidelines: personnel or roles to which privileged accounts on the system are to be restricted is/are defined;",
+      "audit_issue": "The prompt requests a frequency; the canonical definition is personnel or roles."
+    }
+  ]
+}

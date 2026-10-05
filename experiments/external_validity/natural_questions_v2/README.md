@@ -1,6 +1,6 @@
 # Reviewed natural-question study v2
 
-**Status: author source/label review completed and inputs frozen. A user-reported GPU attempt captured five revision-4 contexts, then stopped at the authority check before answer generation. The registered execution repair uses a separate result directory; no answerer results are included here.**
+**Status: author source/label review and registered GPU execution completed. Returned identities and automatic scoring passed the technical audit. All 40 final outputs and the executed notebook are archived in [results_v1](results_v1/README.md). Separate author post-run semantic review remains pending.**
 
 This version retains 20 original r/NISTControls threads, separately from the 136-row historical benchmark and the 30-row intra-annotator retest. It supersedes preparation v1 for execution after author review restored omitted original text in NQ03, NQ12 and NQ16. The previous preparation remains unchanged. See [SOURCE_CORRECTIONS.json](SOURCE_CORRECTIONS.json).
 
@@ -31,4 +31,4 @@ python experiments/external_validity/natural_questions_v2/run_natural_questions.
 
 Both answer paths share Qwen2.5-7B-Instruct in explicitly checked BF16 and the same original question/evidence. Use production S7 retrieval, pinned E5/BGE models, no query rewrites, an empty organization profile and ASK policy. Prompts, construction, token budgets and retries differ between complete answer paths; this is not an isolated component intervention.
 
-Completion still requires CUDA execution, identity/result audit and the separate author post-run review of all 40 question/path pairs. Automatic scoring leaves `experiment_complete` false. Partial/outside cases cannot become whole-question successes. Full-text containment and runtime validity do not establish responsive interpretation. Independent expert correctness remains future work.
+CUDA execution and the technical identity/result audit are documented in [results_v1](results_v1/README.md). Completion still requires the separate author post-run review of all 40 question/path pairs. Automatic scoring leaves `experiment_complete` false. Partial/outside cases cannot become whole-question successes. Full-text containment and runtime validity do not establish responsive interpretation. Independent expert correctness remains future work.

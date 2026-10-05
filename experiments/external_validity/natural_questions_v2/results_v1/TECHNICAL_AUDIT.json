@@ -1,0 +1,74 @@
+{
+  "additional_calls_by_question": {
+    "NQ04/generative_baseline": 2,
+    "NQ11/generative_baseline": 2
+  },
+  "all_original_code_and_input_fingerprints_verified": true,
+  "calls_by_system": {
+    "compliancegpt": 20,
+    "generative_baseline": 24
+  },
+  "checked_archive_files": 63,
+  "decoding_settings_verified": {
+    "compliancegpt": {
+      "do_sample": false,
+      "max_new_tokens": 512,
+      "num_beams": 1,
+      "repetition_penalty": 1.05
+    },
+    "generative_baseline": {
+      "do_sample": false,
+      "max_new_tokens": 640,
+      "num_beams": 1,
+      "repetition_penalty": 1.05
+    }
+  },
+  "generation_input_token_range": [
+    604,
+    3723
+  ],
+  "generation_new_token_range": [
+    34,
+    303
+  ],
+  "independent_correctness_validated": false,
+  "model_inference_during_audit": false,
+  "notebook_sha256": "b4ca0cea412953715cf7bb2a471b54abc16e09044fdcefc243e5c7673684fef1",
+  "offline_scoring_replayed_exactly": [
+    "summary.json",
+    "per_question_outcomes.jsonl",
+    "SUMMARY.md",
+    "post_run_semantic_review.csv"
+  ],
+  "paired_answer_outputs": 40,
+  "paired_model_and_evidence_identities_verified": true,
+  "post_run_author_review_rows_pending": 40,
+  "questions": 20,
+  "raw_generation_calls": 44,
+  "registration_sha256": "1f1e694af162319530074826501cd58ac0ab8b57d2d025a88569b9a1495e7166",
+  "repeated_first_five_contexts_byte_identical": true,
+  "runtime": {
+    "cuda": "12.4",
+    "gpu": "NVIDIA A100-SXM4-40GB",
+    "gpu_memory_bytes": 42405855232,
+    "packages": {
+      "PyYAML": "6.0.3",
+      "accelerate": "1.12.0",
+      "faiss-cpu": "1.10.0",
+      "huggingface-hub": "0.30.2",
+      "numpy": "2.0.2",
+      "pandas": "2.2.3",
+      "sentence-transformers": "4.1.0",
+      "torch": "2.6.0+cu124",
+      "transformers": "4.51.3"
+    },
+    "python": "3.12.14"
+  },
+  "scope_counts": {
+    "full": 3,
+    "outside": 5,
+    "partial": 12
+  },
+  "source_commit": "27c437a2176847b6ac82f86b3f1abbb3ba63c1ac",
+  "status": "technical_identity_and_scoring_audit_passed"
+}
