@@ -1,6 +1,6 @@
 # Reviewed natural-question study v2
 
-**Status: author source/label review completed; pre-inference registration prepared for publication. No retrieval outcomes or answer generations have been produced.**
+**Status: author source/label review completed and inputs frozen. A user-reported GPU attempt captured five revision-4 contexts, then stopped at the authority check before answer generation. The registered execution repair uses a separate result directory; no answerer results are included here.**
 
 This version retains 20 original r/NISTControls threads, separately from the 136-row historical benchmark and the 30-row intra-annotator retest. It supersedes preparation v1 for execution after author review restored omitted original text in NQ03, NQ12 and NQ16. The previous preparation remains unchanged. See [SOURCE_CORRECTIONS.json](SOURCE_CORRECTIONS.json).
 
@@ -20,7 +20,9 @@ See [PROTOCOL.md](PROTOCOL.md) and [protocol.json](protocol.json) for the matche
 
 ## Execute
 
-Publish the registration before inference. A clean checkout must retrieve its exact registration from the checkout commit. The Colab launcher pins that public commit, asks for A100, writes per-question checkpoints and console logs to Drive, and retains the executed notebook and result package.
+The original inputs and execution registration were published at `71a9a187d0a3fe0d64d71cdefbacdb345cce890d` before retrieval. See [EXECUTION_REPAIR.json](EXECUTION_REPAIR.json) for the subsequent, explicitly recorded authority-check correction: canonical control IDs and retriever control IDs use different case/enhancement notation. The validator now compares those identities using the already frozen production normalizer, while source IDs, clause text and evidence kinds remain exact. No question, label, catalog, model, retrieval setting, window rule or metric changed.
+
+Publish the revised executable registration before resuming. A clean checkout must retrieve its exact registration from the checkout commit. The Colab launcher pins that public commit, asks for A100, writes per-question checkpoints and console logs to Drive, and retains the executed notebook and result package. Preserve the original `natural_questions_v2` attempt and use `natural_questions_v2_authority_fix` for the repaired execution. Do not transfer its old run configuration into the new run. Retrieve all 20 questions under the repaired registration before either answer path begins, retaining the earlier five-context attempt for provenance.
 
 ```bash
 python experiments/external_validity/natural_questions_v2/run_natural_questions.py --output-dir /path/to/new_results --preflight-only

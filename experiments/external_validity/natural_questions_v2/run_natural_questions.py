@@ -39,12 +39,22 @@ def require_gpu(torch):
 
 def validate_context_authority(context, records):
     """Checkpoint digests alone cannot establish that evidence is canonical."""
+    from compliancegpt.retriever.retriever_s7 import normalize_control_id
+
     for field in ["retrieved_docs", "evidence_window"]:
         for doc in context.get(field, []):
             record = records.get(doc.get("id"))
-            if record is None or any(doc.get(key) != record.get(key)
-                                     for key in ["text", "kind", "control_id"]):
-                raise ValueError("Checkpoint evidence differs from the registered canonical catalog")
+            if record is None:
+                raise ValueError(f"{context.get('query_id')}: {field} contains unknown source {doc.get('id')!r}")
+            different = [key for key in ["text", "kind"] if doc.get(key) != record.get(key)]
+            # CCS stores ac-2.1; the existing retriever emits AC-2(1). Compare
+            # control identities under that same frozen production rule while
+            # retaining exact source IDs, clause text and evidence kinds.
+            if normalize_control_id(doc.get("control_id")) != normalize_control_id(record.get("control_id")):
+                different.append("control_id")
+            if different:
+                raise ValueError(f"{context.get('query_id')}: {field} source {doc.get('id')!r} "
+                                 f"differs from the registered canonical catalog in {different}")
 
 
 def attach_generation_capture(pipeline, capture_path, active):

@@ -3,7 +3,7 @@
     "experiments/answerer_comparison/rq2_matched/run_matched_rq2.py": "f28552cba25d1a0b931e7821900b7324509a90f1dc57e5d5ad11d94760dddf47",
     "experiments/external_validity/natural_questions_v2/requirements-colab.txt": "c7367bb5328a99f20394e91e1fa790123d3fe935aad869d60e953f5c4e48d42b",
     "experiments/external_validity/natural_questions_v2/review_and_freeze.py": "fe037015d2224e37c1d8864228d5b2fb72b8f21876c734197427d91015a75815",
-    "experiments/external_validity/natural_questions_v2/run_natural_questions.py": "928875ac4e95c8792d57c8f7506182acd78a00b726e1d88c8f4ab18b7160dc8c",
+    "experiments/external_validity/natural_questions_v2/run_natural_questions.py": "8036cf0136dc00e7a6f00b705f57d0cf2ed87d0439a9dd3a37b1fc6d23d3803b",
     "experiments/external_validity/natural_questions_v2/score_results.py": "30e2e2995abd7e3b5d67244901cee89d4f18ead1360be1d24efecbf0392c2936",
     "src/answerer_comparison/matched_window_runner.py": "02abc97b8f53b388cf2385120ffdfebdcaa2ac3d787b0ae6c2711d92aff3fe13",
     "src/compliancegpt/generator/citation_contract_80053.md": "785036b896fef2778901cce4899d369cca7d3f258aa7a335962cad8e6290a98a",
@@ -17,7 +17,12 @@
     "src/generative_answerer/generator.py": "8e4ac4ad235d7a855df8f9bed8e0cc24af404eca9e8def6407dcbb20f7344afa",
     "src/generative_answerer/pipeline.py": "10034299b3aea6b608b87625ccc04a69d5ee37870f0d62bb6cc30a043f525be1"
   },
+  "execution_repair": {
+    "original_registration_sha256": "ad349c068c90ea366f5ee0817ea71b8670585adca3c7353914eb82eb0e259f20",
+    "record": "EXECUTION_REPAIR.json"
+  },
   "file_sha256": {
+    "EXECUTION_REPAIR.json": "8672a5d82072d0c156fe6b919f3f84c4d59572fcde599cd1e402ea8ec2d11e4a",
     "SOURCE_CORRECTIONS.json": "dc4224abf5b375b0dc4be7e0156216aa1c3632935ca64bfa5982202e0302c4e5",
     "author_review.csv": "0a383746210a1098d146340a9050ebda76d4ad31a0ded1ddb6fa03c382e19e43",
     "authority_records.jsonl": "fcdd58265122329ea6eea54b12fd05488248af3e0dbb770bf3b8a2d2223af5b2",
@@ -34,5 +39,5 @@
   "review_input_sha256": "0a383746210a1098d146340a9050ebda76d4ad31a0ded1ddb6fa03c382e19e43",
   "review_timestamp_provenance": "Preserved from the submitted workbook; exact author review time was not separately verified. Author confirmed completion before inference.",
   "schema_version": "compliancegpt-natural-question-registration-v1",
-  "status": "frozen_locally_requires_public_commit_before_inference"
+  "status": "frozen_execution_repair_requires_public_commit_before_resuming"
 }
