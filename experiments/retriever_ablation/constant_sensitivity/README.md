@@ -76,3 +76,7 @@ The fresh baseline differs from two saved historical gold ranks. These findings
 are reported explicitly; historical headlines are preserved. Local sensitivity
 does not establish parameter invariance, remove benchmark tuning bias or replace
 independent expert validation.
+
+## Executed notebook
+
+The exact uploaded [executed Colab notebook](results/rq1_constant_sensitivity_v1/Batch_RQ1_Constant_Sensitivity_Executed.ipynb) retains all seven code-cell execution counts and output blocks, including the actual A100 allocation, offline checks, progress log, 952-evaluation acceptance record, and displayed results. Its [manifest](results/rq1_constant_sensitivity_v1/executed_notebook_manifest.json) records the uploaded-byte digest and its relationship to the registered source and audited archive. The clean launch notebook above is retained for reruns.
