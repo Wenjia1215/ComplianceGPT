@@ -22,6 +22,16 @@ complete capture and seven-condition replay. No generation API key is needed.
 It mounts Drive to retain completed captures and resume an interrupted session.
 The actual allocated GPU is recorded in the run manifest.
 
+The launcher removes the optional `timm`, `torchvision` and `torchaudio` packages
+together before installing the pinned text-model dependencies. Leaving `timm`
+installed after removing `torchvision` causes Transformers 4.51.3 to discover a
+broken vision backend during text-model loading. A fresh-process preflight now
+checks the optional backends and constructs tiny BERT and XLM-RoBERTa models
+through the same AutoModel loading paths before the study starts. The subprocess
+environment explicitly selects PyTorch and disables unused TensorFlow imports.
+This launcher correction preserves the scientific execution commit, registration,
+model pins, package pins and output directory, so compatible captures can resume.
+
 Default output: `MyDrive/ComplianceGPT_runs/rq1_constant_sensitivity_v1`.
 Return the generated `rq1_constant_sensitivity_v1.zip` after completion. It
 contains all score caches, per-query ranks, gate diagnostics, paired statistics,
