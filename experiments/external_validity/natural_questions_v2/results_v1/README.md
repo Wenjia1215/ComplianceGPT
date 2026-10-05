@@ -2,7 +2,7 @@
 
 **GPU generation and automatic scoring are complete. Technical identity/scoring audit passed. The separate author review of all 40 final outputs is pending. Independent expert correctness has not been validated.**
 
-This is the separate exploratory external-input study of 20 naturally occurring questions requested in Dr. Sadjadi's September 21 feedback, section 2.4. It does not replace the 136-row benchmark or the 30-row intra-annotator retest. All questions, failed outputs, retries, and outside-scope cases are retained.
+This is the separate exploratory external-input study of 20 naturally occurring questions. It does not replace the 136-row benchmark or the 30-row intra-annotator retest. All questions, failed outputs, retries, and outside-scope cases are retained.
 
 ## Registered results
 
@@ -67,4 +67,4 @@ PYTHONPATH=src:. USE_TORCH=1 USE_TF=0 USE_FLAX=0 python experiments/external_val
 
 Record `scope_appropriate`, `responsive_to_entire_question`, `unsupported_implementation_or_legal_claim`, reviewer name and relevant notes for each of the 40 question/system pairs. Preserve uncertainties. A positive unsupported-claim judgment flags a problem. These ratings concern the whole question and actual clarification wording; a format pass or verbatim source span cannot substitute for them. Formal completion remains pending until this review is documented.
 
-In the dissertation, explain the purposive one-forum collection and author source/label verification, keep these 20 rows separate, report the adverse outcomes as well as the useful mechanism behavior, and state the small denominators and lack of independent correctness validation. Do not pool or substitute these strict outcomes for historical headline metrics. Dr. Sadjadi's later instruction also remains a writing requirement: the intra-annotator test–retest study bounds the author's labeling consistency, not independent correctness; name an independent expert study as future work. Preserve the Gemini 65-versus-66, p = 1.0 tie framing wherever that comparison appears, including the abstract. It is a different comparison from this study's 0/3-versus-0/3 result.
+In the dissertation, explain the purposive one-forum collection and author source/label verification, keep these 20 rows separate, report the adverse outcomes as well as the useful mechanism behavior, and state the small denominators and lack of independent correctness validation. Do not pool or substitute these strict outcomes for historical headline metrics. Independent expert assessment of labels and whole-question responses remains future work.
