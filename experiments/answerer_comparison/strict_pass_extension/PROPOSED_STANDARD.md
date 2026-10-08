@@ -1,6 +1,6 @@
 # Proposed answer-level strict-pass extension
 
-Status: exploratory proposal; not adopted as the dissertation's primary endpoint.
+Status: superseded exploratory v1 proposal. The implemented trial specification is [STANDARD_V2.md](STANDARD_V2.md), with completed results in [results_v2/SUMMARY.md](results_v2/SUMMARY.md). Neither version replaces the dissertation's historical primary endpoint.
 
 Prepared: 2026-10-08. Source snapshot: `72979835f1e05bae513468ca4074b4d43497da2c`.
 
@@ -78,7 +78,7 @@ A blocked answer must still state the source-backed obligation and identify what
 
 ## Completed mechanical trial
 
-The six contract CSV files, both gold CSV files, and both CCS files match their archived SHA-256 identities. The original offline verifier was independently reapplied to all 408 outputs with ASK, strict_extras=False, strict_verbatim=True, and strict_version=True, reproducing all stored outcomes with zero disagreements.
+Corrected configuration record: the six contract CSV files, both gold CSV files, and both CCS files match their archived identities. V2 reproduces all 408 stored outcomes with strict_extras=False, strict_verbatim=True, strict_version=False, the active corpus revision, org_profile={}, and the original per-row gold policies unchanged. The earlier v1 check used an ASK policy override and strict_version=True; its counts were identical, but those were not the frozen runner's complete actual verifier arguments. Generation was configured as ASK; gold policies were not all ASK.
 
 For this positive-evidence benchmark, errors and abstentions receive no successful normal-answer credit. W and L were computed for normal nonempty-evidence answers; none of their new failures occurred on an S0-passing row. Ask-list ID-set agreement held on all ComplianceGPT and Gemini records and on 29/36 Rev. 4 and 67/100 Rev. 5 Qwen records. Every ask-list disagreement occurred on a row already failing the core ODP-accounting predicate, so adding that condition did not change L or the strict-pass counts.
 

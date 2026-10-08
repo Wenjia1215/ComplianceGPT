@@ -1,0 +1,464 @@
+{
+  "configurations": {
+    "rev4/baseline": {
+      "answer_content_pass": {
+        "count": 6,
+        "n": 36,
+        "rate": 0.16666666666666666,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.07870447595018114,
+          "upper": 0.31890794311279463
+        }
+      },
+      "answer_failure_query_ids": [
+        "15",
+        "33"
+      ],
+      "clarification_failure_query_ids": [],
+      "extended_strict_pass": {
+        "count": 6,
+        "n": 36,
+        "rate": 0.16666666666666666,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.07870447595018114,
+          "upper": 0.31890794311279463
+        }
+      },
+      "legacy_pass": {
+        "count": 8,
+        "n": 36,
+        "rate": 0.2222222222222222,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.11716331975796462,
+          "upper": 0.3808470294611818
+        }
+      },
+      "new_failure_query_ids": [
+        "15",
+        "33"
+      ],
+      "possible_extended_pass": {
+        "count": 6,
+        "n": 36,
+        "rate": 0.16666666666666666,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.07870447595018114,
+          "upper": 0.31890794311279463
+        }
+      },
+      "review_methods": {
+        "legacy_failure_short_circuit": 28,
+        "source_inspection": 8
+      },
+      "uncertain_eligible_rows": []
+    },
+    "rev4/compliancegpt": {
+      "answer_content_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.6497195700482261,
+          "upper": 0.9024690458107127
+        }
+      },
+      "answer_failure_query_ids": [],
+      "clarification_failure_query_ids": [
+        "5",
+        "10",
+        "19",
+        "27"
+      ],
+      "extended_strict_pass": {
+        "count": 25,
+        "n": 36,
+        "rate": 0.6944444444444444,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5314372714948966,
+          "upper": 0.8199554840517008
+        }
+      },
+      "legacy_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.6497195700482261,
+          "upper": 0.9024690458107127
+        }
+      },
+      "new_failure_query_ids": [
+        "5",
+        "10",
+        "19",
+        "27"
+      ],
+      "possible_extended_pass": {
+        "count": 25,
+        "n": 36,
+        "rate": 0.6944444444444444,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5314372714948966,
+          "upper": 0.8199554840517008
+        }
+      },
+      "review_methods": {
+        "full_retention_certificate": 29,
+        "legacy_failure_short_circuit": 7
+      },
+      "uncertain_eligible_rows": []
+    },
+    "rev4/gemini": {
+      "answer_content_pass": {
+        "count": 22,
+        "n": 36,
+        "rate": 0.6111111111111112,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.44864459096605147,
+          "upper": 0.75215126934629
+        }
+      },
+      "answer_failure_query_ids": [
+        "7",
+        "10"
+      ],
+      "clarification_failure_query_ids": [
+        "4",
+        "5",
+        "10",
+        "16",
+        "19",
+        "27"
+      ],
+      "extended_strict_pass": {
+        "count": 17,
+        "n": 36,
+        "rate": 0.4722222222222222,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.31986041515179053,
+          "upper": 0.629940619770124
+        }
+      },
+      "legacy_pass": {
+        "count": 24,
+        "n": 36,
+        "rate": 0.6666666666666666,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5033399787115652,
+          "upper": 0.7978538117569468
+        }
+      },
+      "new_failure_query_ids": [
+        "4",
+        "5",
+        "7",
+        "10",
+        "16",
+        "19",
+        "27"
+      ],
+      "possible_extended_pass": {
+        "count": 17,
+        "n": 36,
+        "rate": 0.4722222222222222,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.31986041515179053,
+          "upper": 0.629940619770124
+        }
+      },
+      "review_methods": {
+        "legacy_failure_short_circuit": 12,
+        "source_inspection": 24
+      },
+      "uncertain_eligible_rows": []
+    },
+    "rev5/baseline": {
+      "answer_content_pass": {
+        "count": 21,
+        "n": 100,
+        "rate": 0.21,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.141656540619153,
+          "upper": 0.29979968834089865
+        }
+      },
+      "answer_failure_query_ids": [
+        "31",
+        "35",
+        "57",
+        "76"
+      ],
+      "clarification_failure_query_ids": [],
+      "extended_strict_pass": {
+        "count": 21,
+        "n": 100,
+        "rate": 0.21,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.141656540619153,
+          "upper": 0.29979968834089865
+        }
+      },
+      "legacy_pass": {
+        "count": 25,
+        "n": 100,
+        "rate": 0.25,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.17545211362287672,
+          "upper": 0.34304463548061603
+        }
+      },
+      "new_failure_query_ids": [
+        "31",
+        "35",
+        "57",
+        "76"
+      ],
+      "possible_extended_pass": {
+        "count": 21,
+        "n": 100,
+        "rate": 0.21,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.141656540619153,
+          "upper": 0.29979968834089865
+        }
+      },
+      "review_methods": {
+        "legacy_failure_short_circuit": 75,
+        "source_inspection": 25
+      },
+      "uncertain_eligible_rows": []
+    },
+    "rev5/compliancegpt": {
+      "answer_content_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5525444329688796,
+          "upper": 0.7363575175690247
+        }
+      },
+      "answer_failure_query_ids": [],
+      "clarification_failure_query_ids": [
+        "1",
+        "4",
+        "10",
+        "11",
+        "27",
+        "29",
+        "32",
+        "36",
+        "45",
+        "47",
+        "52",
+        "66",
+        "69",
+        "88"
+      ],
+      "extended_strict_pass": {
+        "count": 51,
+        "n": 100,
+        "rate": 0.51,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.4134801193402717,
+          "upper": 0.6057800106955886
+        }
+      },
+      "legacy_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5525444329688796,
+          "upper": 0.7363575175690247
+        }
+      },
+      "new_failure_query_ids": [
+        "1",
+        "4",
+        "10",
+        "11",
+        "27",
+        "29",
+        "32",
+        "36",
+        "45",
+        "47",
+        "52",
+        "66",
+        "69",
+        "88"
+      ],
+      "possible_extended_pass": {
+        "count": 51,
+        "n": 100,
+        "rate": 0.51,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.4134801193402717,
+          "upper": 0.6057800106955886
+        }
+      },
+      "review_methods": {
+        "full_retention_certificate": 65,
+        "legacy_failure_short_circuit": 35
+      },
+      "uncertain_eligible_rows": []
+    },
+    "rev5/gemini": {
+      "answer_content_pass": {
+        "count": 56,
+        "n": 100,
+        "rate": 0.56,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.4622810465167699,
+          "upper": 0.6532797336983921
+        }
+      },
+      "answer_failure_query_ids": [
+        "17",
+        "20",
+        "22",
+        "24",
+        "35",
+        "67",
+        "86",
+        "87",
+        "90",
+        "100"
+      ],
+      "clarification_failure_query_ids": [
+        "1",
+        "11",
+        "24",
+        "29",
+        "47",
+        "69",
+        "83",
+        "88",
+        "92"
+      ],
+      "extended_strict_pass": {
+        "count": 48,
+        "n": 100,
+        "rate": 0.48,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.384645517580519,
+          "upper": 0.5768342223477603
+        }
+      },
+      "legacy_pass": {
+        "count": 66,
+        "n": 100,
+        "rate": 0.66,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.5627772885472462,
+          "upper": 0.7453847920265184
+        }
+      },
+      "new_failure_query_ids": [
+        "1",
+        "11",
+        "17",
+        "20",
+        "22",
+        "24",
+        "29",
+        "35",
+        "47",
+        "67",
+        "69",
+        "83",
+        "86",
+        "87",
+        "88",
+        "90",
+        "92",
+        "100"
+      ],
+      "possible_extended_pass": {
+        "count": 49,
+        "n": 100,
+        "rate": 0.49,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.3942199893044113,
+          "upper": 0.5865198806597283
+        }
+      },
+      "review_methods": {
+        "legacy_failure_short_circuit": 34,
+        "source_inspection": 66
+      },
+      "uncertain_eligible_rows": [
+        "67"
+      ]
+    }
+  },
+  "denominators": {
+    "rev4": 36,
+    "rev5": 100
+  },
+  "paired_comparison": {
+    "rev4": {
+      "answer_content_pass": {
+        "compliancegpt_only": 10,
+        "gemini_only": 3,
+        "two_sided_exact_p": 0.09228515625
+      },
+      "extended_strict_pass": {
+        "compliancegpt_only": 9,
+        "gemini_only": 1,
+        "two_sided_exact_p": 0.021484375
+      },
+      "legacy_pass": {
+        "compliancegpt_only": 8,
+        "gemini_only": 3,
+        "two_sided_exact_p": 0.2265625
+      }
+    },
+    "rev5": {
+      "answer_content_pass": {
+        "compliancegpt_only": 18,
+        "gemini_only": 9,
+        "two_sided_exact_p": 0.12207812070846558
+      },
+      "extended_strict_pass": {
+        "compliancegpt_only": 12,
+        "gemini_only": 9,
+        "two_sided_exact_p": 0.6636238098144531
+      },
+      "legacy_pass": {
+        "compliancegpt_only": 11,
+        "gemini_only": 12,
+        "two_sided_exact_p": 1.0
+      }
+    }
+  },
+  "review_boundary": "Source-inspection judgments are provisional, not independently adjudicated; full-retention certificates are sufficient proofs, not a required writing style.",
+  "rule_version": "strict-pass-extension-v2",
+  "scope": "retrospective exploratory frozen-output re-evaluation",
+  "source_snapshot": "72979835f1e05bae513468ca4074b4d43497da2c"
+}
