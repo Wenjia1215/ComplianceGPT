@@ -2,19 +2,17 @@
 
 Result identity: `rq2_frontier_baseline_rev5_v1`
 
-Current [Answer-content strict pass](../../answer_content_strict_pass/README.md): ComplianceGPT **65/100 (65%)**, Gemini **56/100 (56%)**, Qwen 4-bit baseline **21/100 (21%)**. See the [complete re-evaluation](../../answer_content_strict_pass/results_v1/SUMMARY.md). The archived tables below retain the original legacy strict-pass endpoint and historical statistics.
-
 All systems use the same 100 frozen Revision 5 questions, ordered evidence windows, ASK policy, and offline verifier. The primary registered comparison is ComplianceGPT versus Gemini 3.5 Flash.
 
 ## Primary and supporting outcomes
 
-| System | Legacy strict pass [95% CI] | Full clause coverage | Runtime pass | Clause precision | Clause recall | Mean words |
+| System | Strict pass [95% CI] | Full clause coverage | Runtime pass | Clause precision | Clause recall | Mean words |
 |---|---:|---:|---:|---:|---:|---:|
 | ComplianceGPT, 4-bit selector | 65/100 (0.650) [0.553, 0.736] | 65/100 (0.650) | 100/100 (1.000) | 0.584 | 0.835 | 220.7 |
 | Gemini 3.5 Flash, free-form | 66/100 (0.660) [0.563, 0.745] | 67/100 (0.670) | 99/100 (0.990) | 0.696 | 0.775 | 60.2 |
 | Qwen2.5-7B, free-form 4-bit | 25/100 (0.250) [0.175, 0.343] | 53/100 (0.530) | 42/100 (0.420) | 0.530 | 0.690 | 45.4 |
 
-## Registered paired legacy strict-pass test
+## Registered paired strict-pass test
 
 | Comparison | ComplianceGPT only | Gemini only | Both pass | Neither pass | Exact two-sided McNemar p |
 |---|---:|---:|---:|---:|---:|
