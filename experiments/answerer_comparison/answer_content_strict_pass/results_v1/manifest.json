@@ -1,0 +1,40 @@
+{
+  "code_and_rubric_sha256": {
+    "experiments/answerer_comparison/answer_content_strict_pass/README.md": "cfd644b28c2f834c8ca7413fd45691ecf660e97ff0b7a6d190b0eed99d073e8f",
+    "experiments/answerer_comparison/answer_content_strict_pass/run_evaluation.py": "31ee1edf3a6a836587236ad13223acb64774315c54001289c3e3a65dffc19790",
+    "src/answerer_comparison/answer_content_strict_pass.py": "d032f7f485b5b9d35f876eb61a68e77e44e41e88fbd7dbf6b2af6c0e26bab645",
+    "src/compliancegpt/generator/verifier/verifier.py": "facb2d0229f9f97d52278ea3f3c8dde7f7e0a0666cb4c7d7cd973b972cb622ef"
+  },
+  "input_sha256": {
+    "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "experiments/answerer_comparison/rq2_frontier_baseline/results_v1/contracts/rev4_generative_frontier_api.csv": "14f5c33146a06ada055057e221bfc226282d11e2930281603a7b6c6e491876b7",
+    "experiments/answerer_comparison/rq2_frontier_baseline/results_v1/references/rev4_compliancegpt_4bit.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+    "experiments/answerer_comparison/rq2_frontier_baseline/results_v1/references/rev4_generative_baseline_4bit.csv": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/contracts/rev5_generative_frontier_api.csv": "8380b370d061dc772e25b353b353b06023540c6c5f6613839c4f36bedccae06e",
+    "experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/references/rev5_compliancegpt_4bit.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+    "experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/references/rev5_generative_baseline_4bit.csv": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63"
+  },
+  "legacy_configuration": {
+    "generation_resolution_policy": "ASK",
+    "gold_resolution_policy": "unchanged per row",
+    "org_profile": {},
+    "strict_extras": false,
+    "strict_verbatim": true,
+    "strict_version": false
+  },
+  "legacy_disagreements": 0,
+  "output_sha256": {
+    "per_row_results.csv": "e2093bc2798f296f7a49a88db55288dd0cddece94509c40ae4fb8da0106042cd",
+    "per_row_results.jsonl": "9d777b7932bf9c903625053320c21d6f7adcc50766de3a2bb007592df5687f33",
+    "summary.json": "d618a68f62c0b9546ef7a58ed7fe2d2e0e7dd3f3d98b210721a969d08b2b7c84"
+  },
+  "python_version": "3.12.14",
+  "rows": 408,
+  "rule_version": "answer-content-strict-pass-v1",
+  "semantic_reviews_sha256": "afe6e9e86c7afee98bc39153b9d10baad484ff9e255bdae18d082788069e1070",
+  "source_snapshot": "72979835f1e05bae513468ca4074b4d43497da2c",
+  "strict_pass_endpoint": "Answer-content extension"
+}
