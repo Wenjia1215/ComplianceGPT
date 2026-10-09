@@ -145,9 +145,9 @@
         "OK": 36
       },
       "strict_pass": {
-        "count": 8,
+        "count": 6,
         "n": 36,
-        "rate": 0.2222222222222222
+        "rate": 0.16666666666666666
       }
     },
     "generative_baseline_bf16": {
@@ -219,9 +219,9 @@
         "OK": 36
       },
       "strict_pass": {
-        "count": 8,
+        "count": 7,
         "n": 36,
-        "rate": 0.2222222222222222
+        "rate": 0.19444444444444445
       }
     }
   },
@@ -243,27 +243,29 @@
   "n_questions": 36,
   "paired_strict_pass": {
     "bf16_baseline_vs_4bit_compliancegpt": {
-      "both_pass": 8,
-      "exact_mcnemar_two_sided_p": 9.5367431640625e-07,
+      "both_pass": 7,
+      "exact_mcnemar_two_sided_p": 4.76837158203125e-07,
       "left": "generative_baseline_bf16",
       "left_only": 0,
       "neither_pass": 7,
       "paired_rows": 36,
       "right": "compliancegpt_4bit",
-      "right_only": 21
+      "right_only": 22
     },
     "bf16_vs_4bit_baseline": {
-      "both_pass": 6,
+      "both_pass": 3,
       "exact_mcnemar_two_sided_p": 1.0,
       "left": "generative_baseline_bf16",
-      "left_only": 2,
+      "left_only": 4,
       "neither_pass": 26,
       "paired_rows": 36,
       "right": "generative_baseline_4bit",
-      "right_only": 2
+      "right_only": 3
     }
   },
   "result_id": "rq2_bf16_baseline_v1",
   "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
-  "strict_pass_definition": "The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
+  "strict_pass_assessment_boundary": "统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。",
+  "strict_pass_definition": "严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。",
+  "strict_pass_rule_version": "strict-pass-v1"
 }

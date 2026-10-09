@@ -1,24 +1,19 @@
-# Batch 5B — Rev. 4 BF16 Generative Baseline
+# rq2_bf16_baseline 严格通过结果
 
-Result identity: `rq2_bf16_baseline_v1`
+严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。
 
-Only the free-form baseline's model-weight precision changes from 4-bit to BF16. The model revision, prompt, decoding, questions, ordered evidence windows, ODP policy, and verifier are held fixed.
+统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。
 
-| System | Strict pass | Full clause coverage | Runtime contract pass | Mean clause precision | Mean selected clauses | ODP sensitivity* |
-|---|---:|---:|---:|---:|---:|---:|
-| Generative baseline, BF16 | 8/36 (0.222) | 20/36 (0.556) | 14/36 (0.389) | 0.575 | 2.89 | 0/19 (0.000) |
-| Generative baseline, 4-bit (frozen) | 8/36 (0.222) | 18/36 (0.500) | 13/36 (0.361) | 0.488 | 3.33 | 0/19 (0.000) |
-| ComplianceGPT, 4-bit (frozen) | 29/36 (0.806) | 29/36 (0.806) | 36/36 (1.000) | 0.505 | 4.03 | 19/19 (1.000) |
+| 版本与条件 | 严格通过 | 完整条款覆盖 | 平均回答词数 | 平均条款精确率 |
+| --- | --- | --- | --- | --- |
+| compliancegpt_4bit | 29/36 | 29/36 | 167.17 | 0.5049 |
+| generative_baseline_4bit | 6/36 | 18/36 | 36.81 | 0.4880 |
+| generative_baseline_bf16 | 7/36 | 20/36 | 41.28 | 0.5754 |
 
-## Paired strict-pass comparisons
+逐题判定及校验清单见 `../../supplementary_strict_pass/results_v1/`。原合同 CSV 中的旧检查字段保留为原合同条件记录，最终严格通过由本摘要及逐题判定给出。
 
-| Comparison (left vs right) | Left only | Right only | Exact McNemar p |
-|---|---:|---:|---:|
-| BF16 baseline vs 4-bit baseline | 2 | 2 | 1 |
-| BF16 baseline vs 4-bit ComplianceGPT | 0 | 21 | 9.5367432e-07 |
+BF16 的 Q17 对信息系统执行限制与组织承担动作的关系判定不确定，不计严格通过且保留在 36 题分母中。该记录不构成独立专家裁定。
 
-## Interpretation boundary
+bf16_baseline_vs_4bit_compliancegpt：左方独有通过 0，右方独有通过 22，双侧精确 McNemar 值 4.768371582e-07。
 
-This study isolates model-weight precision within the same Qwen2.5-7B free-form baseline. It is neither a frontier-model comparison nor a retraining study. A BF16 change estimates quantization sensitivity on these 36 fixed Rev. 4 rows.
-
-*ODP operating characteristics use author labels and remain provisional until blinded independent annotation is returned.*
+bf16_vs_4bit_baseline：左方独有通过 4，右方独有通过 3，双侧精确 McNemar 值 1。

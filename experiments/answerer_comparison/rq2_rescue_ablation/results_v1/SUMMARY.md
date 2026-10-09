@@ -1,47 +1,16 @@
-# RQ2 ODP-Statement Rescue Ablation
+# rq2_rescue_ablation 严格通过结果
 
-Result identity: `rq2_rescue_ablation_v1`
+严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。
 
-The replay reconstructs the frozen selector path immediately before bounded ODP-statement rescue. It performs no retrieval or model inference. Every rescue-on replay must reproduce the frozen core contract before an on/off effect is reported.
+统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。
 
-## REV5
+| 版本与条件 | 严格通过 | 完整条款覆盖 | 平均回答词数 | 平均条款精确率 |
+| --- | --- | --- | --- | --- |
+| rev4/rescue_off | 29/36 | 29/36 | 157.83 | 0.5132 |
+| rev4/rescue_on | 29/36 | 29/36 | 167.17 | 0.5049 |
+| rev5/rescue_off | 59/100 | 59/100 | 207.98 | 0.6217 |
+| rev5/rescue_on | 65/100 | 65/100 | 220.67 | 0.5841 |
 
-Rescue activates on 22/100 rows and adds 44 identifier occurrences (8 expected-gold occurrences).
+逐题判定及校验清单见 `../../supplementary_strict_pass/results_v1/`。原合同 CSV 中的旧检查字段保留为原合同条件记录，最终严格通过由本摘要及逐题判定给出。
 
-| Measure | Rescue off | Rescue on | Delta |
-|---|---:|---:|---:|
-| Offline strict pass | 59/100 (0.590) | 65/100 (0.650) | +0.060 |
-| Full gold-clause coverage | 59/100 (0.590) | 65/100 (0.650) | +0.060 |
-| Right governing control | 97/100 (0.970) | 97/100 (0.970) | +0.000 |
-| `PARAMS_REQUIRED` on gold ODP rows | 55/63 (0.873) | 63/63 (1.000) | +0.127 |
-| False complete on gold ODP rows | 8/63 (0.127) | 0/63 (0.000) | -0.127 |
-| Exact ODP-list agreement | 47/63 (0.746) | 55/63 (0.873) | +0.127 |
-| `PARAMS_REQUIRED` on labeled non-ODP rows | 6/37 (0.162) | 20/37 (0.541) | +0.378 |
-| Mean selected clauses | 3.93 | 4.37 | +0.44 |
-| Mean additional clauses | 1.39 | 1.75 | +0.36 |
-| Mean gold-clause precision | 0.622 | 0.584 | -0.038 |
-| Mean answer words | 208.0 | 220.7 | +12.7 |
-| Mean surfaced ODPs | 1.53 | 1.97 | +0.44 |
-
-## REV4
-
-Rescue activates on 2/36 rows and adds 6 identifier occurrences (0 expected-gold occurrences).
-
-| Measure | Rescue off | Rescue on | Delta |
-|---|---:|---:|---:|
-| Offline strict pass | 29/36 (0.806) | 29/36 (0.806) | +0.000 |
-| Full gold-clause coverage | 29/36 (0.806) | 29/36 (0.806) | +0.000 |
-| Right governing control | 36/36 (1.000) | 36/36 (1.000) | +0.000 |
-| `PARAMS_REQUIRED` on gold ODP rows | 19/19 (1.000) | 19/19 (1.000) | +0.000 |
-| False complete on gold ODP rows | 0/19 (0.000) | 0/19 (0.000) | +0.000 |
-| Exact ODP-list agreement | 12/19 (0.632) | 12/19 (0.632) | +0.000 |
-| `PARAMS_REQUIRED` on labeled non-ODP rows | 7/17 (0.412) | 9/17 (0.529) | +0.118 |
-| Mean selected clauses | 3.86 | 4.03 | +0.17 |
-| Mean additional clauses | 1.92 | 2.08 | +0.17 |
-| Mean gold-clause precision | 0.513 | 0.505 | -0.008 |
-| Mean answer words | 157.8 | 167.2 | +9.3 |
-| Mean surfaced ODPs | 1.25 | 1.36 | +0.11 |
-
-## Interpretation boundary
-
-This is a deterministic replay over fixed frozen selector outputs. Non-ODP status expansion is descriptive and is not called a false-positive rate or specificity estimate without independent adjudication.
+两批冻结救援合同在统一规则下通过数为 Rev.5 关闭 59/100、启用 65/100，Rev.4 两条件均为 29/36。其余测量与原归档一致。

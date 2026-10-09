@@ -1,35 +1,22 @@
-# RQ2 Control Gate Width Sensitivity
+# rq2_control_gate_width 严格通过结果
 
-Result identity: `rq2_control_gate_width_v1`
+严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。
 
-The fixed-width sweep changes only the number of ranked controls admitted to the shared 24-record evidence window. The released adaptive gate is shown as an unchanged reference.
+统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。
 
-## REV5
+| 版本与条件 | 严格通过 | 完整条款覆盖 | 平均回答词数 | 平均条款精确率 |
+| --- | --- | --- | --- | --- |
+| rev4_adaptive_v3 | 29/36 | 29/36 | 167.17 | 0.5049 |
+| rev4_top1 | 26/36 | 26/36 | 143.81 | 0.4970 |
+| rev4_top2 | 29/36 | 29/36 | 157.44 | 0.5110 |
+| rev4_top3 | 29/36 | 29/36 | 154.31 | 0.5114 |
+| rev4_top5 | 28/36 | 28/36 | 163.83 | 0.4912 |
+| rev5_adaptive_v3 | 65/100 | 65/100 | 220.67 | 0.5841 |
+| rev5_top1 | 62/100 | 62/100 | 204.62 | 0.5823 |
+| rev5_top2 | 65/100 | 65/100 | 229.51 | 0.5717 |
+| rev5_top3 | 65/100 | 65/100 | 227.27 | 0.5654 |
+| rev5_top5 | 64/100 | 67/100 | 223.40 | 0.5602 |
 
-| Gate | Strict pass | Full clause coverage | Mean clause precision | Mean selected clauses | ODP sensitivity* | ODP specificity* |
-|---|---:|---:|---:|---:|---:|---:|
-| Adaptive v3 | 65/100 (0.650) | 65/100 (0.650) | 0.584 | 4.37 | 63/63 (1.000) | 17/37 (0.459) |
-| Top 1 | 62/100 (0.620) | 62/100 (0.620) | 0.582 | 4.15 | 62/63 (0.984) | 17/37 (0.459) |
-| Top 2 | 65/100 (0.650) | 65/100 (0.650) | 0.572 | 4.30 | 63/63 (1.000) | 16/37 (0.432) |
-| Top 3 | 65/100 (0.650) | 65/100 (0.650) | 0.565 | 4.28 | 63/63 (1.000) | 16/37 (0.432) |
-| Top 5 | 67/100 (0.670) | 67/100 (0.670) | 0.560 | 4.55 | 63/63 (1.000) | 12/37 (0.324) |
+逐题判定及校验清单见 `../../supplementary_strict_pass/results_v1/`。原合同 CSV 中的旧检查字段保留为原合同条件记录，最终严格通过由本摘要及逐题判定给出。
 
-*ODP operating characteristics use the author labels and remain provisional until the blinded independent annotation is returned.*
-
-## REV4
-
-| Gate | Strict pass | Full clause coverage | Mean clause precision | Mean selected clauses | ODP sensitivity* | ODP specificity* |
-|---|---:|---:|---:|---:|---:|---:|
-| Adaptive v3 | 29/36 (0.806) | 29/36 (0.806) | 0.505 | 4.03 | 19/19 (1.000) | 8/17 (0.471) |
-| Top 1 | 26/36 (0.722) | 26/36 (0.722) | 0.497 | 3.89 | 19/19 (1.000) | 8/17 (0.471) |
-| Top 2 | 29/36 (0.806) | 29/36 (0.806) | 0.511 | 3.86 | 19/19 (1.000) | 8/17 (0.471) |
-| Top 3 | 29/36 (0.806) | 29/36 (0.806) | 0.511 | 3.97 | 19/19 (1.000) | 8/17 (0.471) |
-| Top 5 | 28/36 (0.778) | 28/36 (0.778) | 0.491 | 4.17 | 19/19 (1.000) | 8/17 (0.471) |
-
-*ODP operating characteristics use the author labels and remain provisional until the blinded independent annotation is returned.*
-
-## Interpretation boundary
-
-The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence.
-
-Gate width is the only changed factor. ODP operating characteristics use author labels and are provisional pending blinded independent annotation.
+Rev.5 固定 top-5 的 Q12、Q39、Q61 引用了各自冻结窗口之外的有效 CCS 来源，因来源窗口要求失败；完整覆盖仍为 67/100，严格通过为 64/100。其余固定门控条件的严格通过数与完整覆盖数相同。

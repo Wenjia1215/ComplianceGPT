@@ -745,76 +745,114 @@
         "PARAMS_REQUIRED": 88
       },
       "strict_pass": {
-        "count": 67,
+        "count": 64,
         "n": 100,
-        "rate": 0.67
+        "rate": 0.64
       }
     }
   },
   "interpretation_boundary": "Gate width is the only changed factor. ODP operating characteristics use author labels and are provisional pending blinded independent annotation.",
   "pairwise_strict_pass": {
     "rev4_adaptive_v3_vs_top1": {
+      "both_pass": 26,
       "exact_mcnemar_two_sided_p": 0.25,
       "left_only": 3,
+      "neither_pass": 7,
+      "paired_rows": 36,
       "right_only": 0
     },
     "rev4_adaptive_v3_vs_top5": {
+      "both_pass": 27,
       "exact_mcnemar_two_sided_p": 1.0,
       "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
       "right_only": 1
     },
     "rev4_top1_vs_top2": {
+      "both_pass": 25,
       "exact_mcnemar_two_sided_p": 0.375,
       "left_only": 1,
+      "neither_pass": 6,
+      "paired_rows": 36,
       "right_only": 4
     },
     "rev4_top1_vs_top5": {
+      "both_pass": 24,
       "exact_mcnemar_two_sided_p": 0.6875,
       "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
       "right_only": 4
     },
     "rev4_top2_vs_top3": {
+      "both_pass": 29,
       "exact_mcnemar_two_sided_p": 1.0,
       "left_only": 0,
+      "neither_pass": 7,
+      "paired_rows": 36,
       "right_only": 0
     },
     "rev4_top3_vs_top5": {
+      "both_pass": 27,
       "exact_mcnemar_two_sided_p": 1.0,
       "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
       "right_only": 1
     },
     "rev5_adaptive_v3_vs_top1": {
+      "both_pass": 61,
       "exact_mcnemar_two_sided_p": 0.375,
       "left_only": 4,
+      "neither_pass": 34,
+      "paired_rows": 100,
       "right_only": 1
     },
     "rev5_adaptive_v3_vs_top5": {
-      "exact_mcnemar_two_sided_p": 0.8318119049072266,
-      "left_only": 10,
+      "both_pass": 52,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 13,
+      "neither_pass": 23,
+      "paired_rows": 100,
       "right_only": 12
     },
     "rev5_top1_vs_top2": {
+      "both_pass": 55,
       "exact_mcnemar_two_sided_p": 0.629058837890625,
       "left_only": 7,
+      "neither_pass": 28,
+      "paired_rows": 100,
       "right_only": 10
     },
     "rev5_top1_vs_top5": {
-      "exact_mcnemar_two_sided_p": 0.42435622215270996,
-      "left_only": 10,
-      "right_only": 15
+      "both_pass": 50,
+      "exact_mcnemar_two_sided_p": 0.8450189828872681,
+      "left_only": 12,
+      "neither_pass": 24,
+      "paired_rows": 100,
+      "right_only": 14
     },
     "rev5_top2_vs_top3": {
+      "both_pass": 60,
       "exact_mcnemar_two_sided_p": 1.0,
       "left_only": 5,
+      "neither_pass": 30,
+      "paired_rows": 100,
       "right_only": 5
     },
     "rev5_top3_vs_top5": {
-      "exact_mcnemar_two_sided_p": 0.79052734375,
-      "left_only": 6,
+      "both_pass": 56,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 9,
+      "neither_pass": 27,
+      "paired_rows": 100,
       "right_only": 8
     }
   },
   "result_id": "rq2_control_gate_width_v1",
   "schema_version": "compliancegpt-rq2-control-gate-width-v1",
-  "strict_pass_definition": "The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
+  "strict_pass_assessment_boundary": "统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。",
+  "strict_pass_definition": "严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。",
+  "strict_pass_rule_version": "strict-pass-v1"
 }

@@ -102,6 +102,7 @@
         },
         "offline_strict_pass": {
           "count": 29,
+          "n": 36,
           "rate": 0.8055555555555556
         },
         "review_burden": {
@@ -195,6 +196,7 @@
         },
         "offline_strict_pass": {
           "count": 29,
+          "n": 36,
           "rate": 0.8055555555555556
         },
         "review_burden": {
@@ -356,6 +358,7 @@
         },
         "offline_strict_pass": {
           "count": 59,
+          "n": 100,
           "rate": 0.59
         },
         "review_burden": {
@@ -449,6 +452,7 @@
         },
         "offline_strict_pass": {
           "count": 65,
+          "n": 100,
           "rate": 0.65
         },
         "review_burden": {
@@ -510,5 +514,8 @@
       }
     }
   },
-  "schema_version": "compliancegpt-rq2-rescue-ablation-v1"
+  "schema_version": "compliancegpt-rq2-rescue-ablation-v1",
+  "strict_pass_assessment_boundary": "统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。",
+  "strict_pass_definition": "严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。",
+  "strict_pass_rule_version": "strict-pass-v1"
 }

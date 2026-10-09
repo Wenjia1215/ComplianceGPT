@@ -1,43 +1,20 @@
-# RQ2 No-Selector Ablation
+# rq2_no_selector 严格通过结果
 
-Result identity: `rq2_no_selector_v1`
+严格通过要求 C、W、L、U、A、F、P 同时满足；完整参考条款覆盖、来源和跨度有效、保留参数记录完整、引用在正文中实际使用、正文要求完整且规范与参数语义忠实。正确改写可通过；澄清值域不计分。
 
-The no-selector path retains every record in each frozen RQ2 v3 evidence window. It performs no model inference, fallback, rescue, or hierarchy expansion.
+统一规则用于冻结的保存回答。正文采用来源对照或完整保留证明，未经过独立专家裁定；不确定项留在分母中且不计通过。配对检验为事后、未调整的探索性分析。
 
-## REV5
+| 版本与条件 | 严格通过 | 完整条款覆盖 | 平均回答词数 | 平均条款精确率 |
+| --- | --- | --- | --- | --- |
+| rev4/selector_v3 | 29/36 | 29/36 | 167.17 | 0.5049 |
+| rev4/no_selector_v1 | 3/36 | 35/36 | 604.94 | 0.2149 |
+| rev5/selector_v3 | 65/100 | 65/100 | 220.67 | 0.5841 |
+| rev5/no_selector_v1 | 7/100 | 93/100 | 601.66 | 0.3061 |
 
-| Measure | Selector v3 | No selector v1 | Delta |
-|---|---:|---:|---:|
-| Offline strict pass | 65/100 (0.650) | 92/100 (0.920) | +0.270 |
-| Full gold-clause coverage | 65/100 (0.650) | 93/100 (0.930) | +0.280 |
-| Right governing control | 97/100 (0.970) | 97/100 (0.970) | +0.000 |
-| Mean selected clauses | 4.37 | 12.10 | +7.73 |
-| Mean additional clauses | 1.75 | 8.85 | +7.10 |
-| Mean gold-clause precision | 0.584 | 0.306 | -0.278 |
-| Mean answer words | 220.7 | 601.7 | +381.0 |
-| Mean citation characters | 48.8 | 143.2 | +94.4 |
-| Exact ODP-list agreement | 55/63 (0.873) | 24/63 (0.381) | -0.492 |
-| `PARAMS_REQUIRED` on author-labeled non-ODP rows | 20/37 (0.541) | 29/37 (0.784) | +0.243 |
+逐题判定及校验清单见 `../../supplementary_strict_pass/results_v1/`。原合同 CSV 中的旧检查字段保留为原合同条件记录，最终严格通过由本摘要及逐题判定给出。
 
-No-selector p95 selected clauses: 24.0; p95 answer words: 1283.5.
+保存的诊断合同包含空的 `ask_list`。Rev.5 的 85 题、Rev.4 的 32 题通过原合同条件但缺少对应的参数澄清请求记录。严格通过差异不能全部归因于选择器；完整覆盖、长度、精确率和原参数集合指标保持原测量。
 
-## REV4
+rev5：主路径独有通过 58，无选择器独有通过 0，双侧精确 McNemar 值 6.938893904e-18。
 
-| Measure | Selector v3 | No selector v1 | Delta |
-|---|---:|---:|---:|
-| Offline strict pass | 29/36 (0.806) | 35/36 (0.972) | +0.167 |
-| Full gold-clause coverage | 29/36 (0.806) | 35/36 (0.972) | +0.167 |
-| Right governing control | 36/36 (1.000) | 36/36 (1.000) | +0.000 |
-| Mean selected clauses | 4.03 | 14.17 | +10.14 |
-| Mean additional clauses | 2.08 | 11.78 | +9.69 |
-| Mean gold-clause precision | 0.505 | 0.215 | -0.290 |
-| Mean answer words | 167.2 | 604.9 | +437.8 |
-| Mean citation characters | 45.1 | 168.2 | +123.1 |
-| Exact ODP-list agreement | 12/19 (0.632) | 2/19 (0.105) | -0.526 |
-| `PARAMS_REQUIRED` on author-labeled non-ODP rows | 9/17 (0.529) | 14/17 (0.824) | +0.294 |
-
-No-selector p95 selected clauses: 24.0; p95 answer words: 954.5.
-
-## Interpretation boundary
-
-Higher coverage does not by itself establish a better operational answer. The additional-evidence, precision, and answer-length measures quantify the review burden created by retaining the whole window. Non-ODP status expansion is reported descriptively and is not called a false-positive rate without independent adjudication.
+rev4：主路径独有通过 27，无选择器独有通过 1，双侧精确 McNemar 值 2.160668373e-07。
