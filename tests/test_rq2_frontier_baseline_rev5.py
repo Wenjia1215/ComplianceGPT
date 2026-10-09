@@ -89,7 +89,7 @@ class FrontierBaselineRev5RunnerTest(unittest.TestCase):
         self.assertGreater(interval["upper"], 0.0)
         self.assertLess(interval["upper"], 0.12)
 
-    def test_summary_pipeline_emits_all_precommitted_endpoints(self):
+    def test_summary_pipeline_uses_complete_strict_pass(self):
         archive_path = REPO_ROOT / runner.DEFAULT_ARCHIVE
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory)
@@ -118,15 +118,15 @@ class FrontierBaselineRev5RunnerTest(unittest.TestCase):
                 api_manifest={"completed_result_rows": 100, "synthetic_test": True},
             )
             paired = summary["paired_strict_pass"]["compliancegpt_vs_frontier"]
-            self.assertEqual(paired["left_only"], 42)
+            self.assertEqual(paired["left_only"], 46)
             self.assertEqual(paired["right_only"], 2)
             self.assertAlmostEqual(
-                paired["exact_mcnemar_two_sided_p"], 1.1266365618212149e-10
+                paired["exact_mcnemar_two_sided_p"], 8.363087999896379e-12
             )
             self.assertEqual(
                 summary["configurations"]["generative_frontier_api"]
                 ["realization_loss"]["count"],
-                28,
+                32,
             )
             self.assertEqual(
                 summary["configurations"]["generative_frontier_api"]

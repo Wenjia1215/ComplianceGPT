@@ -6,6 +6,13 @@ This registered follow-on study addresses the stronger-baseline requirement for 
 
 The result identity is `rq2_frontier_baseline_v1`. It is a new result family and never edits or replaces RQ2 v3 or Batch 5B.
 
+## Strict-pass evaluation
+
+The final three-system [results](results_v1/SUMMARY.md) use the
+[complete strict-pass standard](../../../src/answerer_comparison/README.md).
+Reproduce them without model calls using
+`python experiments/answerer_comparison/run_strict_pass.py`.
+
 ## Completed result
 
 The archived run completed all 36 frozen rows with 36 unique API responses,
@@ -30,7 +37,7 @@ metadata in `run_config.json` and its dependent output-manifest hashes.
 - Frozen prompt SHA-256: `91ba0d840befd5517fbec7595f640333bcb8df8e63301e80552dad841744fdef`.
 - API settings: thinking level `LOW`, temperature `1.0` (the Gemini 3 recommended default), maximum output tokens `2048`, no tools, and no API-enforced structured-output schema. Parse retries return the prior response's thought signature exactly as required by the Gemini 3 multi-turn contract; signatures are not exposed as model output.
 - Retrieval: none. The runner consumes immutable ordered contexts from the validated RQ2 v3 archive.
-- Gold policy: gold labels never enter an API request; they are used only by the unchanged offline verifier.
+- Gold policy: gold labels never enter an API request; they are used only during offline evaluation.
 - Notebook runtime: A100 GPU by default, consistent with the project's Colab
   execution policy; model generation itself is served remotely.
 

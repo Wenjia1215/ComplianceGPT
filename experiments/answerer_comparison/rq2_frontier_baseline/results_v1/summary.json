@@ -137,10 +137,34 @@
           "rate": 0.6785714285714286
         }
       },
+      "realization_loss": {
+        "count": 0,
+        "coverage_complete": 29,
+        "definition": "coverage-complete rows failing strict pass divided by coverage-complete rows",
+        "lost_query_ids": [],
+        "n": 29,
+        "rate": 0.0,
+        "strict_pass_within_coverage": 29,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.0,
+          "upper": 0.11696979849974075
+        }
+      },
       "right_governing_control": {
         "count": 36,
         "n": 36,
         "rate": 1.0
+      },
+      "runtime_contract_only": {
+        "count": 7,
+        "n": 36,
+        "rate": 0.19444444444444445,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.09753095418928728,
+          "upper": 0.3502804299517739
+        }
       },
       "runtime_contract_pass": {
         "count": 36,
@@ -161,8 +185,14 @@
       "strict_pass": {
         "count": 29,
         "n": 36,
-        "rate": 0.8055555555555556
-      }
+        "rate": 0.8055555555555556,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.6497195700482261,
+          "upper": 0.9024690458107127
+        }
+      },
+      "uncertain_query_ids": []
     },
     "generative_baseline_4bit": {
       "additional_clause_count": {
@@ -212,10 +242,47 @@
           "rate": null
         }
       },
+      "realization_loss": {
+        "count": 12,
+        "coverage_complete": 18,
+        "definition": "coverage-complete rows failing strict pass divided by coverage-complete rows",
+        "lost_query_ids": [
+          "1",
+          "4",
+          "8",
+          "10",
+          "11",
+          "12",
+          "15",
+          "18",
+          "25",
+          "28",
+          "33",
+          "34"
+        ],
+        "n": 18,
+        "rate": 0.6666666666666666,
+        "strict_pass_within_coverage": 6,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.43749467295945105,
+          "upper": 0.837212252491663
+        }
+      },
       "right_governing_control": {
         "count": 36,
         "n": 36,
         "rate": 1.0
+      },
+      "runtime_contract_only": {
+        "count": 7,
+        "n": 36,
+        "rate": 0.19444444444444445,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.09753095418928728,
+          "upper": 0.3502804299517739
+        }
       },
       "runtime_contract_pass": {
         "count": 13,
@@ -233,84 +300,16 @@
         "OK": 36
       },
       "strict_pass": {
-        "count": 8,
+        "count": 6,
         "n": 36,
-        "rate": 0.2222222222222222
-      }
-    },
-    "generative_baseline_bf16": {
-      "additional_clause_count": {
-        "max": 8.0,
-        "mean": 1.5833333333333333,
-        "median": 1.0,
-        "min": 0.0,
-        "p95": 7.0
-      },
-      "answer_word_count": {
-        "max": 129.0,
-        "mean": 41.27777777777778,
-        "median": 34.5,
-        "min": 9.0,
-        "p95": 97.5
-      },
-      "full_gold_clause_coverage": {
-        "count": 20,
-        "n": 36,
-        "rate": 0.5555555555555556
-      },
-      "mean_gold_clause_precision": 0.5753858024691358,
-      "mean_gold_clause_recall": 0.6635802469135803,
-      "n_questions": 36,
-      "odp_against_author_labels": {
-        "boundary": "These ODP operating characteristics use author labels and remain provisional until the blinded independent annotation is returned.",
-        "exact_odp_list_agreement": {
-          "count": 3,
-          "n": 19,
-          "rate": 0.15789473684210525
-        },
-        "gold_non_odp_rows": 17,
-        "gold_odp_rows": 19,
-        "params_required_sensitivity": {
-          "count": 0,
-          "n": 19,
-          "rate": 0.0
-        },
-        "specificity": {
-          "count": 17,
-          "n": 17,
-          "rate": 1.0
-        },
-        "status_precision": {
-          "count": 0,
-          "n_predicted_params_required": 0,
-          "rate": null
+        "rate": 0.16666666666666666,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.07870447595018114,
+          "upper": 0.31890794311279463
         }
       },
-      "right_governing_control": {
-        "count": 36,
-        "n": 36,
-        "rate": 1.0
-      },
-      "runtime_contract_pass": {
-        "count": 14,
-        "n": 36,
-        "rate": 0.3888888888888889
-      },
-      "selected_clause_count": {
-        "max": 9.0,
-        "mean": 2.888888888888889,
-        "median": 2.0,
-        "min": 1.0,
-        "p95": 8.0
-      },
-      "status_counts": {
-        "OK": 36
-      },
-      "strict_pass": {
-        "count": 8,
-        "n": 36,
-        "rate": 0.2222222222222222
-      }
+      "uncertain_query_ids": []
     },
     "generative_frontier_api": {
       "additional_clause_count": {
@@ -360,10 +359,41 @@
           "rate": 0.75
         }
       },
+      "realization_loss": {
+        "count": 6,
+        "coverage_complete": 28,
+        "definition": "coverage-complete rows failing strict pass divided by coverage-complete rows",
+        "lost_query_ids": [
+          "7",
+          "10",
+          "18",
+          "24",
+          "33",
+          "36"
+        ],
+        "n": 28,
+        "rate": 0.21428571428571427,
+        "strict_pass_within_coverage": 22,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.1021246033289788,
+          "upper": 0.3953858565372187
+        }
+      },
       "right_governing_control": {
         "count": 36,
         "n": 36,
         "rate": 1.0
+      },
+      "runtime_contract_only": {
+        "count": 11,
+        "n": 36,
+        "rate": 0.3055555555555556,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.1800445159482992,
+          "upper": 0.4685627285051034
+        }
       },
       "runtime_contract_pass": {
         "count": 33,
@@ -382,16 +412,21 @@
         "PARAMS_REQUIRED": 24
       },
       "strict_pass": {
-        "count": 24,
+        "count": 22,
         "n": 36,
-        "rate": 0.6666666666666666
-      }
+        "rate": 0.6111111111111112,
+        "wilson_95_ci": {
+          "level": 0.95,
+          "lower": 0.44864459096605147,
+          "upper": 0.75215126934629
+        }
+      },
+      "uncertain_query_ids": []
     }
   },
   "file_hashes": {
     "compliancegpt_4bit": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
     "generative_baseline_4bit": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
-    "generative_baseline_bf16": "1b84eb673145bdae15d8e52c22678f2cf780d5f09f6e8603e6578ec586c2fc60",
     "generative_frontier_api": "14f5c33146a06ada055057e221bfc226282d11e2930281603a7b6c6e491876b7"
   },
   "framework_version": "rev4",
@@ -405,38 +440,55 @@
   },
   "n_questions": 36,
   "paired_strict_pass": {
-    "frontier_vs_4bit_baseline": {
-      "both_pass": 6,
-      "exact_mcnemar_two_sided_p": 0.0004024505615234375,
-      "left": "generative_frontier_api",
-      "left_only": 18,
-      "neither_pass": 10,
+    "compliancegpt_vs_qwen_4bit": {
+      "both_pass": 5,
+      "exact_mcnemar_two_sided_p": 1.5497207641601562e-06,
+      "left": "compliancegpt_4bit",
+      "left_only": 24,
+      "neither_pass": 6,
       "paired_rows": 36,
       "right": "generative_baseline_4bit",
-      "right_only": 2
+      "right_only": 1
+    },
+    "frontier_vs_4bit_baseline": {
+      "both_pass": 5,
+      "exact_mcnemar_two_sided_p": 0.00014495849609375,
+      "left": "generative_frontier_api",
+      "left_only": 17,
+      "neither_pass": 13,
+      "paired_rows": 36,
+      "right": "generative_baseline_4bit",
+      "right_only": 1
     },
     "frontier_vs_4bit_compliancegpt": {
-      "both_pass": 21,
-      "exact_mcnemar_two_sided_p": 0.2265625,
+      "both_pass": 19,
+      "exact_mcnemar_two_sided_p": 0.09228515625,
       "left": "generative_frontier_api",
       "left_only": 3,
       "neither_pass": 4,
       "paired_rows": 36,
       "right": "compliancegpt_4bit",
-      "right_only": 8
-    },
-    "frontier_vs_bf16_baseline": {
-      "both_pass": 6,
-      "exact_mcnemar_two_sided_p": 0.0004024505615234375,
-      "left": "generative_frontier_api",
-      "left_only": 18,
-      "neither_pass": 10,
-      "paired_rows": 36,
-      "right": "generative_baseline_bf16",
-      "right_only": 2
+      "right_only": 10
     }
+  },
+  "realization_loss_comparison": {
+    "fisher_exact_two_sided_p": 0.010381872348108693,
+    "left": "compliancegpt_4bit",
+    "right": "generative_frontier_api",
+    "table_rows_are_systems_columns_are_lost_then_retained": [
+      [
+        0,
+        29
+      ],
+      [
+        6,
+        22
+      ]
+    ]
   },
   "result_id": "rq2_frontier_baseline_v1",
   "schema_version": "compliancegpt-rq2-frontier-baseline-v1",
-  "strict_pass_definition": "The existing gold-based citation-contract endpoint: full expected-clause coverage, source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
+  "strict_pass_assessment": "All conditions are mandatory. Semantic conditions use versioned source inspection or a sufficient complete-retention proof; judgments are not independently adjudicated. Uncertain cases receive no strict credit and remain in the denominator. The saved outputs are assessed retrospectively; paired tests are exploratory and unadjusted.",
+  "strict_pass_definition": "Full gold governing-control and required-clause coverage; valid revision, source and verbatim evidence; gold-policy parameter/status consistency; exact, unique eligible sources in the matched evidence window; complete retained-parameter accounting; actual citation use in the answer body; complete question-relevant obligations; faithful claims and parameter meaning. Extra evidence is permitted when these conditions hold. Correct paraphrases can pass. Clarification value domains are not scored.",
+  "strict_pass_rule_version": "strict-pass-v1"
 }

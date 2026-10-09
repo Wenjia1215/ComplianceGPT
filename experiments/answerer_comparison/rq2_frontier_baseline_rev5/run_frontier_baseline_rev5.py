@@ -32,6 +32,10 @@ from typing import Any, Dict, List, Mapping, Sequence, Tuple
 REPO_HINT = Path(__file__).resolve().parents[3]
 if str(REPO_HINT) not in sys.path:
     sys.path.insert(0, str(REPO_HINT))
+if str(REPO_HINT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_HINT / "src"))
+
+from answerer_comparison import strict_pass as strict_scoring  # noqa: E402
 
 from experiments.answerer_comparison.rq2_bf16_baseline import (  # noqa: E402
     run_bf16_baseline as registered,
@@ -832,7 +836,12 @@ def aggregate_rows(
     rows: Mapping[str, Mapping[str, str]],
     gold_rows: Mapping[str, Mapping[str, str]],
     normalize_odp_id: Any,
+    strict_results: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> Dict[str, Any]:
+    if strict_results is None:
+        strict_results = strict_scoring.score_rows(
+            revision=FRAMEWORK_VERSION, rows=rows, gold_rows=gold_rows,
+        )
     query_ids = sorted(
         rows,
         key=lambda value: (0, int(value)) if value.isdigit() else (1, value),
@@ -863,7 +872,7 @@ def aggregate_rows(
         per_row.append(
             {
                 "query_id": query_id,
-                "strict_pass": csv_bool(row.get("verifier_pass")),
+                "strict_pass": bool(strict_results[query_id]["strict_pass"]),
                 "runtime_pass": csv_bool(row.get("contract_validity_pass")),
                 "full_gold_clause_coverage": csv_bool(row.get("doc_full_recall")),
                 "right_control": csv_bool(row.get("control_hit_any")),
@@ -903,7 +912,7 @@ def aggregate_rows(
             ),
         }
     )
-    return {
+    aggregate = {
         "n_questions": len(per_row),
         "strict_pass": count_rate("strict_pass"),
         "runtime_contract_pass": count_rate("runtime_pass"),
@@ -951,6 +960,7 @@ def aggregate_rows(
         },
         "per_row": per_row,
     }
+    return strict_scoring.apply_strict_pass_metrics(aggregate, strict_results)
 
 
 def exact_mcnemar(left_only: int, right_only: int) -> float:
@@ -968,32 +978,7 @@ def paired_strict_pass(
     left: Mapping[str, Mapping[str, str]],
     right: Mapping[str, Mapping[str, str]],
 ) -> Dict[str, Any]:
-    if set(left) != set(right):
-        raise AssertionError("Paired outputs have different query-id sets.")
-    query_ids = sorted(left)
-    left_only = sum(
-        csv_bool(left[qid].get("verifier_pass"))
-        and not csv_bool(right[qid].get("verifier_pass"))
-        for qid in query_ids
-    )
-    right_only = sum(
-        csv_bool(right[qid].get("verifier_pass"))
-        and not csv_bool(left[qid].get("verifier_pass"))
-        for qid in query_ids
-    )
-    both = sum(
-        csv_bool(left[qid].get("verifier_pass"))
-        and csv_bool(right[qid].get("verifier_pass"))
-        for qid in query_ids
-    )
-    return {
-        "paired_rows": len(query_ids),
-        "left_only": left_only,
-        "right_only": right_only,
-        "both_pass": both,
-        "neither_pass": len(query_ids) - left_only - right_only - both,
-        "exact_mcnemar_two_sided_p": exact_mcnemar(left_only, right_only),
-    }
+    return strict_scoring.paired_strict_pass(left, right)
 
 
 def fisher_exact_two_sided(a: int, b: int, c: int, d: int) -> float:
@@ -1074,8 +1059,7 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
         "",
         (
             "All systems use the same 100 frozen Revision 5 questions, ordered "
-            "evidence windows, ASK policy, and offline verifier. The primary "
-            "registered comparison is ComplianceGPT versus Gemini 3.5 Flash."
+            "evidence windows, ASK policy, and strict-pass standard."
         ),
         "",
         "## Primary and supporting outcomes",
@@ -1100,7 +1084,7 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
     lines.extend(
         [
             "",
-            "## Registered paired strict-pass test",
+            "## Paired strict-pass test",
             "",
             (
                 "| Comparison | ComplianceGPT only | Gemini only | Both pass "
@@ -1141,6 +1125,8 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
                 f"loss: `{float(realization['fisher_exact_two_sided_p']):.8g}`."
             ),
             "",
+            "The coverage-complete subsets differ by system; this descriptive comparison does not replace the paired end-to-end test.",
+            "",
             (
                 "ComplianceGPT's observed zero realization loss is predicted by "
                 "construction; it confirms that the implementation matches the "
@@ -1176,6 +1162,14 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
             "## Interpretation boundary",
             "",
             str(summary["interpretation_boundary"]),
+            "",
+            "## Strict-pass standard",
+            "",
+            str(summary["strict_pass_definition"]),
+            "",
+            str(summary["strict_pass_assessment"]),
+            "",
+            "See [the complete standard](../../../../src/answerer_comparison/README.md) and [three detailed examples](../../STRICT_PASS_EXAMPLES.md).",
         ]
     )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
@@ -1203,12 +1197,17 @@ def summarize_completed_run(
         rows["generative_baseline_4bit"],
         rows["compliancegpt_4bit"],
     )
+    assessments = {
+        name: strict_scoring.score_rows(revision=FRAMEWORK_VERSION, rows=values, gold_rows=gold_rows)
+        for name, values in rows.items()
+    }
     configurations: Dict[str, Any] = {}
     for name, values in rows.items():
         aggregate = aggregate_rows(
             rows=values,
             gold_rows=gold_rows,
             normalize_odp_id=normalize_odp_id,
+            strict_results=assessments[name],
         )
         aggregate.pop("per_row", None)
         configurations[name] = aggregate
@@ -1230,7 +1229,7 @@ def summarize_completed_run(
         "result_id": RESULT_ID,
         "framework_version": FRAMEWORK_VERSION,
         "n_questions": EXPECTED_ROWS,
-        "precommitment_sha256": PRECOMMITMENT_SHA256,
+        "generation_precommitment_sha256": PRECOMMITMENT_SHA256,
         "changed_factor": (
             "free-form answer model/runtime: Qwen2.5-7B -> Gemini frontier API"
         ),
@@ -1242,16 +1241,20 @@ def summarize_completed_run(
                 "left": "compliancegpt_4bit",
                 "right": "generative_frontier_api",
                 **paired_strict_pass(
-                    rows["compliancegpt_4bit"], rows["generative_frontier_api"]
+                    assessments["compliancegpt_4bit"], assessments["generative_frontier_api"]
                 ),
             },
             "frontier_vs_qwen_4bit": {
                 "left": "generative_frontier_api",
                 "right": "generative_baseline_4bit",
                 **paired_strict_pass(
-                    rows["generative_frontier_api"],
-                    rows["generative_baseline_4bit"],
+                    assessments["generative_frontier_api"],
+                    assessments["generative_baseline_4bit"],
                 ),
+            },
+            "compliancegpt_vs_qwen_4bit": {
+                "left": "compliancegpt_4bit", "right": "generative_baseline_4bit",
+                **paired_strict_pass(assessments["compliancegpt_4bit"], assessments["generative_baseline_4bit"]),
             },
         },
         "realization_loss_comparison": {
@@ -1265,11 +1268,9 @@ def summarize_completed_run(
                 realization_table[1][1],
             ),
         },
-        "strict_pass_definition": (
-            "The existing gold-based citation-contract endpoint: full expected-clause "
-            "coverage, source/revision/verbatim validity, and ODP/status consistency. "
-            "It permits extra evidence."
-        ),
+        "strict_pass_definition": strict_scoring.STRICT_PASS_DEFINITION,
+        "strict_pass_rule_version": strict_scoring.RULE_VERSION,
+        "strict_pass_assessment": strict_scoring.ASSESSMENT_BOUNDARY,
         "interpretation_boundary": (
             "This is a stronger-system baseline, not an isolation of weight precision or "
             "architecture. Questions, model-visible evidence, prompt/parser, ODP policy, "
@@ -1283,6 +1284,7 @@ def summarize_completed_run(
     }
     write_json(output_dir / "summary.json", summary)
     write_summary_markdown(output_dir / "SUMMARY.md", summary)
+    strict_scoring.write_assessments(output_dir, assessments, rows)
     return summary
 
 

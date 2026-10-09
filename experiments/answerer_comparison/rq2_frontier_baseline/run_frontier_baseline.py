@@ -28,6 +28,10 @@ from typing import Any, Dict, List, Mapping, Sequence, Tuple
 REPO_HINT = Path(__file__).resolve().parents[3]
 if str(REPO_HINT) not in sys.path:
     sys.path.insert(0, str(REPO_HINT))
+if str(REPO_HINT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_HINT / "src"))
+
+from answerer_comparison import strict_pass as strict_scoring  # noqa: E402
 
 from experiments.answerer_comparison.rq2_bf16_baseline import (  # noqa: E402
     run_bf16_baseline as registered,
@@ -522,7 +526,6 @@ def format_rate(value: Mapping[str, Any]) -> str:
 def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
     labels = [
         ("generative_frontier_api", "Frontier API baseline"),
-        ("generative_baseline_bf16", "Qwen generative baseline, BF16"),
         ("generative_baseline_4bit", "Qwen generative baseline, 4-bit"),
         ("compliancegpt_4bit", "ComplianceGPT, 4-bit"),
     ]
@@ -531,7 +534,7 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
         "",
         f"Result identity: `{RESULT_ID}`",
         "",
-        "All systems use the same 36 questions, ordered evidence windows, ASK policy, and offline verifier. The frontier baseline inherits the frozen free-form prompt and parser without API tools or schema-constrained decoding.",
+        "All systems use the same 36 questions, ordered evidence windows, ASK policy, and strict-pass standard. The frontier baseline inherits the frozen free-form prompt and parser without API tools or schema-constrained decoding.",
         "",
         "| System | Strict pass | Full clause coverage | Runtime contract pass | Mean clause precision | Mean selected clauses | ODP sensitivity* |",
         "|---|---:|---:|---:|---:|---:|---:|",
@@ -557,15 +560,27 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
         ]
     )
     for key, label in (
-        ("frontier_vs_bf16_baseline", "Frontier vs Qwen BF16 baseline"),
         ("frontier_vs_4bit_baseline", "Frontier vs Qwen 4-bit baseline"),
         ("frontier_vs_4bit_compliancegpt", "Frontier vs 4-bit ComplianceGPT"),
+        ("compliancegpt_vs_qwen_4bit", "ComplianceGPT vs Qwen 4-bit baseline"),
     ):
         value = summary["paired_strict_pass"][key]
         lines.append(
             f"| {label} | {value['left_only']} | {value['right_only']} "
             f"| {float(value['exact_mcnemar_two_sided_p']):.8g} |"
         )
+    lines.extend([
+        "", "## Coverage-complete rejections", "",
+        "| System | Coverage-complete | Strict pass within coverage | Lost | Realization loss |",
+        "|---|---:|---:|---:|---:|",
+    ])
+    for key, label in labels:
+        loss = summary["configurations"][key]["realization_loss"]
+        lines.append(f"| {label} | {loss['coverage_complete']} | {loss['strict_pass_within_coverage']} | {loss['count']} | {format_rate(loss)} |")
+    lines.extend([
+        "", f"Two-sided Fisher exact p for ComplianceGPT versus Gemini realization loss: `{summary['realization_loss_comparison']['fisher_exact_two_sided_p']:.8g}`.",
+        "", "The coverage-complete subsets differ by system; this descriptive comparison does not replace the paired end-to-end test.",
+    ])
     lines.extend(
         [
             "",
@@ -573,7 +588,15 @@ def write_summary_markdown(path: Path, summary: Mapping[str, Any]) -> None:
             "",
             str(summary["interpretation_boundary"]),
             "",
-            "*ODP operating characteristics use author labels and remain provisional until blinded independent annotation is returned.*",
+            "*ODP operating characteristics use author labels and are not independently adjudicated.*",
+            "",
+            "## Strict-pass standard",
+            "",
+            str(summary["strict_pass_definition"]),
+            "",
+            str(summary["strict_pass_assessment"]),
+            "",
+            "See [the complete standard](../../../../src/answerer_comparison/README.md) and [three detailed examples](../../STRICT_PASS_EXAMPLES.md).",
             "",
         ]
     )
@@ -600,6 +623,12 @@ def summarize_completed_run(
         rows["generative_baseline_4bit"],
         rows["compliancegpt_4bit"],
     )
+    rows.pop("generative_baseline_bf16")
+    paths.pop("generative_baseline_bf16")
+    assessments = {
+        name: strict_scoring.score_rows(revision="rev4", rows=values, gold_rows=gold_rows)
+        for name, values in rows.items()
+    }
     configurations: Dict[str, Any] = {}
     for name, values in rows.items():
         aggregate = registered.aggregate_rows(
@@ -607,6 +636,7 @@ def summarize_completed_run(
             gold_rows=gold_rows,
             normalize_odp_id=normalize_odp_id,
         )
+        strict_scoring.apply_strict_pass_metrics(aggregate, assessments[name])
         aggregate.pop("per_row", None)
         configurations[name] = aggregate
 
@@ -614,8 +644,12 @@ def summarize_completed_run(
         return {
             "left": "generative_frontier_api",
             "right": right,
-            **registered.paired_strict_pass(rows["generative_frontier_api"], rows[right]),
+            **strict_scoring.paired_strict_pass(assessments["generative_frontier_api"], assessments[right]),
         }
+
+    from experiments.answerer_comparison.rq2_frontier_baseline_rev5.run_frontier_baseline_rev5 import fisher_exact_two_sided
+    losses = [configurations[key]["realization_loss"] for key in ("compliancegpt_4bit", "generative_frontier_api")]
+    realization_table = [[loss["count"], loss["strict_pass_within_coverage"]] for loss in losses]
 
     summary = {
         "schema_version": SCHEMA_VERSION,
@@ -627,14 +661,21 @@ def summarize_completed_run(
         "api_provenance": dict(api_manifest),
         "configurations": configurations,
         "paired_strict_pass": {
-            "frontier_vs_bf16_baseline": comparison("generative_baseline_bf16"),
             "frontier_vs_4bit_baseline": comparison("generative_baseline_4bit"),
             "frontier_vs_4bit_compliancegpt": comparison("compliancegpt_4bit"),
+            "compliancegpt_vs_qwen_4bit": {
+                "left": "compliancegpt_4bit", "right": "generative_baseline_4bit",
+                **strict_scoring.paired_strict_pass(assessments["compliancegpt_4bit"], assessments["generative_baseline_4bit"]),
+            },
         },
-        "strict_pass_definition": (
-            "The existing gold-based citation-contract endpoint: full expected-clause coverage, "
-            "source/revision/verbatim validity, and ODP/status consistency. It permits extra evidence."
-        ),
+        "strict_pass_definition": strict_scoring.STRICT_PASS_DEFINITION,
+        "realization_loss_comparison": {
+            "left": "compliancegpt_4bit", "right": "generative_frontier_api",
+            "table_rows_are_systems_columns_are_lost_then_retained": realization_table,
+            "fisher_exact_two_sided_p": fisher_exact_two_sided(*realization_table[0], *realization_table[1]),
+        },
+        "strict_pass_rule_version": strict_scoring.RULE_VERSION,
+        "strict_pass_assessment": strict_scoring.ASSESSMENT_BOUNDARY,
         "interpretation_boundary": (
             "This is a stronger-system baseline, not an isolation of weight precision or architecture. "
             "Questions, model-visible evidence, prompt/parser, ODP policy, and verifier are fixed, but "
@@ -646,6 +687,7 @@ def summarize_completed_run(
     }
     registered.write_json(output_dir / "summary.json", summary)
     write_summary_markdown(output_dir / "SUMMARY.md", summary)
+    strict_scoring.write_assessments(output_dir, assessments, rows)
     return summary
 
 

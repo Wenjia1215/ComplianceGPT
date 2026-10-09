@@ -1,7 +1,8 @@
 {
   "files": {
     "PREPARED_CONTEXTS.md": "af2e3f1dba0f1c5d2e13198e621171339c52b09928c558c2575ccf52116724a2",
-    "SUMMARY.md": "6d1048a7294caf158011af13309b628139b28ab0b361543ab861fbc4060cbf38",
+    "README.md": "af6fac7d29aa6658395b0c023d4699fcca30199cae9cb268addd3e7db7cc4655",
+    "SUMMARY.md": "c5369b262f433d018b82a6c8c39eae7d2cab981b458f3d3f6028ae97ca0b6dea",
     "api/responses.jsonl": "542cea5d834b39e2189ff2b763041f62e2abc35d9d41ee72e0be71bd6ae63c4f",
     "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
     "contracts/rev5_generative_frontier_api.csv": "8380b370d061dc772e25b353b353b06023540c6c5f6613839c4f36bedccae06e",
@@ -10,15 +11,19 @@
     "manifests/generation_contract.json": "f88af8f90ded6b0d48f33d2a233cb19e3676b0ae7cb34def008bc1f6c01ec8ca",
     "manifests/run.json": "4ed42deda04c64d4c6397f7e713fbcbc919c1759ba2dc57cc881c5bb32b67aea",
     "manifests/source_archive.json": "d8e61dac63844b1f36216fb78eefc3c4086a2c29d22f6493403d1ca7dc298f2a",
+    "manifests/strict_pass.json": "b2c901446811d10fa3c80d47d581d6f3b8e4dbd3fb13e3947f14ea96e71186f6",
     "preflight/summary.json": "ee66044695c5b5fb6be7a43cbab7fb9384975555e16c2da4f41ad81726f86f11",
     "references/rev5_compliancegpt_4bit.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
     "references/rev5_frozen_paired_summary.json": "46abebc838233b104ed75609a597b204101e4fffc4cc0b6ef2a772b5047fabeb",
     "references/rev5_generative_baseline_4bit.csv": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63",
     "references/rq2_v3_run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5",
     "run_config.json": "8f07c4ef0abb869a7209bfb8306bb01d1dc951ce977afba0f83ac24fb7524d24",
-    "summary.json": "3c4c813bd73835f39e24432c42bf8c2e003e680ee284ce99e5466741634f5024"
+    "strict_pass_rows.csv": "dc136d704f626aa981a2c0126e0c1cc04346fec85086fc0e8c7d02379495c79a",
+    "strict_pass_rows.jsonl": "75ca5e3350c507c134c786ebd238343ca9f8c751799e9a2d02665822996ccb26",
+    "summary.json": "bf5c8baefd2a88e7a6a340b87b76d589b681b990754daa0411539b518edc177d"
   },
-  "files_sha256": "6c113d3dcf32dbb84e8cfaa0608ed8d50b83ac376719ba8f73abaf028578cc47",
+  "files_sha256": "c0d3ff913140da36bb94c67f11a55f70648f130bcbb14607dd918a78432bb882",
   "result_id": "rq2_frontier_baseline_rev5_v1",
-  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1"
+  "schema_version": "compliancegpt-rq2-frontier-baseline-rev5-v1",
+  "scope": "Current materialized evaluation; byte-exact execution manifests remain in the saved ZIP archives."
 }
