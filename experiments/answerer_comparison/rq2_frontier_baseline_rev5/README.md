@@ -29,8 +29,8 @@ The result identity is `rq2_frontier_baseline_rev5_v1`. It is separate from the
   stopping.
 - Excluded study: Gemini Pro is not part of the registered comparison.
 
-The primary endpoint is paired strict pass for frozen ComplianceGPT versus
-Gemini, tested with a two-sided exact McNemar test. Registered secondary outputs
+The evaluation uses the [complete strict-pass standard](../../../src/answerer_comparison/README.md)
+on the saved three-system outputs, with two-sided exact McNemar tests. Supporting outputs
 include clause coverage, coverage-complete realization loss, a two-sided Fisher
 exact test, runtime structural pass, Wilson intervals, ODP sensitivity,
 specificity and precision, clause precision/recall, and answer length.
@@ -88,18 +88,19 @@ record with all nine code-cell execution counts and outputs retained.
 | System | Strict pass | Full clause coverage | Runtime contract pass | Realization loss |
 |---|---:|---:|---:|---:|
 | ComplianceGPT | 65/100 | 65/100 | 100/100 | 0/65 |
-| Gemini 3.5 Flash | 66/100 | 67/100 | 99/100 | 1/67 |
-| Qwen2.5-7B 4-bit | 25/100 | 53/100 | 42/100 | 28/53 |
+| Gemini 3.5 Flash | 56/100 | 67/100 | 99/100 | 11/67 |
+| Qwen2.5-7B 4-bit | 21/100 | 53/100 | 42/100 | 32/53 |
 
-ComplianceGPT and Gemini were not statistically distinguishable on paired
-strict pass: 54 both passed, 11 ComplianceGPT-only passed, 12 Gemini-only
-passed, and 23 neither passed (`p = 1.0`, exact two-sided McNemar). The
-registered Fisher exact comparison of realization loss was also `p = 1.0`.
-The result therefore supports no accuracy-direction claim. Its mechanistic
-distinction is that ComplianceGPT's zero realization loss is predicted by
-deterministic construction and independently checkable at runtime, whereas
-Gemini's 1/67 is excellent empirical behavior under the evaluated model and
-prompt.
+ComplianceGPT has the highest observed strict-pass rate. Its paired comparison
+with Gemini has 47 both passing, 18 ComplianceGPT-only, nine Gemini-only, and
+26 neither passing (exact two-sided McNemar `p = 0.122078`). This exploratory
+comparison does not establish a statistically significant end-to-end difference.
+Coverage-complete realization loss is 0/65 for ComplianceGPT and 11/67 for
+Gemini; the coverage-complete subsets differ by system. Semantic judgments
+are not independently adjudicated.
+
+Reproduce the saved-output evaluation with
+`python experiments/answerer_comparison/run_strict_pass.py`.
 
 The complete package contains:
 
@@ -108,7 +109,7 @@ The complete package contains:
   finish metadata, and token usage;
 - frozen Revision 5 ComplianceGPT and Qwen reference contracts;
 - source, generation, API runtime, response, run, and output manifests;
-- `summary.json` and `SUMMARY.md` with all registered endpoints; and
+- `summary.json`, `SUMMARY.md`, and `strict_pass_rows.{csv,jsonl}` with final strict-pass decisions and supporting metrics; and
 - the sibling archive `rq2_frontier_baseline_rev5_v1.zip`.
 
 ODP operating characteristics use the current author labels and are reported

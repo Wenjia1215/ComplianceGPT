@@ -18,8 +18,8 @@ That exact archive is retained as
 ## Post-run metadata correction
 
 The successful run used Gemini API Paid Tier 1, but the original
-`run_config.json` retained generic free-tier data-policy wording. The
-materialized result and `rq2_frontier_baseline_v1_corrected.zip` correct only
+`run_config.json` retained generic free-tier data-policy wording. The archived
+`rq2_frontier_baseline_v1_corrected.zip` corrects only
 that provenance metadata. They add the operator-reported billing tier, state
 that `generateContent` does not return the billing tier, and record the
 original archive hash. No question, context, response, contract, verifier
@@ -42,23 +42,19 @@ The corrected archive SHA-256 is:
 See [`AUDIT.md`](AUDIT.md) for the independent integrity and result checks and
 [`SUMMARY.md`](SUMMARY.md) for the runner-generated summary.
 
-## Recorded result
+## Strict-pass results
 
-| System | Strict pass | Full clause coverage | Runtime contract pass | Mean clause precision | ODP sensitivity* |
-|---|---:|---:|---:|---:|---:|
-| Gemini 3.5 Flash frontier baseline | 24/36 (0.667) | 28/36 (0.778) | 33/36 (0.917) | 0.615 | 18/19 (0.947) |
-| Qwen BF16 generative baseline | 8/36 (0.222) | 20/36 (0.556) | 14/36 (0.389) | 0.575 | 0/19 (0.000) |
-| Qwen 4-bit generative baseline | 8/36 (0.222) | 18/36 (0.500) | 13/36 (0.361) | 0.488 | 0/19 (0.000) |
-| ComplianceGPT 4-bit | 29/36 (0.806) | 29/36 (0.806) | 36/36 (1.000) | 0.505 | 19/19 (1.000) |
+[`SUMMARY.md`](SUMMARY.md) and [`summary.json`](summary.json) are the canonical
+three-system results under the [complete strict-pass standard](../../../../src/answerer_comparison/README.md).
+[`strict_pass_rows.csv`](strict_pass_rows.csv) and [`strict_pass_rows.jsonl`](strict_pass_rows.jsonl)
+record the final decision and its component predicates for every saved output.
 
-Gemini substantially strengthened the free-form baseline relative to both Qwen
-baselines (`p = 0.00040245056` for each paired strict-pass comparison).
-ComplianceGPT and Gemini had eight and three exclusive passes, respectively,
-but are not statistically distinguishable on strict pass on these 36 rows
-(`p = 0.2265625`). The count difference is not interpreted as evidence of a
-direction.
+- Baseline: 6/36 (16.7%).
+- ComplianceGPT: 29/36 (80.6%).
+- Gemini: 22/36 (61.1%).
 
-*ODP values use current author labels and have not been independently
-adjudicated. The immutable runner-generated summary retains its original
-pre-scope wording; the controlling interpretation is the limitation stated
-here and in the unified Batch 5A–5D comparison.*
+The original ZIP archives, their embedded output manifests, and `AUDIT.md`
+retain the execution record. The materialized `manifests/outputs.json` describes
+the current files; `manifests/strict_pass.json` pins evaluation inputs, code,
+review records and results. Raw contracts and responses are unchanged. Semantic
+judgments are not independently adjudicated.

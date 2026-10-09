@@ -120,6 +120,10 @@ resolution conformance.
 
 ## Evaluation artifacts
 
+The three-system strict-pass standard and offline scoring entry point are
+documented in [`src/answerer_comparison/README.md`](src/answerer_comparison/README.md).
+The canonical result tables contain one strict-pass endpoint.
+
 - The S1–S7 evaluation measures governing-control ranking.
 - The matched answerer evaluation compares complete answer-construction
   methods under the same ordered evidence window and loaded model instance.
@@ -133,23 +137,25 @@ resolution conformance.
   evidence windows, ODP policy, and verifier. It is a separate quantization-
   sensitivity result and does not replace RQ2 v3. Its complete supplied A100
   evidence package and audit record are archived under
-  `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`; BF16 left
-  strict pass unchanged at 8/36 versus the frozen 4-bit baseline.
+  `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/`; its precision
+  comparison remains a separate archived evaluation.
 - The registered Batch 5C study sends the same 36 questions, ordered evidence
   windows, and free-form prompt to the stable `gemini-3.5-flash` Gemini API
   model with no tools or schema-constrained decoding. The completed Paid Tier 1
   run retained all 36 raw API responses, response IDs, server-reported model
-  strings, and token usage, then applied the unchanged offline verifier. Its
+  strings, and token usage, then recorded contract checks. Its
   complete evidence package and audit record are archived under
   `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`; Gemini
-  passed 24/36 strict contracts versus 8/36 for either Qwen baseline.
+  passed 22/36 strict contracts, versus 6/36 for the Qwen 4-bit baseline
+  and 29/36 for ComplianceGPT.
 - The pre-committed Batch 5D study extends the same Gemini protocol to all 100
   Revision 5 rows. Its executed notebook, raw API log, contracts, manifests,
   summary, archive, and independent audit are retained under
   `experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/`.
-  ComplianceGPT and Gemini passed 65/100 and 66/100 strict contracts with
-  11-versus-12 discordance (`p = 1.0`), so neither revision supports an
-  accuracy-direction claim.
+  ComplianceGPT, Gemini, and Qwen 4-bit passed 65/100, 56/100, and 21/100
+  under the complete strict-pass standard. ComplianceGPT versus Gemini has
+  18-versus-9 discordance (`p = 0.122078`); the paired comparison does not
+  establish a statistically significant end-to-end difference.
 - The unified Batch 5A–5D comparison keeps all changed-factor boundaries
   separate while placing the matched endpoints, paired tests, realization
   loss, ODP tradeoffs, and evidence hashes in one dissertation-ready record:

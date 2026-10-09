@@ -7,10 +7,12 @@ frozen RQ2 v3 result. Batch 5C provides the 36-row Revision 4 frontier
 comparison; the pre-committed Batch 5D study extends that comparison to the
 primary 100-row Revision 5 benchmark.
 
-The strict-pass result is intentionally stated without a direction claim:
-**ComplianceGPT and Gemini 3.5 Flash are statistically indistinguishable on
-strict pass on both revisions. The claimed distinction is not accuracy; it is
-construction-enforced realization and runtime verifiability.**
+The three-system tables use the [complete strict-pass standard](../../src/answerer_comparison/README.md)
+and saved matched-window outputs. **ComplianceGPT has the highest observed
+strict-pass rate on both revisions. Its paired differences from Gemini are not
+statistically significant at 0.05.** Semantic judgments are not independently
+adjudicated, and the comparisons are exploratory. Batch 5A gate-width and
+Batch 5B precision results remain separate archived studies.
 
 ## Experimental boundaries
 
@@ -30,42 +32,40 @@ where their matched inputs permit unified descriptive tables.
 
 Realization loss asks a narrower question than end-to-end strict pass: once all
 required evidence is present, how often is the answer still rejected because
-of a citation, source, status, or contract failure?
+of a citation, source, status, contract, or answer-content failure?
 
 ### Revision 4 (36 matched rows)
 
 | System | Coverage-complete | Strict pass | Lost | Realization loss |
 |---|---:|---:|---:|---:|
 | ComplianceGPT | 29 | 29 | 0 | 0/29 (0.0%) |
-| Gemini 3.5 Flash | 28 | 24 | 4 | 4/28 (14.3%) |
-| Qwen2.5-7B BF16 | 20 | 8 | 12 | 12/20 (60.0%) |
-| Qwen2.5-7B 4-bit | 18 | 8 | 10 | 10/18 (55.6%) |
+| Gemini 3.5 Flash | 28 | 22 | 6 | 6/28 (21.4%) |
+| Qwen2.5-7B 4-bit | 18 | 6 | 12 | 12/18 (66.7%) |
 
 For ComplianceGPT versus Gemini, the two-sided Fisher exact p-value is
-`0.0518341`. This is close to, but does not cross, the pre-specified `0.05`
-threshold.
+`0.0103819`. The coverage-complete subsets differ by system; this
+descriptive comparison does not replace the paired end-to-end test.
 
 ### Revision 5 (100 matched rows)
 
 | System | Coverage-complete | Strict pass | Lost | Realization loss |
 |---|---:|---:|---:|---:|
 | ComplianceGPT | 65 | 65 | 0 | 0/65 (0.0%; 95% Wilson CI 0.0%–5.6%) |
-| Gemini 3.5 Flash | 67 | 66 | 1 | 1/67 (1.5%; 95% Wilson CI 0.3%–8.0%) |
-| Qwen2.5-7B 4-bit | 53 | 25 | 28 | 28/53 (52.8%; 95% Wilson CI 39.7%–65.6%) |
+| Gemini 3.5 Flash | 67 | 56 | 11 | 11/67 (16.4%; 95% Wilson CI 9.4%–27.1%) |
+| Qwen2.5-7B 4-bit | 53 | 21 | 32 | 32/53 (60.4%; 95% Wilson CI 46.9%–72.4%) |
 
-For ComplianceGPT versus Gemini, the registered two-sided Fisher exact p-value
-is `1.0`. The larger study therefore does not establish an empirical
-realization-loss-rate difference between them.
+For ComplianceGPT versus Gemini, the two-sided Fisher exact p-value is
+`0.000629911`. This is an exploratory conditional comparison over different,
+overlapping coverage-complete subsets, rather than a paired estimate of
+end-to-end model superiority.
 
-ComplianceGPT's observed zero loss is predicted by construction: deterministic
-assembly and the Runtime Verifier make a coverage-complete contract a strict
-pass. The zero counts confirm that the implementation matches that
-specification on both benchmarks; they are not presented as an estimated
-zero-risk rate. Gemini's 1/67 result is excellent empirical performance under
-this model and prompt, but the free-form protocol does not guarantee it in
-advance or expose a model-independent verifier for it. That guarantee and
-verifiability distinction—not an accuracy-superiority claim—is the durable
-mechanistic result.
+On these saved outputs, ComplianceGPT expresses the selected canonical text
+without alteration and has zero observed coverage-complete realization loss.
+The complete-retention proof certifies its body-content predicates; the
+Runtime Verifier checks the machine-verifiable contract conditions. Gold
+correctness and relevance remain evaluation assumptions. Gemini has 11/67
+coverage-complete rejections. The finite counts do not establish zero future
+risk or general model superiority.
 
 ## End-to-end outcomes
 
@@ -74,42 +74,37 @@ mechanistic result.
 | System or condition | Strict pass | Full clause coverage | Runtime contract pass | Right governing control |
 |---|---:|---:|---:|---:|
 | ComplianceGPT, adaptive v3 | 29/36 (0.806) | 29/36 (0.806) | 36/36 (1.000) | 36/36 (1.000) |
-| ComplianceGPT, fixed top 1 | 26/36 (0.722) | 26/36 (0.722) | 36/36 (1.000) | 34/36 (0.944) |
-| ComplianceGPT, fixed top 2 | 29/36 (0.806) | 29/36 (0.806) | 36/36 (1.000) | 36/36 (1.000) |
-| ComplianceGPT, fixed top 3 | 29/36 (0.806) | 29/36 (0.806) | 36/36 (1.000) | 36/36 (1.000) |
-| ComplianceGPT, fixed top 5 | 28/36 (0.778) | 28/36 (0.778) | 36/36 (1.000) | 36/36 (1.000) |
-| Gemini 3.5 Flash free-form | 24/36 (0.667) | 28/36 (0.778) | 33/36 (0.917) | 36/36 (1.000) |
-| Qwen2.5-7B free-form, BF16 | 8/36 (0.222) | 20/36 (0.556) | 14/36 (0.389) | 36/36 (1.000) |
-| Qwen2.5-7B free-form, 4-bit | 8/36 (0.222) | 18/36 (0.500) | 13/36 (0.361) | 36/36 (1.000) |
+| Gemini 3.5 Flash free-form | 22/36 (0.611) | 28/36 (0.778) | 33/36 (0.917) | 36/36 (1.000) |
+| Qwen2.5-7B free-form, 4-bit | 6/36 (0.167) | 18/36 (0.500) | 13/36 (0.361) | 36/36 (1.000) |
 
 ### Revision 5
 
 | System | Strict pass | Full clause coverage | Runtime contract pass | Right governing control |
 |---|---:|---:|---:|---:|
 | ComplianceGPT, adaptive v3 | 65/100 (0.650) | 65/100 (0.650) | 100/100 (1.000) | 97/100 (0.970) |
-| Gemini 3.5 Flash free-form | 66/100 (0.660) | 67/100 (0.670) | 99/100 (0.990) | 97/100 (0.970) |
-| Qwen2.5-7B free-form, 4-bit | 25/100 (0.250) | 53/100 (0.530) | 42/100 (0.420) | 93/100 (0.930) |
+| Gemini 3.5 Flash free-form | 56/100 (0.560) | 67/100 (0.670) | 99/100 (0.990) | 97/100 (0.970) |
+| Qwen2.5-7B free-form, 4-bit | 21/100 (0.210) | 53/100 (0.530) | 42/100 (0.420) | 93/100 (0.930) |
 
-The shared strict-pass endpoint requires full expected-clause coverage,
-source/revision/verbatim validity, and ODP/status consistency; additional
-evidence is permitted.
+The strict-pass endpoint requires contract/gold conformance, exact provenance,
+complete parameter accounting, actual citation use, required body content,
+claim faithfulness and parameter meaning. Extra evidence and correct
+paraphrases are permitted. Clarification value domains are not scored.
 
 ## Paired strict-pass tests
 
-| Revision and paired comparison | Left only | Right only | Exact two-sided McNemar p | Interpretation |
-|---|---:|---:|---:|---|
-| Rev. 4, ComplianceGPT vs Gemini | 8 | 3 | 0.2265625 | Not statistically distinguishable |
-| Rev. 5, ComplianceGPT vs Gemini | 11 | 12 | 1.000 | Not statistically distinguishable |
-| Rev. 4, Gemini vs Qwen 4-bit | 18 | 2 | 0.00040245 | Gemini materially improves strict pass |
-| Rev. 4, Gemini vs Qwen BF16 | 18 | 2 | 0.00040245 | Gemini materially improves strict pass |
-| Rev. 5, Gemini vs Qwen 4-bit | 42 | 1 | 0.0000000000100044 | Gemini materially improves strict pass |
-| Rev. 4, Qwen BF16 vs Qwen 4-bit | 2 | 2 | 1.000 | No detected quantization effect |
-| Rev. 4, fixed top 2 vs fixed top 3 | 0 | 0 | 1.000 | Identical strict-pass set |
+| Revision and paired comparison | Left only | Right only | Exact two-sided McNemar p |
+|---|---:|---:|---:|
+| rev4, ComplianceGPT vs Gemini | 10 | 3 | 0.0922851562 |
+| rev4, ComplianceGPT vs Qwen 4-bit | 24 | 1 | 1.54972076e-06 |
+| rev4, Gemini vs Qwen 4-bit | 17 | 1 | 0.000144958496 |
+| rev5, ComplianceGPT vs Gemini | 18 | 9 | 0.122078121 |
+| rev5, ComplianceGPT vs Qwen 4-bit | 46 | 2 | 8.363088e-12 |
+| rev5, Gemini vs Qwen 4-bit | 36 | 1 | 5.52972779e-10 |
 
-The McNemar results are paired conditional comparisons over the frozen
-samples. They are not population-level equivalence claims. In particular,
-`p = 0.2265625` on Revision 4 does not mean “better but unproven,” and the
-near-equal Revision 5 discordance supplies no direction claim either.
+These are exploratory, unadjusted paired comparisons over the saved questions.
+ComplianceGPT has higher observed pass rates than Gemini, but the two paired
+p-values exceed 0.05. Neither a nonsignificant test nor these fixed benchmark
+samples establish population equivalence or general superiority.
 
 ## ODP operating point
 
@@ -159,9 +154,10 @@ substantially more concise and precise. For the target audit setting, retaining
 governing text with resolvable citations is the chosen failure mode, but this
 is an engineering tradeoff rather than a universal advantage.
 
-## Gate simplification finding
+## Archived gate-width finding
 
-Fixed top 2 matched the adaptive gate's strict-pass count on both revisions:
+In the archived Batch 5A evaluation, fixed top 2 matched the adaptive gate's
+reported pass count on both revisions:
 29/36 on Revision 4 and 65/100 on Revision 5. Fixed top 3 also matched those
 counts, and the Revision 4 top-2 versus top-3 pass sets were identical. Top 1
 was worse (26/36 and 62/100) and reduced governing-control accuracy. Top 5 was
@@ -174,38 +170,39 @@ not an empirically supported performance claim.
 
 ## Consolidated findings
 
-1. **ComplianceGPT and Gemini are not distinguishable on strict pass.** The
-   paired results are 8:3 on Revision 4 (`p = 0.2266`) and 11:12 on Revision 5
-   (`p = 1.0`). Neither supports an accuracy-superiority or direction claim.
-2. **The main result is mechanistic.** A 7B open-weight selector plus
-   deterministic assembly matches a hosted frontier model on strict pass while
-   guaranteeing runtime-checkable citation, status, and realization properties
-   that the evaluated free-form protocol only approximates empirically.
-3. **Gemini establishes a strong free-form baseline.** It decisively
-   outperforms both Qwen baselines and nearly eliminates realization loss on
-   Revision 5. The original Qwen comparison understated strong free-form model
-   performance.
+1. **ComplianceGPT has the highest observed strict-pass rate.** The paired
+   discordance against Gemini is 10:3 on Revision 4 (`p = 0.0923`) and 18:9
+   on Revision 5 (`p = 0.1221`). These comparisons do not establish a
+   statistically significant end-to-end difference.
+2. **Canonical retention preserves expressed obligations and source meaning.**
+   The evaluated ComplianceGPT bodies satisfy the complete-retention proof;
+   their zero observed conditional loss remains subject to gold and corpus
+   assumptions. Runtime checks and source-inspection judgments are distinct.
+3. **Gemini is a stronger free-form baseline than Qwen.** Its strict-pass
+   rates are higher, but coverage-complete realization loss remains 6/28 on
+   Revision 4 and 11/67 on Revision 5.
 4. **Contract-enforced ODP safety has a measurable operating cost.** It retains
    100% sensitivity under the author labels but has lower specificity and
    precision than Gemini on both revisions.
-5. **Four-bit quantization does not explain the weak Qwen result.** BF16
+5. **The archived precision study isolates quantization.** BF16
    improves Revision 4 coverage from 18/36 to 20/36 but leaves strict pass at
    8/36.
-6. **The control gate can be simplified.** Fixed top 2 reproduces the adaptive
-   strict-pass count on both revisions, so the adaptive mechanism has not earned
+6. **The archived gate-width study supports a simpler gate.** Fixed top 2
+   reproduces the adaptive pass count in that study, so the adaptive mechanism has not earned
    its added complexity in these experiments.
 
 ## Evidence provenance
 
-The tables above were transcribed from immutable machine-readable summaries
-and independently checked against row-level contracts and manifests:
+The three-system tables are derived from the current machine-readable summaries
+and row-level assessments. The original execution ZIPs remain byte-exact; their
+embedded summaries and manifests retain the historical execution record:
 
 | Batch | Summary | Summary SHA-256 | Archived result identity |
 |---|---|---|---|
 | 5A | [`rq2_control_gate_width/results_v1/summary.json`](rq2_control_gate_width/results_v1/summary.json) | `0418612200de5f9550ac576ae216fd6372b8c7ade91d5a7f253da7a582c95358` | Canonical ZIP `543c2e40879422a5a1462bb6fc56fda2ad76f9b060efbc780ebe2a51bc48a07d` |
 | 5B | [`rq2_bf16_baseline/results_v1/summary.json`](rq2_bf16_baseline/results_v1/summary.json) | `2b7a251c884f9fa25df9b13539164bb9366e75f27711e7b7a494ab345244c339` | Supplied Drive export `4039e67453d46b12ad214a3759d16e5a4c9f1028353dd6e253fca06f3b57a561` |
-| 5C | [`rq2_frontier_baseline/results_v1/summary.json`](rq2_frontier_baseline/results_v1/summary.json) | `97943089d1cce2ee35ad65ba3da814e2e7e4cebc1d5cf44cae48447508dc1efc` | Corrected archive `351af9780f0ed7e6714ed3eb81799e8793985ea8b14351f32da9e43ebefa0dfb`; byte-exact runner archive `039ce427f717b83da6f54a87a67bb0438f6c15e44b49d29838d39bc523c20767` |
-| 5D | [`rq2_frontier_baseline_rev5/results_v1/summary.json`](rq2_frontier_baseline_rev5/results_v1/summary.json) | `3c4c813bd73835f39e24432c42bf8c2e003e680ee284ce99e5466741634f5024` | Byte-exact runner archive `9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef` |
+| 5C | [`rq2_frontier_baseline/results_v1/summary.json`](rq2_frontier_baseline/results_v1/summary.json) | `cebee13040bda0e40b99f75f9c8b4e960f25da8729f476badf30760df1e04e3a` | Corrected archive `351af9780f0ed7e6714ed3eb81799e8793985ea8b14351f32da9e43ebefa0dfb`; byte-exact runner archive `039ce427f717b83da6f54a87a67bb0438f6c15e44b49d29838d39bc523c20767` |
+| 5D | [`rq2_frontier_baseline_rev5/results_v1/summary.json`](rq2_frontier_baseline_rev5/results_v1/summary.json) | `bf5c8baefd2a88e7a6a340b87b76d589b681b990754daa0411539b518edc177d` | Byte-exact runner archive `9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef` |
 
 The completed Batch 5D notebook is retained with its execution counts and
 outputs. Its SHA-256 is
