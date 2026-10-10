@@ -1,4 +1,6 @@
 # Batch 5B — Rev. 4 BF16 Generative Baseline
+The separate [BF16 complete-endpoint summary](../supplementary_strict_pass/results_v1/studies/rq2_bf16_baseline/SUMMARY.md) applies all seven strict-pass gates to the stored answers. Historical execution summaries retain the C-check endpoint.
+
 
 The archived pass endpoint in this study is the legacy contract/gold check (C).
 Its fields named `strict_pass` predate the complete seven-gate standard. Use the

@@ -1,0 +1,12 @@
+{
+  "author_source_and_label_review_confirmed_before_inference": true,
+  "numeric_excel_dates": "Decoded using the existing UTC header and workbook date system; stored dates were not changed.",
+  "precise_author_review_time_independently_verified": false,
+  "review_count": 20,
+  "review_csv": "author_review.csv",
+  "review_csv_sha256": "0a383746210a1098d146340a9050ebda76d4ad31a0ded1ddb6fa03c382e19e43",
+  "review_workbook_basename": "ComplianceGPT_Natural_Questions_Reviewed.xlsx",
+  "review_workbook_sha256": "f757dbe9e507c7b8e7b51baff24b6606418978ac460e350b65226fafba214399",
+  "reviewer_name": "Wenjia",
+  "submitted_workbook_sha256": "6168add4bb6cb93009457e35b7a1bb396fbcfbfbcf52eb00bfb9e5099494262c"
+}

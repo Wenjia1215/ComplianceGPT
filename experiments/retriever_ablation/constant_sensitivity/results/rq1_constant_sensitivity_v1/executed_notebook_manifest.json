@@ -1,0 +1,30 @@
+{
+  "artifact": "Batch_RQ1_Constant_Sensitivity_Executed.ipynb",
+  "original_uploaded_filename": "Batch_RQ1_Constant_Sensitivity(1).ipynb",
+  "sha256": "d00382132c14dfb5df268ef80c4f230a2485466012f2bc6bb670102ac89d75a7",
+  "byte_count": 32085,
+  "preservation": "Exact uploaded bytes; all cell source, execution counts, output blocks and notebook metadata retained.",
+  "scientific_source_commit": "a066453a317bba365db707b71745e49fee28811a",
+  "associated_results_commit": "aba4593f7233a8a13167f194586c8e60d51c4828",
+  "associated_result_archive_sha256": "0106042b93d2fb15b754dfd70a983db85cfd1cf716f6cb68f22ac95b421be680",
+  "code_execution_counts": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "output_cell_count": 7,
+  "error_output_count": 0,
+  "observed_gpu": "NVIDIA A100-SXM4-40GB",
+  "observed_gpu_memory_mib": 40960,
+  "observed_driver_version": "580.82.07",
+  "completion_observed": {
+    "accepted": true,
+    "evaluations": 952,
+    "captured_queries": 136
+  },
+  "note": "Notebook execution outputs supplement the independently checked archive. The clean launcher remains in the parent study directory."
+}

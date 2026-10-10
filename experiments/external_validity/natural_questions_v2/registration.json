@@ -1,0 +1,43 @@
+{
+  "code_sha256": {
+    "experiments/answerer_comparison/rq2_matched/run_matched_rq2.py": "f28552cba25d1a0b931e7821900b7324509a90f1dc57e5d5ad11d94760dddf47",
+    "experiments/external_validity/natural_questions_v2/requirements-colab.txt": "c7367bb5328a99f20394e91e1fa790123d3fe935aad869d60e953f5c4e48d42b",
+    "experiments/external_validity/natural_questions_v2/review_and_freeze.py": "fe037015d2224e37c1d8864228d5b2fb72b8f21876c734197427d91015a75815",
+    "experiments/external_validity/natural_questions_v2/run_natural_questions.py": "8036cf0136dc00e7a6f00b705f57d0cf2ed87d0439a9dd3a37b1fc6d23d3803b",
+    "experiments/external_validity/natural_questions_v2/score_results.py": "30e2e2995abd7e3b5d67244901cee89d4f18ead1360be1d24efecbf0392c2936",
+    "src/answerer_comparison/matched_window_runner.py": "02abc97b8f53b388cf2385120ffdfebdcaa2ac3d787b0ae6c2711d92aff3fe13",
+    "src/compliancegpt/generator/citation_contract_80053.md": "785036b896fef2778901cce4899d369cca7d3f258aa7a335962cad8e6290a98a",
+    "src/compliancegpt/generator/generator.py": "772cda0930f636ce8b9da24778410d2c61a11cea81d3d51f835982963e15c625",
+    "src/compliancegpt/generator/verifier/verifier.py": "183c997535e7ddbac0127483ad2d345df6398aedc2b77ad0b4e0d8526e9f574a",
+    "src/compliancegpt/pipeline/evidence_window.py": "bc78c31225299796e793c77ef408bfdb9657fe879d4e0c0a981e87f9921dddf0",
+    "src/compliancegpt/pipeline/odp_policy.py": "3c723e232e084781231d2d0f32c7848b4489f90ce446d433974eb1b1b682fce2",
+    "src/compliancegpt/pipeline/pipeline.py": "e42e26dec59e409f14d54850166f1918dcc4b612232acaea0a22dd87fc1b1fda",
+    "src/compliancegpt/pipeline/profile_resolution.py": "5d5e72048934b158f7f0479014c0d3172c39ae4cf644dd9289e23e081f2c4ed9",
+    "src/compliancegpt/retriever/retriever_s7.py": "530b74c215e5749563220e637252094c4e242d97e2f24ef7df23ae3fe0800a26",
+    "src/generative_answerer/generator.py": "8e4ac4ad235d7a855df8f9bed8e0cc24af404eca9e8def6407dcbb20f7344afa",
+    "src/generative_answerer/pipeline.py": "10034299b3aea6b608b87625ccc04a69d5ee37870f0d62bb6cc30a043f525be1"
+  },
+  "execution_repair": {
+    "original_registration_sha256": "ad349c068c90ea366f5ee0817ea71b8670585adca3c7353914eb82eb0e259f20",
+    "record": "EXECUTION_REPAIR.json"
+  },
+  "file_sha256": {
+    "EXECUTION_REPAIR.json": "8672a5d82072d0c156fe6b919f3f84c4d59572fcde599cd1e402ea8ec2d11e4a",
+    "SOURCE_CORRECTIONS.json": "dc4224abf5b375b0dc4be7e0156216aa1c3632935ca64bfa5982202e0302c4e5",
+    "author_review.csv": "0a383746210a1098d146340a9050ebda76d4ad31a0ded1ddb6fa03c382e19e43",
+    "authority_records.jsonl": "fcdd58265122329ea6eea54b12fd05488248af3e0dbb770bf3b8a2d2223af5b2",
+    "candidate_questions.jsonl": "52becaf6879329ee14de1d2abf68a11cb8f326ebe4f19de66aa3dd162e6b6b45",
+    "discovery_ledger.jsonl": "7d269580b5e03b5be48a335674407b0ee5f66cea08a15f6a1f027897625666ae",
+    "protocol.json": "c13239c8ee7a09b0c6c32144ef700af663aab4d40cdf318ab646b37c36bcdd08",
+    "registered_labels.jsonl": "ad1c54c4ccfcd5a4b04f94313e5487b4ed2c6e8b81455365f6cbf1a041ebc27f",
+    "registered_questions.jsonl": "9deb1f4c202100942fe605bd6b59b2020729f4cbe600d342680dddbbedbc3556",
+    "review_input_manifest.json": "c0ab557b032c96ef69341c6355f63bf246d1697729022ed0a7a983d2b30c2f9e",
+    "reviewed_labels.jsonl": "362a0198a84660e1f4ccb00116eaa7ac6184613c7f401b70c88cb07300afed8d"
+  },
+  "independent_expert_review": false,
+  "review_count": 20,
+  "review_input_sha256": "0a383746210a1098d146340a9050ebda76d4ad31a0ded1ddb6fa03c382e19e43",
+  "review_timestamp_provenance": "Preserved from the submitted workbook; exact author review time was not separately verified. Author confirmed completion before inference.",
+  "schema_version": "compliancegpt-natural-question-registration-v1",
+  "status": "frozen_execution_repair_requires_public_commit_before_resuming"
+}

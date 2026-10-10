@@ -11,7 +11,7 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, List, Optional, Set
 
-from compliancegpt.generator.verifier.verifier import verify_answer
+from compliancegpt.generator.verifier.verifier_revision_v2 import verify_answer, REVISION_RULE_VERSION
 from compliancegpt.pipeline.pipeline import (
     ComplianceGPTPipeline,
     _apply_doc_filter_mode,
@@ -52,6 +52,7 @@ def _ordered_unique_citation_ids(values: Any) -> List[str]:
 def _wrap_out_generative(contract: Dict[str, Any]) -> Dict[str, Any]:
     """Return shape compatible with ComplianceGPT, but label the mode correctly."""
     c: Dict[str, Any] = dict(contract or {})
+    c["revision_validation_rule"] = REVISION_RULE_VERSION
 
     if "selected_source_ids" not in c:
         spans = c.get("evidence_spans", []) or []
@@ -162,6 +163,7 @@ class BaselineGenerativeRAGPipeline(ComplianceGPTPipeline):
                     corpus=self._get_verifier_corpus(),
                     org_profile=self.org_profile,
                     strict_verbatim=bool(self.verify_strict_verbatim),
+                    corpus_version=self.framework_version,
                 )
                 contract_obj["validity_check"] = {
                     "is_pass": bool(vp),

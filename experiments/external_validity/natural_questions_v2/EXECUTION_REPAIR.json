@@ -1,0 +1,33 @@
+{
+  "schema_version": "natural-question-execution-repair-v1",
+  "recorded_date_utc": "2026-10-05",
+  "original_source_commit": "71a9a187d0a3fe0d64d71cdefbacdb345cce890d",
+  "original_registration_sha256": "ad349c068c90ea366f5ee0817ea71b8670585adca3c7353914eb82eb0e259f20",
+  "original_runner_sha256": "928875ac4e95c8792d57c8f7506182acd78a00b726e1d88c8f4ab18b7160dc8c",
+  "repaired_runner_sha256": "8036cf0136dc00e7a6f00b705f57d0cf2ed87d0439a9dd3a37b1fc6d23d3803b",
+  "reason": "The CCS stores lowercase/dot-form control IDs; the frozen production loader normalizes case and enhancement notation. Direct raw-string comparison rejected valid runtime evidence.",
+  "repair": "Compare control identities using the existing production normalize_control_id. Preserve exact source-ID lookup and exact clause-text/evidence-kind comparison. Report the offending source and field on genuine mismatches.",
+  "prior_attempt": {
+    "source": "User-supplied Colab traceback on 2026-10-05",
+    "reported_captured_contexts": [
+      "NQ01",
+      "NQ02",
+      "NQ03",
+      "NQ04",
+      "NQ05"
+    ],
+    "revision": "rev4",
+    "stopped_before_answerer_generation": true,
+    "preservation": "Retain original result directory and launcher logs without modification; validate absence of generation artifacts before the recovery cell starts a separately registered run."
+  },
+  "repaired_output_directory_name": "natural_questions_v2_authority_fix",
+  "retrieval_restarted_for_all_questions": true,
+  "question_label_catalog_model_retrieval_window_and_metric_changes": false,
+  "registration_timing": "Original inputs and protocol were frozen before retrieval. This engineering correction was recorded after the interrupted retrieval attempt and must be publicly registered before repaired retrieval or any answerer generation.",
+  "offline_authority_audit": {
+    "rev4_records": 7416,
+    "rev5_records": 8423,
+    "clause_text_or_kind_changes_in_production_loader": 0,
+    "all_runtime_records_checked_against_raw_catalogs": 15839
+  }
+}

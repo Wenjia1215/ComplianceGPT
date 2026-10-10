@@ -1,4 +1,6 @@
 # RQ2 No-Selector Ablation
+The separate [Original no-selector complete-endpoint summary](../supplementary_strict_pass/results_v1/studies/rq2_no_selector/SUMMARY.md) applies all seven strict-pass gates to the stored answers. Historical execution summaries retain the C-check endpoint.
+
 
 This experiment answers whether the model selector improves the evaluated system or primarily trades expected-clause coverage for concision.
 

@@ -74,6 +74,7 @@ After retrieval + generator selection, the pipeline returns the final, verifier-
 
 ```json
 {
+  "framework_version": "rev5",
   "answer_text": "<string>",
   "evidence_spans": [
     {"source_id": "<string>", "span_text": "<verbatim from CCS>"}
@@ -91,6 +92,22 @@ After retrieval + generator selection, the pipeline returns the final, verifier-
 ```
 
 ### Rules (Final Answer Contract)
+
+The current runtime uses `active-revision-v2`. It requires a supported
+`framework_version` declaration that matches the caller's active corpus revision.
+Recognized source and citation revision labels must agree with that revision.
+New outputs record `revision_validation_rule`. The original verifier and
+`strict-pass-v1` remain available for historical reproduction; the revised
+endpoint is `strict-pass-v2`. See the
+[revision replay](../../../experiments/answerer_comparison/revision_hardening_v2/README.md)
+for the rules, results, and inherited-review boundary.
+
+The dissertation revision candidate also records `odp_registry` on every
+pipeline output. This object contains `registry_id`, `revision`, `sha256`,
+`selection`, and `loaded`. Historical contracts can omit it. The field identifies
+the request metadata used by the pipeline; it does not certify request semantics
+or validate organizational values. See the root
+[release notes](../../../RELEASE_NOTES.md) for selection and limits.
 
 - **`answer_text`**
   - Constructed deterministically from canonical evidence (default: concatenation of filled `span_text`).

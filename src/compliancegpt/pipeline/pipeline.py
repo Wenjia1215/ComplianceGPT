@@ -42,12 +42,16 @@ from compliancegpt.pipeline.odp_policy import (
     normalize_resolution_policy as _normalize_resolution_policy,
     profile_lookup as _profile_lookup,
 )
+from compliancegpt.pipeline.profile_resolution import resolve_profile_answer
+from compliancegpt.pipeline.odp_registry import load_registry_selection, resolve_registry_path, REPOSITORY_ROOT
 
 PIPELINE_PATCH_ID = "2026-03-12-odp-statement-rescue-v3"
 
 _VERIFY_IMPORT_ERROR = None
 try:
-    from compliancegpt.generator.verifier.verifier import verify_answer, verify_contract_validity  # type: ignore
+    from compliancegpt.generator.verifier.verifier_revision_v2 import (  # type: ignore
+        verify_answer, verify_contract_validity, REVISION_RULE_VERSION,
+    )
     try:
         from compliancegpt.generator.verifier.verifier import parse_control_from_source_id  # type: ignore
     except Exception:
@@ -111,7 +115,7 @@ def _normalize_fw(framework_version: str) -> str:
 
 def resolve_default_ccs_path(framework_version: str) -> str:
     fw = _normalize_fw(framework_version)
-    base = Path("/content/drive/MyDrive/ComplianceGPT/data/ccs/nist800-53")
+    base = REPOSITORY_ROOT / "data/ccs/nist800-53"
     if fw == "rev5":
         return str(base / "NIST_SP-800-53_rev5_catalog.jsonl")
     return str(base / "NIST_SP-800-53_rev4_catalog.jsonl")
@@ -119,7 +123,7 @@ def resolve_default_ccs_path(framework_version: str) -> str:
 
 def resolve_default_odp_registry_path(framework_version: str) -> str:
     fw = _normalize_fw(framework_version)
-    base = Path("/content/drive/MyDrive/ComplianceGPT/data/ODP")
+    base = REPOSITORY_ROOT / "data/ODP"
     if fw == "rev5":
         return str(base / "rev5" / "odp_registry_rev5.json")
     return str(base / "rev4" / "odp_registry_rev4.json")
@@ -1164,11 +1168,13 @@ class ComplianceGPTPipeline:
         model_revision: Optional[str] = None,
         shared_model: Any = None,
         shared_tokenizer: Any = None,
+        generator_instance: Any = None,
         retriever_instance: Any = None,
         use_qur: bool = True,
         doc_filter_mode: str = "all",
         ccs_path: Optional[str] = None,
         odp_registry_path: Optional[str] = None,
+        odp_registry_version: str = "legacy",
         strict_ccs_assert: bool = True,
         min_ccs_docs: int = 1000,
         org_profile_path: Optional[str] = None,
@@ -1226,12 +1232,16 @@ class ComplianceGPTPipeline:
         self.org_profile: Dict[str, Any] = load_org_profile(org_profile_path) if org_profile_path else {}
 
         # ODP registry (labels/prompts only; never contains values)
-        self.odp_registry_path = (
-            str(odp_registry_path)
-            if odp_registry_path
-            else resolve_default_odp_registry_path(self.framework_version)
+        self.odp_registry_path = str(resolve_registry_path(
+            self.framework_version, registry_version=odp_registry_version,
+            path_override=odp_registry_path,
+        ))
+        self.odp_registry, self.odp_registry_metadata = load_registry_selection(
+            self.framework_version,
+            registry_version=odp_registry_version,
+            path_override=odp_registry_path,
         )
-        self.odp_registry: Dict[str, Any] = load_odp_registry(self.odp_registry_path)
+        self.odp_registry_version = str(odp_registry_version)
 
 
 
@@ -1312,8 +1322,14 @@ class ComplianceGPTPipeline:
             or ""
         ).strip()
 
-        # 3) Generator (ID selector)
-        self.generator = ComplianceGenerator(self.model, self.tokenizer)
+        # 3) Generator (ID selector).  A frozen selector can be injected for a
+        # prepared-context replay; the ordinary runtime still constructs the
+        # model-backed selector exactly as before.
+        self.generator = (
+            generator_instance
+            if generator_instance is not None
+            else ComplianceGenerator(self.model, self.tokenizer)
+        )
 
         # 4) Optional QUR (query rewrite)
         self.qur = None
@@ -1639,6 +1655,11 @@ class ComplianceGPTPipeline:
           - Evidence must be clause-level (smt/gdn) with verbatim spans from CCS.
           - No CCS inventory backfill (adding clauses that were not retrieved) unless explicitly enabled.
         """
+        def finish(contract_obj: Dict[str, Any]) -> Dict[str, Any]:
+            contract_obj["odp_registry"] = copy.deepcopy(self.odp_registry_metadata)
+            contract_obj["revision_validation_rule"] = REVISION_RULE_VERSION
+            return _wrap_out(contract_obj)
+
         q = str(query or "").strip()
         if not q:
             err_contract = {
@@ -1653,7 +1674,7 @@ class ComplianceGPTPipeline:
                 "all_citations": "",
                 "debug": {"error": "empty_query"},
             }
-            return _wrap_out(err_contract)
+            return finish(err_contract)
 
         self._assert_ccs_loaded()
         context = dict(prepared_context or {})
@@ -1676,6 +1697,9 @@ class ComplianceGPTPipeline:
                         corpus=self._get_verifier_corpus(),
                         org_profile=self.org_profile,
                         strict_verbatim=bool(self.verify_strict_verbatim),
+                        corpus_version=self.framework_version,
+                        expected_resolution_policy=("FILL_FROM_PROFILE" if
+                            _normalize_resolution_policy(self.resolution_policy) == "FILL_FROM_PROFILE" else None),
                     )
                     contract_obj["validity_check"] = {
                         "is_pass": bool(vp),
@@ -1714,7 +1738,7 @@ class ComplianceGPTPipeline:
                 "all_citations": "",
                 "debug": {"error": "retrieval_failed", "exception": repr(e)},
             }
-            return _wrap_out(err_contract)
+            return finish(err_contract)
 
         if not retrieved_docs:
             no_ev = {
@@ -1747,7 +1771,7 @@ class ComplianceGPTPipeline:
                     strict_version=bool(self.verify_strict_version),
                 )
                 no_ev["verification"] = _verifier_result_to_dict(ver)
-            return _wrap_out(no_ev)
+            return finish(no_ev)
 
         try:
             topn = max(1, int(getattr(self, "gen_control_gate_topn", 1)))
@@ -2082,17 +2106,23 @@ class ComplianceGPTPipeline:
                     strict_version=bool(self.verify_strict_version),
                 )
                 final_contract["verification"] = _verifier_result_to_dict(ver)
-            return _wrap_out(final_contract)
+            return finish(final_contract)
 
         # 7) Build answer text (extractive)
         answer_text = "\n\n".join([s["span_text"] for s in filled_spans]).strip()
 
         # 8) Apply ODP policy (ASK/PRESERVE/FILL_FROM_PROFILE), then canonicalize required list
-        answer_text2, odp_required_raw, status_override = _apply_odp_policy_to_answer(
-            answer_text=answer_text,
-            policy=self.resolution_policy,
-            org_profile=self.org_profile,
-        )
+        profile_resolution = None
+        if _normalize_resolution_policy(self.resolution_policy) == "FILL_FROM_PROFILE":
+            answer_text2, odp_required_raw, status_override, profile_resolution = resolve_profile_answer(
+                filled_spans, self.org_profile, self.framework_version,
+            )
+        else:
+            answer_text2, odp_required_raw, status_override = _apply_odp_policy_to_answer(
+                answer_text=answer_text,
+                policy=self.resolution_policy,
+                org_profile=self.org_profile,
+            )
 
         self._ensure_param_inventory_loaded()
         param_ids: Set[str] = getattr(self, "_param_ids", set()) or set()
@@ -2192,6 +2222,9 @@ class ComplianceGPTPipeline:
             },
         }
 
+        if profile_resolution is not None:
+            final_contract["profile_resolution"] = profile_resolution
+            final_contract["resolution_policy"] = "FILL_FROM_PROFILE"
         final_contract = _attach_contract_validity(final_contract)
 
         # 10) Verifier (gold-only)
@@ -2208,7 +2241,7 @@ class ComplianceGPTPipeline:
             )
             final_contract["verification"] = _verifier_result_to_dict(ver)
 
-        return _wrap_out(final_contract)
+        return finish(final_contract)
 
 
 # ---------------------------------------------------------------------------

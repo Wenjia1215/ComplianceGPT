@@ -1,4 +1,6 @@
 # RQ2 Control Gate Width Sensitivity
+The separate [Fixed-width complete-endpoint summary](../supplementary_strict_pass/results_v1/studies/rq2_control_gate_width/SUMMARY.md) applies all seven strict-pass gates to the stored answers. Historical execution summaries retain the C-check endpoint.
+
 
 The archived pass endpoint is the legacy contract/gold check (C). Its historical
 `strict_pass` fields retain that meaning. See the

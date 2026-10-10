@@ -1,0 +1,19 @@
+{
+  "edition_id": "supplementary_strict_pass_v1_english",
+  "rule_version": "strict-pass-v1",
+  "original_review_file_sha256": "526c78a0682ad4aead7f5ed2a165ac4275eed9edd19a739bbb64cd81b69dbbc8",
+  "english_review_file_sha256": "5ede6700aee45b1db6ecb4c242c585d6bc4a1a8b3441ac258e0bd0a2df83e0d1",
+  "translated_fields": [
+    "rationale",
+    "findings.reason"
+  ],
+  "preserved": [
+    "All seven review IDs and verdict sets",
+    "All checked source and parameter IDs",
+    "All quoted source and answer excerpts",
+    "All 988 output conditions and strict-pass decisions"
+  ],
+  "semantic_judgments_changed": false,
+  "new_semantic_reviews": 0,
+  "publication_paths": "Complete-endpoint summaries are separate from original execution summaries; derived fields use strict_pass."
+}

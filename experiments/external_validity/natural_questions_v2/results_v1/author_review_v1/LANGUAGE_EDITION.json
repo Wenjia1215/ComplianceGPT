@@ -1,0 +1,308 @@
+{
+  "edition_id": "author_post_run_review_v1_english",
+  "parent_record_id": "author_post_run_review_v1",
+  "scope": "English translation of explanatory notes only; no new author review",
+  "source_commit": "9116c4f9bf12042878d37935a036139f70529fd1",
+  "original_workbook": {
+    "path": "experiments/external_validity/natural_questions_v2/results_v1/author_review_v1/ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang.xlsx",
+    "sha256": "ca5dd27b24d97f5a5a9ee2a096f5949d7b49503dbcc051186edbc4f16291f8e1"
+  },
+  "original_review_csv_sha256": "8e36f6fda009f6a49ce3ccb4e9da83644b5938c0eb9b835ce9e5749114b15fec",
+  "english_workbook": {
+    "file": "ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang_English.xlsx",
+    "sha256": "cf0f822d50cd48c42d9236039a3445a8f6f27dddca445c2a007ce3a9f5515d7f"
+  },
+  "english_review_csv_sha256": "e99d62ef8b7408f5fcb3fff14de17d598b7a937c8ad1bf83cef0311a62627b2a",
+  "changed_workbook_cells": [
+    "G10",
+    "G11",
+    "G12",
+    "G13",
+    "G14",
+    "G15",
+    "G16",
+    "G17",
+    "G18",
+    "G19",
+    "G20",
+    "G21",
+    "G22",
+    "G23",
+    "G24",
+    "G25",
+    "G26",
+    "G27",
+    "G28",
+    "G29",
+    "G30",
+    "G31",
+    "G32",
+    "G33",
+    "G34",
+    "G35",
+    "G36",
+    "G37",
+    "G38",
+    "G39",
+    "G40",
+    "G41",
+    "G42",
+    "G43",
+    "G44",
+    "G45",
+    "G46",
+    "G47",
+    "G48",
+    "G49"
+  ],
+  "preserved": [
+    "All 120 yes/no/uncertain judgments",
+    "All 40 question/system identities and order",
+    "All reviewer names and runtime statuses",
+    "All 20 frozen question references",
+    "All formulas, list validation, pane positions, and sheet names"
+  ],
+  "judgments_changed": false,
+  "notes_translation_rows": [
+    {
+      "query_id": "NQ01",
+      "system": "compliancegpt",
+      "original_note_sha256": "71d852e6367dd17fe74d2fc7d7a463a5e00a04bb399b5358771fe44172148eb6",
+      "english_note_sha256": "54e471b0e71558475a18ec93fd3159bd248634e830619b2393ca85d4d3a2df4b"
+    },
+    {
+      "query_id": "NQ01",
+      "system": "generative_baseline",
+      "original_note_sha256": "4b76c8eca0f76edbaa704a59d866d59ece2ff240ffabf24c5e99b9ab8f7df6c0",
+      "english_note_sha256": "3a82ee0bea4cd7a055f19e2c66314e24e5accec9b6c87a5ac9a30bf71e18d406"
+    },
+    {
+      "query_id": "NQ02",
+      "system": "compliancegpt",
+      "original_note_sha256": "c8d41e215eafb2fdedf3e38715d8a3765521a4bf78bb41ae7909bf89090d7649",
+      "english_note_sha256": "b7fd06e4cfa8e5cec4f650fe9b38c48d932410fb76f1699538e31043a3145d72"
+    },
+    {
+      "query_id": "NQ02",
+      "system": "generative_baseline",
+      "original_note_sha256": "902fe8470787b15e0b03aebd8a4902df768a01d09aed8a5e42d4d32488fbf480",
+      "english_note_sha256": "ee1576f9a459c88da3229940ea379c9a7af8260f15bc793e2b1d0df58c4689c1"
+    },
+    {
+      "query_id": "NQ03",
+      "system": "compliancegpt",
+      "original_note_sha256": "dc1aa9272ef689933afa5cd4ddd523ad467a436a92806221a9a5de4a81ae97e1",
+      "english_note_sha256": "4334523dddf84ce58e15709a32e1ba21e92214357428e41bbea93393f5980412"
+    },
+    {
+      "query_id": "NQ03",
+      "system": "generative_baseline",
+      "original_note_sha256": "3b1d45b82fb99e9063214afeb9b447941513898f9bb2c8eafa9f5ff4c7b85956",
+      "english_note_sha256": "4ebf4c9929a96293699cec6c966405d7f4511741207ed4331ab21ac68e41df09"
+    },
+    {
+      "query_id": "NQ04",
+      "system": "compliancegpt",
+      "original_note_sha256": "3e2f67d3f17b90b59f30dea9d9f97dc232af09bc768f2d06a3f4c95ab608b626",
+      "english_note_sha256": "ced11d84109e39f648149082f01a00a842e9038d67d234d8345c053faa818767"
+    },
+    {
+      "query_id": "NQ04",
+      "system": "generative_baseline",
+      "original_note_sha256": "001273d371c012149565bc38b1ac554a8c1a527c7a7d641bb1015541ec400d97",
+      "english_note_sha256": "48ae46233092a6bca17f6db8626931ffc7252e713cf67bf9eac8834faecd38d6"
+    },
+    {
+      "query_id": "NQ05",
+      "system": "compliancegpt",
+      "original_note_sha256": "5b3ed174aceeaa01689de44422552e39f840f4db822dbc6660e0e30573ed386e",
+      "english_note_sha256": "5a7cd90b697374bdb8f7d269201546cd9f769a89be4b1214bd8b3196f76e4a34"
+    },
+    {
+      "query_id": "NQ05",
+      "system": "generative_baseline",
+      "original_note_sha256": "e7e68042517895ff572238af73b68b2d0eeacda741235c395bfbd5098c47469c",
+      "english_note_sha256": "5f1dcb4f530b253abff18540c1dd5a8a074e182f6ebb53cbd26bff0e2383d63d"
+    },
+    {
+      "query_id": "NQ06",
+      "system": "compliancegpt",
+      "original_note_sha256": "08c03e4ac9eef0313b5d1bf370a974088d0e4b6bf30a379817b96738ff5026a9",
+      "english_note_sha256": "8a48fb74133a3c4b8e795b8db24017d673b17c4092ea593384b7abeb90c34e25"
+    },
+    {
+      "query_id": "NQ06",
+      "system": "generative_baseline",
+      "original_note_sha256": "e0a6071a37d83b51c0b4885167e9f314ccf9a1dc81e6861bb2e48557f5ac44d5",
+      "english_note_sha256": "222b204691bbfd44ae79ef5ea98bd45367c14929db150ec9c36af9f0c4570a4c"
+    },
+    {
+      "query_id": "NQ07",
+      "system": "compliancegpt",
+      "original_note_sha256": "96b5e8f2889a11ffe760fee22954a436d8d48b49f0e3d06597cca079cd4a98cf",
+      "english_note_sha256": "ffff4d68855796b261582555675e9db5731c2a3fefd38fc04695261b426afc84"
+    },
+    {
+      "query_id": "NQ07",
+      "system": "generative_baseline",
+      "original_note_sha256": "aff4bea7a3ae5225ce587e99995221149a7beee029511cd82831e83054472943",
+      "english_note_sha256": "16ef4d1661d64b25097babd7d6ef22a22f6b5924f67236cf9c8eabbade472549"
+    },
+    {
+      "query_id": "NQ08",
+      "system": "compliancegpt",
+      "original_note_sha256": "d693f5bde83eb2e70febb285486752f8a7defc3e05d5d2e6f189b64c5f172aad",
+      "english_note_sha256": "83f5a21839f2ecc60aea8e350ac96ccfa44a1f1ad233735456db605f5bd470d1"
+    },
+    {
+      "query_id": "NQ08",
+      "system": "generative_baseline",
+      "original_note_sha256": "c90bfc8ca77bd2ed8ac58d14639f527ab296313145640be7403652d5c8ad41ac",
+      "english_note_sha256": "375e14cb24b9de9a3cde32d89d83e0a58acd4372af5a616dce95f1594d23eb60"
+    },
+    {
+      "query_id": "NQ09",
+      "system": "compliancegpt",
+      "original_note_sha256": "9c49f72820d85d9a3edaaa511ddfaec01eb2f9dfd57a1a8ca67136fea725f329",
+      "english_note_sha256": "9187eec5a0125e86ccb2168690d8cd830c2f2b8a43b97d992b09f097fec9095d"
+    },
+    {
+      "query_id": "NQ09",
+      "system": "generative_baseline",
+      "original_note_sha256": "3f55b0fbca21a85912c6d31221f5546198395bac52be70dbff643c43bd5c2f14",
+      "english_note_sha256": "c0dc3b800a20cd136cb7f546eea67cab9eaf52369c86a5267db66743ac1b8703"
+    },
+    {
+      "query_id": "NQ10",
+      "system": "compliancegpt",
+      "original_note_sha256": "6f28dadc353114e35492c3a7a5a1216b8d625ca6090c258a42cc3e0e8f981949",
+      "english_note_sha256": "bcaa051eba6a7fd890e75cf7d9042987b35c6bf004c44059120941d4bc223708"
+    },
+    {
+      "query_id": "NQ10",
+      "system": "generative_baseline",
+      "original_note_sha256": "88fe00e33c5756aa219cb4f5d51c6ab4c28bee6c71dc715dda237ddf9a917063",
+      "english_note_sha256": "6bd45869be76db5b1d97cc48491181174feb53a329900ac5671023583a4430de"
+    },
+    {
+      "query_id": "NQ11",
+      "system": "compliancegpt",
+      "original_note_sha256": "8939c69da00d274de5adadaa2867c7a7a207ef4e52758a9d173a84a58e712e62",
+      "english_note_sha256": "0cd7c3867f042b2bba7eae72ff11d4ddb5dda836d75584e35753693cecaa765d"
+    },
+    {
+      "query_id": "NQ11",
+      "system": "generative_baseline",
+      "original_note_sha256": "c3c412dce36001dfd2fae8977a068c103feee80c517fef00c6e58a8a1e5beae5",
+      "english_note_sha256": "031b1cc5401b7d9e7bd92c1ec5960fb6af240b2279e093908482c0643796a6bd"
+    },
+    {
+      "query_id": "NQ12",
+      "system": "compliancegpt",
+      "original_note_sha256": "cf7e536ba52f620da42f6c3b96725bff3c50ba6002962f9e02057087ddd04ee7",
+      "english_note_sha256": "db5a7a8c60103ec1db49e5e1a28edc89b06a0efc6b8164fc8bf5a65218fec5cc"
+    },
+    {
+      "query_id": "NQ12",
+      "system": "generative_baseline",
+      "original_note_sha256": "549ea931958174128950ad01b766dd9a527f1aa6888c36d28513b7f6e81e1c0a",
+      "english_note_sha256": "0c5d313b0f0121fa00fd436e7d26497a04d79f217461fd224fa05f2baa726d48"
+    },
+    {
+      "query_id": "NQ13",
+      "system": "compliancegpt",
+      "original_note_sha256": "2cc56d74adc2a4e52b52e0971b6c6291fda1f30e6e0c278dc5453cf57b5f17ea",
+      "english_note_sha256": "c15e3cfb8ad1848858534850bcbcd6df6a6f30322e80c58659b5588ad0d84ccc"
+    },
+    {
+      "query_id": "NQ13",
+      "system": "generative_baseline",
+      "original_note_sha256": "e4204df0ebc8400a4a7e4b6b8ff7faada5bb1a74a0766509728cb052ad4b848f",
+      "english_note_sha256": "6a51484994f400f6f9eeb8bd4e01788ea7c7247122f6cbf860cda0fc205e1d01"
+    },
+    {
+      "query_id": "NQ14",
+      "system": "compliancegpt",
+      "original_note_sha256": "fd859c48cbee9280ca75a99130efc2a4d67728213cbcb9c624b05b00e05c280f",
+      "english_note_sha256": "4612aa033cf6ddd40e8068feb3b1adb0705db662ed908e27643ea598f4e6de7d"
+    },
+    {
+      "query_id": "NQ14",
+      "system": "generative_baseline",
+      "original_note_sha256": "d04ff4eb11424a3f2095d8fc913032fd1ad004b4c8da704c89f1b61e6b8834f1",
+      "english_note_sha256": "60081d79cf14f9dd99b6ab7a71d9c5f62b31445e97410c7b76d3933d25b65897"
+    },
+    {
+      "query_id": "NQ15",
+      "system": "compliancegpt",
+      "original_note_sha256": "b3e4b039d6b813650de94fb2483b61e26e71d256b37514f68a1037cf35ebe0cc",
+      "english_note_sha256": "3b79349ebe334277b8358ec1d64d932851b89c3cbf688c0ae79b3ba437a87dea"
+    },
+    {
+      "query_id": "NQ15",
+      "system": "generative_baseline",
+      "original_note_sha256": "bad5e9ef64a92791260eacabb6dafe928329843e329754cff5479d19699196b4",
+      "english_note_sha256": "9adc1e52a3ef09d2abdf408c0b1ff8b17ddd9223bf4857efb7ace6c5bad679a6"
+    },
+    {
+      "query_id": "NQ16",
+      "system": "compliancegpt",
+      "original_note_sha256": "93753848dbdb66b1c3ad7db9b39c73ab7da001172d7fdb6100fdf1c745c09733",
+      "english_note_sha256": "9b9aeca361955eb4145aeea342fa262bd638f3011c0abfc9f5b4aed92576e0c4"
+    },
+    {
+      "query_id": "NQ16",
+      "system": "generative_baseline",
+      "original_note_sha256": "651965a2b16320e7ce0de8869148b4e935bf5a922e58e42014a4d082fe7c4fa4",
+      "english_note_sha256": "fd765cee05abe70c5ea3f11c6435b1370bacd81a4240fd141109fb20a97ec989"
+    },
+    {
+      "query_id": "NQ17",
+      "system": "compliancegpt",
+      "original_note_sha256": "6226c5c0990ddd88da089f42b2b19f5dd8179c8ad65c584fca45ee52f68bc86d",
+      "english_note_sha256": "cde4f137ffa5a11ca3c7a4da9aba9650f5381e4d900e7dc780966c90b4fd66e0"
+    },
+    {
+      "query_id": "NQ17",
+      "system": "generative_baseline",
+      "original_note_sha256": "efeb068f6175b6775fcbd4933c3a7a74c8f98d7bc00fbeaea2f8821a969ca300",
+      "english_note_sha256": "6fc0017e270ef4b9d8907d59f0fb17e4d9d3b27a0743f20d573ade095ba0d03a"
+    },
+    {
+      "query_id": "NQ18",
+      "system": "compliancegpt",
+      "original_note_sha256": "860a6f073d004baa62fd912bbce62ea978e1e2c357e2fee2801dafafbe8aa422",
+      "english_note_sha256": "6b658390b7ea7d0ad0d010e1ed96e156a97000bac5ad0a65f4fd48552ada84dc"
+    },
+    {
+      "query_id": "NQ18",
+      "system": "generative_baseline",
+      "original_note_sha256": "0668ce05fb817704980024b663bcbd87f5616e4f7e4d81d6f6b877d340190bcc",
+      "english_note_sha256": "5768425c7cb45056578fd2397da703c5fd1b3551dc1d362e582818ba8d788bb3"
+    },
+    {
+      "query_id": "NQ19",
+      "system": "compliancegpt",
+      "original_note_sha256": "a1c49d9afb81e713ef5ac363819ea44ad16f1cb49f4481372dc2990cd62bc3bf",
+      "english_note_sha256": "86879415d10bb7cb966c688c776bcaff5206fad591339617ef28034ee898b1fe"
+    },
+    {
+      "query_id": "NQ19",
+      "system": "generative_baseline",
+      "original_note_sha256": "e48f81d87b08e7db79b445fcc0538cd24e9639de035e7aecbbb1ef84689c6db8",
+      "english_note_sha256": "c2864c8ef1d46f8f0d163f11a0048ae2c48985ab5146c83980292c9557c8aa25"
+    },
+    {
+      "query_id": "NQ20",
+      "system": "compliancegpt",
+      "original_note_sha256": "da65a4390f03edf947a24f141778dfbbfed887be54e58e78e5f2ae8ba25f85f1",
+      "english_note_sha256": "13687d22df4a7243f3be1001b3240c64080469ad1fcb4c7bce0865a88c84935d"
+    },
+    {
+      "query_id": "NQ20",
+      "system": "generative_baseline",
+      "original_note_sha256": "549567711e6d4357801a06b55ef37589c095b9a0a9eee55ae02764e644b755d8",
+      "english_note_sha256": "9c66da2d3b04acc206c83f510ad4aca840c803511647d7766416e8f27823667d"
+    }
+  ]
+}

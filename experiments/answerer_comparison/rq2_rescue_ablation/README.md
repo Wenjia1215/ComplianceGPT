@@ -1,4 +1,6 @@
 # RQ2 ODP-Statement Rescue Ablation
+The separate [Rescue complete-endpoint summary](../supplementary_strict_pass/results_v1/studies/rq2_rescue_ablation/SUMMARY.md) applies all seven strict-pass gates to the stored answers. Historical execution summaries retain the C-check endpoint.
+
 
 The original replay reports the legacy contract/gold check (C), including fields
 historically named `offline_strict_pass`. See the

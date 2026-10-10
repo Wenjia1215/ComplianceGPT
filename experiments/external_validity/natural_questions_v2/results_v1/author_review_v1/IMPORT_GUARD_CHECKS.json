@@ -1,0 +1,31 @@
+[
+  {
+    "case": "missing_judgment",
+    "rejected": true,
+    "reason": "Invalid or missing judgment scope_appropriate at row 10"
+  },
+  {
+    "case": "altered_pair",
+    "rejected": true,
+    "reason": "Missing, duplicate, altered, or reordered pairing at workbook row 10"
+  },
+  {
+    "case": "altered_runtime",
+    "rejected": true,
+    "reason": "Recorded runtime status changed at workbook row 10"
+  },
+  {
+    "case": "altered_source",
+    "rejected": true,
+    "reason": "Frozen question reference changed at row 5, column G"
+  },
+  {
+    "case": "altered_frozen_group",
+    "rejected": true,
+    "reason": "Frozen evidence groups changed at row 5"
+  },
+  {
+    "case": "incorrect_cached_counts",
+    "actual_cells_still_validate": true
+  }
+]

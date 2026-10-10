@@ -1,0 +1,156 @@
+{
+  "experiment_complete": false,
+  "independent_correctness_validated": false,
+  "limits": [
+    "One-forum purposive convenience sample. It does not estimate population-wide performance.",
+    "Wilson intervals describe the eligible observed rows under a binomial assumption. They do not account for purposive source selection or correlated forum users.",
+    "Original post captures include source control quotations and explicit IDs. Their presence is documented.",
+    "Author-reviewed labels are reference judgments, not independent professional correctness.",
+    "Full-text coverage is a conservative contract/evidence criterion and does not prove responsive semantic interpretation.",
+    "Partial, outside and ambiguous questions remain visible. They are not counted as successful whole-question answers.",
+    "Untestable ODP cases are not negative labels. Additional listed IDs are unadjudicated expansions.",
+    "Answer-length and clarification counts are burden proxies, not measured user effort.",
+    "Nonsignificant paired results do not establish equivalence."
+  ],
+  "odp_label_counts": {
+    "not_applicable": 5,
+    "not_required": 13,
+    "required": 2
+  },
+  "paired_generation_count": 40,
+  "paired_strict": {
+    "baseline_only": 0,
+    "compliance_only": 0,
+    "denominator": 3,
+    "exact_mcnemar_p": 1.0
+  },
+  "post_run_semantic_review_status": "pending separate author review",
+  "question_count": 20,
+  "result_id": "natural_questions_v2",
+  "scope_counts": {
+    "full": 3,
+    "outside": 5,
+    "partial": 12
+  },
+  "separate_from_136_row_benchmark": true,
+  "systems": {
+    "compliancegpt": {
+      "clause_id_group_coverage": {
+        "denominator": 15,
+        "numerator": 6,
+        "rate": 0.4,
+        "wilson_95": [
+          0.1982449614134158,
+          0.6425316987937539
+        ]
+      },
+      "complete_clause_text_group_coverage": {
+        "denominator": 15,
+        "numerator": 6,
+        "rate": 0.4,
+        "wilson_95": [
+          0.1982449614134158,
+          0.6425316987937539
+        ]
+      },
+      "odp_author_reference_sensitivity": {
+        "denominator": 2,
+        "numerator": 2,
+        "rate": 1.0,
+        "wilson_95": [
+          0.34238022750665303,
+          1.0
+        ]
+      },
+      "odp_author_reference_specificity": {
+        "denominator": 13,
+        "numerator": 1,
+        "rate": 0.07692307692307693,
+        "wilson_95": [
+          0.013710421242556586,
+          0.3331395092109959
+        ]
+      },
+      "runtime_contract_valid": {
+        "denominator": 20,
+        "numerator": 20,
+        "rate": 1.0,
+        "wilson_95": [
+          0.8388748419471806,
+          1.0
+        ]
+      },
+      "strict_full_catalog_contract": {
+        "denominator": 3,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ]
+      },
+      "total_answer_words": 4739,
+      "total_evidence_spans": 59,
+      "total_listed_odps": 34
+    },
+    "generative_baseline": {
+      "clause_id_group_coverage": {
+        "denominator": 15,
+        "numerator": 2,
+        "rate": 0.13333333333333333,
+        "wilson_95": [
+          0.03736125910306537,
+          0.37881982832322364
+        ]
+      },
+      "complete_clause_text_group_coverage": {
+        "denominator": 15,
+        "numerator": 2,
+        "rate": 0.13333333333333333,
+        "wilson_95": [
+          0.03736125910306537,
+          0.37881982832322364
+        ]
+      },
+      "odp_author_reference_sensitivity": {
+        "denominator": 2,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95": [
+          0.0,
+          0.6576197724933469
+        ]
+      },
+      "odp_author_reference_specificity": {
+        "denominator": 13,
+        "numerator": 13,
+        "rate": 1.0,
+        "wilson_95": [
+          0.7719046276458016,
+          0.9999999999999999
+        ]
+      },
+      "runtime_contract_valid": {
+        "denominator": 20,
+        "numerator": 13,
+        "rate": 0.65,
+        "wilson_95": [
+          0.43285427668523624,
+          0.818808175898918
+        ]
+      },
+      "strict_full_catalog_contract": {
+        "denominator": 3,
+        "numerator": 0,
+        "rate": 0.0,
+        "wilson_95": [
+          5.551115123125783e-17,
+          0.5614970317550454
+        ]
+      },
+      "total_answer_words": 473,
+      "total_evidence_spans": 34,
+      "total_listed_odps": 3
+    }
+  }
+}

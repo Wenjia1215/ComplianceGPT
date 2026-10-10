@@ -1,0 +1,11 @@
+{
+  "comparison_counts.csv": "0e389469e440288caab8fec780b0eabe121df2f933663dd63a0fd0e56542c3f1",
+  "input_case_index.jsonl": "9d32dc11e6de74a78fdcc4ee586461bcdc741e95a978b69049da2daed8e93c4a",
+  "revision_mutation_audit.jsonl": "3d2eb6f2c1a9f2b1a12632f1e2e0c2fe00dff9afe52b0f669be294ebd240d3fd",
+  "run_config.json": "c5413c87eb2c678cfff0f5229a9d2d9e7289f6d4ab8e27ce67597d4f5f2fb962",
+  "runtime_deltas.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "score_deltas.jsonl": "a327eedb34d1bb939f660de7abb7a9730d00f19871d9152c026537ba5c1b5512",
+  "semantic_review_links.jsonl": "7b976ca432bcf69fabf1276f6dbb20bbcfeee9ac53be4cadef8113c316f6b4e1",
+  "strict_pass_rows.jsonl": "7364c4cc82d0786809f6d2eafba8976418b48be43290efa8c5448f9cd2a2f962",
+  "summary.json": "8e11585e039b0aaade96a69d70efd2149a7a83d26ffdbe52b67e49f051fe8b85"
+}

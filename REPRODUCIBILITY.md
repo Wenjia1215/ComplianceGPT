@@ -41,6 +41,26 @@ python experiments/answerer_comparison/run_strict_pass.py \
   --output-root /tmp/compliancegpt_strict_pass
 ```
 
+The [integrated runtime release](RELEASE_NOTES.md) uses explicit active-revision
+validation. Its offline diagnostics operate on stored inputs and write fresh
+external directories:
+
+```bash
+python experiments/answerer_comparison/run_supplementary_strict_pass.py \
+  --output-root /tmp/compliancegpt_supplementary_scores
+python experiments/answerer_comparison/revision_hardening_v2/run_revision_replay.py \
+  --output-dir /tmp/compliancegpt_revision_scores
+python tools/validate_release_candidate.py \
+  --output-dir /tmp/compliancegpt_profile_integration
+```
+
+The supplementary runner publishes complete-endpoint summaries in a separate
+assessment directory and preserves historical C-check summaries. Revision v2
+retains all v1 gates and adds declaration and citation revision agreement.
+Historical registered runners require their recorded execution source hashes;
+use those execution commits to reproduce formal runs. Register revised source
+before collecting new model outputs under a new configuration identity.
+
 ## Evaluation map
 
 | Evaluation | Canonical entry point | Recorded results |

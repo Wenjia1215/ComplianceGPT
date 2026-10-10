@@ -1,0 +1,7 @@
+{
+  "legacy_regressions.jsonl": "4aa3df705b68fb412c912429d23ed547775d0d7a35aebded737189677349468b",
+  "mutation_audit.jsonl": "75316c8e688608e10fe84226d29c8b7489f6bacf7ebc864170b0a851f7befdb2",
+  "per_case_audit.jsonl": "37550d08bfb5b3f48d5bfde542c068487c8781961c1c4b726a8b19dc5246f8d5",
+  "summary.json": "9093b0f53eae0e9cae71891e96b887e2427942a063afaf5fa5a5a38ba245ff77",
+  "validation_config.json": "84d2beda05221478256bcf217bfc14fd99f6bdc55e9bba85ecfbbf4acb4194c5"
+}

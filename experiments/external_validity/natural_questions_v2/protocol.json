@@ -1,0 +1,125 @@
+{
+  "analysis": {
+    "burden": "Final answer character count, tokenized word count, evidence span count and clarification count. These are descriptive proxies, not measured user effort.",
+    "historical_benchmark": "Never pool with the 136 historical rows or replace a historical headline.",
+    "odp": "Required, not_required, not_applicable and uncertain remain distinct. Report discrimination only for the determinate required/not_required subset and show both denominators.",
+    "outside_or_ambiguous": "Retain in all-20 descriptive results. Do not treat missing clause/ODP labels as negative labels.",
+    "partial_questions": "Clause-group coverage is diagnostic only. Do not call a partial catalog answer a correct whole-question answer.",
+    "statistics": "Wilson 95% intervals for eligible proportions. Exact paired McNemar on complete determinate pairs. Report numerator and denominator. No proof of equivalence from nonsignificance. Intervals describe these observed eligible rows under binomial assumptions and do not correct for purposive selection or shared forum authors.",
+    "whole_question_strict": "Only full, determinate-ODP rows enter the strict denominator. Every required evidence group must have an acceptable clause whose complete canonical text is retained verbatim in an evidence span, all spans must pass strict containment, runtime contract validity must pass, and ODP status/required-key recall must agree with author labels. This new conservative catalog-contract criterion is not independent semantic correctness or the historical headline metric."
+  },
+  "answering": {
+    "comparison_unit": "Two complete answer paths. Prompt, schema, budgets, retries and construction differ.",
+    "context_gate": "Current adaptive top-1/top-2/top-3 gate, 24-record cap, prefer_smt_keep_params, pinned in source.",
+    "decoding": "greedy, as defined by each answer path",
+    "matched_evidence": true,
+    "org_profile": "none",
+    "resolution_policy": "ASK",
+    "shared_loaded_model": true,
+    "systems": [
+      "compliancegpt",
+      "generative_baseline"
+    ]
+  },
+  "candidate_questions_sha256": "52becaf6879329ee14de1d2abf68a11cb8f326ebe4f19de66aa3dd162e6b6b45",
+  "collection": {
+    "exhaustive_sample": false,
+    "exploratory_sources": "Additional exact-title and identifier queries verified indexed post blocks. Stack Exchange API retrieval was exploratory and supplied no selected model questions.",
+    "forum": "r/NISTControls",
+    "method": "Purposive convenience selection after exploratory retrieval and before any model outcomes. Twelve control-interpretation/implementation questions and eight broader scope/workflow questions.",
+    "posted_date_window": [
+      "2014-01-01",
+      "2026-10-04"
+    ],
+    "primary_content_access": "Initial discovery used indexed original Reddit posts because direct automated retrieval returned HTTP 403. The author checked all 20 original URLs and confirmed the reviewed captures before registration; three omissions were restored.",
+    "query_list": [
+      "site:reddit.com/r/NISTControls \"800-53\" \"control\"",
+      "site:reddit.com/r/NISTControls \"800-53\" \"Rev5\"",
+      "site:reddit.com/r/NISTControls \"800-53\" \"implementation\"",
+      "site:reddit.com/r/NISTControls \"800-53\" \"evidence\"",
+      "site:reddit.com/r/NISTControls \"800-53\" passwords",
+      "site:reddit.com/r/NISTControls \"800-53\" logging",
+      "site:reddit.com/r/NISTControls \"800-53\" encryption",
+      "site:reddit.com/r/NISTControls \"800-53\" assessment question",
+      "site:reddit.com/r/NISTControls \"AC-2\" account management",
+      "site:reddit.com/r/NISTControls \"organization-defined\""
+    ],
+    "random_sample": false,
+    "retrieval_date_utc": "2026-10-05"
+  },
+  "execution_requirements": [
+    "All selected original question blocks and source dates confirmed by the author before any retrieval/model outcome.",
+    "Author labels and review timestamp recorded. Independent expert validation remains separate future work.",
+    "Question wording, labels, protocol and executable fingerprint frozen in a publicly retrievable commit before inference.",
+    "CUDA runtime with recorded actual device and software versions. A100 requested for the Colab workflow.",
+    "Per-question checkpoints, retained generation calls and matched-context/model identity checks.",
+    "An empty retrieval result stops the run and must receive explicit versioned protocol handling. It must not be silently dropped or replaced with gold evidence."
+  ],
+  "expected_questions": 20,
+  "experiment_complete": false,
+  "inputs": {
+    "rev4": {
+      "ccs": {
+        "path": "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl",
+        "sha256": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726"
+      },
+      "odp_registry": {
+        "path": "data/ODP/rev4/odp_registry_rev4.json",
+        "sha256": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c"
+      }
+    },
+    "rev5": {
+      "ccs": {
+        "path": "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl",
+        "sha256": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08"
+      },
+      "odp_registry": {
+        "path": "data/ODP/rev5/odp_registry_rev5.json",
+        "sha256": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+      }
+    }
+  },
+  "known_input_metadata_limitations": [
+    "Registry display metadata for rev4 si-2.2_prm_1 and rev5 au-2_prm_2 is incomplete or inconsistent with canonical parameter definitions. Pinned registry files remain unchanged. Reference judgments and authority helpers use canonical CCS definitions. Post-run review must assess the actual clarification prompts, not just listed parameter IDs."
+  ],
+  "models": {
+    "answerer": {
+      "id": "Qwen/Qwen2.5-7B-Instruct",
+      "precision": "bf16",
+      "quantized": false,
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+    },
+    "dense": {
+      "id": "intfloat/e5-small-v2",
+      "revision": "ffb93f3bd4047442299a41ebb6fa998a38507c52"
+    },
+    "reranker": {
+      "id": "BAAI/bge-reranker-base",
+      "revision": "2cfc18c9415c912f9d8155881c133215df768a70"
+    }
+  },
+  "result_id": "natural_questions_v2",
+  "retrieval": {
+    "configuration": "Production RetrievalConfig defaults, with exact local dense/reranker snapshots. Explicit top_k_controls=12. No generated or stored query rewrites.",
+    "implementation": "src/compliancegpt/retriever/retriever_s7.py",
+    "top_k_controls": 12,
+    "use_qur": false
+  },
+  "reviewed_sample": {
+    "ambiguous": 0,
+    "full": 3,
+    "interpretation": "Small exploratory external-input check; not a representative accuracy estimate or independent expert validation.",
+    "odp_not_applicable": 5,
+    "odp_not_required": 13,
+    "odp_required": 2,
+    "outside": 5,
+    "partial": 12
+  },
+  "schema_version": "compliancegpt-natural-questions-protocol-v1",
+  "source_revision": {
+    "correction_log": "SOURCE_CORRECTIONS.json",
+    "correction_log_sha256": "dc4224abf5b375b0dc4be7e0156216aa1c3632935ca64bfa5982202e0302c4e5",
+    "previous_preparation_commit": "89c78dbc3caa57b9214b26e6a618fbde45377bde"
+  },
+  "status": "author_review_complete_ready_for_public_pre_inference_registration"
+}

@@ -1,0 +1,40 @@
+{
+  "corrections": [
+    {
+      "change": "restore omitted original-post text",
+      "corrected_characters": 2321,
+      "corrected_question_sha256": "f4abf536896015b66a8bab1ee94d4e7af2004a115a08bc1ad428c2e92f44626e",
+      "previous_characters": 1081,
+      "previous_question_sha256": "93d3caf8bc46d803b6082721b82d8daf1d7d54e2126da381699dc85de99a2017",
+      "query_id": "NQ03",
+      "source": "author-reviewed Questions worksheet and original-post confirmation",
+      "timing": "before any retrieval outcomes or answer generations"
+    },
+    {
+      "change": "restore omitted original-post text",
+      "corrected_characters": 1114,
+      "corrected_question_sha256": "17ffd95b19db5e35edf28626a3a1f277c86191159ed44200205cc06b1db9fee8",
+      "previous_characters": 1102,
+      "previous_question_sha256": "13164868abeb7c8904a124adf7f6257246924f6aedd798e2cc79d7eb64204785",
+      "query_id": "NQ12",
+      "source": "author-reviewed Questions worksheet and original-post confirmation",
+      "timing": "before any retrieval outcomes or answer generations"
+    },
+    {
+      "change": "restore omitted original-post text",
+      "corrected_characters": 1267,
+      "corrected_question_sha256": "71d61921417029bf341c0dbe410d04baef8acef15a116ccaac6248e26b3d6f08",
+      "previous_characters": 1064,
+      "previous_question_sha256": "3026d7fd6c352d52a93c819129ff233c87bc0819540c66e88d0753bc3b14ec86",
+      "query_id": "NQ16",
+      "source": "author-reviewed Questions worksheet and original-post confirmation",
+      "timing": "before any retrieval outcomes or answer generations"
+    }
+  ],
+  "helper_correction": "Visible parameter descriptions use complete canonical CCS parameter definitions, rather than registry display fragments.",
+  "no_model_outcomes_observed": true,
+  "previous_preparation_commit": "89c78dbc3caa57b9214b26e6a618fbde45377bde",
+  "previous_version": "natural_questions_v1",
+  "question_count_changed": false,
+  "revised_version": "natural_questions_v2"
+}

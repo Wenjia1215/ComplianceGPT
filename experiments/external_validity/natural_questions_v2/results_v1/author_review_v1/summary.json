@@ -1,0 +1,104 @@
+{
+  "result_id": "natural_questions_v2",
+  "record_id": "author_post_run_review_v1",
+  "author_post_run_review_complete": true,
+  "technical_run_complete": true,
+  "independent_correctness_validated": false,
+  "design": "Single-author, unblinded post-run descriptive review; companion audit observations were available.",
+  "reviewer_names": [
+    "Wenjia Wang"
+  ],
+  "denominator_per_system": 20,
+  "validation": {
+    "expected_review_rows": 40,
+    "validated_review_rows": 40,
+    "validated_frozen_questions": 20,
+    "runtime_statuses_preserved": true,
+    "pairing_and_order_preserved": true,
+    "judgments_checked_directly": true,
+    "cached_completion_formulas_used": false
+  },
+  "systems": {
+    "compliancegpt": {
+      "scope_appropriate": {
+        "yes": 5,
+        "no": 15,
+        "uncertain": 0
+      },
+      "responsive_to_entire_question": {
+        "yes": 1,
+        "no": 19,
+        "uncertain": 0
+      },
+      "unsupported_implementation_or_legal_claim": {
+        "yes": 0,
+        "no": 20,
+        "uncertain": 0
+      }
+    },
+    "generative_baseline": {
+      "scope_appropriate": {
+        "yes": 9,
+        "no": 8,
+        "uncertain": 3
+      },
+      "responsive_to_entire_question": {
+        "yes": 5,
+        "no": 15,
+        "uncertain": 0
+      },
+      "unsupported_implementation_or_legal_claim": {
+        "yes": 6,
+        "no": 14,
+        "uncertain": 0
+      }
+    }
+  },
+  "uncertain_judgments": [
+    {
+      "query_id": "NQ09",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "The body is empty. It neither explains logging requirements nor asks for event types, logging conditions, or generation components, so D=no. There is no claim, so E=no. C remains uncertain: the context lacks AU-3/AU-12 and cannot establish the actual configuration, but AU-2 supports a partial explanation. The empty answer does not show whether this is a reasonable limit or excessive abstention."
+    },
+    {
+      "query_id": "NQ16",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "The empty answer omits parameter meaning, the AU-4/AU-11 comparison, where to record the rationale, and example sources, so D=no. There is no claim, so E=no. C remains uncertain: the context lacks AU-11/PL-2, but AU-4 supports a partial explanation. The answer gives no reason for complete abstention, so its handling of this partially answerable boundary cannot be established."
+    },
+    {
+      "query_id": "NQ19",
+      "system": "generative_baseline",
+      "field": "scope_appropriate",
+      "notes": "The empty answer addresses neither the two policy-writing approaches, the relationships among the documents, nor the need for internal rules, so D=no. There is no claim, so E=no. C remains uncertain: key AC-1/PL-2 text did not enter the context, but AC-2 supports a partial account-type explanation. Complete abstention without a scope explanation does not establish appropriate handling of that boundary."
+    }
+  ],
+  "interpretation": [
+    "All yes/no/uncertain values are retained without imputation.",
+    "Responsiveness and unsupported-claim judgments are distinct; neither is an independent correctness endpoint.",
+    "No inferential comparison, composite correctness score, or new gold label is introduced.",
+    "Original automatic scoring files, blank review template, contracts and run archive are unchanged."
+  ],
+  "inputs": {
+    "workbook": {
+      "file": "ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang_English.xlsx",
+      "sha256": "cf0f822d50cd48c42d9236039a3445a8f6f27dddca445c2a007ce3a9f5515d7f"
+    },
+    "registered_questions.jsonl": {
+      "sha256": "9deb1f4c202100942fe605bd6b59b2020729f4cbe600d342680dddbbedbc3556"
+    },
+    "registered_labels.jsonl": {
+      "sha256": "ad1c54c4ccfcd5a4b04f94313e5487b4ed2c6e8b81455365f6cbf1a041ebc27f"
+    },
+    "protocol.json": {
+      "sha256": "c13239c8ee7a09b0c6c32144ef700af663aab4d40cdf318ab646b37c36bcdd08"
+    },
+    "results_v1/per_question_outcomes.jsonl": {
+      "sha256": "ca703dec64da84b2b599587e55d9ce5d7b8fc81bf764d2d9f59a04740477425b"
+    },
+    "results_v1/summary.json": {
+      "sha256": "3be2971be0a28b95b73f92c1cf5bad3d3d522c152228f607179ee4b63e09c4ea"
+    }
+  }
+}

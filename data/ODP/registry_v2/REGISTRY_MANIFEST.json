@@ -1,0 +1,28 @@
+{
+  "allowed_fields": [
+    "ask_prompt",
+    "cardinality",
+    "data_type",
+    "examples",
+    "friendly_label"
+  ],
+  "case_archive": "experiments/answerer_comparison/retrospective_repairs/ComplianceGPT_Batch_03_Clarification_Repair.zip",
+  "files_sha256": {
+    "rev4/odp_registry_rev4.csv": "c26d9a588b52f66efb13e8f4be3e04716a14a2ebc864c3323f63be9b684050e5",
+    "rev4/odp_registry_rev4.json": "3a6f39b474ec9e355bdd0bfac4f4f3b462b123f7d7787199d3c6bea88440b2a8",
+    "rev5/odp_registry_rev5.csv": "614d8c3a3b71215ed0c550ea2369e7b0f85d5a79c1f73b9d888cb7f93e067818",
+    "rev5/odp_registry_rev5.json": "df2b70a41ef739b13688d5637c9f35d91b40741b6b25c2bf07a6695122e18279"
+  },
+  "parent_registries": {
+    "rev4": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c",
+    "rev5": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+  },
+  "registry_id": "odp_registry_source_repair_v2",
+  "repairs": {
+    "rev4": 3,
+    "rev5": 13
+  },
+  "source_commit": "c4188bfb459210d16c8c43f7819df35ba4a6ee07",
+  "types_and_cardinality": "Descriptive request metadata; no supplied-value validator or organization approval is added",
+  "use": "Explicit opt-in for a new run; preserve historical defaults and results"
+}

@@ -27,6 +27,11 @@ Rule version: `strict-pass-v1`. This standard applies to the saved matched-windo
 three-system comparison: Qwen2.5-7B 4-bit free-form, ComplianceGPT, and Gemini
 3.5 Flash, with 100 Revision 5 and 36 Revision 4 questions per system.
 
+`strict_pass_v2.py` retains the v1 gates and adds explicit active-revision
+agreement. See the [versioned replay](../../experiments/answerer_comparison/revision_hardening_v2/README.md)
+for rules, fingerprints, inherited review provenance, and unchanged stored
+decisions. V1 remains the historical assessment identity.
+
 `S = C AND W AND L AND U AND A AND F AND P`
 
 Every condition is mandatory. All systems use the same standard, questions,

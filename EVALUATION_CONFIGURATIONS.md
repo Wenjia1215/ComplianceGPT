@@ -3,7 +3,9 @@
 The dissertation reports three S7-related configurations. They are separate
 result families and must not be treated as one interchangeable execution.
 
-Current answer comparisons use the complete `strict-pass-v1` endpoint. Historical
+Recorded answer comparisons use the complete `strict-pass-v1` endpoint. The
+versioned `strict-pass-v2` replay adds explicit revision agreement and preserves
+all 1,532 stored decisions. Current answer pipelines use `active-revision-v2`. Historical
 execution fields named `verifier_pass` or `offline_strict_pass` retain the legacy
 contract/gold check (C). See the
 [result and scoring map](docs/EVALUATION_RESULTS.md) before comparing counts

@@ -1,0 +1,82 @@
+[
+  {
+    "file": "Batch_Natural_Questions_v2_executed.ipynb",
+    "bytes": 41892,
+    "sha256": "b4ca0cea412953715cf7bb2a471b54abc16e09044fdcefc243e5c7673684fef1"
+  },
+  {
+    "file": "CLARIFICATION_AUDIT.json",
+    "bytes": 7553,
+    "sha256": "a4ffbc5b7badf871407521bbc7bf48de33151f3d39c0b44e5396525dcab56f29"
+  },
+  {
+    "file": "CONTENT_AUDIT.csv",
+    "bytes": 19348,
+    "sha256": "6182734b41cbba5fc8ba43c507f2e06f0b1492188e78ee2ccde242c29b323159"
+  },
+  {
+    "file": "README.md",
+    "bytes": 9707,
+    "sha256": "5968058ac05ad0ccad9fd3f696bccd140cc665f2da2301f3bfbddfca685730ca"
+  },
+  {
+    "file": "RETRIEVAL_DIAGNOSTICS.json",
+    "bytes": 10306,
+    "sha256": "2c7f32eb6c8a9060801c0b1a8d3dcd7fa1ff9a40a7d06e34f3568a256ce31da7"
+  },
+  {
+    "file": "TECHNICAL_AUDIT.json",
+    "bytes": 2014,
+    "sha256": "88c0baa78e070ef89c86a385d125a07dfb9031aaf224bb73aeacceef3b2b22b6"
+  },
+  {
+    "file": "author_review_v1/ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang_English.xlsx",
+    "bytes": 17435,
+    "sha256": "cf0f822d50cd48c42d9236039a3445a8f6f27dddca445c2a007ce3a9f5515d7f"
+  },
+  {
+    "file": "author_review_v1/IMPORT_GUARD_CHECKS.json",
+    "bytes": 752,
+    "sha256": "cebe9eb66425c4bde5b8b451172c0a35a652cadb23402661f4722bff201ee55a"
+  },
+  {
+    "file": "author_review_v1/LANGUAGE_EDITION.json",
+    "bytes": 12493,
+    "sha256": "d9881e416486f6097262b574bf9802956a7eec3ca0831581e060b25a394b6b90"
+  },
+  {
+    "file": "author_review_v1/README.md",
+    "bytes": 3825,
+    "sha256": "1624e5148b67a18a9c516bc1ff183e118ad56aa737dc46f8be89d9fec589e51c"
+  },
+  {
+    "file": "author_review_v1/author_post_run_review.csv",
+    "bytes": 17476,
+    "sha256": "e99d62ef8b7408f5fcb3fff14de17d598b7a937c8ad1bf83cef0311a62627b2a"
+  },
+  {
+    "file": "author_review_v1/summary.json",
+    "bytes": 4287,
+    "sha256": "73e10888688bf882454b44b9b53f51ba8dbe62427da5f313f6b218a98cab77f5"
+  },
+  {
+    "file": "natural_questions_v2_results.zip",
+    "bytes": 779320,
+    "sha256": "0636a22abf3ea4a63d432e04f53bd61e884d067ad41de73beaf25532947b63fb"
+  },
+  {
+    "file": "per_question_outcomes.jsonl",
+    "bytes": 29595,
+    "sha256": "ca703dec64da84b2b599587e55d9ce5d7b8fc81bf764d2d9f59a04740477425b"
+  },
+  {
+    "file": "post_run_semantic_review.csv",
+    "bytes": 1242,
+    "sha256": "f9cfaa98820ff073b25ad539c33848fb1c151186db03c2226290aabdee83e8e2"
+  },
+  {
+    "file": "summary.json",
+    "bytes": 4454,
+    "sha256": "3be2971be0a28b95b73f92c1cf5bad3d3d522c152228f607179ee4b63e09c4ea"
+  }
+]

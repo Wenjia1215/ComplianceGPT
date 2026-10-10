@@ -1,0 +1,860 @@
+{
+  "configurations": {
+    "rev4_adaptive_v3": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 2.0833333333333335,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.25
+      },
+      "answer_word_count": {
+        "max": 526.0,
+        "mean": 167.16666666666666,
+        "median": 131.0,
+        "min": 20.0,
+        "p95": 423.25
+      },
+      "full_gold_clause_coverage": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      },
+      "mean_gold_clause_precision": 0.50489417989418,
+      "mean_gold_clause_recall": 0.8858024691358025,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 12,
+          "n": 19,
+          "rate": 0.631578947368421
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 8.0,
+        "mean": 4.027777777777778,
+        "median": 4.0,
+        "min": 2.0,
+        "p95": 7.25
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      }
+    },
+    "rev4_top1": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 2.0277777777777777,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.25
+      },
+      "answer_word_count": {
+        "max": 526.0,
+        "mean": 143.80555555555554,
+        "median": 110.0,
+        "min": 22.0,
+        "p95": 380.5
+      },
+      "full_gold_clause_coverage": {
+        "count": 26,
+        "n": 36,
+        "rate": 0.7222222222222222
+      },
+      "mean_gold_clause_precision": 0.49702380952380953,
+      "mean_gold_clause_recall": 0.8267746913580247,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 12,
+          "n": 19,
+          "rate": 0.631578947368421
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 34,
+        "n": 36,
+        "rate": 0.9444444444444444
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 8.0,
+        "mean": 3.888888888888889,
+        "median": 4.0,
+        "min": 2.0,
+        "p95": 7.0
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 26,
+        "n": 36,
+        "rate": 0.7222222222222222
+      }
+    },
+    "rev4_top2": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 1.9444444444444444,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.25
+      },
+      "answer_word_count": {
+        "max": 526.0,
+        "mean": 157.44444444444446,
+        "median": 110.0,
+        "min": 10.0,
+        "p95": 426.75
+      },
+      "full_gold_clause_coverage": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      },
+      "mean_gold_clause_precision": 0.510978835978836,
+      "mean_gold_clause_recall": 0.8672839506172839,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 12,
+          "n": 19,
+          "rate": 0.631578947368421
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 8.0,
+        "mean": 3.861111111111111,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 7.25
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      }
+    },
+    "rev4_top3": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 2.0277777777777777,
+        "median": 1.5,
+        "min": 0.0,
+        "p95": 5.25
+      },
+      "answer_word_count": {
+        "max": 408.0,
+        "mean": 154.30555555555554,
+        "median": 115.5,
+        "min": 10.0,
+        "p95": 339.0
+      },
+      "full_gold_clause_coverage": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      },
+      "mean_gold_clause_precision": 0.5113756613756614,
+      "mean_gold_clause_recall": 0.8719135802469136,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 11,
+          "n": 19,
+          "rate": 0.5789473684210527
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 8.0,
+        "mean": 3.9722222222222223,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 7.25
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 29,
+        "n": 36,
+        "rate": 0.8055555555555556
+      }
+    },
+    "rev4_top5": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 2.1666666666666665,
+        "median": 2.0,
+        "min": 0.0,
+        "p95": 6.0
+      },
+      "answer_word_count": {
+        "max": 408.0,
+        "mean": 163.83333333333334,
+        "median": 139.0,
+        "min": 10.0,
+        "p95": 362.75
+      },
+      "full_gold_clause_coverage": {
+        "count": 28,
+        "n": 36,
+        "rate": 0.7777777777777778
+      },
+      "mean_gold_clause_precision": 0.4911596119929453,
+      "mean_gold_clause_recall": 0.85570987654321,
+      "n_questions": 36,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 11,
+          "n": 19,
+          "rate": 0.5789473684210527
+        },
+        "gold_non_odp_rows": 17,
+        "gold_odp_rows": 19,
+        "params_required_sensitivity": {
+          "count": 19,
+          "n": 19,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 8,
+          "n": 17,
+          "rate": 0.47058823529411764
+        },
+        "status_precision": {
+          "count": 19,
+          "n_predicted_params_required": 28,
+          "rate": 0.6785714285714286
+        }
+      },
+      "right_governing_control": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "runtime_contract_pass": {
+        "count": 36,
+        "n": 36,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 9.0,
+        "mean": 4.166666666666667,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 8.0
+      },
+      "status_counts": {
+        "OK": 8,
+        "PARAMS_REQUIRED": 28
+      },
+      "strict_pass": {
+        "count": 28,
+        "n": 36,
+        "rate": 0.7777777777777778
+      }
+    },
+    "rev5_adaptive_v3": {
+      "additional_clause_count": {
+        "max": 12.0,
+        "mean": 1.75,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.0
+      },
+      "answer_word_count": {
+        "max": 642.0,
+        "mean": 220.67,
+        "median": 207.0,
+        "min": 18.0,
+        "p95": 451.3499999999999
+      },
+      "full_gold_clause_coverage": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      },
+      "mean_gold_clause_precision": 0.5840790043290043,
+      "mean_gold_clause_recall": 0.8349545454545455,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 55,
+          "n": 63,
+          "rate": 0.873015873015873
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 63,
+          "n": 63,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 17,
+          "n": 37,
+          "rate": 0.4594594594594595
+        },
+        "status_precision": {
+          "count": 63,
+          "n_predicted_params_required": 83,
+          "rate": 0.7590361445783133
+        }
+      },
+      "right_governing_control": {
+        "count": 97,
+        "n": 100,
+        "rate": 0.97
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 12.0,
+        "mean": 4.37,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 8.049999999999997
+      },
+      "status_counts": {
+        "OK": 17,
+        "PARAMS_REQUIRED": 83
+      },
+      "strict_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      }
+    },
+    "rev5_top1": {
+      "additional_clause_count": {
+        "max": 12.0,
+        "mean": 1.68,
+        "median": 1.0,
+        "min": 0.0,
+        "p95": 5.0
+      },
+      "answer_word_count": {
+        "max": 611.0,
+        "mean": 204.62,
+        "median": 195.0,
+        "min": 18.0,
+        "p95": 413.2
+      },
+      "full_gold_clause_coverage": {
+        "count": 62,
+        "n": 100,
+        "rate": 0.62
+      },
+      "mean_gold_clause_precision": 0.5822976190476191,
+      "mean_gold_clause_recall": 0.7945021645021645,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 52,
+          "n": 63,
+          "rate": 0.8253968253968254
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 62,
+          "n": 63,
+          "rate": 0.9841269841269841
+        },
+        "specificity": {
+          "count": 17,
+          "n": 37,
+          "rate": 0.4594594594594595
+        },
+        "status_precision": {
+          "count": 62,
+          "n_predicted_params_required": 82,
+          "rate": 0.7560975609756098
+        }
+      },
+      "right_governing_control": {
+        "count": 91,
+        "n": 100,
+        "rate": 0.91
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 12.0,
+        "mean": 4.15,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 9.0
+      },
+      "status_counts": {
+        "OK": 18,
+        "PARAMS_REQUIRED": 82
+      },
+      "strict_pass": {
+        "count": 62,
+        "n": 100,
+        "rate": 0.62
+      }
+    },
+    "rev5_top2": {
+      "additional_clause_count": {
+        "max": 5.0,
+        "mean": 1.68,
+        "median": 1.5,
+        "min": 0.0,
+        "p95": 4.0
+      },
+      "answer_word_count": {
+        "max": 660.0,
+        "mean": 229.51,
+        "median": 211.5,
+        "min": 18.0,
+        "p95": 495.84999999999974
+      },
+      "full_gold_clause_coverage": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      },
+      "mean_gold_clause_precision": 0.5717409812409813,
+      "mean_gold_clause_recall": 0.8323484848484849,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 56,
+          "n": 63,
+          "rate": 0.8888888888888888
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 63,
+          "n": 63,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 16,
+          "n": 37,
+          "rate": 0.43243243243243246
+        },
+        "status_precision": {
+          "count": 63,
+          "n_predicted_params_required": 84,
+          "rate": 0.75
+        }
+      },
+      "right_governing_control": {
+        "count": 99,
+        "n": 100,
+        "rate": 0.99
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 11.0,
+        "mean": 4.3,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 9.0
+      },
+      "status_counts": {
+        "OK": 16,
+        "PARAMS_REQUIRED": 84
+      },
+      "strict_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      }
+    },
+    "rev5_top3": {
+      "additional_clause_count": {
+        "max": 6.0,
+        "mean": 1.72,
+        "median": 2.0,
+        "min": 0.0,
+        "p95": 4.049999999999997
+      },
+      "answer_word_count": {
+        "max": 642.0,
+        "mean": 227.27,
+        "median": 212.0,
+        "min": 18.0,
+        "p95": 458.94999999999993
+      },
+      "full_gold_clause_coverage": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      },
+      "mean_gold_clause_precision": 0.5653805916305916,
+      "mean_gold_clause_recall": 0.8248354978354979,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 56,
+          "n": 63,
+          "rate": 0.8888888888888888
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 63,
+          "n": 63,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 16,
+          "n": 37,
+          "rate": 0.43243243243243246
+        },
+        "status_precision": {
+          "count": 63,
+          "n_predicted_params_required": 84,
+          "rate": 0.75
+        }
+      },
+      "right_governing_control": {
+        "count": 99,
+        "n": 100,
+        "rate": 0.99
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 11.0,
+        "mean": 4.28,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 7.049999999999997
+      },
+      "status_counts": {
+        "OK": 16,
+        "PARAMS_REQUIRED": 84
+      },
+      "strict_pass": {
+        "count": 65,
+        "n": 100,
+        "rate": 0.65
+      }
+    },
+    "rev5_top5": {
+      "additional_clause_count": {
+        "max": 7.0,
+        "mean": 1.88,
+        "median": 2.0,
+        "min": 0.0,
+        "p95": 5.0
+      },
+      "answer_word_count": {
+        "max": 687.0,
+        "mean": 223.4,
+        "median": 196.5,
+        "min": 25.0,
+        "p95": 460.8999999999998
+      },
+      "full_gold_clause_coverage": {
+        "count": 67,
+        "n": 100,
+        "rate": 0.67
+      },
+      "mean_gold_clause_precision": 0.5601926406926406,
+      "mean_gold_clause_recall": 0.834462481962482,
+      "n_questions": 100,
+      "odp_against_author_labels": {
+        "boundary": "These ODP sensitivity, specificity, and precision values use the author labels. They remain provisional until the blinded independent annotation is returned.",
+        "exact_odp_list_agreement": {
+          "count": 51,
+          "n": 63,
+          "rate": 0.8095238095238095
+        },
+        "gold_non_odp_rows": 37,
+        "gold_odp_rows": 63,
+        "params_required_sensitivity": {
+          "count": 63,
+          "n": 63,
+          "rate": 1.0
+        },
+        "specificity": {
+          "count": 12,
+          "n": 37,
+          "rate": 0.32432432432432434
+        },
+        "status_precision": {
+          "count": 63,
+          "n_predicted_params_required": 88,
+          "rate": 0.7159090909090909
+        }
+      },
+      "right_governing_control": {
+        "count": 99,
+        "n": 100,
+        "rate": 0.99
+      },
+      "runtime_contract_pass": {
+        "count": 100,
+        "n": 100,
+        "rate": 1.0
+      },
+      "selected_clause_count": {
+        "max": 11.0,
+        "mean": 4.55,
+        "median": 4.0,
+        "min": 1.0,
+        "p95": 8.049999999999997
+      },
+      "status_counts": {
+        "OK": 12,
+        "PARAMS_REQUIRED": 88
+      },
+      "strict_pass": {
+        "count": 64,
+        "n": 100,
+        "rate": 0.64
+      }
+    }
+  },
+  "historical_source_summary": "experiments/answerer_comparison/rq2_control_gate_width/results_v1/summary.json",
+  "interpretation_boundary": "Gate width is the only changed factor. ODP operating characteristics use author labels and are provisional pending blinded independent annotation.",
+  "pairwise_strict_pass": {
+    "rev4_adaptive_v3_vs_top1": {
+      "both_pass": 26,
+      "exact_mcnemar_two_sided_p": 0.25,
+      "left_only": 3,
+      "neither_pass": 7,
+      "paired_rows": 36,
+      "right_only": 0
+    },
+    "rev4_adaptive_v3_vs_top5": {
+      "both_pass": 27,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
+      "right_only": 1
+    },
+    "rev4_top1_vs_top2": {
+      "both_pass": 25,
+      "exact_mcnemar_two_sided_p": 0.375,
+      "left_only": 1,
+      "neither_pass": 6,
+      "paired_rows": 36,
+      "right_only": 4
+    },
+    "rev4_top1_vs_top5": {
+      "both_pass": 24,
+      "exact_mcnemar_two_sided_p": 0.6875,
+      "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
+      "right_only": 4
+    },
+    "rev4_top2_vs_top3": {
+      "both_pass": 29,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 0,
+      "neither_pass": 7,
+      "paired_rows": 36,
+      "right_only": 0
+    },
+    "rev4_top3_vs_top5": {
+      "both_pass": 27,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 2,
+      "neither_pass": 6,
+      "paired_rows": 36,
+      "right_only": 1
+    },
+    "rev5_adaptive_v3_vs_top1": {
+      "both_pass": 61,
+      "exact_mcnemar_two_sided_p": 0.375,
+      "left_only": 4,
+      "neither_pass": 34,
+      "paired_rows": 100,
+      "right_only": 1
+    },
+    "rev5_adaptive_v3_vs_top5": {
+      "both_pass": 52,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 13,
+      "neither_pass": 23,
+      "paired_rows": 100,
+      "right_only": 12
+    },
+    "rev5_top1_vs_top2": {
+      "both_pass": 55,
+      "exact_mcnemar_two_sided_p": 0.629058837890625,
+      "left_only": 7,
+      "neither_pass": 28,
+      "paired_rows": 100,
+      "right_only": 10
+    },
+    "rev5_top1_vs_top5": {
+      "both_pass": 50,
+      "exact_mcnemar_two_sided_p": 0.8450189828872681,
+      "left_only": 12,
+      "neither_pass": 24,
+      "paired_rows": 100,
+      "right_only": 14
+    },
+    "rev5_top2_vs_top3": {
+      "both_pass": 60,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 5,
+      "neither_pass": 30,
+      "paired_rows": 100,
+      "right_only": 5
+    },
+    "rev5_top3_vs_top5": {
+      "both_pass": 56,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "left_only": 9,
+      "neither_pass": 27,
+      "paired_rows": 100,
+      "right_only": 8
+    }
+  },
+  "publication_scope": "Complete-endpoint reassessment of immutable historical outputs",
+  "result_id": "rq2_control_gate_width_v1",
+  "schema_version": "compliancegpt-rq2-control-gate-width-v1",
+  "strict_pass_assessment_boundary": "The common rule assesses frozen stored answers through source inspection or complete-retention proofs. No independent expert adjudication is available. Uncertain cases remain in the denominator and receive no pass credit. Paired tests are retrospective, exploratory, and unadjusted.",
+  "strict_pass_definition": "Strict pass requires C, W, L, U, A, F, and P together: complete gold-clause coverage, valid sources and spans, complete retained-parameter accounting, citation use in the body, complete answer requirements, faithful normative claims, and faithful parameter semantics. Faithful paraphrases can pass. Clarification value domains are outside this endpoint.",
+  "strict_pass_rule_version": "strict-pass-v1"
+}

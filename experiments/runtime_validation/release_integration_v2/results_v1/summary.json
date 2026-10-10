@@ -1,0 +1,25 @@
+{
+  "acceptance_checks": {
+    "all_136_ask_regressions": true,
+    "all_630_mutations_detected": true,
+    "all_800_cases": true,
+    "all_8_preserve_regressions": true,
+    "all_case_outcomes_match_history": true,
+    "all_registry_identities": true,
+    "legacy_outcomes_match_history": true,
+    "mutation_outcomes_match_history": true
+  },
+  "accepted": true,
+  "accepted_cases": 800,
+  "boundary": "Synthetic profiles and stored normalized selector traces; two recorded fallback states reconstructed. No new inference, retrieval, organization approval, domain validation, or strict-pass estimate.",
+  "cases": 800,
+  "detected_mutations": 630,
+  "historical_fixture_identity": "rq2_profile_fill_v2",
+  "legacy_regressions": {
+    "ASK": 136,
+    "PRESERVE": 8
+  },
+  "mutations": 630,
+  "validation_id": "release_candidate_profile_integration_v2",
+  "validation_kind": "retrospective integration diagnostic"
+}

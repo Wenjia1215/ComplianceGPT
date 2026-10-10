@@ -6,7 +6,7 @@ from new model inference.
 
 ## Complete strict pass
 
-The currently published rule is
+The recorded complete endpoint uses
 [`strict-pass-v1`](../src/answerer_comparison/README.md):
 
 `S = C AND W AND L AND U AND A AND F AND P`
@@ -17,6 +17,13 @@ required body content, faithful claims, and preserved parameter meaning.
 Every gate is mandatory, and uncertain judgments remain in the denominator
 without pass credit. Source-inspection judgments are retrospective and are not
 independently adjudicated.
+
+The integrated runtime now uses `active-revision-v2`. The separate
+[`strict-pass-v2` replay](../experiments/answerer_comparison/revision_hardening_v2/README.md)
+adds explicit declaration and citation revision agreement to every v1 gate.
+All 1,532 recorded assessments retain their decisions under v2. The tables below
+therefore apply to both complete-rule versions on these stored outputs. Their
+legacy C fields retain the execution-time checker identity.
 
 The legacy `verifier_pass` and `offline_strict_pass` fields record C alone in
 the original execution artifacts. Their names predate the complete standard.
@@ -73,11 +80,34 @@ example, the archived BF16 and 4-bit Revision 4 baselines each have 8/36 C passe
 That statement concerns the legacy endpoint; it is not a complete strict-pass
 comparison.
 
+## Complete supplementary comparison
+
+The [988-row supplementary assessment](../experiments/answerer_comparison/supplementary_strict_pass/README.md)
+uses the same seven-gate v1 endpoint. Separate derived summaries report these
+results while historical execution summaries retain their C checks.
+
+| Condition | Rev. 5 complete strict pass | Rev. 4 complete strict pass |
+|---|---:|---:|
+| Original no-selector | 7/100 | 3/36 |
+| Rescue off | 59/100 | 29/36 |
+| Rescue on | 65/100 | 29/36 |
+| Fixed top-1 | 62/100 | 26/36 |
+| Fixed top-2 | 65/100 | 29/36 |
+| Fixed top-3 | 65/100 | 29/36 |
+| Fixed top-5 | 64/100 | 28/36 |
+| Free-form BF16 baseline | Not evaluated | 7/36 |
+
+BF16 Q17 remains semantically uncertain and receives no pass credit. On Rev. 4,
+BF16 versus the 4-bit baseline has four versus three exclusive passes and an
+exploratory two-sided exact McNemar p-value of 1.0. BF16 versus ComplianceGPT has
+zero versus 22 exclusive passes and p = 4.76837e-7. These retrospective tests
+are unadjusted; the first does not establish equivalence between precisions.
+
 Keep an execution archive separate from a later assessment of its saved answers.
 A comparison must identify the revision, answer condition, scoring rule,
 denominator, and source artifacts. Runtime validity, clause coverage, C pass,
 and complete strict pass are distinct outcomes.
 
 The published v1 scorer retains the original `strict_version=False` contract
-checker configuration. Explicit revision-label hardening is a separate versioned
-change and must not be attributed to this implementation.
+checker configuration. Explicit revision-label hardening belongs to v2 and
+must not be attributed to the historical v1 implementation.

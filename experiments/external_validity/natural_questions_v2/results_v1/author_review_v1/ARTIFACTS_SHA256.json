@@ -1,0 +1,32 @@
+[
+  {
+    "file": "ComplianceGPT_Natural_Questions_Post_Run_Reviewed_Wenjia_Wang_English.xlsx",
+    "bytes": 17435,
+    "sha256": "cf0f822d50cd48c42d9236039a3445a8f6f27dddca445c2a007ce3a9f5515d7f"
+  },
+  {
+    "file": "IMPORT_GUARD_CHECKS.json",
+    "bytes": 752,
+    "sha256": "cebe9eb66425c4bde5b8b451172c0a35a652cadb23402661f4722bff201ee55a"
+  },
+  {
+    "file": "LANGUAGE_EDITION.json",
+    "bytes": 12493,
+    "sha256": "d9881e416486f6097262b574bf9802956a7eec3ca0831581e060b25a394b6b90"
+  },
+  {
+    "file": "README.md",
+    "bytes": 3825,
+    "sha256": "1624e5148b67a18a9c516bc1ff183e118ad56aa737dc46f8be89d9fec589e51c"
+  },
+  {
+    "file": "author_post_run_review.csv",
+    "bytes": 17476,
+    "sha256": "e99d62ef8b7408f5fcb3fff14de17d598b7a937c8ad1bf83cef0311a62627b2a"
+  },
+  {
+    "file": "summary.json",
+    "bytes": 4287,
+    "sha256": "73e10888688bf882454b44b9b53f51ba8dbe62427da5f313f6b218a98cab77f5"
+  }
+]

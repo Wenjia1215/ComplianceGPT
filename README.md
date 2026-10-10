@@ -37,6 +37,8 @@ and verifier result.
 | Goal | Entry point |
 |---|---|
 | Compare final results and distinguish scoring versions | [`docs/EVALUATION_RESULTS.md`](docs/EVALUATION_RESULTS.md) |
+| Review integrated runtime changes and source identities | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) |
+| Review all complete-endpoint supplementary assessments | [`experiments/answerer_comparison/supplementary_strict_pass/README.md`](experiments/answerer_comparison/supplementary_strict_pass/README.md) |
 | Understand the pipeline | [`src/compliancegpt/pipeline/README_pipeline.md`](src/compliancegpt/pipeline/README_pipeline.md) |
 | Run a single-query demonstration | [`src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb`](src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb) |
 | Inspect the citation-contract schema | [`src/compliancegpt/generator/citation_contract_80053.md`](src/compliancegpt/generator/citation_contract_80053.md) |

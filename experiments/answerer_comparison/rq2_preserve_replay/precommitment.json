@@ -1,0 +1,83 @@
+{
+  "acceptance_checks": [
+    "row_count_is_8",
+    "all_rows_exercise_visible_preserve_markers",
+    "all_visible_marker_rows_are_params_required",
+    "no_ok_contract_has_a_visible_marker",
+    "all_required_lists_are_nonempty",
+    "all_placeholders_are_literal",
+    "all_ask_lists_are_empty",
+    "all_runtime_contracts_are_valid",
+    "all_selectors_are_unchanged",
+    "all_final_ids_are_in_frozen_windows"
+  ],
+  "base_repository_commit": "e2c8d0418e735c7ea349a45b43b9f8ec64bd80a4",
+  "code_manifest_sha256": "255c1576fe83a85796ee17795a106813698b0c2a7c4a2c7b91f758804b5ff31e",
+  "code_sha256": {
+    "experiments/answerer_comparison/rq2_preserve_replay/run_preserve_replay.py": "4a92b4edb7ab2f114fcae7f60c54ce7fc12cd4f8f53f7a4b8d6616b48a9442e3",
+    "src/answerer_comparison/matched_window_runner.py": "02abc97b8f53b388cf2385120ffdfebdcaa2ac3d787b0ae6c2711d92aff3fe13",
+    "src/compliancegpt/generator/generator.py": "772cda0930f636ce8b9da24778410d2c61a11cea81d3d51f835982963e15c625",
+    "src/compliancegpt/generator/verifier/verifier.py": "facb2d0229f9f97d52278ea3f3c8dde7f7e0a0666cb4c7d7cd973b972cb622ef",
+    "src/compliancegpt/pipeline/evidence_window.py": "bc78c31225299796e793c77ef408bfdb9657fe879d4e0c0a981e87f9921dddf0",
+    "src/compliancegpt/pipeline/odp_policy.py": "3c723e232e084781231d2d0f32c7848b4489f90ce446d433974eb1b1b682fce2",
+    "src/compliancegpt/pipeline/pipeline.py": "513b759df4a177e198ec0960188e9c0cd5f667c857602ad1b6a5cd398d971ee2",
+    "tests/test_odp_policy.py": "76c37775553b6719c18c7fbaa54e489c978b209073b1e236a4575bc5a5b9a400",
+    "tests/test_pipeline_generator_injection.py": "2a3a7fa7d4a7fa5e7bf10209af10a59f9aaf767b9efa0f1c2a309330989a0acd"
+  },
+  "completion_rule": "all 8 registered rows produce validated contracts",
+  "frozen_defective_runtime_commit": "be862bcadfa61b474d795303e01ce9394909fdcc",
+  "frozen_inputs": {
+    "archive": {
+      "path": "experiments/answerer_comparison/rq2_matched/results_v3/compliancegpt_rq2_matched_v3.zip",
+      "sha256": "56a70db6eca0420df6affbe63c859418ac423b54d80d3d1eae7bf785f0f63328"
+    },
+    "archive_members": {
+      "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
+      "contexts/rev5_prepared_contexts.jsonl": "b47e58c17ce6d0aca1d8519941f52c3c21e393d9187fcf113de7bfec68cfc473",
+      "contracts/rev4_compliancegpt.csv": "cb8d49cdff4b1ebcd68f0010b4fbecafd457352cb9e963856b03ef1a0aae50f9",
+      "contracts/rev5_compliancegpt.csv": "9440fd02c25e30b4b3fe39890fadb3ec3e120dfd8af9e82ea23fab6f87167cc9",
+      "run_config.json": "9f87e66c19c8a066aa6d87350eca2b959a3c2315bc7b602eac75f3f13b23acf5"
+    },
+    "ccs": {
+      "rev4": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+      "rev5": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08"
+    },
+    "gold": {
+      "rev4": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+      "rev5": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5"
+    },
+    "odp_registry": {
+      "rev4": "399509be44e720609efa25c0e39646fa2f27b20a0a20248435b9ae9926dbac7c",
+      "rev5": "3cd31393ed97df6292a45b749bca5359c802397d68ee6dcb41081b075fd32545"
+    }
+  },
+  "gold_use": "sample identification and post-construction offline verification only",
+  "model_id": "Qwen/Qwen2.5-7B-Instruct",
+  "model_inference": "none; replay exact frozen selector_raw values",
+  "model_revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "no_formal_outputs_observed_at_registration": true,
+  "policy_patch_id": "2026-10-03-preserve-status-v1.1",
+  "policy_version": "1.1",
+  "query_ids": {
+    "rev4": [
+      "21",
+      "30"
+    ],
+    "rev5": [
+      "1",
+      "11",
+      "20",
+      "30",
+      "69",
+      "93"
+    ]
+  },
+  "registered_at_utc": "2026-10-03T22:05:20Z",
+  "resolution_policy": "PRESERVE",
+  "result_id": "rq2_preserve_replay_v1",
+  "retrieval": "none; immutable prepared contexts",
+  "row_count": 8,
+  "sample_rule": "all gold rows with resolution_policy=PRESERVE",
+  "schema_version": "compliancegpt-rq2-preserve-precommitment-v1",
+  "stopping_rule": "no outcome-based stopping; run all 8 rows"
+}

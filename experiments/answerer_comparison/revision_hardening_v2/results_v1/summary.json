@@ -1,0 +1,470 @@
+{
+  "acceptance_checks": {
+    "all_1532_v1_assessments_reproduced": true,
+    "all_revision_mutations_detected": true,
+    "all_semantic_verdicts_unchanged": true,
+    "both_revision_directions_have_positive_controls": true,
+    "code_hashes_unchanged_during_execution": true,
+    "every_positive_control_has_eight_mutations": true,
+    "only_revision_gate_can_lower_strict_pass": true,
+    "ordinary_file_inputs_unchanged_during_execution": true,
+    "strict_metadata_mutations_never_pass_v2": true
+  },
+  "accepted": true,
+  "assessment_rows_with_endpoint_changes": 0,
+  "assessments": 1532,
+  "boundary": "All conditions are mandatory. Semantic conditions use versioned source inspection or a sufficient complete-retention proof; judgments are not independently adjudicated. Uncertain cases receive no strict credit and remain in the denominator. The saved outputs are assessed retrospectively; paired tests are exploratory and unadjusted. V2 adds only a mechanical revision gate. It inherits v1 semantic judgments and complete-retention proofs; it adds no independent semantic adjudication.",
+  "counts": [
+    {
+      "condition": "baseline",
+      "family": "main",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 21,
+      "strict_v2": 21
+    },
+    {
+      "condition": "compliancegpt",
+      "family": "main",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 65,
+      "strict_v2": 65
+    },
+    {
+      "condition": "gemini",
+      "family": "main",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 56,
+      "strict_v2": 56
+    },
+    {
+      "condition": "baseline",
+      "family": "main",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 6,
+      "strict_v2": 6
+    },
+    {
+      "condition": "compliancegpt",
+      "family": "main",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 29,
+      "strict_v2": 29
+    },
+    {
+      "condition": "gemini",
+      "family": "main",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 22,
+      "strict_v2": 22
+    },
+    {
+      "condition": "no_selector",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 7,
+      "strict_v2": 7
+    },
+    {
+      "condition": "rescue_off",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 59,
+      "strict_v2": 59
+    },
+    {
+      "condition": "rescue_on",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 65,
+      "strict_v2": 65
+    },
+    {
+      "condition": "top1",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 62,
+      "strict_v2": 62
+    },
+    {
+      "condition": "top2",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 65,
+      "strict_v2": 65
+    },
+    {
+      "condition": "top3",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 65,
+      "strict_v2": 65
+    },
+    {
+      "condition": "top5",
+      "family": "supplementary",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 64,
+      "strict_v2": 64
+    },
+    {
+      "condition": "no_selector",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 3,
+      "strict_v2": 3
+    },
+    {
+      "condition": "rescue_off",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 29,
+      "strict_v2": 29
+    },
+    {
+      "condition": "rescue_on",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 29,
+      "strict_v2": 29
+    },
+    {
+      "condition": "baseline_bf16",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 7,
+      "strict_v2": 7
+    },
+    {
+      "condition": "top1",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 26,
+      "strict_v2": 26
+    },
+    {
+      "condition": "top2",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 29,
+      "strict_v2": 29
+    },
+    {
+      "condition": "top3",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 29,
+      "strict_v2": 29
+    },
+    {
+      "condition": "top5",
+      "family": "supplementary",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 28,
+      "strict_v2": 28
+    },
+    {
+      "condition": "no_selector_requests",
+      "family": "repaired_no_selector",
+      "n": 100,
+      "revision": "rev5",
+      "revision_gate_pass": 100,
+      "strict_decisions_changed": 0,
+      "strict_v1": 92,
+      "strict_v2": 92
+    },
+    {
+      "condition": "no_selector_requests",
+      "family": "repaired_no_selector",
+      "n": 36,
+      "revision": "rev4",
+      "revision_gate_pass": 36,
+      "strict_decisions_changed": 0,
+      "strict_v1": 35,
+      "strict_v2": 35
+    }
+  ],
+  "family_counts": {
+    "main": 408,
+    "repaired_no_selector": 136,
+    "supplementary": 988
+  },
+  "mutation_attempts": 11376,
+  "mutation_boundary": "Retrospective mutations of runtime-valid normal frozen contracts. Repeated conditions share questions; attempts are not independent observations. Source-namespace mutations receive runtime checks only, without new semantic reviews. This diagnostic tests revision handling, not global verifier sensitivity.",
+  "mutation_counts": [
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "opposite_declaration",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "missing_declaration",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "unknown_declaration",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "ambiguous_declaration",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "nonstring_declaration",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 0,
+      "operator": "opposite_source_namespace",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 0,
+      "operator": "opposite_packed_source_namespace",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 384,
+      "legacy_runtime_accepted": 384,
+      "legacy_strict_accepted_where_surface_unchanged": 272,
+      "operator": "opposite_citation_label",
+      "revision": "rev4",
+      "v2_detected": 384,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "opposite_declaration",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "missing_declaration",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "unknown_declaration",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "ambiguous_declaration",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "nonstring_declaration",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 0,
+      "operator": "opposite_source_namespace",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 0,
+      "operator": "opposite_packed_source_namespace",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    },
+    {
+      "attempts": 1038,
+      "legacy_runtime_accepted": 1038,
+      "legacy_strict_accepted_where_surface_unchanged": 621,
+      "operator": "opposite_citation_label",
+      "revision": "rev5",
+      "v2_detected": 1038,
+      "v2_strict_accepted_where_surface_unchanged": 0
+    }
+  ],
+  "mutation_positive_controls": [
+    {
+      "count": 26,
+      "eligibility": "excluded",
+      "family": "main",
+      "revision": "rev4"
+    },
+    {
+      "count": 82,
+      "eligibility": "positive_controls",
+      "family": "main",
+      "revision": "rev4"
+    },
+    {
+      "count": 62,
+      "eligibility": "excluded",
+      "family": "main",
+      "revision": "rev5"
+    },
+    {
+      "count": 238,
+      "eligibility": "positive_controls",
+      "family": "main",
+      "revision": "rev5"
+    },
+    {
+      "count": 36,
+      "eligibility": "positive_controls",
+      "family": "repaired_no_selector",
+      "revision": "rev4"
+    },
+    {
+      "count": 100,
+      "eligibility": "positive_controls",
+      "family": "repaired_no_selector",
+      "revision": "rev5"
+    },
+    {
+      "count": 22,
+      "eligibility": "excluded",
+      "family": "supplementary",
+      "revision": "rev4"
+    },
+    {
+      "count": 266,
+      "eligibility": "positive_controls",
+      "family": "supplementary",
+      "revision": "rev4"
+    },
+    {
+      "count": 700,
+      "eligibility": "positive_controls",
+      "family": "supplementary",
+      "revision": "rev5"
+    }
+  ],
+  "mutation_result_id": "runtime_revision_mutations_v2",
+  "new_semantic_reviews": 0,
+  "parent_rule_version": "strict-pass-v1",
+  "result_id": "strict_pass_revision_replay_v2",
+  "rule_version": "strict-pass-v2",
+  "runtime_rows_with_changes": 0,
+  "semantic_provenance_counts": {
+    "inherited_v1_source_inspection": 131,
+    "unchanged_v1_complete_retention_proof": 901,
+    "v1_contract_failure_short_circuit": 500
+  },
+  "strict_decisions_changed": 0
+}

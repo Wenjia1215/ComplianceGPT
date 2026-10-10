@@ -1,0 +1,484 @@
+{
+  "interpretation": "Post-run descriptive diagnostics. Frozen metrics and labels are unchanged. A missing cited child ID can still have text in a cited parent clause.",
+  "questions": [
+    {
+      "query_id": "NQ01",
+      "allowed_controls": [
+        "SI-2"
+      ],
+      "retrieved_record_count": 48,
+      "window_record_count": 13,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ02",
+      "allowed_controls": [
+        "SC-39",
+        "SC-3"
+      ],
+      "retrieved_record_count": 31,
+      "window_record_count": 7,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ03",
+      "allowed_controls": [
+        "CP-7",
+        "CP-7",
+        "CP-2"
+      ],
+      "retrieved_record_count": 29,
+      "window_record_count": 18,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ04",
+      "allowed_controls": [
+        "AC-2"
+      ],
+      "retrieved_record_count": 49,
+      "window_record_count": 22,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ05",
+      "allowed_controls": [
+        "SI-11"
+      ],
+      "retrieved_record_count": 34,
+      "window_record_count": 4,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ06",
+      "allowed_controls": [
+        "PL-10"
+      ],
+      "retrieved_record_count": 36,
+      "window_record_count": 2,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ07",
+      "allowed_controls": [
+        "AC-3",
+        "AC-3",
+        "AC-3"
+      ],
+      "retrieved_record_count": 44,
+      "window_record_count": 18,
+      "missing_upstream_groups": [
+        [
+          "pl-2_smt.a.2"
+        ],
+        [
+          "pl-2_smt.a.9"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ],
+        [
+          "sa-9_smt.a"
+        ],
+        [
+          "sa-9_smt.b"
+        ]
+      ],
+      "missing_window_groups": [
+        [
+          "pl-2_smt.a.2"
+        ],
+        [
+          "pl-2_smt.a.9"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ],
+        [
+          "sa-9_smt.a"
+        ],
+        [
+          "sa-9_smt.b"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "pl-2_smt.a.2"
+        ],
+        [
+          "pl-2_smt.a.9"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ],
+        [
+          "sa-9_smt.a"
+        ],
+        [
+          "sa-9_smt.b"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ08",
+      "allowed_controls": [
+        "IA-8",
+        "PL-11",
+        "PM-7"
+      ],
+      "retrieved_record_count": 37,
+      "window_record_count": 8,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ09",
+      "allowed_controls": [
+        "AU-5",
+        "AU-5",
+        "AU-2"
+      ],
+      "retrieved_record_count": 40,
+      "window_record_count": 12,
+      "missing_upstream_groups": [
+        [
+          "au-3_smt"
+        ],
+        [
+          "au-12_smt.a"
+        ],
+        [
+          "au-12_smt.c"
+        ]
+      ],
+      "missing_window_groups": [
+        [
+          "au-3_smt"
+        ],
+        [
+          "au-12_smt.a"
+        ],
+        [
+          "au-12_smt.c"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "au-3_smt"
+        ],
+        [
+          "au-12_smt.a"
+        ],
+        [
+          "au-12_smt.c"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ10",
+      "allowed_controls": [
+        "PL-10"
+      ],
+      "retrieved_record_count": 47,
+      "window_record_count": 2,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ11",
+      "allowed_controls": [
+        "SI-3",
+        "SI-3",
+        "SI-3"
+      ],
+      "retrieved_record_count": 34,
+      "window_record_count": 18,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ12",
+      "allowed_controls": [
+        "AC-12",
+        "AC-12",
+        "SC-23"
+      ],
+      "retrieved_record_count": 32,
+      "window_record_count": 6,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [
+        [
+          "sc-10_smt"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "sc-10_smt"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ13",
+      "allowed_controls": [
+        "PL-10"
+      ],
+      "retrieved_record_count": 32,
+      "window_record_count": 2,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ14",
+      "allowed_controls": [
+        "RA-5",
+        "SI-2",
+        "CA-7"
+      ],
+      "retrieved_record_count": 60,
+      "window_record_count": 24,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [
+        [
+          "si-2_smt.a"
+        ],
+        [
+          "si-2_smt.d"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": [
+        [
+          "si-2_smt.a"
+        ],
+        [
+          "si-2_smt.d"
+        ]
+      ]
+    },
+    {
+      "query_id": "NQ15",
+      "allowed_controls": [
+        "PL-10"
+      ],
+      "retrieved_record_count": 33,
+      "window_record_count": 2,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [],
+      "missing_cited_id_groups": [],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ16",
+      "allowed_controls": [
+        "AU-4",
+        "AU-4",
+        "AU-5"
+      ],
+      "retrieved_record_count": 28,
+      "window_record_count": 12,
+      "missing_upstream_groups": [
+        [
+          "au-11_smt"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_window_groups": [
+        [
+          "au-11_smt"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "au-11_smt"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ17",
+      "allowed_controls": [
+        "AC-2"
+      ],
+      "retrieved_record_count": 50,
+      "window_record_count": 5,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [
+        [
+          "ca-2_smt.a"
+        ],
+        [
+          "ca-2_smt.b.1"
+        ],
+        [
+          "ca-2_smt.b.2"
+        ],
+        [
+          "ca-2_smt.b.3"
+        ],
+        [
+          "ca-2_smt.c"
+        ],
+        [
+          "ca-2_smt.d"
+        ],
+        [
+          "ca-2_smt.e"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "ca-2_smt.a"
+        ],
+        [
+          "ca-2_smt.b.1"
+        ],
+        [
+          "ca-2_smt.b.2"
+        ],
+        [
+          "ca-2_smt.b.3"
+        ],
+        [
+          "ca-2_smt.c"
+        ],
+        [
+          "ca-2_smt.d"
+        ],
+        [
+          "ca-2_smt.e"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ18",
+      "allowed_controls": [
+        "AC-6"
+      ],
+      "retrieved_record_count": 41,
+      "window_record_count": 10,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [
+        [
+          "ac-10_smt"
+        ],
+        [
+          "ac-10_gdn"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "ac-10_smt"
+        ],
+        [
+          "ac-10_gdn"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ19",
+      "allowed_controls": [
+        "AC-2",
+        "AC-1",
+        "AC-3"
+      ],
+      "retrieved_record_count": 105,
+      "window_record_count": 24,
+      "missing_upstream_groups": [
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_window_groups": [
+        [
+          "ac-1_gdn"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "ac-1_gdn"
+        ],
+        [
+          "ac-1_smt.a.1.a"
+        ],
+        [
+          "ac-1_smt.a.1.b"
+        ],
+        [
+          "ac-1_smt.a.2"
+        ],
+        [
+          "pl-2_smt.a.12"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    },
+    {
+      "query_id": "NQ20",
+      "allowed_controls": [
+        "AC-2"
+      ],
+      "retrieved_record_count": 28,
+      "window_record_count": 4,
+      "missing_upstream_groups": [],
+      "missing_window_groups": [
+        [
+          "ac-11_smt.a"
+        ],
+        [
+          "ac-11_smt.b"
+        ]
+      ],
+      "missing_cited_id_groups": [
+        [
+          "ac-11_smt.a"
+        ],
+        [
+          "ac-11_smt.b"
+        ]
+      ],
+      "missing_cited_id_groups_with_text_in_other_cited_spans": []
+    }
+  ]
+}
