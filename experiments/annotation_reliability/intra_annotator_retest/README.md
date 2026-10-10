@@ -141,6 +141,16 @@ granularity. The complete differences are reported in
 [`reveal/AGREEMENT_REPORT.md`](reveal/AGREEMENT_REPORT.md) and
 [`reveal/agreement_results.csv`](reveal/agreement_results.csv).
 
+## Score sensitivity to the repeated labels
+
+The separate [repeated-label sensitivity](../repeated_annotation_sensitivity/README.md)
+applies the second labels to 150 frozen answers across five paths. It retains
+the registered sample and original agreement definitions. ComplianceGPT gains
+Revision 5 Q84 and loses Revision 4 Q14, keeping its combined count at 25/30.
+Ten generative answers require fresh semantic judgments; their revised totals
+are reported as bounds. This retrospective analysis does not replace the
+full benchmark or independently adjudicate either annotation.
+
 ## Reproduce the reveal
 
 Run the sampler again with the now-public seed, then run the scorer against the

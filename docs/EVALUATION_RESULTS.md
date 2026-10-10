@@ -52,8 +52,10 @@ Canonical complete assessments:
 The exploratory exact paired McNemar p-values for ComplianceGPT versus Gemini
 are 0.122078 on Revision 5 and 0.092285 on Revision 4. The observed differences
 do not establish statistically significant end-to-end superiority or
-population equivalence. Conditional realization-loss comparisons over
-different coverage-complete subsets answer a separate descriptive question.
+population equivalence. System-specific coverage-conditioned losses answer a
+separate descriptive question. The [question-paired statistical analysis](../experiments/answerer_comparison/paired_conditional_statistics/README.md)
+provides difference intervals, common-coverage membership, and uncertainty
+sensitivity without substituting a selected subset for the full comparison.
 
 ## Original no-selector diagnostic
 
@@ -71,6 +73,38 @@ replay is a different output condition, even if its answer bodies are unchanged.
 See the [versioned assessment and reproduction command](../experiments/answerer_comparison/rq2_no_selector/strict_pass_v1/README.md)
 for row-level decisions and hashes. Original contract CSVs and archives retain
 their historical values.
+
+## Separate request-repaired no-selector condition
+
+| Revision | Original no-selector complete pass | Request-repaired complete pass | ComplianceGPT complete pass |
+|---|---:|---:|---:|
+| Rev. 5 | 7/100 | 92/100 | 65/100 |
+| Rev. 4 | 3/36 | 35/36 | 29/36 |
+
+The replay `rq2_no_selector_requests_v1` changes only `ask_list`. Answer bodies,
+retained source IDs, statuses, contexts, and windows remain unchanged. The
+repaired condition includes every ComplianceGPT pass and adds 27 Revision 5
+and six Revision 4 passes. It therefore limits claims that the selector is
+necessary for high strict pass on these windows. The larger output and request
+counts describe a scope tradeoff; usefulness and human review time remain
+unmeasured. See the [repair comparison and archived evidence](../experiments/answerer_comparison/retrospective_repairs/README.md).
+
+The separate `clarification_registry_repair_v2` replay repairs source-backed
+request metadata. Its 16 registry repairs change 40 requests across 17 contracts
+without changing recorded strict-v1 gates or decisions. High strict pass does
+not certify useful request wording or valid supplied values.
+
+## Repeated-author-label sensitivity
+
+The [30-question sensitivity analysis](../experiments/annotation_reliability/repeated_annotation_sensitivity/README.md)
+uses frozen outputs with the author's second labels. ComplianceGPT changes
+from 17/22 to 18/22 on Revision 5 and from 8/8 to 7/8 on Revision 4. Its
+combined 25/30 total masks one gain and one loss. Gemini and Qwen revised
+totals remain bounded where changed references require fresh semantic judgments.
+
+Raw clause-set agreement remains 16/30. These records assess author repeatability
+and score sensitivity, without independently validating labels or replacing
+the 100-question and 36-question benchmark comparisons.
 
 ## Historical execution records
 

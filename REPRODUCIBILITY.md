@@ -324,7 +324,7 @@ is:
 470d75f469ee6c823c22fc0695da368ada85295ecc3ec4f5a2cf536ef5ba816e
 ```
 
-This post hoc experiment measures the coverage-versus-review-burden tradeoff
+This post hoc experiment measures coverage, evidence scope, and output size
 and does not replace the frozen RQ2 v3 result family.
 
 The archived no-selector `offline_strict_pass` field records C: 92/100 on
@@ -339,6 +339,38 @@ Reproduce it from unchanged inputs in a fresh output directory:
 python tools/audit_no_selector_strict_pass.py \
   --output-dir /tmp/compliancegpt_no_selector_strict_pass_v1
 ```
+
+## Saved retrospective statistical and label-sensitivity results
+
+| Analysis | Saved evidence | Scope |
+|---|---|---|
+| [Paired comparisons and uncertainty sensitivity](experiments/answerer_comparison/paired_conditional_statistics/README.md) | 680 answer records, matched outcomes, group summaries, and original input hashes | 100 Rev. 5 and 36 Rev. 4 questions, with five separately identified answer paths. |
+| [Repeated-author-label sensitivity](experiments/annotation_reliability/repeated_annotation_sensitivity/README.md) | 150 frozen contracts, 30 label audits, score bounds, and ten unresolved semantic reviews | The registered 22 Rev. 5 and eight Rev. 4 sampled questions. |
+| [Request repair and registry repair](experiments/answerer_comparison/retrospective_repairs/README.md) | Existing replay archives, field-change ledgers, manifests, and comparison tables | Request construction and source-backed request metadata are separate interventions. |
+
+The two analysis directories publish existing result data and methods. Their
+original result files retain their bytes and SHA-256 indexes. Historical run
+configurations identify a local candidate commit/tree and analysis-program
+hashes; those programs are not included in these directories. They are not
+current-main execution commands. Use the row ledgers to inspect the counts,
+pair memberships, and missing-review bounds.
+
+Each `PUBLICATION_INDEX.json` binds historical inputs to the public source at
+`b3603f48ce85ce8acecd11f9d9058e4844e30b03`. Byte-exact inputs and archive members
+are identified directly. English explanations and dependent hash metadata have
+explicit edition bindings; contracts, review IDs, verdicts, scoring gates, and
+runtime outcomes agree. Original source identities remain in the saved records.
+
+The request-repaired no-selector path passes 92/100 and 35/36 while changing
+only `ask_list`. It does not replace the original 7/100 and 3/36 complete
+results. The statistical analysis keeps the overall ComplianceGPT/Gemini tests
+separate from selected common-coverage diagnostics. Repeated labels change
+one ComplianceGPT gain and one loss despite an unchanged combined 25/30 total.
+
+The [natural-question run and author post-run review](experiments/external_validity/natural_questions_v2/README.md)
+are complete. Its historical automatic `experiment_complete=false` flag
+predates the separate author review and remains preserved in the saved output.
+Reproduce that model run at its recorded execution commit.
 
 ## ODP-statement rescue ablation
 

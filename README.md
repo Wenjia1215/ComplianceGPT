@@ -39,6 +39,10 @@ and verifier result.
 | Compare final results and distinguish scoring versions | [`docs/EVALUATION_RESULTS.md`](docs/EVALUATION_RESULTS.md) |
 | Review integrated runtime changes and source identities | [`RELEASE_NOTES.md`](RELEASE_NOTES.md) |
 | Review all complete-endpoint supplementary assessments | [`experiments/answerer_comparison/supplementary_strict_pass/README.md`](experiments/answerer_comparison/supplementary_strict_pass/README.md) |
+| Inspect overall paired tests and conditional sensitivity | [`experiments/answerer_comparison/paired_conditional_statistics/README.md`](experiments/answerer_comparison/paired_conditional_statistics/README.md) |
+| Compare original and request-repaired no-selector outputs | [`experiments/answerer_comparison/retrospective_repairs/README.md`](experiments/answerer_comparison/retrospective_repairs/README.md) |
+| Inspect score sensitivity to repeated author labels | [`experiments/annotation_reliability/repeated_annotation_sensitivity/README.md`](experiments/annotation_reliability/repeated_annotation_sensitivity/README.md) |
+| Review the completed natural-question run and author review | [`experiments/external_validity/natural_questions_v2/README.md`](experiments/external_validity/natural_questions_v2/README.md) |
 | Understand the pipeline | [`src/compliancegpt/pipeline/README_pipeline.md`](src/compliancegpt/pipeline/README_pipeline.md) |
 | Run a single-query demonstration | [`src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb`](src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb) |
 | Inspect the citation-contract schema | [`src/compliancegpt/generator/citation_contract_80053.md`](src/compliancegpt/generator/citation_contract_80053.md) |
@@ -86,6 +90,7 @@ ComplianceGPT/
 │   ├── annotation_reliability/       # Blinded test-retest protocol and commitments
 │   ├── retriever_ablation/        # S1–S7 evaluation and outputs
 │   ├── answerer_comparison/       # Matched evaluation and selector/rescue ablations
+│   ├── external_validity/         # Natural-question studies and author review
 │   ├── micro_ablations/           # Secondary gold-informed diagnostics
 │   ├── pipeline_runs/             # Recorded contract traces
 │   └── runtime_validation/        # Gold-independent contract validation
@@ -172,6 +177,16 @@ from the legacy contract/gold check retained in execution archives.
    and 3/36 Rev. 4 rows; the archived 92/100 and 35/36 values measure the legacy
    contract/gold check. See the
    [versioned assessment](experiments/answerer_comparison/rq2_no_selector/strict_pass_v1/README.md).
+- The separately identified request-repaired no-selector replay changes only
+  clarification requests. It passes 92/100 and 35/36 while retaining the original
+  bodies, source IDs, statuses, and windows. Its larger outputs show an evidence
+  scope and length tradeoff; they do not measure assessor review time. See the
+  [repair comparison](experiments/answerer_comparison/retrospective_repairs/README.md).
+- The [paired statistical analysis](experiments/answerer_comparison/paired_conditional_statistics/README.md)
+  preserves the inconclusive overall ComplianceGPT/Gemini comparison and keeps
+  common-coverage diagnostics separate. The [repeated-label sensitivity](experiments/annotation_reliability/repeated_annotation_sensitivity/README.md)
+  records one ComplianceGPT gain and one loss on 30 sampled questions, with
+  bounded generative totals where new semantic judgments are unavailable.
 - The deterministic ODP-rescue ablation reconstructs the frozen pre-rescue
   selector state and replays bounded rescue on and off. It measures the rule's
   ODP-blocking, clause-coverage, status-scope, and evidence-burden effects

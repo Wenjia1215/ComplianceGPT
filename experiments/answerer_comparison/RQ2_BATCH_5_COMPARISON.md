@@ -8,8 +8,8 @@ comparison; the pre-committed Batch 5D study extends that comparison to the
 primary 100-row Revision 5 benchmark.
 
 The three-system tables use the [complete strict-pass standard](../../src/answerer_comparison/README.md)
-and saved matched-window outputs. **ComplianceGPT has the highest observed
-strict-pass rate on both revisions. Its paired differences from Gemini are not
+and saved matched-window outputs. **Among these three main systems, ComplianceGPT
+has the highest observed strict-pass rate on both revisions. Its paired differences from Gemini are not
 statistically significant at 0.05.** Semantic judgments are not independently
 adjudicated, and the comparisons are exploratory. Batch 5A gate-width and
 Batch 5B precision results remain separate archived studies.
@@ -17,6 +17,13 @@ Batch 5B precision results remain separate archived studies.
 Use the [result and scoring map](../../docs/EVALUATION_RESULTS.md) to distinguish
 the complete endpoint from the legacy contract/gold check (C). Original execution
 audits and archives retain C, including fields historically named `strict_pass`.
+
+The later [paired analysis](paired_conditional_statistics/README.md) adds
+intervals, common-coverage diagnostics, and uncertainty sensitivity. The
+[request-repaired no-selector replay](retrospective_repairs/README.md) passes
+92/100 and 35/36, exceeding all three main systems. It remains a separate
+retrospective output condition. The [repeated-label sensitivity](../annotation_reliability/repeated_annotation_sensitivity/README.md)
+also has its own sampled denominator and does not replace this comparison.
 
 ## Experimental boundaries
 
@@ -32,23 +39,24 @@ within-Qwen precision study. Batches 5C and 5D are stronger-system comparisons,
 not one-factor weight experiments. Their conclusions remain separate even
 where their matched inputs permit unified descriptive tables.
 
-## Headline result: coverage-complete realization loss
+## Descriptive coverage-conditioned loss
 
-Realization loss asks a narrower question than end-to-end strict pass: once all
-required evidence is present, how often is the answer still rejected because
+Coverage-conditioned loss asks a narrower question than end-to-end strict pass:
+once every required gold clause ID is retained, how often is the answer rejected because
 of a citation, source, status, contract, or answer-content failure?
 
 ### Revision 4 (36 matched rows)
 
 | System | Coverage-complete | Strict pass | Lost | Realization loss |
 |---|---:|---:|---:|---:|
-| ComplianceGPT | 29 | 29 | 0 | 0/29 (0.0%) |
-| Gemini 3.5 Flash | 28 | 22 | 6 | 6/28 (21.4%) |
-| Qwen2.5-7B 4-bit | 18 | 6 | 12 | 12/18 (66.7%) |
+| ComplianceGPT | 29 | 29 | 0 | 0/29 (0.0%; 95% Wilson CI 0.0%–11.7%) |
+| Gemini 3.5 Flash | 28 | 22 | 6 | 6/28 (21.4%; 95% Wilson CI 10.2%–39.5%) |
+| Qwen2.5-7B 4-bit | 18 | 6 | 12 | 12/18 (66.7%; 95% Wilson CI 43.7%–83.7%) |
 
-For ComplianceGPT versus Gemini, the two-sided Fisher exact p-value is
-`0.0103819`. The coverage-complete subsets differ by system; this
-descriptive comparison does not replace the paired end-to-end test.
+The coverage-complete subsets differ by system and overlap in question
+membership. Their loss rates are descriptive. The later paired analysis uses
+the same 25 questions for both systems in its common-coverage diagnostic;
+the overall paired comparison keeps all 36 questions.
 
 ### Revision 5 (100 matched rows)
 
@@ -58,10 +66,10 @@ descriptive comparison does not replace the paired end-to-end test.
 | Gemini 3.5 Flash | 67 | 56 | 11 | 11/67 (16.4%; 95% Wilson CI 9.4%–27.1%) |
 | Qwen2.5-7B 4-bit | 53 | 21 | 32 | 32/53 (60.4%; 95% Wilson CI 46.9%–72.4%) |
 
-For ComplianceGPT versus Gemini, the two-sided Fisher exact p-value is
-`0.000629911`. This is an exploratory conditional comparison over different,
-overlapping coverage-complete subsets, rather than a paired estimate of
-end-to-end model superiority.
+The paired common-coverage diagnostic uses the same 54 questions for both
+systems, while the overall comparison retains all 100. Independent-subset
+Fisher tests in historical reports do not account for overlapping question
+membership and do not supply the inferential comparison on this page.
 
 On these saved outputs, ComplianceGPT expresses the selected canonical text
 without alteration and has zero observed coverage-complete realization loss.
@@ -110,6 +118,23 @@ ComplianceGPT has higher observed pass rates than Gemini, but the two paired
 p-values exceed 0.05. Neither a nonsignificant test nor these fixed benchmark
 samples establish population equivalence or general superiority.
 
+The 95% paired difference intervals are [-1.2, 18.9] percentage points on
+Revision 5 and [-0.4, 37.4] on Revision 4. Both include zero. See the
+[full paired table and row-level evidence](paired_conditional_statistics/README.md).
+
+### Common-coverage and uncertain-judgment diagnostics
+
+ComplianceGPT passes all 54 and 25 common-coverage Gemini questions; Gemini
+passes 47 and 19. Exact p-values are 0.015625 and 0.03125. A supplementary
+Holm adjustment across four ComplianceGPT/Gemini and ComplianceGPT/Qwen
+conditional comparisons gives 0.03125 for both Gemini contrasts.
+
+Granting optimistic credit to the two uncertain semantic gates on Revision 5
+Gemini Q67 changes its common-coverage pass count to 48/54. Both Gemini
+contrasts then have Holm p = 0.0625, although Revision 4 outcomes stay fixed.
+These selected, retrospective diagnostics do not establish a causal effect
+or replace the inconclusive overall Gemini comparisons.
+
 ## ODP operating point
 
 ### Revision 4
@@ -131,7 +156,7 @@ samples establish population equivalence or general superiority.
 Sensitivity and specificity must be reported together. ComplianceGPT selects a
 high-sensitivity operating point: it detects every author-labeled ODP-positive
 row, but it marks 20/37 Revision 5 negative rows as `PARAMS_REQUIRED`. Gemini
-has fewer false alarms and higher status precision, while missing 7/63
+marks fewer author-labeled negative rows and has higher status precision, while missing 7/63
 positive rows. Qwen's perfect specificity is not useful without its zero
 sensitivity.
 
@@ -139,9 +164,10 @@ The behavior observed in a free-form model is a property of that model,
 version, prompt, and serving runtime. The ComplianceGPT contract enforces the
 `PARAMS_REQUIRED` safety behavior for any selector and the Runtime Verifier can
 check it without gold labels. The operating-characteristic values above use
-current author labels and have not been independently adjudicated; the planned
-annotation study is reported as future validation rather than a pending
-condition on these results.
+current author labels and have not been independently adjudicated. The completed
+30-row author retest measures repeatability, with 16/30 exact clause-set
+agreement. Its [score-sensitivity analysis](../annotation_reliability/repeated_annotation_sensitivity/README.md)
+keeps these original benchmark outcomes and reports revised sampled bounds.
 
 ## Evidence and verbosity tradeoff
 
@@ -174,7 +200,7 @@ not an empirically supported performance claim.
 
 ## Consolidated findings
 
-1. **ComplianceGPT has the highest observed strict-pass rate.** The paired
+1. **ComplianceGPT leads the three main systems numerically.** The paired
    discordance against Gemini is 10:3 on Revision 4 (`p = 0.0923`) and 18:9
    on Revision 5 (`p = 0.1221`). These comparisons do not establish a
    statistically significant end-to-end difference.
@@ -194,6 +220,12 @@ not an empirically supported performance claim.
 6. **The archived gate-width study supports a simpler gate.** Fixed top 2
    reproduces the adaptive pass count in that study, so the adaptive mechanism has not earned
    its added complexity in these experiments.
+7. **Request-repaired no-selector passes more questions.** Its 92/100 and
+   35/36 counts include every ComplianceGPT pass while returning longer bodies
+   and more request records. These proxies do not establish human review cost.
+8. **An unchanged retest total hides changed decisions.** ComplianceGPT gains
+   Revision 5 Q84 and loses Revision 4 Q14, keeping 25/30 combined passes.
+   Generative retest totals remain bounded where new semantic reviews are absent.
 
 ## Evidence provenance
 

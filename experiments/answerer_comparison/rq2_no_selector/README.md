@@ -16,6 +16,14 @@ row-level decisions, hashes, and an offline reproduction command. The original
 contracts contain empty clarification-request lists; a repaired request replay
 is a separate intervention and must retain its own result identity.
 
+The [request-repair comparison](../retrospective_repairs/README.md) places the
+original 7/100 and 3/36 results beside the repaired 92/100 and 35/36 results.
+Only `ask_list` changes between these conditions. The [paired statistical
+analysis](../paired_conditional_statistics/README.md) records their relation to
+ComplianceGPT without treating the original request-list defect as an isolated
+selector effect. Answer length and extra evidence remain scope proxies, not
+measured human review cost.
+
 The report includes:
 
 - legacy contract/gold pass (C);
@@ -33,7 +41,7 @@ Run from the repository root:
 
 ```bash
 python experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py \
-  --output-dir experiments/answerer_comparison/rq2_no_selector/results_v1
+  --output-dir /tmp/compliancegpt_no_selector_replay
 ```
 
 The script refuses an existing output directory so reruns cannot silently mix with or overwrite an earlier result identity.

@@ -1,0 +1,20 @@
+{
+  "changed_rows": [
+    {
+      "assessment_id": "31549833ee1098094de5949d3581fdcd5ca637b881171f1fd8ceb568d9ae388c",
+      "frozen_strict_pass": false,
+      "group": "gemini",
+      "optimistic_strict_pass": true,
+      "query_id": "67",
+      "revision": "rev5",
+      "semantic_review_id": "ba59a915eb5110179be22b5e8327fceff8ea7bf051105bfe9c326f340bbf7dd9",
+      "uncertain_gates": [
+        "claim_faithfulness",
+        "parameter_semantics"
+      ]
+    }
+  ],
+  "fixed_denominators_and_subsets": true,
+  "new_semantic_reviews": 0,
+  "scenario": "optimistic_uncertain_semantics"
+}

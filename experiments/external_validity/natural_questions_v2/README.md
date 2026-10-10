@@ -1,6 +1,9 @@
 # Reviewed natural-question study v2
 
-**Status: author source/label review and registered GPU execution completed. Returned identities and automatic scoring passed the technical audit. All 40 final outputs and the executed notebook are archived in [results_v1](results_v1/README.md). Separate author post-run semantic review remains pending.**
+**Status: author source/label review, registered GPU execution, and author
+post-run semantic review are complete. All 40 final outputs and the executed
+notebook are archived in [results_v1](results_v1/README.md). The separate
+[author review](results_v1/author_review_v1/README.md) covers all 40 output pairs.**
 
 This version retains 20 original r/NISTControls threads, separately from the 136-row historical benchmark and the 30-row intra-annotator retest. It supersedes preparation v1 for execution after author review restored omitted original text in NQ03, NQ12 and NQ16. The previous preparation remains unchanged. See [SOURCE_CORRECTIONS.json](SOURCE_CORRECTIONS.json).
 
