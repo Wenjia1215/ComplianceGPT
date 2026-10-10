@@ -1,0 +1,505 @@
+{
+  "audit_date": "2026-10-10",
+  "audited_commit": "3427dca90921fad88afa3fc179cb6980fb1d1a42",
+  "summary": {
+    "notebooks": 20,
+    "cells": 227,
+    "code_cells": 177,
+    "code_cells_with_execution_count": 141,
+    "notebooks_with_stored_errors": 1,
+    "stored_error_outputs": 1,
+    "notebooks_with_top_level_widget_metadata": 0,
+    "credential_value_candidates": 0
+  },
+  "notebooks": [
+    {
+      "path": "experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb",
+      "role": "Completed BF16 execution record",
+      "sha256": "0295d5a63f315d4537afd32b3259e37cae9bca4d8c28c851e8614415ff311c18",
+      "nbformat": 4,
+      "nbformat_minor": 0,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 1,
+        "code": 9
+      },
+      "code_cells_with_execution_count": 9,
+      "stored_output_types": {
+        "stream": 9,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "dd2e3c85cb32d2965af8bdeb79af40e64629cad5335659671abbaf526daa02ac",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 1
+    },
+    {
+      "path": "experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb",
+      "role": "Registered control-gate launch notebook",
+      "sha256": "0cf1d4e4fde1412d894421509fdf34d82eb220940d2f72f514f0fde19c31e18c",
+      "nbformat": 4,
+      "nbformat_minor": 0,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 1,
+        "code": 9
+      },
+      "code_cells_with_execution_count": 0,
+      "stored_output_types": {},
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "411e2b926ae16b782f3d524c3beaeb10b630d6db2af272b8fd3cb32101873b0a",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 1
+    },
+    {
+      "path": "experiments/answerer_comparison/rq2_frontier_baseline/Batch_5C_Rev4_Frontier_API_Baseline.ipynb",
+      "role": "Completed Revision 4 API execution record",
+      "sha256": "2559ce38a209c0c3474b5285bd4e7461b9e8b466246102cc3cd07316e30ebd84",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 14,
+      "cell_types": {
+        "markdown": 5,
+        "code": 9
+      },
+      "code_cells_with_execution_count": 9,
+      "stored_output_types": {
+        "stream": 9,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "563e9777677425f77d56e4d6d359baed915213637ab28bf82afc5357d7dd0a42",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [
+        "GEMINI_API_KEY",
+        "userdata.get"
+      ],
+      "source_url_count": 2
+    },
+    {
+      "path": "experiments/answerer_comparison/rq2_frontier_baseline_rev5/Batch_5D_Rev5_Frontier_API_Baseline.ipynb",
+      "role": "Completed Revision 5 API execution record",
+      "sha256": "2e96e47c83f4d02e04b992a81d76cb3c8e670cffbc876d3329437637a1247fcc",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 13,
+      "cell_types": {
+        "markdown": 4,
+        "code": 9
+      },
+      "code_cells_with_execution_count": 9,
+      "stored_output_types": {
+        "stream": 9,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "ec8e41c943c4bb0d0e5424c7a9eda0c6adc9eac7721bccc2b682b57db97cc511",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [
+        "GEMINI_API_KEY",
+        "userdata.get"
+      ],
+      "source_url_count": 1
+    },
+    {
+      "path": "experiments/answerer_comparison/rq2_matched/RQ2_Matched_Window_Rerun.ipynb",
+      "role": "Matched-window launch notebook",
+      "sha256": "397a3bc7944e6a445443d65c6288307a3c3898d0f0f0e571630839a409742edd",
+      "nbformat": 4,
+      "nbformat_minor": 0,
+      "cell_count": 7,
+      "cell_types": {
+        "markdown": 1,
+        "code": 6
+      },
+      "code_cells_with_execution_count": 6,
+      "stored_output_types": {
+        "stream": 6,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "1fe6c702ae277eacd9cacd8bad642aee58d3d9e1c3500e4c24b86d078732e039",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [
+        "GITHUB_TOKEN",
+        "getpass",
+        "userdata.get"
+      ],
+      "source_url_count": 3
+    },
+    {
+      "path": "experiments/external_validity/natural_questions_v2/Batch_Natural_Questions_v2.ipynb",
+      "role": "Repaired natural-question launch notebook",
+      "sha256": "b5ccc2466a9af1c3c775a600aac5d7a8d4e9b216fc63e0c144b01115a65c5748",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 3,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 0,
+      "stored_output_types": {},
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "17a6aa7bc455962050ec6056a223762495daed3b39f820ad22a81633fbe2d46c",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 3
+    },
+    {
+      "path": "experiments/external_validity/natural_questions_v2/prior_attempt/Batch_Natural_Questions_v2_authority_check_failed.ipynb",
+      "role": "Preserved failed authority-check attempt",
+      "sha256": "e2800d8bead08101db7b8353032fceb5baa9bac1e488f62a9b30e427ecc9b0c9",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 3,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 5,
+      "stored_output_types": {
+        "stream": 5,
+        "error": 1
+      },
+      "stored_error_types": {
+        "RuntimeError": 1
+      },
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "50ed7dc1310e039d9bb6358f60f7ed295224be8d06245022a668ba18c3293ba9",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 4
+    },
+    {
+      "path": "experiments/external_validity/natural_questions_v2/results_v1/Batch_Natural_Questions_v2_executed.ipynb",
+      "role": "Completed natural-question execution record",
+      "sha256": "b4ca0cea412953715cf7bb2a471b54abc16e09044fdcefc243e5c7673684fef1",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 3,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 7,
+      "stored_output_types": {
+        "stream": 7,
+        "execute_result": 1,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "50ed7dc1310e039d9bb6358f60f7ed295224be8d06245022a668ba18c3293ba9",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 4
+    },
+    {
+      "path": "experiments/retriever_ablation/constant_sensitivity/Batch_RQ1_Constant_Sensitivity.ipynb",
+      "role": "Registered constant-sensitivity launch notebook",
+      "sha256": "d767d2abec361a0a68e4d29789fea9b3872ce8aa7d02a4655174b1be30c8956a",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 3,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 0,
+      "stored_output_types": {},
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "99b76989e0e29e139cf2607240d09817df86038c349c844c5a1d48e3e80dc28a",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 1
+    },
+    {
+      "path": "experiments/retriever_ablation/constant_sensitivity/results/rq1_constant_sensitivity_v1/Batch_RQ1_Constant_Sensitivity_Executed.ipynb",
+      "role": "Completed constant-sensitivity execution record",
+      "sha256": "d00382132c14dfb5df268ef80c4f230a2485466012f2bc6bb670102ac89d75a7",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 3,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 7,
+      "stored_output_types": {
+        "stream": 6,
+        "execute_result": 1,
+        "display_data": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "99b76989e0e29e139cf2607240d09817df86038c349c844c5a1d48e3e80dc28a",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 1
+    },
+    {
+      "path": "experiments/retriever_ablation/notebook/AblationStudy_S1_7.ipynb",
+      "role": "Historical primary retrieval evaluation",
+      "sha256": "0bb22d950ed4b8a836d296b0fea31300483e2695312702ee179c80baaacb30f1",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 15,
+      "cell_types": {
+        "markdown": 4,
+        "code": 11
+      },
+      "code_cells_with_execution_count": 0,
+      "stored_output_types": {},
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "9110c9b1af8c1ce992f0f70bb44a9e8aa372a5f0ec19fdd3868655f95f15a3b7",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "experiments/retriever_ablation/performance_benchmark/Performance_Benchmark.ipynb",
+      "role": "Historical performance diagnostic",
+      "sha256": "8c39513793dc54259cfd7d270dd49006e095094be57febb345d7ed0102aee0fb",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 8,
+      "cell_types": {
+        "markdown": 1,
+        "code": 7
+      },
+      "code_cells_with_execution_count": 7,
+      "stored_output_types": {
+        "stream": 16,
+        "display_data": 23,
+        "execute_result": 1
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "39e5974e995ebf15dfbbd15b2c81789a1cf44c29277f46cd692b713cea2180fe",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/3_canonical_examples/ComplianceGPT_test_clean.ipynb",
+      "role": "Canonical ComplianceGPT example",
+      "sha256": "c1438185463053bfa55c8ad8fcb8825b7847a085a9e18319e87c91ee9d89565c",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 5,
+      "cell_types": {
+        "markdown": 1,
+        "code": 4
+      },
+      "code_cells_with_execution_count": 4,
+      "stored_output_types": {
+        "stream": 12,
+        "display_data": 31
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "5cb04d169fcff2187c750c9b0f921a070dc311e7b247e19a3df55ef47899be9d",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/3_canonical_examples/qwen7b_naked_test_clean.ipynb",
+      "role": "Canonical free-form example",
+      "sha256": "7553393e27d78840507b42a87e9fb4c16799aeccaf144464731795a6329d5f8c",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 5,
+      "cell_types": {
+        "markdown": 1,
+        "code": 4
+      },
+      "code_cells_with_execution_count": 4,
+      "stored_output_types": {
+        "stream": 7,
+        "display_data": 11
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "8dcd9cf1182cc061f589b1111f9652c3e4e2bb74c453627afd9ac76560fd896d",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/compliancegpt/QUR_generator/QUR_Generator_UT.ipynb",
+      "role": "Query-rewrite workflow and unit checks",
+      "sha256": "9342a69f6e3597b60e853ff5eaed715f0557b193f8f5a79a4e2b5ec1b47cf2ae",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 12,
+      "cell_types": {
+        "markdown": 3,
+        "code": 9
+      },
+      "code_cells_with_execution_count": 9,
+      "stored_output_types": {
+        "stream": 7,
+        "display_data": 15
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "6b49a431a02bb07e8cbc9ef0eba3124c437935063a012dbfabbf5d9f643bcd46",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/compliancegpt/pipeline/batch_run/rev4/Batch_Run_rev4.ipynb",
+      "role": "Historical Revision 4 batch workflow",
+      "sha256": "c6da408353e15b800fb9a3a3a3b6ed3852a3960eba50cca41ff5289568623a2d",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 17,
+      "cell_types": {
+        "markdown": 3,
+        "code": 14
+      },
+      "code_cells_with_execution_count": 14,
+      "stored_output_types": {
+        "stream": 14,
+        "display_data": 36,
+        "execute_result": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "922076122388020e8d2a4274e623593b275bfe79e855aefcd3f6835c5456c28d",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/compliancegpt/pipeline/batch_run/rev5/Batch_Run.ipynb",
+      "role": "Historical Revision 5 batch workflow",
+      "sha256": "c5801309ccf7197f98b620d97872968ffc60d67fc7647ab663e39d56e502a8f0",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 18,
+      "cell_types": {
+        "markdown": 3,
+        "code": 15
+      },
+      "code_cells_with_execution_count": 15,
+      "stored_output_types": {
+        "stream": 14,
+        "display_data": 36,
+        "execute_result": 2
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "6da7f274d01d997d06e69b83c0d01fae66fb780d3080835fdbc8b9c542f24373",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/compliancegpt/pipeline/single_run/Acceptance_Tests.ipynb",
+      "role": "Single-run acceptance notebook",
+      "sha256": "84ef8d6002321d9f187361d66b845565133acc481c37fbb21f46ef32bc752fad",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 23,
+      "cell_types": {
+        "markdown": 3,
+        "code": 20
+      },
+      "code_cells_with_execution_count": 20,
+      "stored_output_types": {
+        "stream": 12,
+        "display_data": 7
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "a3fb9b732b5155fa559c84c26116361ac0a4f7d08314704bbbbca25fa106486b",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb",
+      "role": "Single-query demonstration",
+      "sha256": "7055398329ce675e060c828aca383ced6d59e3df4a4ed90e9ad7600e9b86d68f",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 2,
+        "code": 8
+      },
+      "code_cells_with_execution_count": 8,
+      "stored_output_types": {
+        "stream": 10,
+        "display_data": 30
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "ccc15b05572d135b154c14f3876558db63a94d537ba21c0a191839c5024444bd",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    },
+    {
+      "path": "src/generative_answerer/Single_Run_Generative.ipynb",
+      "role": "Single-query free-form demonstration",
+      "sha256": "0585defb5f6600e09a2d8a747eaf352290332dda24a7e7f197bd2da05a3b189b",
+      "nbformat": 4,
+      "nbformat_minor": 5,
+      "cell_count": 10,
+      "cell_types": {
+        "markdown": 2,
+        "code": 8
+      },
+      "code_cells_with_execution_count": 8,
+      "stored_output_types": {
+        "stream": 10,
+        "display_data": 30
+      },
+      "stored_error_types": {},
+      "top_level_widget_metadata_present": false,
+      "source_sha256": "753197ad807ee35ec2e7b3d541ff31dfa7a7cbeda0d7464b10fa0f4681c4a7e4",
+      "colab_import_or_drive_mount": true,
+      "credential_reference_fields": [],
+      "source_url_count": 0
+    }
+  ],
+  "credential_candidates_redacted": [],
+  "stored_errors": [
+    {
+      "path": "experiments/external_validity/natural_questions_v2/prior_attempt/Batch_Natural_Questions_v2_authority_check_failed.ipynb",
+      "cell_index": 6,
+      "error_type": "RuntimeError"
+    }
+  ],
+  "notebooks_modified": false,
+  "new_notebook_execution": false,
+  "checks": {
+    "notebook_json_and_core_fields": "Parsed JSON; checked notebook version, cells, metadata, output lists, and execution-count types.",
+    "credential_patterns": [
+      "Hugging Face tokens",
+      "GitHub tokens",
+      "Google API keys",
+      "service API keys",
+      "AWS access-key IDs",
+      "literal API-key/token/password/secret assignments"
+    ],
+    "placeholder_handling": "Ignored explicit example or placeholder assignments; possible values would be redacted.",
+    "source_hash_definition": "SHA-256 of each cell source joined in cell order with a newline between cells.",
+    "limits": "Pattern scans are not exhaustive secret detection. Execution counts do not prove experiment completion. No notebook was run or edited."
+  }
+}

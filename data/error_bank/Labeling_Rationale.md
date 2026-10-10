@@ -478,7 +478,7 @@ cp-2_smt.h`
 > incident details, trends, and handling. Incident information can be obtained from a variety of
 > sources, including network monitoring, incident reports, incident response teams, user
 > complaints, supply chain partners, audit monitoring, physical access monitoring, and user and
-> administrator reports. [IR-4](#ir-4) provides information on the types of incidents that are
+> administrator reports. [IR-4](../raw/nist800-53/source/NIST.SP.800-53r5.pdf#page=179) provides information on the types of incidents that are
 > appropriate for monitoring. [NIST SP 800-53 Rev.5: IR-5]
 
 ### My Reasoning Process
@@ -560,7 +560,7 @@ ma-5_smt.c`
 > of life cycle-based security and privacy engineering processes. System security and privacy
 > plans are living documents that are updated and adapted throughout the system development life
 > cycle (e.g., during capability determination, analysis of alternatives, requests for proposal,
-> and design reviews). [Section 2.1](#c3397cc9-83c6-4459-adb2-836739dc1b94) describes the
+> and design reviews). [Section 2.1](../raw/nist800-53/source/NIST.SP.800-53r5.pdf#page=34) describes the
 > different types of requirements that are relevant to organizations during the system
 > development life cycle and the relationship between requirements and controls.\n\nOrganizations
 > may develop a single, integrated security and privacy plan or maintain separate plans. Security

@@ -67,6 +67,7 @@ and verifier result.
 | Review evaluation-constant provenance | [`CONSTANTS_PROVENANCE.md`](CONSTANTS_PROVENANCE.md) |
 | Review AI-assistance disclosure | [`AI_ASSISTANCE.md`](AI_ASSISTANCE.md) |
 | Review notebook audit | [`NOTEBOOK_AUDIT.md`](NOTEBOOK_AUDIT.md) |
+| Choose a CPU, historical GPU, or API environment | [`docs/ENVIRONMENTS.md`](docs/ENVIRONMENTS.md) |
 | Reproduce reported evaluations | [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) |
 
 ## Repository layout

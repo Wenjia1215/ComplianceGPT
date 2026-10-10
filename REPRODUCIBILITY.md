@@ -1,15 +1,24 @@
 # Reproducing ComplianceGPT Evaluations
 
 This repository retains the source, canonical inputs, recorded outputs, and
-run-specific provenance for the evaluations reported for ComplianceGPT. The
-workflows use Google Colab or a CUDA-capable Python environment and may download
-third-party model weights.
+run-specific provenance for the evaluations reported for ComplianceGPT.
+Offline scoring and deterministic integration checks use stored inputs and
+need no GPU, model download, or API call. New retrieval and Qwen runs use their
+recorded model environments; Gemini runs use the API.
+
+See [Environments and execution modes](docs/ENVIRONMENTS.md) for the checked
+CPU setup, historical dependency records, notebook boundaries, and manual
+GitHub Actions workflow. Run commands from the repository root and write new
+outputs to unused directories outside the repository.
 
 ## Repository identity and historical boundary
 
-The original evaluation documentation recorded the following public baseline.
-Run-specific manifests identify the execution and assessment versions for each
-result family:
+The documentation and notebook audit on 2026-10-10 used source commit
+`3427dca90921fad88afa3fc179cb6980fb1d1a42`. Each historical manifest still
+identifies the execution and assessment versions for its own result family.
+
+The original evaluation documentation recorded the following public baseline;
+it is a historical reference, not a universal execution target:
 
 ```text
 repository: https://github.com/Wenjia1215/ComplianceGPT
@@ -70,10 +79,18 @@ before collecting new model outputs under a new configuration identity.
 | Control-gate width sensitivity | `experiments/answerer_comparison/rq2_control_gate_width/run_control_gate_width.py` | `experiments/answerer_comparison/rq2_control_gate_width/results_v1/` |
 | Rev. 4 BF16 generative baseline | `experiments/answerer_comparison/rq2_bf16_baseline/run_bf16_baseline.py` | `experiments/answerer_comparison/rq2_bf16_baseline/results_v1/` |
 | Rev. 4 frontier API baseline | `experiments/answerer_comparison/rq2_frontier_baseline/run_frontier_baseline.py` | `experiments/answerer_comparison/rq2_frontier_baseline/results_v1/` |
+| Rev. 5 frontier API baseline | `experiments/answerer_comparison/rq2_frontier_baseline_rev5/run_frontier_baseline_rev5.py` | [Recorded API results](experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/README.md) |
 | No-selector ablation | `experiments/answerer_comparison/rq2_no_selector/run_no_selector_ablation.py` | `experiments/answerer_comparison/rq2_no_selector/results_v1/` |
 | ODP-statement rescue ablation | `experiments/answerer_comparison/rq2_rescue_ablation/run_rescue_ablation.py` | `experiments/answerer_comparison/rq2_rescue_ablation/results_v1/` |
 | Runtime Verifier mutation evaluation | `experiments/answerer_comparison/runtime_verifier_mutation/run_verifier_mutations.py` | `experiments/answerer_comparison/runtime_verifier_mutation/results_v1/` |
 | Per-identifier runtime provenance | `experiments/answerer_comparison/rq2_identifier_provenance/run_identifier_provenance.py` | `experiments/answerer_comparison/rq2_identifier_provenance/results_v1/` |
+| Corrected PRESERVE replay | [Registered stored-selector replay](experiments/answerer_comparison/rq2_preserve_replay/README.md) | `experiments/answerer_comparison/rq2_preserve_replay/results_v1/` |
+| Profile-fill v2 | [Registered deterministic profile cases](experiments/answerer_comparison/rq2_profile_fill_v2/README.md) | `experiments/answerer_comparison/rq2_profile_fill_v2/results_v2/` |
+| Natural-question v2 comparison | [Recorded BF16 run and author review](experiments/external_validity/natural_questions_v2/README.md) | `experiments/external_validity/natural_questions_v2/results_v1/` |
+| Retrieval-constant sensitivity | [Registered GPU study and captured-data replay](experiments/retriever_ablation/constant_sensitivity/README.md) | `experiments/retriever_ablation/constant_sensitivity/results/rq1_constant_sensitivity_v1/` |
+| Complete main and supplementary scoring | [CPU scoring commands](#scoring-identities) | [Versioned result map](docs/EVALUATION_RESULTS.md) |
+| Active-revision and profile integration | [Current-source offline diagnostics](RELEASE_NOTES.md#offline-verification) | [Revision replay](experiments/answerer_comparison/revision_hardening_v2/README.md) and [profile integration](experiments/runtime_validation/release_integration_v2/README.md) |
+| Paired statistics and repeated-label sensitivity | [Saved ledgers and input bindings](#saved-retrospective-statistical-and-label-sensitivity-results) | Existing result files; historical analysis programs are not included in those directories. |
 | Secondary rewrite diagnostics | `experiments/micro_ablations/run_micro_ablations.py` | `experiments/micro_ablations/` |
 | Runtime contract validation | `experiments/runtime_validation/revalidate_contracts.py` | `experiments/runtime_validation/outputs/` |
 | Single-query demonstration | `src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb` | generated during execution |
@@ -507,8 +524,18 @@ frozen runtime version could return `OK` in that unevaluated branch. The
 reported matched runs used `ASK`; therefore this correction does not change
 the dissertation results. The regression is covered by
 `tests/test_odp_policy.py` and identified in source as
-`2026-09-24-preserve-status-v1`. It has not been evaluated in an end-to-end
-`PRESERVE` run.
+`2026-09-24-preserve-status-v1`.
+
+The completed [PRESERVE replay](experiments/answerer_comparison/rq2_preserve_replay/README.md)
+now evaluates all eight registered PRESERVE rows with frozen contexts and
+stored selectors. All eight retain literal placeholders, return
+`PARAMS_REQUIRED`, and pass runtime validation. The replay performs no new
+retrieval or model inference. Its historical offline C check passes 5/8; that
+count is not a complete seven-gate assessment. The completed
+[profile-fill v2 study](experiments/answerer_comparison/rq2_profile_fill_v2/README.md)
+and [current integration diagnostic](experiments/runtime_validation/release_integration_v2/README.md)
+provide separate deterministic fixture evidence. None of these replays
+replaces a new live-retrieval or selector-model evaluation of PRESERVE.
 
 The frozen `intfloat/e5-small-v2` path used `passage:` for indexed corpus text
 but encoded transformed queries without the model-recommended `query:` prefix.

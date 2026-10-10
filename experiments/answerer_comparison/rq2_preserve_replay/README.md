@@ -14,21 +14,29 @@ The pre-registered protocol and acceptance rules are in
 [`PRECOMMITMENT.md`](PRECOMMITMENT.md) and
 [`precommitment.json`](precommitment.json).
 
-Run the non-outcome preflight from the repository root:
+The formal result records execution commit
+`17a76e14a2285c5070b8d8da3c7341e5772d303d`. Use that source snapshot to
+reproduce the registered run; its source-hash checks remain active. The current
+[profile integration diagnostic](../../runtime_validation/release_integration_v2/README.md)
+checks the revised runtime separately.
+
+Run the non-outcome preflight from the repository root of the recorded snapshot:
 
 ```bash
 PYTHONPATH=src python experiments/answerer_comparison/rq2_preserve_replay/run_preserve_replay.py \
   --preflight
 ```
 
-Run the formal replay once into a new result directory:
+Run the formal replay into a fresh directory outside the repository:
 
 ```bash
 PYTHONPATH=src python experiments/answerer_comparison/rq2_preserve_replay/run_preserve_replay.py \
-  --output-dir experiments/answerer_comparison/rq2_preserve_replay/results_v1
+  --output-dir /tmp/compliancegpt_preserve_replay_v1
 ```
 
 The runner refuses to mix with or overwrite a nonempty result directory.
+Choose an unused path for each reproduction and preserve the published
+`results_v1/` evidence.
 
 ## Frozen result
 
@@ -43,13 +51,15 @@ Result identity: `rq2_preserve_replay_v1`
 | Runtime-valid contracts | 8/8 |
 | Frozen selectors unchanged | 8/8 |
 | Final IDs inside frozen windows | 8/8 |
-| Offline strict-verifier pass | 5/8 |
+| Historical offline contract/gold check (C) | 5/8 |
 
-The registered runtime acceptance result is **PASS**. Offline strict scoring
+The registered runtime acceptance result is **PASS**. The historical C check
 passes 5/6 Revision 5 rows and 0/2 Revision 4 rows. The three failures retain
 the frozen selector choices and contain missing gold-clause signals; two also
 contain missing gold-ODP signals. These are coverage limitations, not failures
 of the corrected `PRESERVE` status transition.
+The archived field name does not make 5/8 a complete seven-gate strict-pass
+result; see the [scoring identities](../../../REPRODUCIBILITY.md#scoring-identities).
 
 Frozen result archive:
 
