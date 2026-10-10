@@ -14,6 +14,10 @@ statistically significant at 0.05.** Semantic judgments are not independently
 adjudicated, and the comparisons are exploratory. Batch 5A gate-width and
 Batch 5B precision results remain separate archived studies.
 
+Use the [result and scoring map](../../docs/EVALUATION_RESULTS.md) to distinguish
+the complete endpoint from the legacy contract/gold check (C). Original execution
+audits and archives retain C, including fields historically named `strict_pass`.
+
 ## Experimental boundaries
 
 | Batch | Result identity | Changed factor | Scope | Question answered |
@@ -148,16 +152,16 @@ condition on these results.
 | Rev. 5 | ComplianceGPT | 0.584 | 0.835 | 220.7 |
 | Rev. 5 | Gemini 3.5 Flash | 0.696 | 0.775 | 60.2 |
 
-Across both revisions, ComplianceGPT buys higher clause recall and guaranteed
-citation/status fidelity at a clear cost in precision and length. Gemini is
+Across both revisions, ComplianceGPT retains canonical source text and has higher
+clause recall at a clear cost in precision and length. Gemini is
 substantially more concise and precise. For the target audit setting, retaining
 governing text with resolvable citations is the chosen failure mode, but this
 is an engineering tradeoff rather than a universal advantage.
 
-## Archived gate-width finding
+## Archived gate-width finding under the legacy C endpoint
 
 In the archived Batch 5A evaluation, fixed top 2 matched the adaptive gate's
-reported pass count on both revisions:
+reported contract/gold pass count on both revisions:
 29/36 on Revision 4 and 65/100 on Revision 5. Fixed top 3 also matched those
 counts, and the Revision 4 top-2 versus top-3 pass sets were identical. Top 1
 was worse (26/36 and 62/100) and reduced governing-control accuracy. Top 5 was
@@ -185,8 +189,8 @@ not an empirically supported performance claim.
    100% sensitivity under the author labels but has lower specificity and
    precision than Gemini on both revisions.
 5. **The archived precision study isolates quantization.** BF16
-   improves Revision 4 coverage from 18/36 to 20/36 but leaves strict pass at
-   8/36.
+   improves Revision 4 coverage from 18/36 to 20/36 but leaves the legacy
+   contract/gold pass count at 8/36. This comparison concerns C.
 6. **The archived gate-width study supports a simpler gate.** Fixed top 2
    reproduces the adaptive pass count in that study, so the adaptive mechanism has not earned
    its added complexity in these experiments.

@@ -1,7 +1,7 @@
 {
   "files": {
     "PREPARED_CONTEXTS.md": "dad626ce6d32d0a409ef908e1d57c8fa009895d02f3983b1eb4907ea33306234",
-    "SUMMARY.md": "8313dc8694d992685f55faa65c2cba4eb0868eb519514d3438e5743d3d333fc3",
+    "SUMMARY.md": "514638b83ffadad39aa7af58070ee0d6445802979239c162468c7e55b5e7fdcc",
     "contexts/rev4_prepared_contexts.jsonl": "4f1ca834993a34c22bb4b61fa9a984d32382b5e84e3473656a22af688412d7a6",
     "contracts/rev4_generative_baseline_bf16.csv": "1b84eb673145bdae15d8e52c22678f2cf780d5f09f6e8603e6578ec586c2fc60",
     "manifests/bf16_runtime.json": "8977c68e1090c4e43e5bbee18846c94f0ef1985e3a4e346d0063a5416b6aba11",
@@ -16,7 +16,8 @@
     "run_config.json": "258062f638e029114423cefe40aae8724af9e592b54ef391538de784f7ca4829",
     "summary.json": "2b7a251c884f9fa25df9b13539164bb9366e75f27711e7b7a494ab345244c339"
   },
-  "files_sha256": "e265388b72d758b0d05e2bf55899f9b45622b51f497bdf17d8465d3ded97ce3b",
+  "files_sha256": "e271924f8a82752485301a7840430823fbe543a9913f51b82a9baae31cbaa430",
   "result_id": "rq2_bf16_baseline_v1",
-  "schema_version": "compliancegpt-rq2-bf16-baseline-v1"
+  "schema_version": "compliancegpt-rq2-bf16-baseline-v1",
+  "scope": "Current materialized package with explicit legacy C labels in Markdown; the original execution manifest remains in the byte-exact archive."
 }

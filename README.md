@@ -36,6 +36,7 @@ and verifier result.
 
 | Goal | Entry point |
 |---|---|
+| Compare final results and distinguish scoring versions | [`docs/EVALUATION_RESULTS.md`](docs/EVALUATION_RESULTS.md) |
 | Understand the pipeline | [`src/compliancegpt/pipeline/README_pipeline.md`](src/compliancegpt/pipeline/README_pipeline.md) |
 | Run a single-query demonstration | [`src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb`](src/compliancegpt/pipeline/single_run/Single_Run_Demo.ipynb) |
 | Inspect the citation-contract schema | [`src/compliancegpt/generator/citation_contract_80053.md`](src/compliancegpt/generator/citation_contract_80053.md) |
@@ -122,7 +123,9 @@ resolution conformance.
 
 The three-system strict-pass standard and offline scoring entry point are
 documented in [`src/answerer_comparison/README.md`](src/answerer_comparison/README.md).
-The canonical result tables contain one strict-pass endpoint.
+The canonical three-system tables use the complete seven-gate endpoint.
+[`docs/EVALUATION_RESULTS.md`](docs/EVALUATION_RESULTS.md) distinguishes it
+from the legacy contract/gold check retained in execution archives.
 
 - The S1–S7 evaluation measures governing-control ranking.
 - The matched answerer evaluation compares complete answer-construction
@@ -163,7 +166,10 @@ The canonical result tables contain one strict-pass endpoint.
 - The deterministic no-selector ablation retains every statement and guidance
   record in each frozen matched-run evidence window. It measures the coverage,
   answer-length, evidence-precision, and ODP-scope tradeoff without new model
-  inference.
+   inference. Its original contracts pass the complete standard on 7/100 Rev. 5
+   and 3/36 Rev. 4 rows; the archived 92/100 and 35/36 values measure the legacy
+   contract/gold check. See the
+   [versioned assessment](experiments/answerer_comparison/rq2_no_selector/strict_pass_v1/README.md).
 - The deterministic ODP-rescue ablation reconstructs the frozen pre-rescue
   selector state and replays bounded rescue on and off. It measures the rule's
   ODP-blocking, clause-coverage, status-scope, and evidence-burden effects
@@ -178,10 +184,11 @@ The canonical result tables contain one strict-pass endpoint.
   retrieval, model inference, or gold-guided attribution.
 - The micro-ablation study is a secondary, gold-informed diagnostic and is not
   a deployable retrieval method.
-- The pre-label intra-annotator test-retest protocol freezes a 30-row,
-  revision-stratified, label-blind sampling algorithm and cryptographic
-  commitments while withholding the private seed and row mapping until the
-  second labels are complete and hashed.
+- The completed intra-annotator test-retest study retains the 30-row sampling
+   protocol, commitments, revealed mapping, and second labels. Exact agreement
+   was 29/30 for controls, 16/30 for clause sets, and 26/30 for ODP sets. See the
+   [agreement report](experiments/annotation_reliability/intra_annotator_retest/reveal/AGREEMENT_REPORT.md).
+   This measures the author's label stability, rather than independent validation.
 - Runtime validation checks source resolution, span containment, and visible
   unresolved-state consistency; it does not establish global evidence
   completeness.

@@ -1,5 +1,10 @@
 # Batch 5B — Rev. 4 BF16 Generative Baseline
 
+The archived pass endpoint in this study is the legacy contract/gold check (C).
+Its fields named `strict_pass` predate the complete seven-gate standard. Use the
+[result and scoring map](../../../docs/EVALUATION_RESULTS.md) to identify the
+endpoint before comparing this study with current three-system assessments.
+
 [Open the Batch 5B notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_bf16_baseline/Batch_5B_Rev4_BF16_Baseline.ipynb)
 
 This registered follow-on study addresses the RQ2 quantization-asymmetry concern. It reruns the 36-row Revision 4 free-form generative baseline with `Qwen/Qwen2.5-7B-Instruct` loaded in true BF16 instead of 4-bit. The model revision, system and user prompts, deterministic decoding, parse retries, questions, ordered evidence windows, `ASK` ODP policy, and offline verifier remain fixed.
@@ -58,7 +63,7 @@ The completed directory contains:
 
 ## Metrics and interpretation
 
-The summary reports strict verifier pass, full gold-clause coverage, clause recall and precision, answer and citation burden, runtime contract validity, and author-label ODP operating characteristics. It provides paired exact McNemar comparisons for BF16 versus the frozen 4-bit baseline and for BF16 baseline versus frozen 4-bit ComplianceGPT.
+The archived summary reports legacy contract/gold pass (C), full gold-clause coverage, clause recall and precision, answer and citation burden, runtime contract validity, and author-label ODP operating characteristics. Its paired exact McNemar comparisons use C for BF16 versus the frozen 4-bit baseline and for BF16 baseline versus frozen 4-bit ComplianceGPT.
 
 This experiment estimates quantization sensitivity within one 7B model on 36
 fixed Rev. 4 rows. It is not a frontier-model baseline, a retraining result, or
@@ -67,14 +72,14 @@ current author labels and have not been independently adjudicated.
 
 ## Recorded finding
 
-True BF16 left strict pass unchanged at 8/36 versus 8/36 for the frozen 4-bit
+True BF16 left C pass unchanged at 8/36 versus 8/36 for the frozen 4-bit
 baseline. Two rows improved and two regressed (`p = 1.0`, paired exact
 two-sided McNemar). BF16 modestly increased full clause coverage from 18/36 to
 20/36 and runtime contract pass from 13/36 to 14/36, but both precision modes
 had 0/19 author-label ODP sensitivity.
 
 Frozen 4-bit ComplianceGPT passed 29/36. Against BF16 it had 21 exclusive
-passes, while BF16 had none (`p = 9.5367432e-07`). The principal RQ2 gap is
-therefore not explained by the baseline's original 4-bit quantization. See
+passes, while BF16 had none (`p = 9.5367432e-07`). These are legacy C comparisons
+and do not measure the complete answer standard. See
 [`results_v1/AUDIT.md`](results_v1/AUDIT.md) for integrity checks and the
 independent reconstruction.

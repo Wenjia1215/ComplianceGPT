@@ -6,6 +6,14 @@ This directory records the validated result package for the corrected RQ2
 matched-window experiment. The complete evidence package is
 `compliancegpt_rq2_matched_v3.zip`.
 
+The tables in this execution record retain the legacy contract/gold endpoint
+(C). In particular, the original Qwen counts of 25/100 and 8/36 are C passes.
+The complete seven-gate assessment of the same saved outputs gives 21/100 and
+6/36; ComplianceGPT remains at 65/100 and 29/36. Use the
+[current result map](../../../../docs/EVALUATION_RESULTS.md) for the complete
+comparison, final paired tests, and canonical row-level assessments. The
+execution archive and its original machine-readable fields remain unchanged.
+
 ## Provenance
 
 - Runner commit: `be862bcadfa61b474d795303e01ce9394909fdcc`
@@ -41,9 +49,9 @@ after answer construction, through the offline verifier.
   contract CSV files and gold rows.
 - The recorded experiment-code hashes match the files at the runner commit.
 
-## RQ2 results
+## Historical RQ2 contract/gold results (C)
 
-| Revision | System | Questions | Offline strict pass | Rate |
+| Revision | System | Questions | Legacy contract/gold pass (C) | Rate |
 |---|---|---:|---:|---:|
 | Revision 5 | ComplianceGPT | 100 | 65 | 0.6500 |
 | Revision 5 | Generative baseline | 100 | 25 | 0.2500 |
@@ -59,9 +67,9 @@ These values measure agreement with the implemented gold-based rules under the
 fixed questions, evidence windows, model revision, and outputs. They do not
 establish legal sufficiency, auditor approval, or complete semantic correctness.
 
-### Strict-pass decomposition
+### Historical contract/gold decomposition
 
-| Revision | System | Full gold clause coverage | Clause-complete but fails another strict predicate | Offline strict pass |
+| Revision | System | Full gold clause coverage | Clause-complete but fails another C predicate | Legacy contract/gold pass (C) |
 |---|---|---:|---:|---:|
 | Revision 5 | ComplianceGPT | 65 | 0 | 65 |
 | Revision 5 | Generative baseline | 53 | 28 | 25 |

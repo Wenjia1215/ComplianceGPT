@@ -1,5 +1,12 @@
 # Batch 5B validated result
 
+This package retains the execution-time contract/gold endpoint (C). The original
+fields named `strict_pass` predate the complete seven-gate standard. See the
+[result map](../../../../docs/EVALUATION_RESULTS.md) for the scoring identities.
+The current Markdown labels identify C explicitly; the materialized output
+manifest records their current hashes. The execution ZIP and its embedded
+manifest retain their original bytes.
+
 This directory records the complete supplied evidence package for the
 completed `rq2_bf16_baseline_v1` run. The run used
 an NVIDIA A100-SXM4-40GB and loaded every floating model parameter as
@@ -35,18 +42,18 @@ See [`AUDIT.md`](AUDIT.md) for the independent recomputation and
 
 ## Recorded result
 
-| System | Strict pass | Full clause coverage | Runtime contract pass | ODP sensitivity* |
+| System | Legacy contract/gold pass (C) | Full clause coverage | Runtime contract pass | ODP sensitivity* |
 |---|---:|---:|---:|---:|
 | Generative baseline, BF16 | 8/36 | 20/36 | 14/36 | 0/19 |
 | Generative baseline, frozen 4-bit | 8/36 | 18/36 | 13/36 | 0/19 |
 | ComplianceGPT, frozen 4-bit | 29/36 | 29/36 | 36/36 | 19/19 |
 
-BF16 and 4-bit baseline strict pass were identical in aggregate. Their four
+BF16 and 4-bit baseline C pass were identical in aggregate. Their four
 discordant rows split evenly (two BF16-only and two 4-bit-only), giving an
 exact two-sided McNemar value of `1.0`. Against frozen 4-bit ComplianceGPT,
 BF16 had zero left-only passes and 21 right-only passes (`p = 9.5367432e-07`).
-The result therefore does not support 4-bit quantization as the explanation
-for the main RQ2 gap.
+This archived comparison concerns C and does not measure the complete answer
+standard.
 
 *ODP values use current author labels and have not been independently
 adjudicated. The immutable runner-generated summary retains its original

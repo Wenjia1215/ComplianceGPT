@@ -1,0 +1,43 @@
+{
+  "boundary": "Retrospective assessment; no new model inference, retrieval, request repair, or human semantic judgment. Eligible bodies use the existing complete-retention proof. Gold labels remain author-defined.",
+  "code_sha256": {
+    "src/answerer_comparison/strict_pass.py": "703fad4ee642009265dfb32fd016d3eed903aac14fe77ef43363bc4492a2278d",
+    "src/compliancegpt/generator/verifier/verifier.py": "facb2d0229f9f97d52278ea3f3c8dde7f7e0a0666cb4c7d7cd973b972cb622ef",
+    "tools/audit_no_selector_strict_pass.py": "92c9d7b21c870598a76315225a84e63b0863ad42bdafc31fbfa2adf77a2fcba2"
+  },
+  "input_sha256": {
+    "data/ccs/nist800-53/NIST_SP-800-53_rev4_catalog.jsonl": "500bb5d1f265080752710c2f0ae84b8044b67a1e2118cd5e166353b6fc3ab726",
+    "data/ccs/nist800-53/NIST_SP-800-53_rev5_catalog.jsonl": "71057ba79c54b8c1f0d171198a6ccb60b4c8818acbd2062e7f7c74ee11242e08",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev4_gold-set_36q.csv": "80a0a8844abdf04d634d779feea970f01f071b62f8c73ada9c19d455863bb9b2",
+    "data/gold_standard_datasets/nist800-53/nist_sp800-53_rev5_gold-set_100q.csv": "f5838fb4fdbdc4ab9543f7860f9e2d9169935bdb308e43d49d21dae267e595b5",
+    "experiments/answerer_comparison/rq2_frontier_baseline/results_v1/references/rev4_generative_baseline_4bit.csv": "cf891ddd0710125e5d37b43913166f0e7cef50426605133d87915229a90f53b5",
+    "experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/references/rev5_generative_baseline_4bit.csv": "85a3e52b75b283a3fda6c50ae59d8dde4e59748ada7d58c5b88ae8c5c8f2cb63",
+    "experiments/answerer_comparison/rq2_no_selector/results_v1/contracts/rev4_no_selector.csv": "af05e97e7c0078a1f576700922ca292331bc778db4d9948337b38d6364be7602",
+    "experiments/answerer_comparison/rq2_no_selector/results_v1/contracts/rev5_no_selector.csv": "606024e83dacdabac8e0dcbe7bbd37aa61d7a9823d23341b3de6d1d58fcfff3d"
+  },
+  "result_id": "rq2_no_selector_strict_pass_v1",
+  "revisions": {
+    "rev4": {
+      "assessment_methods": {
+        "contract_failure_short_circuit": 1,
+        "full_retention_certificate": 35
+      },
+      "legacy_contract_pass": 35,
+      "legacy_passes_failing_parameter_accounting": 32,
+      "n": 36,
+      "strict_pass": 3
+    },
+    "rev5": {
+      "assessment_methods": {
+        "contract_failure_short_circuit": 8,
+        "full_retention_certificate": 92
+      },
+      "legacy_contract_pass": 92,
+      "legacy_passes_failing_parameter_accounting": 85,
+      "n": 100,
+      "strict_pass": 7
+    }
+  },
+  "rule_version": "strict-pass-v1",
+  "source_condition": "rq2_no_selector_v1; original saved contracts"
+}

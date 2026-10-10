@@ -6,9 +6,17 @@ This experiment answers whether the model selector improves the evaluated system
 
 The result identity is `rq2_no_selector_v1`. It does not replace or rename any RQ2 v3 artifact.
 
+The original execution uses the legacy contract/gold check (C). Its historical
+`offline_strict_pass` field gives 92/100 on Revision 5 and 35/36 on Revision 4.
+The complete seven-gate standard gives 7/100 and 3/36 for the same original
+contracts. See the [versioned assessment](strict_pass_v1/README.md) for
+row-level decisions, hashes, and an offline reproduction command. The original
+contracts contain empty clarification-request lists; a repaired request replay
+is a separate intervention and must retain its own result identity.
+
 The report includes:
 
-- offline strict pass;
+- legacy contract/gold pass (C);
 - full expected-clause coverage;
 - governing-control and any-clause hits;
 - selected-clause and additional-evidence counts;

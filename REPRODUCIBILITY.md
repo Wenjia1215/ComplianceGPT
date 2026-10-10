@@ -7,8 +7,9 @@ third-party model weights.
 
 ## Repository identity and historical boundary
 
-The dissertation's frozen inputs and reported output artifacts are tied to
-the public evaluation baseline:
+The original evaluation documentation recorded the following public baseline.
+Run-specific manifests identify the execution and assessment versions for each
+result family:
 
 ```text
 repository: https://github.com/Wenjia1215/ComplianceGPT
@@ -24,6 +25,21 @@ provenance, not the recommended execution target.
 Current source may contain clearly identified documentation and regression
 patches made after the frozen evaluation. Such patches do not retroactively
 change stored outputs or their metrics.
+
+## Scoring identities
+
+Use [the result map](docs/EVALUATION_RESULTS.md) for the current complete
+strict-pass counts and their canonical assessment files. The original execution
+archives retain the contract/gold check (C), including fields whose historical
+names contain `strict_pass`. C, full clause coverage, runtime validity, and the
+complete seven-gate endpoint measure different outcomes.
+
+Reproduce the complete three-system assessment without changing recorded results:
+
+```bash
+python experiments/answerer_comparison/run_strict_pass.py \
+  --output-root /tmp/compliancegpt_strict_pass
+```
 
 ## Evaluation map
 
@@ -158,9 +174,9 @@ The canonical result archive SHA-256 is:
 543c2e40879422a5a1462bb6fc56fda2ad76f9b060efbc780ebe2a51bc48a07d
 ```
 
-Fixed top 2 matched the adaptive reference's strict-pass count on both
+Fixed top 2 matched the adaptive reference's legacy C-pass count on both
 revisions. The stored within-revision exact McNemar comparisons found no
-significant strict-pass difference at the 0.05 level. ODP sensitivity,
+significant C-pass difference at the 0.05 level. ODP sensitivity,
 specificity, and status precision use current author labels and have not been
 independently adjudicated. The full independent annotation study is scoped as
 future validation rather than a pending condition on these recorded results.
@@ -209,7 +225,7 @@ The exact supplied Google Drive export has SHA-256:
 
 The executed notebook records 36/36 completed rows, a BF16-only parameter
 inventory, and no attached quantizer. BF16 and the frozen 4-bit baseline each
-passed 8/36 strict contracts; their two-versus-two discordance gives an exact
+passed 8/36 legacy contract/gold checks (C); their two-versus-two discordance gives an exact
 two-sided McNemar value of `1.0`. Frozen 4-bit ComplianceGPT passed 29/36 and
 had 21 exclusive passes against BF16 (`p = 9.5367432e-07`).
 
@@ -223,10 +239,12 @@ this is a stronger-system comparison rather than a one-factor precision study.
 The completed Paid Tier 1 result is archived under
 [`experiments/answerer_comparison/rq2_frontier_baseline/results_v1/`](experiments/answerer_comparison/rq2_frontier_baseline/results_v1/).
 It contains 36 unique completed API responses, no parse retries, and no
-orphaned calls. Gemini passed 24/36 strict contracts, compared with 8/36 for
-each Qwen baseline and 29/36 for frozen ComplianceGPT. The exact paired
-McNemar values were `0.00040245` against either Qwen baseline and `0.2265625`
-against ComplianceGPT.
+orphaned calls. Under complete `strict-pass-v1`, Gemini, Qwen 4-bit, and
+ComplianceGPT pass 22/36, 6/36, and 29/36. Their exact paired McNemar p-values
+are 0.0001449585 for Gemini versus Qwen and 0.092285156 for Gemini versus
+ComplianceGPT. The original 24/36 Gemini and 8/36 Qwen counts describe C.
+Use the [canonical assessment](experiments/answerer_comparison/rq2_frontier_baseline/results_v1/README.md)
+for the final row-level decisions; the original audit retains the execution-time endpoint.
 
 The byte-exact runner archive has SHA-256
 `039ce427f717b83da6f54a87a67bb0438f6c15e44b49d29838d39bc523c20767`.
@@ -243,13 +261,16 @@ independent audit are retained under
 [`experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/`](experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/).
 
 The run completed with 100 unique API responses, one call per row, no parse
-retries, and no orphaned calls. ComplianceGPT and Gemini passed 65/100 and
-66/100 strict contracts. Their paired discordance was 11 versus 12 with exact
-two-sided McNemar `p = 1.0`; no accuracy direction is claimed. Coverage-complete
-realization loss was 0/65 for ComplianceGPT and 1/67 for Gemini, with Fisher
-exact `p = 1.0`. The observed zero for ComplianceGPT confirms the deterministic
-construction on this benchmark; it is not presented as an estimated zero-risk
-rate.
+retries, and no orphaned calls. Under complete `strict-pass-v1`, ComplianceGPT,
+Gemini, and Qwen 4-bit pass 65/100, 56/100, and 21/100. ComplianceGPT versus
+Gemini has 18-versus-9 discordance and exact two-sided McNemar
+`p = 0.122078`. The test does not establish a significant end-to-end difference
+or equivalence. Coverage-complete realization loss is 0/65 for ComplianceGPT
+and 11/67 for Gemini; these different conditional subsets do not replace the
+paired full-sample comparison. The
+[canonical assessment](experiments/answerer_comparison/rq2_frontier_baseline_rev5/results_v1/README.md)
+retains all component decisions. The original 66/100 Gemini count and
+`p = 1.0` describe C and remain in the unchanged execution archive.
 
 The byte-exact result archive SHA-256 is
 `9f088b2ccb410fdd6df8980d693529320fec351e9a01e7400cd7d48fc55dddef`,
@@ -285,6 +306,19 @@ is:
 
 This post hoc experiment measures the coverage-versus-review-burden tradeoff
 and does not replace the frozen RQ2 v3 result family.
+
+The archived no-selector `offline_strict_pass` field records C: 92/100 on
+Revision 5 and 35/36 on Revision 4. The complete seven-gate assessment of those
+same original contracts gives 7/100 and 3/36. Empty clarification-request lists
+cause retained-parameter accounting failures; these differences do not isolate
+the selector's effect. See the
+[versioned assessment](experiments/answerer_comparison/rq2_no_selector/strict_pass_v1/README.md).
+Reproduce it from unchanged inputs in a fresh output directory:
+
+```bash
+python tools/audit_no_selector_strict_pass.py \
+  --output-dir /tmp/compliancegpt_no_selector_strict_pass_v1
+```
 
 ## ODP-statement rescue ablation
 

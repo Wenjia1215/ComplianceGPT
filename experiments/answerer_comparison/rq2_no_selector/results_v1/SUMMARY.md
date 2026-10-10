@@ -4,11 +4,30 @@ Result identity: `rq2_no_selector_v1`
 
 The no-selector path retains every record in each frozen RQ2 v3 evidence window. It performs no model inference, fallback, rescue, or hierarchy expansion.
 
+## Complete strict-pass assessment
+
+The complete seven-gate standard gives the following results for the original
+saved contracts:
+
+| Revision | ComplianceGPT selector | Original no-selector |
+|---|---:|---:|
+| Rev. 5 | 65/100 | 7/100 |
+| Rev. 4 | 29/36 | 3/36 |
+
+The original no-selector contracts contain empty clarification-request lists.
+Among outputs passing C, 85 Revision 5 rows and 32 Revision 4 rows fail complete
+retained-parameter accounting. This gap does not isolate the selector's effect.
+The [versioned assessment](../strict_pass_v1/README.md) records every predicate
+and the unchanged input hashes. A request-repaired replay is a separate condition.
+
+The tables below retain the historical execution measurements. Their pass row
+measures the legacy contract/gold check (C), rather than all seven gates.
+
 ## REV5
 
 | Measure | Selector v3 | No selector v1 | Delta |
 |---|---:|---:|---:|
-| Offline strict pass | 65/100 (0.650) | 92/100 (0.920) | +0.270 |
+| Legacy contract/gold pass (C) | 65/100 (0.650) | 92/100 (0.920) | +0.270 |
 | Full gold-clause coverage | 65/100 (0.650) | 93/100 (0.930) | +0.280 |
 | Right governing control | 97/100 (0.970) | 97/100 (0.970) | +0.000 |
 | Mean selected clauses | 4.37 | 12.10 | +7.73 |
@@ -25,7 +44,7 @@ No-selector p95 selected clauses: 24.0; p95 answer words: 1283.5.
 
 | Measure | Selector v3 | No selector v1 | Delta |
 |---|---:|---:|---:|
-| Offline strict pass | 29/36 (0.806) | 35/36 (0.972) | +0.167 |
+| Legacy contract/gold pass (C) | 29/36 (0.806) | 35/36 (0.972) | +0.167 |
 | Full gold-clause coverage | 29/36 (0.806) | 35/36 (0.972) | +0.167 |
 | Right governing control | 36/36 (1.000) | 36/36 (1.000) | +0.000 |
 | Mean selected clauses | 4.03 | 14.17 | +10.14 |

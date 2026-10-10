@@ -1,5 +1,10 @@
 # RQ2 Control Gate Width Sensitivity
 
+The archived pass endpoint is the legacy contract/gold check (C). Its historical
+`strict_pass` fields retain that meaning. See the
+[result and scoring map](../../../docs/EVALUATION_RESULTS.md) for the current
+complete standard and the boundaries between assessments and execution records.
+
 [Open the Batch 5A notebook in Colab](https://colab.research.google.com/github/Wenjia1215/ComplianceGPT/blob/main/experiments/answerer_comparison/rq2_control_gate_width/Batch_5A_Control_Gate_Width_Sweep.ipynb)
 
 This study implements the advisor-requested fixed-width sweep over the top 1, 2, 3, and 5 ranked controls. It changes one factor only: the number of ranked controls admitted to the shared evidence window. Retrieval traces, accepted query rewrites, document filtering, the primary-first rule, the 24-record cap, selector prompt, pinned selector model, ODP policy, and verifier remain fixed.
@@ -16,13 +21,13 @@ The sweep preserves the released gate's exact unit of counting. Ranked enhanceme
 
 For each revision and gate width, the completed run reports:
 
-- offline strict pass under the existing gold-based citation-contract endpoint;
+- legacy contract/gold pass (C) under the execution-time citation-contract endpoint;
 - full expected-clause coverage and mean clause recall;
 - mean gold-clause precision, selected-clause count, additional-clause count, and answer length;
 - right-governing-control coverage;
 - runtime contract validity;
 - `PARAMS_REQUIRED` sensitivity, status precision, specificity, and exact ODP-list agreement against the author labels; and
-- paired exact McNemar tests for strict-pass differences.
+- paired exact McNemar tests for C-pass differences.
 
 The ODP operating characteristics use current author labels and have not been
 independently adjudicated. The full annotation study is future validation, not
@@ -60,9 +65,9 @@ registered runner commit and writes resumable checkpoints to
 
 ## Recorded finding
 
-Fixed top 2 matched the released adaptive gate's strict-pass count in both revisions: 65/100 on Rev. 5 and 29/36 on Rev. 4. Top 3 produced the same strict-pass and ODP-specificity results with lower clause precision. Top 5 reached 67/100 on Rev. 5 but fell to 28/36 on Rev. 4 and reduced Rev. 5 author-label ODP specificity from 17/37 to 12/37. Fixed top 1 fell to 62/100 and 26/36 without a specificity gain over the adaptive reference.
+Under the archived C endpoint, fixed top 2 matched the released adaptive gate's pass count in both revisions: 65/100 on Rev. 5 and 29/36 on Rev. 4. Top 3 produced the same C-pass and ODP-specificity results with lower clause precision. Top 5 reached 67/100 on Rev. 5 but fell to 28/36 on Rev. 4 and reduced Rev. 5 author-label ODP specificity from 17/37 to 12/37. Fixed top 1 fell to 62/100 and 26/36 without a specificity gain over the adaptive reference.
 
-No stored within-revision strict-pass comparison was statistically significant;
+No stored within-revision C-pass comparison was statistically significant;
 all exact two-sided McNemar values were at least 0.25. The tested data show no
 benefit from the adaptive gate over a constant top-2 gate, making fixed top 2
 the simpler evidence-supported operating point. ODP operating characteristics
